@@ -1,7 +1,11 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vitest/config";
 
-const alias = { "@": resolve(import.meta.dirname) };
+const alias = {
+  "@": resolve(import.meta.dirname),
+  // "server-only" lança fora do bundler do Next; nos testes vira um módulo vazio.
+  "server-only": resolve(import.meta.dirname, "tests/stubs/empty.ts"),
+};
 
 export default defineConfig({
   test: {

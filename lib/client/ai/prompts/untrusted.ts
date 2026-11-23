@@ -17,7 +17,7 @@ function randomId(): string {
 export function wrapUntrusted(tag: string, text: string, maxChars: number): string {
   const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   // Tags de abertura e fechamento, sem diferenciar caixa e com espaços (`< /cv >`).
-  const delimiter = new RegExp(`<\\s*/?\\s*${escaped}(?![\\w-])[^>]*>?`, "gi");
+  const delimiter = new RegExp(`<\\s*(?:/\\s*)?${escaped}(?![\\w-])[^>]*>?`, "gi");
   let clean = text.slice(0, Math.max(0, maxChars));
   // Repete até estabilizar: remover uma tag pode juntar pedaços e formar outra (`</c</cv>v>`).
   for (let prev = ""; prev !== clean; ) {

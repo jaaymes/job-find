@@ -181,6 +181,18 @@ describe("generateStructured", () => {
     expect(onPartial.mock.calls.length).toBeLessThan(parts.length);
   });
 
+  it("emite o último parcial mesmo dentro da janela do throttle", async () => {
+    const model = mockModel([...text(...ok.split("")), finish("stop")]);
+    const onPartial = vi.fn();
+    await run(model, { onPartial });
+    expect(onPartial.mock.calls.at(-1)?.[0]).toEqual({ name: "Ana", years: 3 });
+  });
+
+  it("finish other com saída válida é conclusão normal", async () => {
+    const model = mockModel([...text(ok), finish("other")]);
+    await expect(run(model)).resolves.toMatchObject({ data: { years: 3 } });
+  });
+
   it("aborto no meio do stream propaga e a promessa termina", async () => {
     const ac = new AbortController();
     const stream = new ReadableStream({

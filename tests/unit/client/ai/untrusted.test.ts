@@ -46,4 +46,10 @@ describe("wrapUntrusted", () => {
   it("não remove tags de nome parecido", () => {
     expect(wrapUntrusted("cv", "<cvx>ok", 100)).toContain("<cvx>ok");
   });
+
+  it("não sofre backtracking quadrático com `<` seguido de muitos espaços", () => {
+    const t = Date.now();
+    wrapUntrusted("cv", `<${" ".repeat(5000)}x`.repeat(20), 200_000);
+    expect(Date.now() - t).toBeLessThan(500);
+  });
 });

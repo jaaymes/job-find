@@ -93,6 +93,17 @@ async function callOnce<T>(
   let lastPartial = "";
   let lastParseAt = 0;
   let finishReason: string | undefined;
+  const emitPartial = async () => {
+    const parsed = await parsePartialJson(acc).catch(() => undefined);
+    const serialized = parsed && parsed.value !== undefined ? JSON.stringify(parsed.value) : "";
+    if (!serialized || serialized === lastPartial) return;
+    lastPartial = serialized;
+    try {
+      a.onPartial?.(parsed?.value);
+    } catch {
+      // onPartial nunca pode quebrar o stream.
+    }
+  };
   try {
     for await (const part of result.fullStream) {
       if (part.type === "text-delta") {
@@ -101,16 +112,7 @@ async function callOnce<T>(
         const now = Date.now();
         if (a.onPartial && now - lastParseAt >= PARTIAL_INTERVAL_MS) {
           lastParseAt = now;
-          const parsed = await parsePartialJson(acc).catch(() => undefined);
-          const serialized = parsed && parsed.value !== undefined ? JSON.stringify(parsed.value) : "";
-          if (serialized && serialized !== lastPartial) {
-            lastPartial = serialized;
-            try {
-              a.onPartial(parsed?.value);
-            } catch {
-              // onPartial nunca pode quebrar o stream.
-            }
-          }
+          await emitPartial();
         }
       } else if (part.type === "error") {
         streamError ??= { error: part.error };
@@ -125,6 +127,8 @@ async function callOnce<T>(
     throw mapProviderError(e, { provider: providerId });
   }
   if (a.signal?.aborted) throw abortReason(a.signal);
+  // Último valor parcial: deltas dentro da janela do throttle ainda não foram emitidos.
+  if (a.onPartial && !streamError) await emitPartial();
   if (streamError) throw mapProviderError(streamError.error, { provider: providerId });
   if (finishReason === "length") throw new AiError("truncated", { meta: { finishReason } });
   if (finishReason === "error" || finishReason === "interrupted" || finishReason === undefined) {

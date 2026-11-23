@@ -119,3 +119,15 @@ export function storageUsageBytes(): number {
     return 0;
   }
 }
+
+/** Testa se o localStorage aceita gravações (falha em modo privado restrito, cookies bloqueados etc.). */
+export function isStorageAvailable(): boolean {
+  const probe = "jobfind:probe";
+  try {
+    window.localStorage.setItem(probe, "1");
+    window.localStorage.removeItem(probe);
+    return true;
+  } catch {
+    return false;
+  }
+}

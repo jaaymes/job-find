@@ -4,6 +4,9 @@ import { useSyncExternalStore } from "react";
 import type { z } from "zod";
 import { STORAGE_PREFIX, type StorageKey } from "./keys";
 
+/** Notificação na mesma aba (o evento nativo `storage` só dispara em outras abas). */
+export const STORAGE_CHANGE_EVENT = "jobfind:storage";
+
 export type SetResult = { ok: true } | { ok: false; reason: "quota" | "unavailable" };
 
 export type Store<T> = {
@@ -81,6 +84,7 @@ export function createStore<T>(
       return { ok: false, reason: isQuotaError(e) ? "quota" : "unavailable" };
     }
     listeners.forEach((cb) => cb());
+    window.dispatchEvent(new CustomEvent(STORAGE_CHANGE_EVENT));
     return { ok: true };
   }
 
@@ -120,14 +124,33 @@ export function storageUsageBytes(): number {
   }
 }
 
-/** Testa se o localStorage aceita gravações (falha em modo privado restrito, cookies bloqueados etc.). */
-export function isStorageAvailable(): boolean {
+export type StorageProbe = "ok" | "quota" | "unavailable";
+
+let probeCache: StorageProbe | null = null;
+
+/**
+ * Testa uma única vez por carregamento de página se o localStorage aceita gravações.
+ * Cota cheia (QuotaExceededError) é "quota", não "unavailable". O resultado é
+ * cacheado: chamadas seguintes não escrevem (evita laços de eventos `storage`).
+ */
+export function probeStorage(): StorageProbe {
+  if (probeCache !== null) return probeCache;
   const probe = "jobfind:probe";
   try {
     window.localStorage.setItem(probe, "1");
     window.localStorage.removeItem(probe);
-    return true;
-  } catch {
-    return false;
+    probeCache = "ok";
+  } catch (e) {
+    probeCache = isQuotaError(e) ? "quota" : "unavailable";
   }
+  return probeCache;
+}
+
+export function isStorageAvailable(): boolean {
+  return probeStorage() !== "unavailable";
+}
+
+/** Somente para testes: descarta o resultado cacheado da sonda. */
+export function resetStorageProbeForTests(): void {
+  probeCache = null;
 }

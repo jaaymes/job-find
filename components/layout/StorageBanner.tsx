@@ -2,7 +2,11 @@
 
 import Link from "next/link";
 import { useSyncExternalStore } from "react";
-import { isStorageAvailable, storageUsageBytes } from "@/lib/client/storage/store";
+import {
+  probeStorage,
+  STORAGE_CHANGE_EVENT,
+  storageUsageBytes,
+} from "@/lib/client/storage/store";
 
 /** Acima disso (cota típica do localStorage: ~5 MB) o usuário é avisado. */
 const NEAR_LIMIT_BYTES = 4 * 1024 * 1024;
@@ -10,12 +14,22 @@ const NEAR_LIMIT_BYTES = 4 * 1024 * 1024;
 type State = "ok" | "unavailable" | "near-limit";
 
 function subscribe(cb: () => void): () => void {
-  window.addEventListener("storage", cb);
-  return () => window.removeEventListener("storage", cb);
+  const onStorage = (e: StorageEvent) => {
+    // Ignora a chave de sonda e chaves de outros apps.
+    if (e.key === null || e.key.startsWith("jobfind:v1:")) cb();
+  };
+  window.addEventListener("storage", onStorage);
+  window.addEventListener(STORAGE_CHANGE_EVENT, cb);
+  return () => {
+    window.removeEventListener("storage", onStorage);
+    window.removeEventListener(STORAGE_CHANGE_EVENT, cb);
+  };
 }
 
 function getSnapshot(): State {
-  if (!isStorageAvailable()) return "unavailable";
+  const probe = probeStorage();
+  if (probe === "unavailable") return "unavailable";
+  if (probe === "quota") return "near-limit";
   return storageUsageBytes() > NEAR_LIMIT_BYTES ? "near-limit" : "ok";
 }
 

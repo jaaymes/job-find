@@ -112,6 +112,17 @@ describe("extractText", () => {
     expect(w.terminate).toHaveBeenCalledTimes(1);
   });
 
+  it("ignora mensagens de protocolo do bundler (ex.: Turbopack 'ready') e espera a resposta real", async () => {
+    const w = inlineWorker();
+    const post = w.postMessage.bind(w);
+    w.postMessage = (msg, t) => {
+      w.onmessage?.({ data: { sourceName: "worker", targetName: "main", action: "ready", data: {} } });
+      post(msg, t);
+    };
+    const r = await realExtractText(fixture("texto.pdf"), { createWorker: () => w });
+    expect(r.kind).toBe("pdf");
+  });
+
   it("erro do worker vira ExtractError estável", async () => {
     const w: WorkerLike = { onmessage: null, onerror: null, onmessageerror: null, terminate: vi.fn(), postMessage: () => w.onerror?.({}) };
     await expect(realExtractText(fixture("texto.pdf"), { createWorker: () => w })).rejects.toMatchObject({ code: "failed" });

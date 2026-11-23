@@ -65,7 +65,9 @@ function runInWorker(
     };
     const timer = setTimeout(() => finish(() => reject(new ExtractError("timeout"))), timeoutMs);
     worker.onmessage = (ev) => {
-      const d = ev.data as { ok: boolean; result?: ExtractResult; code?: ExtractErrorCode };
+      const d = ev.data as { ok?: unknown; result?: ExtractResult; code?: ExtractErrorCode } | null;
+      // O Turbopack injeta no worker um protocolo próprio (ex.: {action:"ready"}); só vale a nossa resposta ({ok}).
+      if (typeof d !== "object" || d === null || typeof d.ok !== "boolean") return;
       finish(() => (d?.ok && d.result ? resolve(d.result) : reject(new ExtractError(d?.code ?? "failed"))));
     };
     worker.onerror = () => finish(() => reject(new ExtractError("failed", "falha no worker")));

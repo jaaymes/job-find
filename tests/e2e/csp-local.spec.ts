@@ -33,7 +33,7 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
     expect(script).toContain("'strict-dynamic'");
     expect(script).not.toContain("'unsafe-inline'");
 
-    await expect(page.getByRole("heading", { name: "Perfil — em construção" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Seu perfil" })).toBeVisible();
     // Hidratou: o React anexou suas props de evento/fibras aos nós do DOM.
     await page.waitForFunction(() =>
       Object.keys(document.body.firstElementChild ?? {}).some((k) => k.startsWith("__reactFiber")),

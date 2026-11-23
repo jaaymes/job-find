@@ -265,7 +265,7 @@ test.describe("Configurações de IA", () => {
   test("Perfil com provedor conectado não mostra o CTA", async ({ page }) => {
     await seed(page, { providers: { openai: openaiProvider } });
     await page.goto("/perfil");
-    await expect(page.getByRole("heading", { name: "Perfil — em construção" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Seu perfil" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Conecte uma IA em Configurações" })).toHaveCount(0);
   });
 });

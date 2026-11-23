@@ -161,6 +161,42 @@ describe("generateStructured", () => {
     expect(JSON.stringify(model.doStreamCalls[0]?.prompt)).not.toContain("JSON Schema");
   });
 
+  it("modo tool também recebe o schema no system prompt", async () => {
+    const model = mockModel([...text(ok), finish("stop")]);
+    const def = { ...PROVIDERS.openai, structured: "tool" as const };
+    await run(model, { resolveModel: async () => ({ model, provider: def, modelId: "m1" }) });
+    expect(JSON.stringify(model.doStreamCalls[0]?.prompt)).toContain("JSON Schema");
+  });
+
+  it("finish tool-calls com saída válida é conclusão normal", async () => {
+    const model = mockModel([...text(ok), finish("tool-calls")]);
+    await expect(run(model)).resolves.toMatchObject({ data: { name: "Ana" } });
+  });
+
+  it("onPartial é limitado no tempo (não faz parse a cada delta)", async () => {
+    const parts = ok.split("");
+    const model = mockModel([...text(...parts), finish("stop")]);
+    const onPartial = vi.fn();
+    await run(model, { onPartial });
+    expect(onPartial.mock.calls.length).toBeLessThan(parts.length);
+  });
+
+  it("aborto no meio do stream propaga e a promessa termina", async () => {
+    const ac = new AbortController();
+    const stream = new ReadableStream({
+      start(c) {
+        c.enqueue({ type: "stream-start", warnings: [] });
+        c.enqueue({ type: "text-start", id: "t" });
+        c.enqueue({ type: "text-delta", id: "t", delta: ok.slice(0, 8) });
+        setTimeout(() => ac.abort(), 5);
+      },
+    });
+    const model = new MockLanguageModelV4({ doStream: async () => ({ stream }) as never });
+    const err = await run(model, { signal: ac.signal }).catch((e: unknown) => e);
+    expect(err).not.toBeInstanceOf(AiError);
+    expect(err).toMatchObject({ name: "AbortError" });
+  });
+
   it("padrão usa resolveTaskModel: sem provedor lança no_provider", async () => {
     await expect(
       generateStructured({
@@ -211,6 +247,42 @@ describe("mapProviderError", () => {
     const e = new TypeError("Failed to fetch");
     expect(mapProviderError(e)).toMatchObject({ code: "unavailable", retryable: true });
     expect(mapProviderError(e, { provider: "local" })).toMatchObject({ code: "local_blocked" });
+  });
+
+  it("AbortError é relançado; TimeoutError vira timeout", () => {
+    const abort = new DOMException("Aborted", "AbortError");
+    expect(() => mapProviderError(abort)).toThrow(abort);
+    expect(mapProviderError(new DOMException("t", "TimeoutError"))).toMatchObject({ code: "timeout", retryable: true });
+  });
+
+  it("não carrega o corpo da requisição (cause nem meta)", () => {
+    const e = new APICallError({
+      message: "x",
+      url: "u",
+      requestBodyValues: { prompt: "CURRICULO-SECRETO" },
+      statusCode: 500,
+      responseBody: "falha",
+    });
+    const m = mapProviderError(e);
+    expect(m.cause).toBeUndefined();
+    expect(JSON.stringify(m.meta)).not.toContain("CURRICULO-SECRETO");
+  });
+
+  it("4xx desconhecido não é retryable", () => {
+    for (const s of [400, 404, 413, 422]) {
+      expect(mapProviderError(api(s))).toMatchObject({ code: "unavailable", retryable: false });
+    }
+  });
+
+  it("404 do OpenRouter com data policy -> blocked_by_privacy", () => {
+    const e = mapProviderError(api(404, { responseBody: "No endpoints found matching your data policy" }));
+    expect(e).toMatchObject({ code: "blocked_by_privacy", retryable: false });
+  });
+
+  it("403 sem limit_usd -> invalid_key com meta.excerpt", () => {
+    const e = mapProviderError(api(403, { responseBody: '{"error":"moderado:  conteúdo"}' }));
+    expect(e.code).toBe("invalid_key");
+    expect(e.meta?.excerpt).toContain("moderado");
   });
 
   it("não reembrulha AiError", () => {

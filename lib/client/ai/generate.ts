@@ -10,6 +10,7 @@ import type { AiSettings } from "./settings";
 
 /** No máximo 2 chamadas ao modelo por operação, somando a retentativa do Zod e a do `validate`. */
 const MAX_CALLS = 2;
+const PARTIAL_INTERVAL_MS = 50;
 
 type ResolveModel = (s: AiSettings, task: AiTask) => ReturnType<typeof resolveTaskModel>;
 
@@ -56,6 +57,15 @@ function parseLoose(raw: string): { ok: true; value: unknown } | { ok: false } {
   }
 }
 
+/** Motivo do aborto: `TimeoutError` (AbortSignal.timeout) vira `timeout`; o resto segue como AbortError. */
+function abortReason(signal?: AbortSignal): unknown {
+  const r: unknown = signal?.reason;
+  if (typeof r === "object" && r !== null && (r as { name?: unknown }).name === "TimeoutError") {
+    return new AiError("timeout", { retryable: true });
+  }
+  return new DOMException("Aborted", "AbortError");
+}
+
 /** Uma chamada ao modelo: devolve o texto completo ou lança AiError (nunca deixa rejeição solta). */
 async function callOnce<T>(
   a: GenerateArgs<T>,
@@ -81,12 +91,16 @@ async function callOnce<T>(
 
   let acc = "";
   let lastPartial = "";
+  let lastParseAt = 0;
   let finishReason: string | undefined;
   try {
     for await (const part of result.fullStream) {
       if (part.type === "text-delta") {
         acc += part.text;
-        if (a.onPartial) {
+        // Limita a 1 parse a cada 50 ms para não custar O(n²) em saídas grandes.
+        const now = Date.now();
+        if (a.onPartial && now - lastParseAt >= PARTIAL_INTERVAL_MS) {
+          lastParseAt = now;
           const parsed = await parsePartialJson(acc).catch(() => undefined);
           const serialized = parsed && parsed.value !== undefined ? JSON.stringify(parsed.value) : "";
           if (serialized && serialized !== lastPartial) {
@@ -103,20 +117,17 @@ async function callOnce<T>(
       } else if (part.type === "finish") {
         finishReason = part.finishReason;
       } else if (part.type === "abort") {
-        throw new DOMException("Aborted", "AbortError");
+        throw abortReason(a.signal);
       }
     }
   } catch (e) {
-    if (isAbortError(e) || a.signal?.aborted) throw e;
+    if (isAbortError(e)) throw e;
     throw mapProviderError(e, { provider: providerId });
   }
-  if (a.signal?.aborted) throw new DOMException("Aborted", "AbortError");
-  if (streamError) {
-    if (isAbortError(streamError.error)) throw streamError.error;
-    throw mapProviderError(streamError.error, { provider: providerId });
-  }
+  if (a.signal?.aborted) throw abortReason(a.signal);
+  if (streamError) throw mapProviderError(streamError.error, { provider: providerId });
   if (finishReason === "length") throw new AiError("truncated", { meta: { finishReason } });
-  if (finishReason === "error" || finishReason === "other" || finishReason === undefined) {
+  if (finishReason === "error" || finishReason === "interrupted" || finishReason === undefined) {
     throw new AiError("unavailable", { retryable: true, meta: { finishReason } });
   }
   return acc;
@@ -131,7 +142,7 @@ export async function generateStructured<T>(
 ): Promise<{ data: T; provider: ProviderId; model: string }> {
   const resolved = await (a.resolveModel ?? resolveTaskModel)(a.settings, a.task);
   const system =
-    resolved.provider.structured === "json_mode"
+    resolved.provider.structured !== "json_schema"
       ? `${a.system}\n\nResponda somente com JSON válido que siga este JSON Schema, sem texto extra:\n${JSON.stringify(z.toJSONSchema(a.schema))}`
       : a.system;
 

@@ -36,9 +36,11 @@ export class AiError extends Error {
 
 /** Aborto do usuário (`AbortController`): deve ser repassado, nunca embrulhado como erro de IA. */
 export function isAbortError(e: unknown): boolean {
-  return (
-    typeof e === "object" && e !== null && "name" in e && (e as { name?: unknown }).name === "AbortError"
-  );
+  return errName(e) === "AbortError";
+}
+
+function errName(e: unknown): unknown {
+  return typeof e === "object" && e !== null && "name" in e ? (e as { name?: unknown }).name : undefined;
 }
 
 function statusOf(e: unknown): number | undefined {
@@ -49,7 +51,7 @@ function statusOf(e: unknown): number | undefined {
   return undefined;
 }
 
-/** Texto bruto do corpo/dados do erro, só para procurar marcadores (nunca vai para log nem para a UI). */
+/** Texto bruto da RESPOSTA (corpo/dados), só para procurar marcadores. Nunca inclui o corpo da requisição. */
 function bodyText(e: unknown): string {
   if (!APICallError.isInstance(e)) return "";
   let data = "";
@@ -61,20 +63,31 @@ function bodyText(e: unknown): string {
   return `${e.responseBody ?? ""} ${data}`;
 }
 
+/** Trecho curto da resposta do provedor para a UI (ex.: mensagem de moderação). */
+function excerptOf(body: string): string | undefined {
+  const t = body.replace(/\s+/g, " ").trim().slice(0, 200);
+  return t === "" ? undefined : t;
+}
+
 const RETRYABLE: ReadonlySet<AiErrorCode> = new Set(["rate_limit", "timeout", "unavailable"]);
 
 /**
- * Converte um erro de provedor em `AiError`. Erros sem status HTTP (falha de rede, CORS, erro no corpo
+ * Converte um erro de provedor em `AiError`. Aborto do usuário (`AbortError`) é relançado como veio;
+ * só `TimeoutError` (`AbortSignal.timeout`) vira `timeout`. Erros sem status HTTP (rede, CORS, erro no corpo
  * de uma resposta 200) viram `unavailable`; na IA local, falha de rede vira `local_blocked`.
+ * O erro original não vira `cause` (o `APICallError` carrega o prompt em `requestBodyValues`).
  * `finish_reason: length` (`truncated`) é tratado em `generateStructured`, que vê o fim do stream.
  */
 export function mapProviderError(e: unknown, ctx: { provider?: ProviderId } = {}): AiError {
   if (e instanceof AiError) return e;
+  if (isAbortError(e)) throw e;
   const status = statusOf(e);
-  const make = (code: AiErrorCode, meta?: Record<string, unknown>) =>
-    new AiError(code, { retryable: RETRYABLE.has(code), meta: { ...(status ? { status } : {}), ...meta }, cause: e });
-  if (isAbortError(e)) return make("timeout");
   const body = bodyText(e);
+  const excerpt = excerptOf(body);
+  const meta: Record<string, unknown> = { ...(status ? { status } : {}), ...(excerpt ? { excerpt } : {}) };
+  const make = (code: AiErrorCode, retryable = RETRYABLE.has(code)) => new AiError(code, { retryable, meta });
+  if (errName(e) === "TimeoutError") return make("timeout");
+  const privacy = /data_collection|data policy/i.test(body);
   switch (status) {
     case 401:
       return make("invalid_key");
@@ -86,14 +99,18 @@ export function mapProviderError(e: unknown, ctx: { provider?: ProviderId } = {}
       return make("rate_limit");
     case 408:
       return make("timeout");
+    case 404:
     case 503:
-      if (body.includes("data_collection")) return make("blocked_by_privacy");
-      return make("unavailable");
+      if (privacy) return make("blocked_by_privacy");
+      return make("unavailable", status === 503);
     default:
   }
   if (status !== undefined && status >= 500) return make("unavailable");
-  if (status === undefined && ctx.provider === "local" && e instanceof TypeError) return make("local_blocked");
-  if (status === undefined && ctx.provider === "local" && APICallError.isInstance(e)) return make("local_blocked");
-  // Sem status (rede, CORS, erro no corpo de uma resposta 200) ou status inesperado: tenta de novo pode resolver.
-  return new AiError("unavailable", { retryable: true, meta: status ? { status } : undefined, cause: e });
+  // Outros 4xx (400, 404, 413, 422...): repetir não resolve.
+  if (status !== undefined && status >= 400) return make("unavailable", false);
+  if (status === undefined && ctx.provider === "local" && (e instanceof TypeError || APICallError.isInstance(e))) {
+    return make("local_blocked");
+  }
+  // Sem status (rede, CORS, erro no corpo de uma resposta 200): tentar de novo pode resolver.
+  return make("unavailable");
 }

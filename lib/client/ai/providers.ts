@@ -4,6 +4,9 @@ import type { ProviderV4 } from "@ai-sdk/provider";
 import { z } from "zod";
 import { AiError } from "./errors";
 
+// A CSP das rotas (local) não tem 'unsafe-eval': sem isto o Zod 4 testa `new Function` ao validar e gera uma violação de CSP.
+z.config({ jitless: true });
+
 export type AiTask = "extract" | "analyze" | "cv";
 
 export const PROVIDER_IDS = [

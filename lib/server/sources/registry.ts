@@ -7,6 +7,7 @@ import { greenhouse } from "@/lib/server/sources/greenhouse";
 import { himalayas } from "@/lib/server/sources/himalayas";
 import { jobicy } from "@/lib/server/sources/jobicy";
 import { lever } from "@/lib/server/sources/lever";
+import { remoteok } from "@/lib/server/sources/remoteok";
 import { wwr } from "@/lib/server/sources/wwr";
 
 /** Preenchido pelas Tarefas 11–14 e 38; começa vazio. */
@@ -17,6 +18,7 @@ export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
   himalayas,
   jobicy,
   lever,
+  remoteok,
   wwr,
 };
 

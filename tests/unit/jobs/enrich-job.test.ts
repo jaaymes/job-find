@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { enrichJob } from "@/lib/server/jobs/enrich-job";
+import { computeContentHash, enrichJob } from "@/lib/server/jobs/enrich-job";
+import { SANITIZER_VERSION } from "@/lib/server/sanitize";
 import type { NormalizedJob } from "@/lib/server/sources/types";
 
 const src = { id: "greenhouse", brazilian: false, dofollow: false } as const;
@@ -70,6 +71,23 @@ describe("enrichJob", () => {
     expect(reused?.descriptionHtml).toBe("<p>salvo</p>");
     const diff = enrichJob(norm(), src, { contentHash: "outro", descriptionHtml: "<p>salvo</p>" });
     expect(diff?.descriptionHtml).toBe("<p>Build things with React</p>");
+  });
+
+  it("computeContentHash é o mesmo hash que o enrichJob grava", () => {
+    expect(enrichJob(norm(), src)?.contentHash).toBe(computeContentHash(norm()));
+  });
+
+  it("o hash inclui a versão do sanitizador", () => {
+    expect(computeContentHash(norm(), SANITIZER_VERSION + 1)).not.toBe(computeContentHash(norm()));
+    expect(computeContentHash(norm(), SANITIZER_VERSION)).toBe(computeContentHash(norm()));
+  });
+
+  it("subir a versão do sanitizador força a re-sanitização do HTML salvo", () => {
+    // HTML gravado por uma versão anterior do sanitizador, com o hash daquela versão.
+    const stale = { contentHash: computeContentHash(norm(), SANITIZER_VERSION - 1), descriptionHtml: "<p>velho</p>" };
+    const j = enrichJob(norm(), src, stale);
+    expect(j?.descriptionHtml).toBe("<p>Build things with React</p>");
+    expect(j?.sanitizerVersion).toBe(SANITIZER_VERSION);
   });
 
   it("descarta salário com moeda inválida e normaliza o válido", () => {

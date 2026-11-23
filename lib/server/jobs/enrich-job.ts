@@ -43,7 +43,7 @@ export type EnrichedJob = {
   salaryPeriod: "hour" | "month" | "year" | null;
   /** Data informada pela fonte; o upsert aplica o teto (now) e o fallback (first_seen). */
   publishedAt: Date | null;
-  /** sha1 do conteúdo bruto, independente da fonte e da URL: decide se vale sanitizar e atualizar de novo. */
+  /** `computeContentHash`: conteúdo bruto + versão do sanitizador; decide se vale sanitizar e atualizar de novo. */
   contentHash: string;
 };
 
@@ -67,20 +67,13 @@ function cleanCountry(value: string | null): string | null {
 }
 
 /**
- * Normaliza e enriquece uma vaga de uma fonte. Devolve `null` quando não é vaga
- * de tecnologia (RN-01) ou a URL é inválida (SEC-03). Quando `prev.contentHash`
- * é igual ao hash do conteúdo bruto, reaproveita o HTML já sanitizado (poupa CPU).
+ * Hash do conteúdo bruto normalizado (barato: sem sanitizar nem analisar texto). Independe da
+ * fonte e da URL; inclui a versão do sanitizador, para que subir a versão invalide o HTML salvo
+ * e force a re-sanitização (no `enrichJob` e no atalho de vagas inalteradas da coleta).
  */
-export function enrichJob(
-  n: NormalizedJob,
-  src: { id: SourceId; brazilian: boolean; dofollow: boolean },
-  prev?: { contentHash: string; descriptionHtml: string } | null,
-): EnrichedJob | null {
-  if (!isTechJob(n.title, n.tags)) return null;
-  const urlCanonical = canonicalUrl(n.url);
-  if (!urlCanonical) return null;
-
-  const hash = hashParts([
+export function computeContentHash(n: NormalizedJob, sanitizerVersion: number = SANITIZER_VERSION): string {
+  return hashParts([
+    `sanitizer:${sanitizerVersion}`,
     n.title,
     n.company,
     n.companyLogoUrl ?? "",
@@ -95,6 +88,23 @@ export function enrichJob(
     [...n.tags].sort().join(","),
     JSON.stringify(n.salary),
   ]);
+}
+
+/**
+ * Normaliza e enriquece uma vaga de uma fonte. Devolve `null` quando não é vaga
+ * de tecnologia (RN-01) ou a URL é inválida (SEC-03). Quando `prev.contentHash`
+ * é igual ao hash do conteúdo bruto, reaproveita o HTML já sanitizado (poupa CPU).
+ */
+export function enrichJob(
+  n: NormalizedJob,
+  src: { id: SourceId; brazilian: boolean; dofollow: boolean },
+  prev?: { contentHash: string; descriptionHtml: string } | null,
+): EnrichedJob | null {
+  if (!isTechJob(n.title, n.tags)) return null;
+  const urlCanonical = canonicalUrl(n.url);
+  if (!urlCanonical) return null;
+
+  const hash = computeContentHash(n);
 
   const descriptionHtml =
     prev && prev.contentHash === hash

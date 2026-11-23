@@ -43,7 +43,7 @@ export type EnrichedJob = {
   salaryPeriod: "hour" | "month" | "year" | null;
   /** Data informada pela fonte; o upsert aplica o teto (now) e o fallback (first_seen). */
   publishedAt: Date | null;
-  /** sha1 do conteúdo bruto: decide se vale sanitizar e atualizar de novo. */
+  /** sha1 do conteúdo bruto, independente da fonte e da URL: decide se vale sanitizar e atualizar de novo. */
   contentHash: string;
 };
 
@@ -81,8 +81,6 @@ export function enrichJob(
   if (!urlCanonical) return null;
 
   const hash = hashParts([
-    src.id,
-    n.url,
     n.title,
     n.company,
     n.companyLogoUrl ?? "",

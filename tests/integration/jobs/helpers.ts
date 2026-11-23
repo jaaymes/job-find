@@ -40,7 +40,8 @@ export function makeJob(over: Partial<EnrichedJob> = {}): EnrichedJob {
   };
 }
 
-export async function getRow(db: TestDb, id: number) {
+export async function getRow(db: TestDb, id: number | null) {
+  if (id === null) throw new Error("jobId nulo");
   const [row] = await db.select().from(jobs).where(eq(jobs.id, id));
   return row;
 }

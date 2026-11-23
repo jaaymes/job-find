@@ -1,6 +1,9 @@
 import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
+import { enrichJob } from "@/lib/server/jobs/enrich-job";
+import type { NormalizedJob } from "@/lib/server/sources/types";
 import { upsertJob } from "@/lib/server/jobs/upsert";
+import { jobSources, jobs } from "@/lib/server/db/schema";
 import { resetDb, testDb } from "../setup";
 import { addDays, getRow, getSource, makeJob, T0 } from "./helpers";
 
@@ -155,5 +158,52 @@ describe("upsertJob", () => {
     expect(row.salaryMin).toBe("5000.00");
     expect(row.salaryMax).toBe("8000.50");
     expect(row.salaryCurrency).toBe("BRL");
+  });
+
+  it("fontes alternadas com o mesmo conteúdo não reescrevem a vaga (hash independe da fonte)", async () => {
+    const db = await testDb();
+    const norm = (url: string): NormalizedJob => ({
+      externalId: "x",
+      url,
+      title: "Senior React Developer",
+      company: "Acme",
+      companyLogoUrl: null,
+      descriptionHtml: "<p>Build things with React</p>",
+      descriptionFormat: "html",
+      country: "BR",
+      city: "São Paulo",
+      locationText: "São Paulo, Brazil",
+      eligibleRegions: [],
+      workModeHint: "remote",
+      seniorityHint: null,
+      tags: ["react"],
+      salary: null,
+      publishedAt: addDays(T0, -5),
+    });
+    const enrich = (id: "greenhouse" | "himalayas", url: string) => {
+      const j = enrichJob(norm(url), { id, brazilian: false, dofollow: false });
+      if (!j) throw new Error("esperava vaga");
+      return j;
+    };
+    const g = enrich("greenhouse", "https://boards.example.com/acme/1");
+    const h = enrich("himalayas", "https://himalayas.app/acme/1");
+    expect(g.contentHash).toBe(h.contentHash);
+    const gRef = { source: "greenhouse", externalId: "g", url: "https://boards.example.com/acme/1" } as const;
+    const hRef = { source: "himalayas", externalId: "h", url: "https://himalayas.app/acme/1" } as const;
+    expect((await upsertJob(db, g, gRef, T0)).status).toBe("inserted");
+    expect((await upsertJob(db, h, hRef, addDays(T0, 1))).status).toBe("updated"); // só mescla as fontes
+    expect((await upsertJob(db, g, gRef, addDays(T0, 2))).status).toBe("unchanged");
+    expect((await upsertJob(db, h, hRef, addDays(T0, 3))).status).toBe("unchanged");
+    expect((await upsertJob(db, g, gRef, addDays(T0, 4))).status).toBe("unchanged");
+  });
+
+  it("não insere vaga nova com mais de 45 dias; com 44 dias insere", async () => {
+    const db = await testDb();
+    const old = await upsertJob(db, makeJob({ publishedAt: addDays(T0, -46) }), ref, T0);
+    expect(old).toEqual({ jobId: null, status: "skipped" });
+    expect(await db.select().from(jobs)).toHaveLength(0);
+    expect(await db.select().from(jobSources)).toHaveLength(0);
+    const ok = await upsertJob(db, makeJob({ publishedAt: addDays(T0, -44) }), ref, T0);
+    expect(ok.status).toBe("inserted");
   });
 });

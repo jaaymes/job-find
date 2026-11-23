@@ -4,12 +4,13 @@ import type { Db } from "@/lib/server/db/client";
 import { jobSources, jobs } from "@/lib/server/db/schema";
 import type { SourceId } from "@/lib/shared/types/job";
 import type { EnrichedJob } from "./enrich-job";
+import { MAX_AGE_DAYS } from "./expire";
 
 const DAY_MS = 86_400_000;
 /** RN-05: janela de deduplicação. */
 const DEDUPE_WINDOW_DAYS = 30;
 
-export type UpsertStatus = "inserted" | "updated" | "unchanged";
+export type UpsertStatus = "inserted" | "updated" | "unchanged" | "skipped";
 
 // O drizzle expande arrays JS em lista de parâmetros dentro de `sql`; aqui vai o literal do Postgres.
 function pgArray(values: string[]): string {
@@ -34,7 +35,7 @@ export async function upsertJob(
   job: EnrichedJob,
   ref: { source: SourceId; externalId: string; url: string },
   now: Date,
-): Promise<{ jobId: number; status: UpsertStatus }> {
+): Promise<{ jobId: number | null; status: UpsertStatus }> {
   const [bySource] = await db
     .select({ id: jobs.id })
     .from(jobSources)
@@ -56,6 +57,7 @@ export async function upsertJob(
     targetId = byUrl?.id;
   }
 
+  let liveKeyMatch = false;
   if (targetId === undefined) {
     // Janela de 30 dias: um registro antigo com a mesma chave não absorve a vaga nova.
     const [byKey] = await db
@@ -64,10 +66,20 @@ export async function upsertJob(
       .where(and(eq(jobs.dedupeKey, job.dedupeKey), isNull(jobs.expiredAt)));
     if (byKey && now.getTime() - byKey.firstSeenAt.getTime() > DEDUPE_WINDOW_DAYS * DAY_MS) {
       await db.update(jobs).set({ expiredAt: now }).where(eq(jobs.id, byKey.id));
+    } else {
+      liveKeyMatch = byKey !== undefined;
     }
   }
 
   const published = clampPublished(job.publishedAt, now);
+  // Vaga nova já fora da validade de 45 dias: inserir só para expirar na próxima rodada geraria churn.
+  if (
+    targetId === undefined &&
+    !liveKeyMatch &&
+    now.getTime() - published.getTime() > MAX_AGE_DAYS * DAY_MS
+  ) {
+    return { jobId: null, status: "skipped" };
+  }
   const stacksLiteral = pgArray(job.stacks);
   const searchVector = sql`job_search_vector(${job.title}, ${job.company}, ${stacksLiteral}::text[], ${job.language}, ${job.searchBody})`;
   const sourcesUnion = sql`ARRAY(SELECT DISTINCT s FROM unnest(${jobs.sources} || ARRAY[${ref.source}]::text[]) AS s ORDER BY s)`;

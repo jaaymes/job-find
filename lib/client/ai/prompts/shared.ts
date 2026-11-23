@@ -34,29 +34,51 @@ const NAME_PARTICLES = new Set(["das", "dos", "del", "der", "van", "von", "les",
 const escapeRe = (t: string) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const unaccent = (t: string) => t.normalize("NFD").replace(/\p{M}/gu, "").normalize("NFC");
 
+const capFirst = (w: string) => w.charAt(0).toUpperCase() + w.slice(1);
+const variants = (w: string) => [...new Set([w.normalize("NFC"), unaccent(w)])];
+const altOf = (terms: string[]) => [...new Set(terms)].filter(Boolean).sort((a, b) => b.length - a.length).map(escapeRe).join("|");
+
+/** Troca o nome do usuário num texto livre por `[NOME]`. */
+export type NameRedactor = (text: string) => string;
+
 /**
- * Regex do nome do usuário: o nome inteiro e cada parte com 3+ letras (sem partículas), com e sem acento. `null`
- * sem nome. Ordem do mais longo para o mais curto: "Ana Souza" vira um só `[NOME]`.
+ * Redator do nome do usuário (`null` sem nome). Para não estragar palavras comuns ("Novos campos", "Fundo branco",
+ * "Rio de Janeiro" com sobrenome Rio):
+ * - só casa partes com inicial maiúscula (sensível à 1ª letra), com e sem acento, de 3+ letras e sem partículas;
+ * - o nome inteiro, ou 2+ partes em sequência ("Maria Campos", "Campos Branco", "Ana dos Santos"), viram `[NOME]`;
+ * - uma parte sozinha só vira `[NOME]` se for o primeiro nome ("Maria liderou"); sobrenome sozinho fica.
  */
-export function nameRegex(name: string | null | undefined): RegExp | null {
+export function nameRedactor(name: string | null | undefined): NameRedactor | null {
   const full = (name ?? "").trim().replace(/\s+/g, " ");
   if (!full) return null;
-  const parts = full.split(/[^\p{L}'’-]+/u).filter((w) => (w.match(/\p{L}/gu)?.length ?? 0) >= 3 && !NAME_PARTICLES.has(w.toLowerCase()));
-  const terms = new Set<string>();
-  for (const t of [full, ...parts]) {
-    terms.add(t.normalize("NFC"));
-    terms.add(unaccent(t));
-  }
-  const alt = [...terms].filter(Boolean).sort((a, b) => b.length - a.length).map(escapeRe).join("|");
-  return alt ? new RegExp(`(?<![\\p{L}\\d])(?:${alt})(?![\\p{L}\\d])`, "giu") : null;
+  const raw = full.split(/[^\p{L}'’-]+/u).filter((w) => (w.match(/\p{L}/gu)?.length ?? 0) >= 3 && !NAME_PARTICLES.has(w.toLowerCase()));
+  const parts = raw.map(capFirst);
+  const fullRe = new RegExp(`(?<![\\p{L}\\d])(?:${altOf([...variants(full), ...variants(full.split(" ").map(capFirst).join(" "))])})(?![\\p{L}\\d])`, "gu");
+  const firstName = new Set(parts.length > 0 && raw[0] === full.split(/[^\p{L}'’-]+/u).find(Boolean) ? variants(parts[0]) : []);
+  const partAlt = altOf(parts.flatMap(variants));
+  const runRe = partAlt
+    ? new RegExp(
+        `(?<![\\p{L}\\d])(?:${partAlt})(?:[ \\t]+(?:(?:de|da|do|dos|das|e|del|van|von)[ \\t]+)?(?:${partAlt}))*(?![\\p{L}\\d])`,
+        "gu",
+      )
+    : null;
+  const partSet = new Set(parts.flatMap(variants));
+  return (text) => {
+    const t = text.normalize("NFC").replace(fullRe, NAME_PLACEHOLDER);
+    if (!runRe) return t;
+    return t.replace(runRe, (m) => {
+      const n = m.split(/[ \t]+/).filter((w) => partSet.has(w)).length;
+      return n >= 2 || firstName.has(m) ? NAME_PLACEHOLDER : m;
+    });
+  };
 }
 
 /** Texto livre (título, resumo, bullets): contato redigido e o nome do usuário trocado por `[NOME]`. */
-function freeText(s: string, nameRe: RegExp | null): string {
+function freeText(s: string, redactName: NameRedactor | null): string {
   const t = redactContact(s);
-  return nameRe ? t.normalize("NFC").replace(nameRe, NAME_PLACEHOLDER) : t;
+  return redactName ? redactName(t) : t;
 }
-const cleanFree = (s: string | null | undefined, nameRe: RegExp | null) => (s ? freeText(s, nameRe) : null);
+const cleanFree = (s: string | null | undefined, redactName: NameRedactor | null) => (s ? freeText(s, redactName) : null);
 
 /**
  * Projeção mínima do perfil (D-11): sem `contact` (e-mail, telefone, links) e sem nome. Os textos livres passam
@@ -64,7 +86,7 @@ const cleanFree = (s: string | null | undefined, nameRe: RegExp | null) => (s ? 
  * do usuário escrito neles (resumo, bullets) vira `[NOME]`.
  */
 export function projectProfile(p: Profile) {
-  const nameRe = nameRegex(p.name);
+  const nameRe = nameRedactor(p.name);
   return {
     headline: cleanFree(p.headline, nameRe),
     location: clean(p.location),
@@ -111,7 +133,7 @@ export function wrapJobDescription(job: JobDetail, extraLines: string[] = []): s
  * nome escrito nos textos livres (título, resumo, bullets) vira `[NOME]`.
  */
 export function projectProfileForTailor(p: Profile) {
-  const nameRe = nameRegex(p.name);
+  const nameRe = nameRedactor(p.name);
   return {
     headline: cleanFree(p.headline, nameRe),
     seniority: p.seniority,

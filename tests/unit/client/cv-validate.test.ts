@@ -436,3 +436,34 @@ describe("prepareFacts (memoização)", () => {
     expect(validateTailored(profile, d, job, prepareFacts({ ...profile, experiences: [] }, job))).toEqual(validateTailored(profile, d, job));
   });
 });
+
+describe("revisão 2: área depois de preposição e marcadores", () => {
+  const texts = (v: Violation[]) => v.map((x) => x.text.toLowerCase());
+  const bullet = (t: string) => validateTailored(profile, withBullet("exp_1", t, ["exp_1.b1"]));
+
+  it("área/cargo depois de em/for/at não é empresa", () => {
+    expect(validateTailored(profile, docs({ summary: "Especialista em Frontend e React" }))).toEqual([]);
+    expect(validateTailored(profile, docs({ summary: "Atuação em Data e React" }))).toEqual([]);
+    expect(validateTailored(profile, docs({ headline: "Desenvolvedora em Mobile" }))).toEqual([]);
+    expect(validateTailored(profile, docs({ summary: "Built React apps for Mobile and Web" }))).toEqual([]);
+    expect(validateTailored(profile, docs({ summary: "Trabalhei no Mobile com React" }))).toEqual([]);
+  });
+  it("empresa inventada continua marcada; comuns continuam livres", () => {
+    expect(kinds(bullet("Liderou a migração para React at Cloud Data Software"))).toContain("unknown_name");
+    expect(texts(bullet("Liderou a migração para React na BTG"))).toContain("btg");
+    expect(validateTailored(profile, withLetter("Trabalho no Brasil com React."))).toEqual([]);
+    expect(validateTailored(profile, withLetter("Atuei na equipe de Data com React."))).toEqual([]);
+    expect(validateTailored(profile, withLetter("Entrei em Janeiro com React."))).toEqual([]);
+  });
+  it("marcador literal de dado ocultado é violação no CV e na carta, com feedback claro", () => {
+    const b = bullet("[NOME] liderou a migração para React");
+    expect(b.map((v) => v.text)).toEqual(["[NOME]"]);
+    expect(toPromptFeedback(b)[0]).toMatch(/remova o marcador \[NOME\]/);
+    expect(validateTailored(profile, withLetter("Sou [NOME], contato [EMAIL] e [TELEFONE], moro na [ENDERECO].")).map((v) => v.text)).toEqual(
+      expect.arrayContaining(["[NOME]", "[EMAIL]", "[TELEFONE]", "[ENDERECO]"]),
+    );
+    // Fica fora do PDF: o bullet com o marcador é sinalizado.
+    const d = withBullet("exp_1", "[NOME] liderou a migração para React", ["exp_1.b1"]);
+    expect(assembleCv(profile, d, "pt", { violations: validateTailored(profile, d) }).experiences[0].bullets[0].flagged).toBe(true);
+  });
+});

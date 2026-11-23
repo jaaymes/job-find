@@ -222,6 +222,12 @@ describe("interrupção antecipada", () => {
     expect(net).toMatchObject({ error: "unavailable", network: true });
     const http = await evaluatePair(pair, { settings: defaultAiSettings(), resolveModel: throwing(new AiError("unavailable", { meta: { status: 500 } })) });
     expect(http).toMatchObject({ error: "unavailable", network: false });
+    // Fim anormal do stream (finishReason), mesmo indefinido: é do par, não da rede; não interrompe.
+    for (const finishReason of ["error", undefined]) {
+      const stream = await evaluatePair(pair, { settings: defaultAiSettings(), resolveModel: throwing(new AiError("unavailable", { retryable: true, meta: { finishReason } })) });
+      expect(stream).toMatchObject({ error: "unavailable", network: false });
+      expect(abortReason(stream)).toBeNull();
+    }
     const key = await evaluatePair(pair, { settings: defaultAiSettings(), resolveModel: throwing(new AiError("invalid_key", { meta: { status: 401 } })) });
     expect(abortReason(key)).toBe("invalid_key");
   });

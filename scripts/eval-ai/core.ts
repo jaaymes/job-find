@@ -147,8 +147,10 @@ export async function evaluatePair(pair: Pair, opts: EvaluateOpts): Promise<Pair
     };
   } catch (e) {
     const code = e instanceof AiError ? e.code : "unexpected";
-    // `mapProviderError`: sem status HTTP (rede, DNS, conexão recusada) vira `unavailable` sem `meta.status`.
-    const network = e instanceof AiError && code === "unavailable" && e.meta?.status === undefined;
+    // `mapProviderError`: sem status HTTP (rede, DNS, conexão recusada) vira `unavailable` sem `meta.status`. O fim
+    // anormal do stream (`meta.finishReason`, mesmo `undefined`) é do par, não da rede: não interrompe.
+    const meta = e instanceof AiError ? (e.meta ?? {}) : {};
+    const network = code === "unavailable" && !("status" in meta) && !("finishReason" in meta);
     return {
       id: pair.id,
       lang,

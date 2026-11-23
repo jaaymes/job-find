@@ -150,20 +150,30 @@ const SENTENCE_END = new Set([".", "!", "?", ":", ";", "•", "*", "-", "–", "
  * Para decidir o início de frase anda para trás só sobre o espaço em branco entre duas palavras (O(n) no total).
  */
 // Sequência de palavras com inicial maiúscula logo depois de uma preposição de empresa ("at Cloud Data Software",
-// "na Data Software"). Linear: cada repetição consome espaço e uma maiúscula.
+// "na Data Software"). Linear: cada repetição consome espaço e uma maiúscula. Sem "em"/"for": "Especialista em
+// Frontend", "apps for Mobile" descrevem área, não empresa.
 const COMPANY_RUN_RE =
-  /(?<![\p{L}\d])(?:at|na|no|nas|nos|for|em|pela|pelo)[ \t]+(\p{Lu}[\p{L}\d'’]*(?:[ \t]+\p{Lu}[\p{L}\d'’]*)*)/gu;
+  /(?<![\p{L}\d])(?:at|na|no|nas|nos|pela|pelo)[ \t]+(\p{Lu}[\p{L}\d'’]*(?:[ \t]+\p{Lu}[\p{L}\d'’]*)*)/gu;
 
-/** Início (índice) de cada palavra que está em contexto de empresa. */
+/**
+ * Início (índice) de cada palavra que está em contexto de empresa: 2+ palavras com maiúscula depois da preposição,
+ * ou uma só que não é termo de área/cargo ("no Mobile" é área; "na Acme" já é nome comum de checar).
+ */
 function companyRunStarts(text: string): Set<number> {
   const out = new Set<number>();
   for (const m of text.matchAll(COMPANY_RUN_RE)) {
     const run = m[1];
     const base = m.index + m[0].length - run.length;
-    for (const w of run.matchAll(/\p{Lu}[\p{L}\d'’]*/gu)) out.add(base + w.index);
+    const words = [...run.matchAll(/\p{Lu}[\p{L}\d'’]*/gu)];
+    if (words.length === 1 && COMMON_ROLE_WORDS.has(fold(words[0][0]))) continue;
+    for (const w of words) out.add(base + w.index);
   }
   return out;
 }
+
+/** Marcadores de dado pessoal ocultado (`redactContact`, `[NOME]`): nunca podem ir para o documento. */
+const PLACEHOLDER_RE = /\[(?:NOME|EMAIL|TELEFONE|ENDERECO)\]/g;
+const isPlaceholder = (t: string) => /^\[(?:NOME|EMAIL|TELEFONE|ENDERECO)\]$/.test(t);
 
 function capitalizedMidSentence(text: string): { word: string; end: number }[] {
   const out: { word: string; end: number }[] = [];
@@ -454,6 +464,11 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
       for (const part of fold(w).split(/\s+/)) flaggedNames.add(part); // "tech lead" também cobre "Lead"
       add("unknown_name", w, where, key);
     };
+    // Marcador literal de dado ocultado ("[NOME]"): destacar e deixar fora do PDF.
+    for (const m of text.matchAll(PLACEHOLDER_RE)) {
+      flaggedNames.add(fold(m[0].slice(1, -1)));
+      add("unknown_name", m[0], where, key);
+    }
     // Mesmo comprimento: os índices de `folded` são usados também sobre `text` (ver "à" abaixo).
     const folded = foldText(text).replace(/hiring manager/g, (x) => " ".repeat(x.length));
 
@@ -604,6 +619,7 @@ export function toPromptFeedback(violations: Violation[]): string[] {
           ? `${at}: o número "${v.text}" não está na fonte citada; use só números do bullet de origem (sourceBulletIds) ou remova-o`
           : `${at}: o número "${v.text}" não está no perfil; remova-o ou use só números do perfil`;
       case "unknown_name":
+        if (isPlaceholder(v.text)) return `${at}: remova o marcador ${v.text}; ele substitui um dado pessoal ocultado e não pode aparecer no texto`;
         return v.where.part === "letter"
           ? `${at}: o termo "${v.text}" (nome, sigla, cargo, senioridade ou certificação) não aparece no perfil nem na vaga; remova-o`
           : `${at}: o termo "${v.text}" (nome, sigla, cargo, senioridade ou certificação) não aparece no perfil; no CV, use só o que está no perfil (não copie da vaga); remova-o`;

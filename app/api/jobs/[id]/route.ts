@@ -1,6 +1,7 @@
 import { getHttpDb } from "@/lib/server/db/client";
 import { cachedJson, errorJson, internalError } from "@/lib/server/jobs/http";
 import { getJob } from "@/lib/server/jobs/query";
+import { attributionFor } from "@/lib/server/sources/registry";
 
 export const dynamic = "force-dynamic";
 
@@ -12,8 +13,7 @@ export async function GET(_req: Request, ctx: { params: Promise<{ id: string }> 
   if (!Number.isSafeInteger(id) || id <= 0) return notFound();
 
   try {
-    // Task 10 liga o registro de conectores (label/dofollow) via `attributionFor`.
-    const job = await getJob(getHttpDb(), id);
+    const job = await getJob(getHttpDb(), id, attributionFor);
     return job ? cachedJson(job, `jobs,job-${id}`) : notFound();
   } catch (err) {
     return internalError(err);

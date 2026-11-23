@@ -61,6 +61,21 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
     for (const n of inline) expect(n).toBe(nonce);
   });
 
+  test("subcaminhos (local), mesmo 404, respondem com um único header CSP com nonce", async ({ request }) => {
+    for (const path of ["/perfil/x", "/configuracoes/callback", "/gerador/abc", "/minhas-vagas/x"]) {
+      const res = await request.get(path);
+      const csps = res.headersArray().filter((h) => h.name.toLowerCase() === "content-security-policy");
+      expect(csps, path).toHaveLength(1);
+      expect(csps[0].value, path).toContain("nonce-");
+    }
+  });
+
+  test("respostas (local) não são cacheáveis publicamente", async ({ request }) => {
+    const cache = (await request.get("/perfil")).headers()["cache-control"] ?? "";
+    console.log(`cache-control /perfil: ${cache}`);
+    expect(cache).not.toMatch(/public|s-maxage/);
+  });
+
   test("a home continua com a CSP estática (um único header) e os demais headers de segurança", async ({ request }) => {
     for (const path of ["/", "/perfil"]) {
       const res = await request.get(path);

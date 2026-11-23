@@ -21,38 +21,16 @@ export function proxy(request: NextRequest) {
   return response;
 }
 
-// Só as rotas (local) (manter em sincronia com LOCAL_PATHS do next.config.ts), sem prefetch.
+// Só as rotas (local) (manter em sincronia com LOCAL_PATHS do next.config.ts); `:path*` cobre zero ou
+// mais segmentos, o mesmo conjunto que a CSP estática exclui. Sem `missing` de prefetch: as rotas
+// são dinâmicas e um <link rel=prefetch> pode buscar o HTML, que precisa vir com a CSP.
 // NUNCA incluir /api/*: o segredo do cron é verificado no route handler (D-15, CVE-2025-29927).
-// O Next exige o `config` como literal estático (não aceita variáveis), por isso a repetição.
+// O Next exige o `config` como literal estático (não aceita variáveis).
 export const config = {
   matcher: [
-    {
-      source: "/perfil",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
-    {
-      source: "/configuracoes/:path*",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
-    {
-      source: "/gerador/:path*",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
-    {
-      source: "/minhas-vagas",
-      missing: [
-        { type: "header", key: "next-router-prefetch" },
-        { type: "header", key: "purpose", value: "prefetch" },
-      ],
-    },
+    "/perfil/:path*",
+    "/configuracoes/:path*",
+    "/gerador/:path*",
+    "/minhas-vagas/:path*",
   ],
 };

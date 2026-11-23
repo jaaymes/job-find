@@ -1,3 +1,4 @@
+import { pathToRegexp } from "next/dist/compiled/path-to-regexp";
 import { describe, expect, it } from "vitest";
 import { AI_CSP_HOSTS } from "../../../lib/shared/ai-hosts";
 import { buildCsp, buildNonceCsp, buildSecurityHeaders } from "../../../lib/shared/csp";
@@ -140,15 +141,34 @@ describe("next.config headers()", () => {
   });
 });
 
-describe("proxy.ts matcher", () => {
-  it("cobre só os caminhos (local), ignora prefetch e nunca /api", async () => {
+describe("proxy.ts matcher x CSP estática", () => {
+  const compile = (source: string) => pathToRegexp(source);
+
+  it("matcher literal cobre só os caminhos (local), sem /api", async () => {
     const { config } = await import("../../../proxy");
-    const entries = config.matcher as { source: string; missing?: { key: string }[] }[];
-    const sources = entries.map((e) => e.source);
-    expect(sources).toEqual(["/perfil", "/configuracoes/:path*", "/gerador/:path*", "/minhas-vagas"]);
-    for (const e of entries) {
-      expect(e.missing?.map((m) => m.key)).toEqual(["next-router-prefetch", "purpose"]);
+    expect(config.matcher).toEqual([
+      "/perfil/:path*",
+      "/configuracoes/:path*",
+      "/gerador/:path*",
+      "/minhas-vagas/:path*",
+    ]);
+  });
+
+  it("exatamente uma CSP por caminho: excluído da estática <=> casado pelo proxy", async () => {
+    const { config } = await import("../../../proxy");
+    const { default: next } = await import("../../../next.config");
+    const rules = await next.headers?.();
+    const cspRule = rules?.find((r) => r.headers.some((h) => h.key === "Content-Security-Policy"));
+    const staticCsp = compile(cspRule?.source ?? "");
+    const proxyMatchers = (config.matcher as string[]).map(compile);
+
+    const local = ["/perfil", "/perfil/x", "/configuracoes", "/configuracoes/callback", "/gerador/abc", "/minhas-vagas", "/minhas-vagas/x"];
+    const publicPaths = ["/perfilx", "/", "/vagas/1", "/api/jobs"];
+    for (const path of [...local, ...publicPaths]) {
+      const byStatic = staticCsp.test(path);
+      const byProxy = proxyMatchers.some((m) => m.test(path));
+      expect(byStatic !== byProxy, `${path}: estática=${byStatic} proxy=${byProxy}`).toBe(true);
+      expect(byProxy, path).toBe(local.includes(path));
     }
-    expect(sources.join(" ")).not.toContain("api");
   });
 });

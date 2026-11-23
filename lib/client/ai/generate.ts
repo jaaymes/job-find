@@ -24,7 +24,8 @@ export type GenerateArgs<T> = {
   temperature: number;
   signal?: AbortSignal;
   onPartial?: (p: unknown) => void;
-  validate?: (v: T) => string[];
+  /** `ctx.last`: é a última chamada permitida (a resposta não terá outra chance de ser corrigida). */
+  validate?: (v: T, ctx: { attempt: number; last: boolean }) => string[];
   /** Ponto de injeção para testes; o padrão é `resolveTaskModel`. */
   resolveModel?: ResolveModel;
 };
@@ -166,7 +167,7 @@ export async function generateStructured<T>(
         problems = { issues };
         feedback = issues;
       } else {
-        const violations = a.validate?.(checked.data) ?? [];
+        const violations = a.validate?.(checked.data, { attempt: call, last: call === MAX_CALLS }) ?? [];
         if (violations.length === 0) {
           return { data: checked.data, provider: resolved.provider.id, model: resolved.modelId };
         }

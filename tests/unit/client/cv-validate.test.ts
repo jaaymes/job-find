@@ -348,3 +348,24 @@ describe("flagBullets / assembleCv com revisão", () => {
     expect(cv.experiences).toEqual([]);
   });
 });
+
+describe("títulos em inglês com perfil em português", () => {
+  const enJob = { title: "Engineer", company: "Acme", summary: "Build things", descriptionHtml: "<p>Build things</p>" };
+  const titled = (headline: string, p: Profile) =>
+    validateTailored(p, { cv: { headline, summary: "Experience with React.", skills: ["React"], experiences: [] }, coverLetter: null }, enJob);
+  const senior: Profile = { ...profile, seniority: "senior" };
+  const mid: Profile = { ...profile, seniority: "mid", experiences: profile.experiences.map((e) => ({ ...e, title: "Dev Pleno" })) };
+
+  it("perfil sênior: 'Senior Full Stack Developer' e 'Full Stack Software Engineer' não geram violação", () => {
+    expect(titled("Senior Full Stack Developer", senior)).toEqual([]);
+    expect(titled("Full Stack Software Engineer", senior)).toEqual([]);
+    expect(titled("Frontend Engineer, Mobile and Cloud Platform", senior)).toEqual([]);
+  });
+  it("perfil pleno: só a senioridade inventada é marcada, não o cargo", () => {
+    expect(titled("Senior Full Stack Developer", mid).map((v) => v.text.toLowerCase())).toEqual(["senior"]);
+    expect(titled("Full Stack Software Engineer", mid)).toEqual([]);
+  });
+  it("continua marcando cargo de liderança inventado", () => {
+    expect(titled("Staff Engineer", mid).map((v) => v.text.toLowerCase())).toContain("staff");
+  });
+});

@@ -75,10 +75,10 @@ describe("generateDocs", () => {
   });
 
   it("o validador (com a vaga) só reprova na 1ª resposta; na 2ª aceita e a tela destaca", async () => {
-    generate.mockImplementation(async (a: { validate: (d: TailoredDocs) => string[] }) => {
+    generate.mockImplementation(async (a: { validate: (d: TailoredDocs, c: { attempt: number; last: boolean }) => string[] }) => {
       const bad = docs({ headline: "Dev React com 300 projetos" });
-      expect(a.validate(bad).length).toBeGreaterThan(0);
-      expect(a.validate(bad)).toEqual([]);
+      expect(a.validate(bad, { attempt: 1, last: false }).length).toBeGreaterThan(0);
+      expect(a.validate(bad, { attempt: 2, last: true })).toEqual([]);
       return { data: bad, provider: "deepseek", model: "m" };
     });
     const { record } = await generateDocs({ job, profile: profile(), settings: defaultAiSettings(), lang: "pt", includeLetter: false });
@@ -104,6 +104,14 @@ describe("generateDocs", () => {
     });
     await generateDocs({ job, profile: profile(), settings: defaultAiSettings(), lang: "pt", includeLetter: false, onPartial });
     expect(onPartial).toHaveBeenCalledWith({ cv: { headline: "Dev" } });
+  });
+});
+
+describe("generatedStore", () => {
+  it("descarta só o registro inválido e mantém os demais", () => {
+    const good: GeneratedRecord = { ...docs(), provider: "deepseek", model: "m", promptVersion: 1, createdAt: "x", lang: "pt", includeLetter: false, edits: null, approvedFlags: [] };
+    window.localStorage.setItem("jobfind:v1:generatedDocs", JSON.stringify({ v: 1, data: { "1": good, "2": { cv: "quebrado" }, "3": { ...good, lang: "xx" } } }));
+    expect(Object.keys(generatedStore.get())).toEqual(["1"]);
   });
 });
 

@@ -27,6 +27,8 @@ import { type EditorTab, TailoredEditor } from "./TailoredEditor";
 /** Teto da chamada: o critério de aceite é 60 s; a folga cobre modelos lentos antes de desistir. */
 const GENERATE_TIMEOUT_MS = 120_000;
 const MAX_PAGES = 2;
+/** Espera sem digitar antes de gravar as edições no localStorage (o estado em memória é imediato). */
+const SAVE_DEBOUNCE_MS = 300;
 
 type RunArgs = { lang: CvLang; includeLetter: boolean };
 type Failure = { text: string; retry: boolean; settingsLink: boolean };
@@ -109,6 +111,10 @@ function Generator({ job }: { job: JobDetail }) {
   const [partial, setPartial] = useState<unknown>(null);
   const [failure, setFailure] = useState<Failure | null>(null);
   const [lastRun, setLastRun] = useState<RunArgs | null>(null);
+  // Edições que existiam quando a última geração começou (já confirmadas): uma edição nova pede nova confirmação.
+  const [lastSnap, setLastSnap] = useState("null");
+  const pendingRef = useRef<GeneratedRecord | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [confirm, setConfirm] = useState<RunArgs | null>(null);
   const [draft, setDraft] = useState<RunArgs>(() => ({ lang: pickLanguage(job), includeLetter: false }));
   // Cópia da sessão: mantém tudo na tela mesmo que a gravação falhe (cota cheia).
@@ -119,13 +125,27 @@ function Generator({ job }: { job: JobDetail }) {
   const [downloading, setDownloading] = useState(false);
   const [downloadFailed, setDownloadFailed] = useState(false);
 
-  // Sair da página ou trocar de vaga cancela a chamada em andamento.
+  /** Grava no localStorage o último estado pendente (as edições são gravadas com atraso). */
+  const flush = useCallback(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = null;
+    const r = pendingRef.current;
+    if (!r) return;
+    pendingRef.current = null;
+    const res = generatedStore.set({ ...generatedStore.get(), [String(job.id)]: r });
+    setSaveFailed(!res.ok);
+  }, [job.id]);
+
+  // Sair da página ou trocar de vaga cancela a chamada em andamento e grava o que ficou pendente.
   useEffect(() => {
+    window.addEventListener("pagehide", flush);
     return () => {
+      window.removeEventListener("pagehide", flush);
+      flush();
       abortRef.current?.abort();
       abortRef.current = null;
     };
-  }, [job.id]);
+  }, [job.id, flush]);
 
   const record = (fresh?.jobId === job.id ? fresh.record : null) ?? saved?.[String(job.id)] ?? null;
   const docs = useMemo(() => (record ? docsOf(record) : null), [record]);
@@ -136,20 +156,23 @@ function Generator({ job }: { job: JobDetail }) {
 
   const write = (next: GeneratedRecord) => {
     setFresh({ jobId: job.id, record: next });
-    const res = generatedStore.set({ ...generatedStore.get(), [String(job.id)]: next });
-    setSaveFailed(!res.ok);
+    pendingRef.current = next;
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(flush, SAVE_DEBOUNCE_MS);
   };
   const update = (fn: (r: GeneratedRecord) => GeneratedRecord) => {
     if (record) write(fn(record));
   };
 
   const run = useCallback(
-    async (args: RunArgs) => {
+    async (args: RunArgs, snap: string) => {
       if (abortRef.current || !profile || !settings) return;
+      flush();
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       setRunning(args);
       setLastRun(args);
+      setLastSnap(snap);
       setPartial(null);
       setFailure(null);
       setConfirm(null);
@@ -184,14 +207,22 @@ function Generator({ job }: { job: JobDetail }) {
         }
       }
     },
-    [job, profile, settings],
+    [job, profile, settings, flush],
   );
 
   /** Refazer a geração descarta as edições: pede confirmação antes, só quando há edições. */
   const request = (args: RunArgs) => {
     if (running) return;
     if (record?.edits) setConfirm(args);
-    else void run(args);
+    else void run(args, "null");
+  };
+
+  const editsSnap = JSON.stringify(record?.edits ?? null);
+  /** Tentar de novo: se há edições que a confirmação anterior não cobria, pergunta de novo. */
+  const retry = () => {
+    if (!lastRun || running) return;
+    if (record?.edits && editsSnap !== lastSnap) setConfirm(lastRun);
+    else void run(lastRun, editsSnap);
   };
 
   const cancel = () => {
@@ -292,7 +323,7 @@ function Generator({ job }: { job: JobDetail }) {
                 aprovações que você fez.
               </p>
               <div className="flex flex-wrap gap-2">
-                <button type="button" className={BTN_PRIMARY} onClick={() => void run(confirm)}>
+                <button type="button" className={BTN_PRIMARY} onClick={() => void run(confirm, editsSnap)}>
                   Descartar e gerar
                 </button>
                 <button type="button" className={BTN_OUTLINE} onClick={() => setConfirm(null)}>
@@ -313,7 +344,7 @@ function Generator({ job }: { job: JobDetail }) {
               {record && <p className="text-jf-ink-3">O texto que você já tinha continua aqui, com as suas edições.</p>}
               <div className="flex flex-wrap gap-2">
                 {failure.retry && lastRun && (
-                  <button type="button" className={BTN_OUTLINE} onClick={() => void run(lastRun)} disabled={running !== null}>
+                  <button type="button" className={BTN_OUTLINE} onClick={retry} disabled={running !== null}>
                     Tentar de novo
                   </button>
                 )}
@@ -353,6 +384,7 @@ function Generator({ job }: { job: JobDetail }) {
                 <div className="grid items-start gap-5 lg:grid-cols-2">
                   <div className="flex flex-col gap-5">
                     <TailoredEditor
+                      key={record.createdAt}
                       docs={docs}
                       review={review}
                       tab={activeTab}
@@ -371,11 +403,20 @@ function Generator({ job }: { job: JobDetail }) {
                     </p>
                   </div>
                   <div className="lg:sticky lg:top-4">
-                    <PdfPreview
-                      cv={review.cv}
-                      letter={activeTab === "letter" ? docs.coverLetter : null}
-                      onPages={setPages}
-                    />
+                    {activeTab === "letter" && review.letter.flagged ? (
+                      <div
+                        role="status"
+                        className="flex h-[70vh] min-h-[420px] w-full items-center justify-center rounded-xl border border-jf-line bg-jf-surface p-6 text-center text-sm text-jf-ink-3"
+                      >
+                        Aprove ou corrija o trecho da carta para ver o PDF.
+                      </div>
+                    ) : (
+                      <PdfPreview
+                        cv={review.cv}
+                        letter={activeTab === "letter" ? docs.coverLetter : null}
+                        onPages={setPages}
+                      />
+                    )}
                   </div>
                 </div>
               </>

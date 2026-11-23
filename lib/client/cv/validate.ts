@@ -110,6 +110,11 @@ const COMMON_CAPITALIZED = new Set(
     // termos genéricos de carta
     "hiring", "manager", "team", "recruiter", "recruiting", "equipe", "time", "senhor", "senhora",
     "brasil", "brazil", "remote", "remoto",
+    // cargos e áreas comuns em títulos (en/es). Senioridade (Senior, Staff, Lead...) fica de fora: tem checagem própria.
+    "developer", "engineer", "software", "frontend", "front-end", "backend", "back-end", "full", "stack", "fullstack",
+    "full-stack", "mobile", "web", "platform", "data", "cloud", "devops", "product", "designer", "analyst",
+    "consultant", "specialist", "programmer", "architect", "engineering", "development",
+    "desarrollador", "desarrolladora", "ingeniero", "ingeniera", "analista",
   ].map(fold),
 );
 

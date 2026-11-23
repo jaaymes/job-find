@@ -27,9 +27,19 @@ export function docsOf(r: GeneratedRecord): TailoredDocs {
   return r.edits ?? { cv: r.cv, coverLetter: r.coverLetter };
 }
 
+/** Valida cada registro à parte: um registro corrompido some sozinho, sem levar os outros junto. */
+const GeneratedRecords = z.record(z.string(), z.unknown()).transform((all) => {
+  const ok: Record<string, GeneratedRecord> = {};
+  for (const [id, raw] of Object.entries(all)) {
+    const parsed = GeneratedRecord.safeParse(raw);
+    if (parsed.success) ok[id] = parsed.data;
+  }
+  return ok;
+});
+
 /** Um único store, com todos os documentos: `jobId` -> registro. Módulo leve: não puxa o SDK de IA. */
 export const generatedStore: Store<Record<string, GeneratedRecord>> = createStore(
   "jobfind:v1:generatedDocs",
-  z.record(z.string(), GeneratedRecord),
+  GeneratedRecords,
   { version: 1, initial: {} },
 );

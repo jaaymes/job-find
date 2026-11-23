@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import type { Review } from "@/lib/client/cv/review";
 import type { Violation } from "@/lib/client/cv/validate";
@@ -61,12 +61,21 @@ function Item({
   );
 }
 
+let nextId = 0;
+const seq = (n: number) => Array.from({ length: n }, () => nextId++);
+
 const rowsFor = (text: string, perLine = 70) => Math.max(2, Math.ceil(text.length / perLine));
 
 export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChange, onApprove }: Props) {
   const { cv } = review;
   const setCv = (patch: Partial<TailoredDocs["cv"]>) => onChange({ ...docs, cv: { ...docs.cv, ...patch } });
   const occurrences = new Map<string, number>();
+  // Ids estáveis por item (o editor remonta a cada nova geração, ver `key` no pai): remover um item não
+  // desloca o estado dos vizinhos.
+  const [ids, setIds] = useState(() => ({
+    skills: seq(docs.cv.skills.length),
+    bullets: docs.cv.experiences.map((e) => seq(e.bullets.length)),
+  }));
 
   return (
     <section aria-label="Editor do CV e da carta" className={`${CARD} flex flex-col gap-4 p-4 sm:p-5`}>
@@ -127,7 +136,7 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
           <fieldset className="flex flex-col gap-2.5">
             <legend className="mb-1 text-[13px] font-semibold text-jf-ink-2">Competências</legend>
             {docs.cv.skills.map((s, i) => (
-              <Item key={i} state={cv.flags.skills[i]} onApprove={onApprove}>
+              <Item key={ids.skills[i] ?? `s${i}`} state={cv.flags.skills[i]} onApprove={onApprove}>
                 <div className="flex gap-2">
                   <input
                     aria-label={`Competência ${i + 1}`}
@@ -139,7 +148,10 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
                     type="button"
                     className={BTN_OUTLINE}
                     aria-label={`Remover competência ${i + 1}`}
-                    onClick={() => setCv({ skills: docs.cv.skills.filter((_, j) => j !== i) })}
+                    onClick={() => {
+                      setIds((c) => ({ ...c, skills: c.skills.filter((_, j) => j !== i) }));
+                      setCv({ skills: docs.cv.skills.filter((_, j) => j !== i) });
+                    }}
                   >
                     Remover
                   </button>
@@ -170,9 +182,9 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
                   const state = exp.bullets[bi];
                   return (
                     <Item
-                      key={bi}
+                      key={ids.bullets[xi]?.[bi] ?? `b${bi}`}
                       state={state}
-                      approvable={state.violations.some((v) => v.key === state.key)}
+                      approvable={state.violations.some((v) => v.key === state.key) && state.violations.every((v) => v.key === state.key)}
                       onApprove={onApprove}
                     >
                       <div className="flex gap-2">
@@ -187,7 +199,10 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
                           type="button"
                           className={`${BTN_OUTLINE} self-start`}
                           aria-label={`Remover bullet ${bi + 1} de ${exp.company}`}
-                          onClick={() => setBullets(x.bullets.filter((_, j) => j !== bi))}
+                          onClick={() => {
+                            setIds((c) => ({ ...c, bullets: c.bullets.map((l, k) => (k === xi ? l.filter((_, j) => j !== bi) : l)) }));
+                            setBullets(x.bullets.filter((_, j) => j !== bi));
+                          }}
                         >
                           Remover
                         </button>

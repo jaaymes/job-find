@@ -29,12 +29,11 @@ export type GenerateDocsArgs = {
  * anterior (edições e aprovações vão embora). Só grava quando a geração termina: se falhar, lança e o registro
  * anterior, com as edições, fica intacto. Devolve o registro mesmo quando a gravação falha.
  *
- * RN-07: o validador roda uma vez como retentativa (o modelo recebe o feedback). Na segunda resposta ele aceita o
+ * RN-07: o validador reprova a 1ª chamada como retentativa (o modelo recebe o feedback). Na última chamada (`ctx.last`) aceita o
  * que vier, porque o que ainda violar não é descartado: a tela o destaca e o deixa fora do PDF até o usuário aprovar.
  */
 export async function generateDocs(a: GenerateDocsArgs): Promise<{ record: GeneratedRecord; saved: SetResult }> {
   const now = a.now ?? new Date();
-  let validations = 0;
   const { data, provider, model } = await generateStructured({
     task: "cv",
     settings: a.settings,
@@ -45,7 +44,7 @@ export async function generateDocs(a: GenerateDocsArgs): Promise<{ record: Gener
     temperature: CV_TAILOR_V1.temperature,
     signal: a.signal,
     onPartial: a.onPartial,
-    validate: (d) => (++validations > 1 ? [] : toPromptFeedback(validateTailored(a.profile, d, a.job))),
+    validate: (d, ctx) => (ctx.last ? [] : toPromptFeedback(validateTailored(a.profile, d, a.job))),
     resolveModel: a.resolveModel,
   });
   const record: GeneratedRecord = {

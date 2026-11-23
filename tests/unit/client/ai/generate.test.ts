@@ -100,6 +100,20 @@ describe("generateStructured", () => {
     expect(model.doStreamCalls).toHaveLength(2);
   });
 
+  it("validate recebe o contexto da tentativa: Zod falho na 1ª e violação na 2ª, que aceita com last=true", async () => {
+    const model = mockModel([...text("{}"), finish("stop")], [...text(ok), finish("stop")]);
+    const seen: { attempt: number; last: boolean }[] = [];
+    const r = await run(model, {
+      validate: (_d, ctx) => {
+        seen.push(ctx);
+        return ctx.last ? [] : ["x"];
+      },
+    });
+    expect(r.data).toEqual({ name: "Ana", years: 3 });
+    expect(seen).toEqual([{ attempt: 2, last: true }]);
+    expect(model.doStreamCalls).toHaveLength(2);
+  });
+
   it("erro no meio do stream (HTTP 200) vira unavailable retryable", async () => {
     const model = mockModel([
       ...text(ok.slice(0, 8)),

@@ -102,8 +102,8 @@ function docsFor(body: string, m: Mock): Docs {
         : "Prezada equipe, tenho experiência com React e TypeScript e quero contribuir com o time.";
   return {
     cv: {
-      headline: en ? "Full Stack, React and TypeScript" : "Desenvolvedora Full Stack",
-      summary: en ? "Experience with React and TypeScript." : "Desenvolvedora com experiência em React e TypeScript.",
+      headline: en ? "Senior Full Stack Developer" : "Desenvolvedora Full Stack",
+      summary: en ? "Developer with experience in React and TypeScript." : "Desenvolvedora com experiência em React e TypeScript.",
       skills: ["React", "TypeScript"],
       experiences: [{ expId: "exp_1", bullets }],
     },
@@ -158,6 +158,10 @@ async function seedStorage(page: Page, entries: Record<string, unknown>) {
   );
 }
 
+async function storedRec(page: Page): Promise<{ edits: { cv: { headline: string } } | null; approvedFlags: string[] } & Record<string, unknown>> {
+  return JSON.parse((await page.evaluate((k) => window.localStorage.getItem(k), DOCS_KEY)) ?? "{}").data?.["1"] ?? null;
+}
+
 async function pdfText(path: string): Promise<string> {
   const doc = await getDocumentProxy(new Uint8Array(await readFile(path)));
   return (await extractText(doc, { mergePages: true })).text;
@@ -188,7 +192,7 @@ test.afterAll(async () => {
 test.beforeEach(async ({ page }) => {
   problems = [];
   page.on("console", (msg) => {
-    if (/content security policy|refused to (load|apply|execute|connect|create|frame)/i.test(msg.text())) problems.push(msg.text());
+    if (/^CSP |content security policy|refused to (load|apply|execute|connect|create|frame)/i.test(msg.text())) problems.push(msg.text());
   });
   page.on("pageerror", (err) => problems.push(err.message));
   await page.addInitScript(() => {
@@ -269,10 +273,11 @@ test("gera o CV no idioma da vaga, destaca o trecho inventado, mantém fora do P
 
   // Edita um trecho: a aprovação vale por trecho e a edição fica salva.
   await headline(page).fill("Desenvolvedora Full Stack e React");
-  const stored = await page.evaluate((k) => window.localStorage.getItem(k), DOCS_KEY);
-  const rec = JSON.parse(stored ?? "{}").data["1"];
+  // As edições são gravadas com um pequeno atraso (debounce).
+  await expect.poll(async () => storedRec(page).then((r) => r?.edits?.cv.headline)).toBe("Desenvolvedora Full Stack e React");
+  const rec = await storedRec(page);
   expect(rec).toMatchObject({ provider: "deepseek", model: "deepseek-chat", promptVersion: 1, lang: "pt", includeLetter: false });
-  expect(rec.edits.cv.headline).toBe("Desenvolvedora Full Stack e React");
+  expect(rec.edits?.cv.headline).toBe("Desenvolvedora Full Stack e React");
   expect(rec.approvedFlags).toHaveLength(1);
 
   // Reload: documentos, edições e aprovações voltam do localStorage, sem nova chamada ao provedor.
@@ -362,13 +367,16 @@ test("cancelar interrompe a geração sem erro e sem salvar nada", async ({ page
   await page.route(CHAT_URL, async (route) => {
     if (route.request().method() === "OPTIONS") return route.fulfill({ status: 204, headers: cors(route) });
     await gate;
-    return route.abort();
+    await route.abort().catch(() => {});
   });
   await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
   await page.goto("/gerador/1");
   await page.getByRole("button", { name: GENERATE }).click();
   await expect(page.getByRole("status").filter({ hasText: "Gerando" })).toBeVisible();
+  // O cancelamento aborta a requisição no navegador: espera a falha dela antes de olhar o armazenamento.
+  const aborted = page.waitForEvent("requestfailed", (r) => r.url() === CHAT_URL && r.method() === "POST");
   await page.getByRole("button", { name: "Cancelar" }).click();
+  await aborted;
   await expect(page.getByRole("button", { name: GENERATE })).toBeEnabled();
   await expect(alerts(page)).toHaveCount(0);
   release();
@@ -391,13 +399,14 @@ test("trocar o idioma para EN refaz a geração em inglês; com edições, pede 
 
   await page.getByLabel("Idioma do CV").selectOption("en");
   await page.getByRole("button", { name: "Descartar e gerar" }).click();
-  await expect(headline(page)).toHaveValue("Full Stack, React and TypeScript", FIRST);
+  await expect(headline(page)).toHaveValue("Senior Full Stack Developer", FIRST);
   await expect(page.getByLabel("Idioma do CV")).toHaveValue("en");
   expect(mock.bodies).toHaveLength(2);
   expect(mock.bodies[1]).toContain("Escreva tudo em English");
   await expect(bulletBox(page, 1)).toHaveValue("Cut page load time by 40% using React.");
-  const rec = JSON.parse((await page.evaluate((k) => window.localStorage.getItem(k), DOCS_KEY)) ?? "{}").data["1"];
-  expect(rec).toMatchObject({ lang: "en", edits: null, approvedFlags: [] });
+  expect(await storedRec(page)).toMatchObject({ lang: "en", edits: null, approvedFlags: [] });
+  // Título realista em EN com perfil em PT: sem falso positivo e sem retentativa do validador.
+  await expect(banner(page)).toHaveText(/Nenhum trecho/);
 });
 
 test("o idioma padrão segue o da vaga (vaga em inglês começa em EN)", async ({ page }) => {
@@ -405,7 +414,7 @@ test("o idioma padrão segue o da vaga (vaga em inglês começa em EN)", async (
   await page.goto("/gerador/2");
   await expect(page.getByLabel("Idioma do CV")).toHaveValue("en");
   await page.getByRole("button", { name: GENERATE }).click();
-  await expect(headline(page)).toHaveValue("Full Stack, React and TypeScript", FIRST);
+  await expect(headline(page)).toHaveValue("Senior Full Stack Developer", FIRST);
   expect(mock.bodies[0]).toContain("Escreva tudo em English");
 });
 
@@ -445,8 +454,12 @@ test("carta com número inventado fica destacada e o download é bloqueado até 
 
   await page.getByRole("tab", { name: "Carta de apresentação" }).click();
   await expect(page.getByRole("button", { name: "Baixar carta (PDF)" })).toBeDisabled();
+  // A carta em revisão não vira PDF nem na pré-visualização (o visualizador do iframe permitiria baixar).
+  await expect(page.getByText("Aprove ou corrija o trecho da carta para ver o PDF.")).toBeVisible();
+  await expect(page.locator("iframe[title='Pré-visualização do PDF']")).toHaveCount(0);
   await page.locator('[data-flagged="true"]').getByRole("button", { name: "Aprovar mesmo assim" }).click();
   await expect(page.getByRole("button", { name: "Baixar carta (PDF)" })).toBeEnabled();
+  await expect(page.locator("iframe[title='Pré-visualização do PDF']")).toHaveAttribute("src", /^blob:/, FIRST);
   await expect(banner(page)).toHaveText(/Nenhum trecho/);
 });
 
@@ -462,13 +475,31 @@ test("429 mostra 'Tentar de novo' e as edições continuam lá; a nova tentativa
 
   await expect(alerts(page).filter({ hasText: "Limite de uso atingido" })).toBeVisible();
   await expect(headline(page)).toHaveValue("Desenvolvedora Full Stack e React");
-  const rec = JSON.parse((await page.evaluate((k) => window.localStorage.getItem(k), DOCS_KEY)) ?? "{}").data["1"];
-  expect(rec.edits.cv.headline).toBe("Desenvolvedora Full Stack e React");
+  await expect.poll(async () => storedRec(page).then((r) => r?.edits?.cv.headline)).toBe("Desenvolvedora Full Stack e React");
 
-  // A confirmação já foi dada: tentar de novo não pergunta outra vez.
+  // A confirmação já foi dada e nada mudou: tentar de novo não pergunta outra vez.
   await page.getByRole("button", { name: "Tentar de novo" }).click();
   await expect(headline(page)).toHaveValue("Desenvolvedora Full Stack", FIRST);
   await expect(alerts(page)).toHaveCount(0);
+});
+
+test("editar depois de uma falha: 'Tentar de novo' pede confirmação de novo", async ({ page }) => {
+  mock.invent = false;
+  await generate(page);
+  mock.statuses.push(429);
+  await page.getByRole("button", { name: "Regenerar" }).click(); // sem edições: não pergunta
+  await expect(alerts(page).filter({ hasText: "Limite de uso atingido" })).toBeVisible();
+  const calls = mock.bodies.length;
+
+  await headline(page).fill("Desenvolvedora Full Stack e React");
+  await page.getByRole("button", { name: "Tentar de novo" }).click();
+  await expect(page.getByText("Suas edições serão descartadas")).toBeVisible();
+  expect(mock.bodies).toHaveLength(calls);
+  await expect(headline(page)).toHaveValue("Desenvolvedora Full Stack e React");
+
+  await page.getByRole("button", { name: "Descartar e gerar" }).click();
+  await expect(headline(page)).toHaveValue("Desenvolvedora Full Stack", FIRST);
+  expect(mock.bodies).toHaveLength(calls + 1);
 });
 
 test("avisa quando o CV passa de 2 páginas", async ({ page }) => {

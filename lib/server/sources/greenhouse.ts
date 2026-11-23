@@ -73,6 +73,7 @@ export const greenhouse: Connector = {
   brazilian: false,
   fullSnapshot: true,
   minIntervalMinutes: 60,
+  allowedHosts: [GREENHOUSE_HOST],
   attribution: { label: "Greenhouse", url: "https://www.greenhouse.com", dofollow: false },
   fetch: fetchBoards,
   normalize(raw): NormalizedJob | null {

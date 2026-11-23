@@ -54,6 +54,8 @@ export type Connector = {
   brazilian: boolean;
   fullSnapshot: boolean;
   minIntervalMinutes: number;
+  /** Hosts liberados no fetch seguro desta fonte (URLs base fixas no código). */
+  allowedHosts: string[];
   attribution: { label: string; url: string; dofollow: boolean };
   fetch: (ctx: ConnectorContext) => AsyncIterable<unknown>;
   /** Retorna `null` para vagas que não são de tecnologia (RN-01). */

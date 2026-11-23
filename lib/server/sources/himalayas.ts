@@ -90,6 +90,7 @@ export const himalayas: Connector = {
   brazilian: false,
   fullSnapshot: false,
   minIntervalMinutes: 60,
+  allowedHosts: [HIMALAYAS_HOST],
   attribution: { label: "Himalayas", url: `https://${HIMALAYAS_HOST}`, dofollow: false },
   fetch: fetchPages,
   normalize(raw) {

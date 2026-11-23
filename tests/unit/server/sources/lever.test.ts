@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { LEVER_BOARDS, lever } from "@/lib/server/sources/lever";
+import { LEVER_BOARDS, LEVER_HOST, lever } from "@/lib/server/sources/lever";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
 import { collect, fakeCtx } from "./helpers";
@@ -31,6 +31,7 @@ describe("conector Lever", () => {
     expect(lever.fullSnapshot).toBe(true);
     expect(lever.brazilian).toBe(false);
     expect(lever.minIntervalMinutes).toBe(60);
+    expect(lever.allowedHosts).toEqual([LEVER_HOST]);
     expect(lever.attribution.dofollow).toBe(false);
     expect(CONNECTORS.lever).toBe(lever);
     expect(LEVER_BOARDS).toEqual(["ciandt", "neon", "swile", "toptal", "spotify"]);

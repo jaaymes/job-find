@@ -95,6 +95,7 @@ export const jobicy: Connector = {
   brazilian: false,
   fullSnapshot: false,
   minIntervalMinutes: 60,
+  allowedHosts: [JOBICY_HOST],
   attribution: { label: "Jobicy", url: `https://${JOBICY_HOST}`, dofollow: false },
   fetch: fetchFeeds,
   normalize(raw) {

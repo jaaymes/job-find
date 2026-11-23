@@ -101,6 +101,7 @@ export const lever: Connector = {
   brazilian: false,
   fullSnapshot: true,
   minIntervalMinutes: 60,
+  allowedHosts: [LEVER_HOST],
   attribution: { label: "Lever", url: "https://www.lever.co", dofollow: false },
   fetch: fetchBoards,
   normalize(raw): NormalizedJob | null {

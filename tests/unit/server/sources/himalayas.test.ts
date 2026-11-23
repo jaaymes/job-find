@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { himalayas } from "@/lib/server/sources/himalayas";
+import { HIMALAYAS_HOST, himalayas } from "@/lib/server/sources/himalayas";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
 import { collect, fakeCtx } from "./helpers";
@@ -30,6 +30,7 @@ describe("conector Himalayas", () => {
     expect(himalayas.fullSnapshot).toBe(false);
     expect(himalayas.brazilian).toBe(false);
     expect(himalayas.minIntervalMinutes).toBe(60);
+    expect(himalayas.allowedHosts).toEqual([HIMALAYAS_HOST]);
     expect(himalayas.attribution).toEqual({ label: "Himalayas", url: "https://himalayas.app", dofollow: false });
     expect(CONNECTORS.himalayas).toBe(himalayas);
   });

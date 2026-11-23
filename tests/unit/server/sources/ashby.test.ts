@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { ASHBY_BOARDS, ashby } from "@/lib/server/sources/ashby";
+import { ASHBY_BOARDS, ASHBY_HOST, ashby } from "@/lib/server/sources/ashby";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
 import { collect, fakeCtx } from "./helpers";
@@ -33,6 +33,7 @@ describe("conector Ashby", () => {
     expect(ashby.fullSnapshot).toBe(true);
     expect(ashby.brazilian).toBe(false);
     expect(ashby.minIntervalMinutes).toBe(60);
+    expect(ashby.allowedHosts).toEqual([ASHBY_HOST]);
     expect(ashby.attribution.dofollow).toBe(false);
     expect(CONNECTORS.ashby).toBe(ashby);
     expect(ASHBY_BOARDS).toEqual([

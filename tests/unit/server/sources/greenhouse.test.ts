@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { GREENHOUSE_BOARDS, decodeEntities, greenhouse, parseLocation } from "@/lib/server/sources/greenhouse";
+import { GREENHOUSE_BOARDS, GREENHOUSE_HOST, decodeEntities, greenhouse, parseLocation } from "@/lib/server/sources/greenhouse";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
 import { collect, fakeCtx } from "./helpers";
@@ -31,6 +31,7 @@ describe("conector Greenhouse", () => {
     expect(greenhouse.fullSnapshot).toBe(true);
     expect(greenhouse.attribution.dofollow).toBe(false);
     expect(greenhouse.minIntervalMinutes).toBe(60);
+    expect(greenhouse.allowedHosts).toEqual([GREENHOUSE_HOST]);
     expect(CONNECTORS.greenhouse).toBe(greenhouse);
     expect(GREENHOUSE_BOARDS).toEqual([
       "stone", "c6bank", "btgpactual", "xpinc", "inter", "quintoandar", "gympass", "clara", "ebanx", "vtex",

@@ -89,6 +89,7 @@ export const ashby: Connector = {
   brazilian: false,
   fullSnapshot: true,
   minIntervalMinutes: 60,
+  allowedHosts: [ASHBY_HOST],
   attribution: { label: "Ashby", url: "https://www.ashbyhq.com", dofollow: false },
   fetch: fetchBoards,
   normalize(raw): NormalizedJob | null {

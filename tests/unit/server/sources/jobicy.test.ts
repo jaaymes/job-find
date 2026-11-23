@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { jobicy } from "@/lib/server/sources/jobicy";
+import { JOBICY_HOST, jobicy } from "@/lib/server/sources/jobicy";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
 import { collect, fakeCtx } from "./helpers";
@@ -27,6 +27,7 @@ describe("conector Jobicy", () => {
     expect(jobicy.fullSnapshot).toBe(false);
     expect(jobicy.brazilian).toBe(false);
     expect(jobicy.minIntervalMinutes).toBe(60);
+    expect(jobicy.allowedHosts).toEqual([JOBICY_HOST]);
     expect(jobicy.attribution.url).toBe("https://jobicy.com");
     expect(CONNECTORS.jobicy).toBe(jobicy);
   });

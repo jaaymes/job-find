@@ -233,6 +233,19 @@ describe("rodada 2: falsos positivos", () => {
     expect(validateTailored(mid, docs({ headline: "Desenvolvedora pleno" }))).toEqual([]);
   });
 
+  it("rodada 3: dev singular, senioridade em bullets, produtos, ao/para o, certificado pela", () => {
+    expect(texts(validateTailored(mid, docs({ summary: "Sou dev sênior com foco em React" })))).toContain("senior");
+    expect(texts(validateTailored(mid, docs({ headline: "Senior Dev, React" })))).toContain("senior");
+    expect(texts(bullet("Atuei como tech lead do squad"))).toContain("tech lead");
+    expect(texts(bullet("Promovida a staff engineer"))).toContain("staff");
+    for (const t of ["Mentorei devs júnior", "Worked with senior engineers", "Reportava ao CTO", "Reportava à CTO", "Reporting to the CTO"]) {
+      expect(bullet(t).filter((v) => v.kind === "unknown_name"), t).toEqual([]);
+    }
+    expect(validateTailored({ ...profile, summary: "AWS" }, withBullet("exp_1", "Usei Amazon S3 e Google Analytics com React", ["exp_1.b1"])).filter((v) => v.kind === "unknown_name")).toEqual([]);
+    expect(bullet("Usei SAP com React").filter((v) => v.kind === "unknown_name")).toEqual([]);
+    expect(texts(validateTailored(profile, withLetter("Tenho certificado pela AWS")))).toContain("certificado pela");
+  });
+
   it("Tech Lead gera uma só violação", () => {
     expect(validateTailored(mid, docs({ headline: "Tech Lead React" })).filter((v) => v.kind === "unknown_name")).toHaveLength(1);
   });

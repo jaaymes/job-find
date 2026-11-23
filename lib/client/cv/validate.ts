@@ -138,8 +138,8 @@ const SENTENCE_END = new Set([".", "!", "?", ":", ";", "•", "*", "-", "–", "
  * Palavras com inicial maiúscula fora do início de frase/linha. Siglas (tudo maiúsculo) são ignoradas aqui.
  * Para decidir o início de frase anda para trás só sobre o espaço em branco entre duas palavras (O(n) no total).
  */
-function capitalizedMidSentence(text: string): string[] {
-  const out: string[] = [];
+function capitalizedMidSentence(text: string): { word: string; end: number }[] {
+  const out: { word: string; end: number }[] = [];
   for (const m of text.matchAll(/(?<![\p{L}\d])\p{Lu}[\p{L}\d'’]*/gu)) {
     const word = m[0];
     if (word.length > 1 && word === word.toUpperCase()) continue; // sigla
@@ -151,7 +151,7 @@ function capitalizedMidSentence(text: string): string[] {
       i--;
     }
     if (i < 0 || newline || SENTENCE_END.has(text[i])) continue; // início de frase
-    out.push(word);
+    out.push({ word, end: m.index + word.length });
   }
   return out;
 }
@@ -170,12 +170,13 @@ const SENIORITY_GROUPS = [
 ];
 // Palavras que, logo antes ou depois do termo, indicam que ele descreve OUTRAS pessoas ("devs júnior").
 const OTHER_PEOPLE = new Set(
-  ["devs", "dev", "developers", "engineers", "engenheiros", "engenheiras", "desenvolvedores", "desenvolvedoras",
+  ["devs", "squads", "developers", "engineers", "engenheiros", "engenheiras", "desenvolvedores", "desenvolvedoras",
     "times", "equipe", "equipes", "teams", "profissionais", "pessoas", "people", "colegas", "analistas"],
 );
 const CREDENTIAL_GROUPS = [
   ["certified", "certification", "certifications", "certificacao", "certificacoes", "certificado em",
-    "certificada em", "certificados em", "certificadas em"],
+    "certificada em", "certificados em", "certificadas em", "certificado pela", "certificado pelo",
+    "certificada pela", "certificada pelo", "certificados pela", "certificados pelo", "certificadas pela", "certificadas pelo"],
   ["pmp"], ["csm"], ["mba"], ["mestrado", "master's", "msc"], ["doutorado", "phd"],
   ["bacharel", "bacharelado", "bachelor", "bachelor's"], ["pos-graduacao", "pos graduacao", "posgraduacao"],
 ];
@@ -201,7 +202,7 @@ const ACRONYM_ALLOWLIST = new Set(
     "usa", "eua", "br", "en", "pt", "ok", "url", "html", "css", "ia", "ai", "ml", "llm", "etl", "bi", "crm", "erp",
     "ddd", "solid", "crud", "mvc", "jwt", "sso", "lgpd", "e2e", "ssl", "tls", "gdpr", "oauth", "rpc", "grpc", "ide",
     "os", "gpu", "cpu", "ram", "dns", "vpn", "iot", "rpa", "dba", "sre", "poc", "mfa", "rbac", "cdn", "tcp", "udp",
-    "ftp", "ssh", "xml", "csv", "yaml", "pii", "nlp", "ocr", "gps",
+    "sap", "aws", "gcp", "ftp", "ssh", "xml", "csv", "yaml", "pii", "nlp", "ocr", "gps",
     // UFs
     "ac", "al", "ap", "am", "ba", "ce", "df", "es", "go", "ma", "mt", "ms", "mg", "pa", "pb", "pr", "pe", "pi", "rj",
     "rn", "rs", "ro", "rr", "sc", "sp", "se", "to",
@@ -212,12 +213,13 @@ const ACRONYM_ALLOWLIST = new Set(
 // Palavras antes das quais uma sigla desconhecida é tratada como nome de empresa ("na BTG", "at BTG").
 const COMPANY_PREPOSITIONS = new Set(["na", "no", "nas", "nos", "pela", "pelo", "at", "for", "em", "from", "da", "do", "para"]);
 // Produto/serviço colado a uma empresa ("Google Analytics", "AWS S3"): não é o nome da empresa em si.
+const PRODUCT_WORDS = new Set(["s3", "analytics", "azure", "cloud", "workspace", "ads", "pay", "maps", "web", "docs", "drive", "meet"]);
 const PRODUCT_AFTER = /^\s+(?:s3|analytics|azure|cloud|workspace|ads|pay|maps|web|docs|drive|meet)(?![\p{L}\d])/u;
 // Empresas conhecidas, para pegar nomes em minúsculas ("na google"). Sem palavras comuns (meta, stone, vale).
 const KNOWN_COMPANIES = [
   "google", "itau", "nubank", "amazon", "microsoft", "facebook", "oracle", "netflix", "uber", "spotify", "bradesco",
   "santander", "btg", "ifood", "magalu", "americanas", "petrobras", "embraer", "totvs", "stefanini", "accenture",
-  "thoughtworks", "deloitte", "linkedin", "twitter", "salesforce", "ibm", "tesla", "airbnb", "shopify",
+  "thoughtworks", "deloitte", "linkedin", "twitter", "ibm", "tesla", "airbnb", "shopify",
 ];
 
 function esc(t: string): string {
@@ -365,7 +367,7 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
   };
 
   /** `sourceText`: texto cujos números/termos por extenso valem para este trecho. */
-  const checkText = (text: string, where: Where, key: string, sourceText: string, selfDescription: boolean) => {
+  const checkText = (text: string, where: Where, key: string, sourceText: string) => {
     const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
     for (const t of numberTokens(text)) {
       if (t.yearLike) {
@@ -385,8 +387,8 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     };
     const folded = foldText(text).replace(/hiring manager/g, " ");
 
-    // Senioridade/cargo (perfil ou vaga): só na autodescrição (headline, summary, carta), nunca em bullets.
-    if (selfDescription) {
+    // Senioridade/cargo (perfil ou vaga), em qualquer trecho; termo que descreve outras pessoas não conta.
+    {
       SENIORITY_RES.forEach((re, i) => {
         if (facts.seniorityOk.has(i)) return;
         re.lastIndex = 0;
@@ -394,6 +396,10 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
           const before = /([\p{L}]+)\s+$/u.exec(folded.slice(Math.max(0, m.index - 24), m.index))?.[1];
           const after = /^\s+([\p{L}]+)/u.exec(folded.slice(m.index + m[0].length, m.index + m[0].length + 24))?.[1];
           if ((before && OTHER_PEOPLE.has(before)) || (after && OTHER_PEOPLE.has(after))) continue;
+          // "Reportava ao CTO", "para o diretor", "to the CTO": outra pessoa.
+          const lead = folded.slice(Math.max(0, m.index - 16), m.index);
+          if (/(?:^|\s)(?:ao|para o|para a|to the|reporting to|reported to)\s+$/.test(lead)) continue;
+          if (/(?:^|\s)à\s+$/i.test(text.slice(Math.max(0, m.index - 4), m.index))) continue;
           flagName(m[0]);
           break;
         }
@@ -425,8 +431,10 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
       add("unknown_number", w, where, key);
     }
 
-    for (const w of capitalizedMidSentence(text)) {
+    for (const { word: w, end } of capitalizedMidSentence(text)) {
       const f = fold(w);
+      // Produto colado a uma empresa ("Amazon S3", "Google Analytics").
+      if (PRODUCT_WORDS.has(f) || PRODUCT_AFTER.test(foldText(text.slice(end, end + 24)))) continue;
       if (COMMON_CAPITALIZED.has(f) || CATALOG_WORDS.has(f) || facts.words.has(f) || jobWords.has(f) || flaggedNames.has(f)) continue;
       flagName(w);
     }
@@ -459,8 +467,8 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     const ok = id ? facts.stacks.has(id) : facts.skillNames.has(fold(skill.trim()));
     if (!ok) add("unknown_skill", skill, cvWhere, skillKey(i, skill));
   });
-  checkText(docs.cv.headline, cvWhere, headlineKey(docs.cv.headline), facts.all, true);
-  checkText(docs.cv.summary, cvWhere, summaryKey(docs.cv.summary), facts.all, true);
+  checkText(docs.cv.headline, cvWhere, headlineKey(docs.cv.headline), facts.all);
+  checkText(docs.cv.summary, cvWhere, summaryKey(docs.cv.summary), facts.all);
 
   // experiências e bullets
   const bulletById = new Map<string, { expId: string; text: string }>();
@@ -487,11 +495,11 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
         else sources.push(src.text);
       }
       if (b.sourceBulletIds.length === 0) add("unknown_exp", "sem fonte", where, key);
-      checkText(b.text, where, key, sources.join("\n"), false);
+      checkText(b.text, where, key, sources.join("\n"));
     });
   }
 
-  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all, true);
+  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all);
   return out;
 }
 

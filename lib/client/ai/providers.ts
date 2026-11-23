@@ -198,6 +198,7 @@ function compat(
   keyDocsUrl: string,
   models: Record<AiTask, string>,
   structured: ProviderDef["structured"] = "json_mode",
+  privacyNote: string | null = null,
 ): ProviderDef {
   return {
     id,
@@ -209,7 +210,7 @@ function compat(
     structured,
     auth: "paste",
     keyDocsUrl,
-    privacyNote: null,
+    privacyNote,
     cspHosts: [host],
     defaultModels: models,
     create: openAICompatible(id, baseURL),
@@ -228,8 +229,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     structured: "json_schema",
     auth: "pkce",
     keyDocsUrl: "https://openrouter.ai/docs/guides/overview/auth/oauth",
-    privacyNote:
-      "O OpenRouter encaminha o texto ao provedor do modelo; o app pede data_collection: deny por padrão.",
+    privacyNote: null,
     cspHosts: ["https://openrouter.ai"],
     defaultModels: {
       extract: "deepseek/deepseek-v4.1-flash",
@@ -279,7 +279,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     keyDocsUrl: "https://console.anthropic.com/settings/keys",
     privacyNote: null,
     cspHosts: ["https://api.anthropic.com"],
-    defaultModels: { extract: "claude-haiku-4-5", analyze: "claude-haiku-4-5", cv: "claude-sonnet-4-5" },
+    defaultModels: { extract: "claude-haiku-5-5", analyze: "claude-haiku-5-5", cv: "claude-sonnet-5-5" },
     create: async ({ apiKey }) => {
       const { createAnthropic } = await import("@ai-sdk/anthropic");
       return createAnthropic({ apiKey, headers: ANTHROPIC_HEADERS });
@@ -314,6 +314,8 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     "https://api.deepseek.com",
     "https://platform.deepseek.com/api_keys",
     same("deepseek-chat"),
+    "json_mode",
+    "A API direta da DeepSeek processa os dados em servidores na China. Confirme que aceita enviar seu currículo e as vagas para lá antes do primeiro uso.",
   ),
   local: {
     id: "local",
@@ -325,8 +327,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     structured: "json_mode",
     auth: "none",
     keyDocsUrl: "https://github.com/ollama/ollama/blob/main/docs/faq.md",
-    privacyNote:
-      "Os dados ficam na sua máquina. Exige liberar CORS no servidor local e a permissão de rede local do navegador.",
+    privacyNote: null,
     cspHosts: ["http://127.0.0.1:*", "http://localhost:*"],
     defaultModels: same("llama3.2"),
     create: openAICompatible("local", "http://127.0.0.1:11434/v1", { fetch: loopbackFetch }),
@@ -339,7 +340,13 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
         throw new AiError("local_blocked", { cause });
       }
       if (!res.ok) throw new AiError("unavailable", { retryable: true, meta: { status: res.status } });
-      const body = OpenAIList.safeParse(await res.json());
+      let json: unknown;
+      try {
+        json = await res.json();
+      } catch (cause) {
+        throw new AiError("unavailable", { retryable: true, cause });
+      }
+      const body = OpenAIList.safeParse(json);
       if (!body.success) return [];
       return body.data.data.flatMap((e) => {
         const m = Entry.safeParse(e);

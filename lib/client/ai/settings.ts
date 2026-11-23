@@ -3,13 +3,13 @@ import "client-only";
 import { z } from "zod";
 import { createStore } from "@/lib/client/storage/store";
 import { safeUrl } from "@/lib/shared/url";
-import { PROVIDER_IDS } from "./providers";
+import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "./providers";
 
 const ProviderIdSchema = z.enum(PROVIDER_IDS);
 
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost", "[::1]"]);
+const LOOPBACK_HOSTS = new Set(["127.0.0.1", "localhost"]);
 
-/** IA local só aceita HTTP em loopback (127.0.0.1, localhost, [::1]); qualquer porta. */
+/** IA local só aceita HTTP em loopback (127.0.0.1, localhost); qualquer porta, igual à CSP (`cspHosts` do registro). */
 export function isLoopbackBaseURL(input: string): boolean {
   const normalized = safeUrl(input, { allowHttp: true });
   if (!normalized) return false;
@@ -38,8 +38,9 @@ export const AiSettings = z
   .superRefine((s, ctx) => {
     for (const [id, cfg] of Object.entries(s.providers)) {
       if (cfg.baseURL === undefined) continue;
-      // Só a IA local tem baseURL editável; nuvem usa o host fixo da CSP (D-17).
-      if (id !== "local" || !isLoopbackBaseURL(cfg.baseURL)) {
+      // Só provedores com `editableBaseURL` aceitam endereço próprio (hoje, a IA local, só em loopback).
+      const def = PROVIDERS[id as ProviderId];
+      if (!def.editableBaseURL || (id === "local" && !isLoopbackBaseURL(cfg.baseURL))) {
         ctx.addIssue({
           code: "custom",
           path: ["providers", id, "baseURL"],

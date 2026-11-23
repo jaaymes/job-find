@@ -50,4 +50,27 @@ describe("resolveTaskModel", () => {
     const r = await resolveTaskModel(s, "extract");
     expect(r.provider.id).toBe("local");
   });
+
+  it("fallback pula provedor com aviso de privacidade não aceito", async () => {
+    const s: AiSettings = {
+      ...defaultAiSettings(),
+      providers: {
+        deepseek: { key: "k", addedAt: at, source: "paste" },
+        openai: { key: "k", addedAt: at, source: "paste" },
+      },
+    };
+    expect((await resolveTaskModel(s, "extract")).provider.id).toBe("openai");
+    s.providers.deepseek = { key: "k", addedAt: at, source: "paste", privacyAccepted: true };
+    s.providers.openai = undefined;
+    expect((await resolveTaskModel(s, "extract")).provider.id).toBe("deepseek");
+  });
+
+  it("escolha explícita de provedor com aviso não aceito lança blocked_by_privacy", async () => {
+    const s: AiSettings = {
+      ...defaultAiSettings(),
+      providers: { deepseek: { key: "k", addedAt: at, source: "paste" } },
+      tasks: { extract: { provider: "deepseek", model: "deepseek-chat" }, analyze: null, cv: null },
+    };
+    await expect(resolveTaskModel(s, "extract")).rejects.toMatchObject({ code: "blocked_by_privacy" });
+  });
 });

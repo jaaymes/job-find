@@ -11,10 +11,16 @@ function isConnected(s: AiSettings, id: ProviderId): boolean {
   return id === "local" ? Boolean(cfg.baseURL) : Boolean(cfg.key);
 }
 
+/** Provedor com aviso de privacidade que o usuário ainda não aceitou. */
+function needsPrivacyAck(s: AiSettings, id: ProviderId): boolean {
+  return PROVIDERS[id].privacyNote !== null && s.providers[id]?.privacyAccepted !== true;
+}
+
 /**
  * Resolve o modelo de uma tarefa. Usa a escolha explícita da tarefa; sem ela, cai no
  * primeiro provedor conectado (ordem do registro) com o modelo padrão da tarefa.
- * Lança `AiError('no_provider')` quando nada está conectado.
+ * Provedores com `privacyNote` sem `privacyAccepted` são pulados no fallback e bloqueiam a escolha
+ * explícita (`blocked_by_privacy`). Lança `AiError('no_provider')` quando nada está disponível.
  */
 export async function resolveTaskModel(
   s: AiSettings,
@@ -25,10 +31,13 @@ export async function resolveTaskModel(
   let modelId: string;
   if (choice) {
     if (!isConnected(s, choice.provider)) throw new AiError("no_provider");
+    if (needsPrivacyAck(s, choice.provider)) {
+      throw new AiError("blocked_by_privacy", { meta: { provider: choice.provider } });
+    }
     id = choice.provider;
     modelId = choice.model;
   } else {
-    const first = PROVIDER_IDS.find((p) => isConnected(s, p));
+    const first = PROVIDER_IDS.find((p) => isConnected(s, p) && !needsPrivacyAck(s, p));
     if (!first) throw new AiError("no_provider");
     id = first;
     modelId = PROVIDERS[first].defaultModels[task];

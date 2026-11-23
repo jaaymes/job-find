@@ -3,6 +3,8 @@ import { AI_CSP_HOSTS } from "@/lib/shared/ai-hosts";
 import { PROVIDERS, PROVIDER_IDS } from "@/lib/client/ai/providers";
 import { AiSettings, defaultAiSettings } from "@/lib/client/ai/settings";
 
+afterEach(() => vi.unstubAllGlobals());
+
 const withLocal = (baseURL: string) => ({
   ...defaultAiSettings(),
   providers: { local: { baseURL, addedAt: "2026-11-23T00:00:00.000Z", source: "paste" as const } },
@@ -76,8 +78,6 @@ describe("registro de provedores", () => {
 });
 
 describe("listModels (fetch mockado)", () => {
-  afterEach(() => vi.unstubAllGlobals());
-
   it("OpenRouter devolve preços por milhão de tokens e a chave vai no header", async () => {
     const fetchMock = vi.fn(
       async () =>
@@ -127,10 +127,23 @@ describe("AiSettings", () => {
     expect(AiSettings.safeParse(withLocal("http://127.0.0.1.evil.com:11434")).success).toBe(false);
   });
 
-  it("aceita loopback em 127.0.0.1, localhost e [::1]", () => {
-    for (const u of ["http://127.0.0.1:11434/v1", "http://localhost:1234/v1", "http://[::1]:11434/v1"]) {
+  it("aceita loopback em 127.0.0.1 e localhost; rejeita [::1] (fora da CSP)", () => {
+    for (const u of ["http://127.0.0.1:11434/v1", "http://localhost:1234/v1"]) {
       expect(AiSettings.safeParse(withLocal(u)).success).toBe(true);
     }
+    expect(AiSettings.safeParse(withLocal("http://[::1]:11434/v1")).success).toBe(false);
+  });
+
+  it("DeepSeek e Gemini têm aviso de privacidade", () => {
+    expect(PROVIDERS.deepseek.privacyNote).toMatch(/China/);
+    expect(PROVIDERS.google.privacyNote).toBeTruthy();
+  });
+
+  it("listModels local com resposta não-JSON vira AiError unavailable", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("<html>", { status: 200 })));
+    await expect(
+      PROVIDERS.local.listModels({ baseURL: "http://127.0.0.1:11434/v1" }),
+    ).rejects.toMatchObject({ code: "unavailable" });
   });
 
   it("não permite baseURL personalizada em provedores de nuvem", () => {

@@ -93,23 +93,23 @@ docs/fontes.md, CONTRIBUTING.md, CODE_OF_CONDUCT.md, .env.example, .github/**
 
 Saída única: `docs/tech/spikes.md`, com uma seção por spike, cada uma com veredito **confirmado** ou **plano B escolhido** e a evidência. Não é TDD. O código dos spikes fica em `spikes/` e é apagado no fim da fase.
 
-### Tarefa 0.1: Vercel Schedules e CRON_SECRET
+### Task 0.1: Vercel Schedules e CRON_SECRET
 - [ ] Fazer deploy de uma rota `spikes/schedule-probe` que grava os headers recebidos num log, com um agendamento por hora no Vercel Schedules.
 - [ ] **Confirmar:** o agendamento roda de hora em hora no Hobby e envia `Authorization: Bearer <CRON_SECRET>`. Registrar o formato de configuração (`vercel.json` ou painel).
 - [ ] **Se não enviar o header:** plano B com GitHub Actions `schedule: '17 * * * *'` chamando a rota com `curl -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}"`.
 
-### Tarefa 0.2: CSP por SRI
+### Task 0.2: CSP por SRI
 - [ ] Criar um app mínimo com Next 16.4 e `experimental.sri: { algorithm: 'sha256' }`. Montar uma página com `unpdf` (`import()`) e outra com `@react-pdf/renderer` (`dynamic`, `ssr:false`), e aplicar a CSP da D-15 via `headers()`.
 - [ ] **Confirmar:** nenhuma violação de CSP no console (Playwright, `page.on('console')`) e as páginas continuam estáticas (`○` no output do `next build`). Registrar se `'wasm-unsafe-eval'` ou `worker-src blob:` são necessários.
 - [ ] **Plano B:** nonce só nas rotas `(local)`.
 
-### Tarefa 0.3: Provedores de IA no navegador
+### Task 0.3: Provedores de IA no navegador
 - [ ] Criar uma página de teste que chama `streamText` com `Output.object` para OpenRouter (`deepseek/deepseek-v4.1-flash` e `deepseek/deepseek-v4-flash`, com `provider: { require_parameters: true, data_collection: 'deny' }`), OpenAI, Anthropic (header `anthropic-dangerous-direct-browser-access`), Gemini, DeepSeek direto e Ollama local.
 - [ ] **Confirmar por provedor:** CORS, JSON válido, streaming, comportamento de erro com HTTP 200 no meio do stream, json_schema da DeepSeek e Local Network Access no Chrome. Medir também a qualidade PT/EN com 5 currículos (P-02).
 - [ ] Testar o PKCE do OpenRouter com `limit=5&expiration=1-year`.
 - [ ] Registrar uma tabela provedor × modo de saída estruturada. Ela alimenta o campo `structured` da Tarefa 23.
 
-### Tarefa 0.4: Extração de PDF
+### Task 0.4: Extração de PDF
 - [ ] Medir o `unpdf` com um PDF de 10 páginas: tempo e bloqueio da thread principal.
 - [ ] **Se travar mais de 300 ms:** registrar o plano B com `pdfjs-dist` num worker dedicado.
 
@@ -119,7 +119,7 @@ Saída única: `docs/tech/spikes.md`, com uma seção por spike, cada uma com ve
 
 ## Fase 1: Índice de vagas
 
-### Tarefa 1: Scaffold e base do repositório open-source
+### Task 1: Scaffold e base do repositório open-source
 
 **Arquivos:**
 - **Criar:** `package.json`, `tsconfig.json`, `next.config.ts`, `app/layout.tsx`, `app/globals.css`, `components/ui/*` (shadcn: button, input, select, checkbox, tabs, badge, card, dialog, toast), `vitest.config.ts`, `playwright.config.ts`, `docker-compose.test.yml`, `.env.example`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `.github/workflows/ci.yml`, `.github/dependabot.yml`, `.github/ISSUE_TEMPLATE/{bug,nova-fonte,novo-provedor}.md`, `.github/pull_request_template.md`
@@ -141,7 +141,7 @@ Saída única: `docs/tech/spikes.md`, com uma seção por spike, cada uma com ve
 - [ ] **Passo 9:** verificar. Rodar `pnpm lint && pnpm typecheck && pnpm test && pnpm build`. Esperado: tudo verde.
 - [ ] **Passo 10:** commitar (`chore: scaffold Next.js 16 e arquivos open-source`).
 
-### Tarefa 2 [P]: Validador de URL compartilhado (SEC-03)
+### Task 2 [P]: Validador de URL compartilhado (SEC-03)
 
 **Arquivos:** criar `lib/shared/url.ts`; teste em `tests/unit/shared/url.test.ts`
 
@@ -164,7 +164,7 @@ expect(safeUrl('  https://A.com/vaga  ')).toBe('https://a.com/vaga')
 - [ ] **Passo 4:** rodar de novo. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 3 [P]: Dicionário de stacks isomórfico (RF-04, D-08)
+### Task 3 [P]: Dicionário de stacks isomórfico (RF-04, D-08)
 
 **Arquivos:** criar `lib/shared/stacks.ts`; testes em `tests/unit/shared/stacks.test.ts` e na fixture `tests/fixtures/stacks/sample-100.json`
 
@@ -204,7 +204,7 @@ expect(precision(sample100)).toBeGreaterThanOrEqual(0.9)
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 4 [P]: Classificadores de enriquecimento (RF-05, RF-06, RN-01, RN-03, RN-04, RN-05, RN-08)
+### Task 4 [P]: Classificadores de enriquecimento (RF-05, RF-06, RN-01, RN-03, RN-04, RN-05, RN-08)
 
 **Arquivos:** criar `lib/shared/types/job.ts` (só os tipos base), `lib/server/enrich/{origin,work-mode,seniority,language,tech,dedupe}.ts`; testes em `tests/unit/server/enrich/*.test.ts`
 
@@ -245,7 +245,7 @@ expect(dedupeKey({ company: 'X', title: 'Dev', country: 'BR', city: 'Recife', wo
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 5 [P]: Sanitização do HTML das vagas (SEC-02)
+### Task 5 [P]: Sanitização do HTML das vagas (SEC-02)
 
 **Arquivos:** criar `lib/server/sanitize.ts` e `lib/client/render-html.ts`; testes em `tests/unit/server/sanitize.test.ts`, `tests/unit/client/render-html.test.ts` e na fixture `tests/fixtures/xss/payloads.txt` (corpus OWASP)
 
@@ -278,7 +278,7 @@ expect(summarize('<p>' + 'a '.repeat(400) + '</p>').length).toBeLessThanOrEqual(
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 6: Schema do banco e migração 0001 (D-03, D-04, D-05)
+### Task 6: Schema do banco e migração 0001 (D-03, D-04, D-05)
 
 **Arquivos:** criar `lib/server/db/schema.ts`, `lib/server/db/client.ts`, `drizzle.config.ts`, `drizzle/0001_init.sql` (+ `drizzle/meta`), `tests/integration/setup.ts`; teste em `tests/integration/db/migration.test.ts`
 
@@ -306,7 +306,7 @@ await expect(insertJobRaw(db, { dedupe_key: 'k', expired_at: new Date() })).reso
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 7 [P com a 8]: Upsert, expiração e retenção (RF-02, RF-03, RF-07, D-04)
+### Task 7 [P com a 8]: Upsert, expiração e retenção (RF-02, RF-03, RF-07, D-04)
 
 **Arquivos:** criar `lib/server/sources/types.ts` (só `NormalizedJob`; a Tarefa 10 completa o arquivo), `lib/server/jobs/upsert.ts`, `lib/server/jobs/expire.ts` e `lib/server/jobs/enrich-job.ts`; testes em `tests/integration/jobs/upsert.test.ts` e `tests/integration/jobs/expire.test.ts`
 
@@ -368,7 +368,7 @@ expect(await markMissedRuns(db, 'greenhouse', runStart, 390, 400)).toBeGreaterTh
 - [ ] **Passo 5:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 6:** commitar.
 
-### Tarefa 8 [P com a 7]: Query de listagem com cursor e filtros (RF-08, RF-09, RF-10, D-05)
+### Task 8 [P com a 7]: Query de listagem com cursor e filtros (RF-08, RF-09, RF-10, D-05)
 
 **Arquivos:** criar `lib/shared/schemas/jobs-query.ts` e `lib/shared/jobs-url.ts`; modificar `lib/shared/types/job.ts` (acrescenta `JobSummary` e `JobDetail`); criar `lib/server/jobs/cursor.ts` e `lib/server/jobs/query.ts`; testes em `tests/unit/shared/jobs-query.test.ts`, `tests/unit/shared/jobs-url.test.ts` e `tests/integration/jobs/query.test.ts`
 
@@ -431,7 +431,7 @@ for (const s of ['C#', 'node.js', '"São Paulo"', "'", '&', '   ']) await expect
 - [ ] **Passo 5:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 6:** commitar.
 
-### Tarefa 9: Rotas `GET /api/jobs` e `GET /api/jobs/[id]` (D-06)
+### Task 9: Rotas `GET /api/jobs` e `GET /api/jobs/[id]` (D-06)
 
 **Arquivos:** criar `app/api/jobs/route.ts` e `app/api/jobs/[id]/route.ts`; teste em `tests/integration/api/jobs-route.test.ts`
 
@@ -460,7 +460,7 @@ expect((await GET(new Request('http://x/api/jobs/999999'), { params: Promise.res
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 10: Base dos conectores e fetch seguro (D-07, SEC-06)
+### Task 10: Base dos conectores e fetch seguro (D-07, SEC-06)
 
 **Arquivos:** criar `lib/server/sources/types.ts` (completa o tipo da Tarefa 7), `lib/server/sources/http.ts` e `lib/server/sources/registry.ts`; teste em `tests/unit/server/sources/http.test.ts`
 
@@ -500,7 +500,7 @@ await expect(createSafeFetch(['api.example.com'], { timeoutMs: 100 })('https://a
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefas 11 a 14 [P]: Conectores do MVP (Himalayas, Greenhouse, Ashby e Lever, Jobicy)
+### Task 11: Conectores do MVP — Tarefas 11 a 14 [P] (Himalayas, Greenhouse, Ashby e Lever, Jobicy)
 
 Todas seguem o mesmo molde. Cada uma cria `lib/server/sources/<id>.ts`, registra o conector em `registry.ts`, salva uma fixture real em `tests/fixtures/sources/<id>/*.json` (baixada uma vez com `curl` e commitada) e escreve o teste `tests/unit/server/sources/<id>.test.ts`. Os endpoints, a atribuição e o tipo de snapshot estão na tabela da D-07 da spec.
 
@@ -537,7 +537,7 @@ expect(connector.normalize({ lixo: true })).toBeNull()          // payload invá
 
 **Verificação do grupo:** `pnpm test tests/unit/server/sources`. Esperado: PASS.
 
-### Tarefa 15: Orquestrador da coleta (RF-01, RNF-03, RNF-04, D-07)
+### Task 15: Orquestrador da coleta (RF-01, RNF-03, RNF-04, D-07)
 
 **Arquivos:** criar `lib/server/collect/run.ts` e `lib/server/collect/lock.ts`; teste em `tests/integration/collect/run.test.ts`
 
@@ -574,7 +574,7 @@ expect((await runCollection({ db, sources: ['a'], now, connectors: { a: okConn(1
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 16: Rota `/api/cron/collect` e agendamento (SEC-04, D-02)
+### Task 16: Rota `/api/cron/collect` e agendamento (SEC-04, D-02)
 
 **Arquivos:** criar `lib/server/cron-auth.ts`, `app/api/cron/collect/route.ts` e a configuração de agendamento definida na Tarefa 0.1 (`vercel.json` ou `.github/workflows/collect.yml`); teste em `tests/unit/server/cron-auth.test.ts`
 
@@ -601,7 +601,7 @@ expect(verifyCronSecret('Bearer s3cr3t', 's3cr3t')).toBe(true)
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 17: Headers de segurança e CSP (SEC-01, SEC-07, D-15, D-17)
+### Task 17: Headers de segurança e CSP (SEC-01, SEC-07, D-15, D-17)
 
 **Arquivos:** modificar `next.config.ts`; criar `lib/shared/csp.ts`; teste em `tests/unit/shared/csp.test.ts`
 
@@ -625,7 +625,7 @@ expect(csp).not.toContain("'unsafe-eval'")
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 18 [P com a 19]: Home de vagas (US-01, US-02, D-01, D-16)
+### Task 18 [P com a 19]: Home de vagas (US-01, US-02, D-01, D-16)
 
 **Arquivos:**
 - Criar: `app/(site)/page.tsx`, `app/providers.tsx` (QueryClient e NuqsAdapter), `components/layout/{SiteHeader,SiteFooter}.tsx`, `components/jobs/{JobsPage,SearchBar,StackChips,FiltersPanel,ModeTabs,JobCard,ChanceBadge}.tsx` e `lib/client/jobs/use-jobs.ts`
@@ -652,7 +652,7 @@ expect(csp).not.toContain("'unsafe-eval'")
 - [ ] **Passo 5:** rodar `pnpm test && pnpm test:e2e tests/e2e/home.spec.ts`. Esperado: PASS.
 - [ ] **Passo 6:** commitar.
 
-### Tarefa 19 [P com a 18]: Detalhe da vaga (RN-10)
+### Task 19 [P com a 18]: Detalhe da vaga (RN-10)
 
 **Arquivos:** criar `app/(site)/vagas/[id]/page.tsx` e `components/jobs/JobDetail.tsx`; teste em `tests/e2e/job-detail.spec.ts`
 
@@ -666,7 +666,7 @@ expect(csp).not.toContain("'unsafe-eval'")
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 20: Fontes documentadas, WAF e fechamento da Fase 1
+### Task 20: Fontes documentadas, WAF e fechamento da Fase 1
 
 **Arquivos:** criar `docs/fontes.md`
 
@@ -686,7 +686,7 @@ expect(csp).not.toContain("'unsafe-eval'")
 
 ## Fase 2: Perfil, IA e chance
 
-### Tarefa 21: Store do localStorage (D-09, RNF-10)
+### Task 21: Store do localStorage (D-09, RNF-10)
 
 **Arquivos:** criar `lib/client/storage/store.ts` e `lib/client/storage/keys.ts`; teste em `tests/unit/client/storage.test.ts`
 
@@ -719,7 +719,7 @@ expect(s.get()).toEqual({ a: 0 }); expect(s.set({ a: 1 })).toEqual({ ok: false, 
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 22: Avisos de armazenamento na interface (Foco de revisão 3, RNF-10)
+### Task 22: Avisos de armazenamento na interface (Foco de revisão 3, RNF-10)
 
 **Arquivos:** criar `components/layout/StorageBanner.tsx`; teste em `tests/unit/client/storage-banner.test.tsx`
 
@@ -731,7 +731,7 @@ expect(s.get()).toEqual({ a: 0 }); expect(s.set({ a: 1 })).toEqual({ ok: false, 
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 23: Registro de provedores de IA e configuração (D-17)
+### Task 23: Registro de provedores de IA e configuração (D-17)
 
 **Arquivos:**
 - Modificar: `lib/shared/ai-hosts.ts` (criado na Tarefa 17; a lista passa a ser gerada dos `cspHosts` do registro, ou mantida igual a eles, o que o teste garante)
@@ -793,7 +793,7 @@ expect(AiSettings.safeParse(withLocal('https://evil.com')).success).toBe(false)
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 24: Geração estruturada com fallback e erros (D-11, D-17, Foco de revisão 5)
+### Task 24: Geração estruturada com fallback e erros (D-11, D-17, Foco de revisão 5)
 
 **Arquivos:** criar `lib/client/ai/errors.ts`, `lib/client/ai/generate.ts` e `lib/client/ai/prompts/untrusted.ts`; testes em `tests/unit/client/ai/generate.test.ts` e `tests/unit/client/ai/untrusted.test.ts`
 
@@ -836,7 +836,7 @@ expect(w).toMatch(/^<job_description id="[a-z0-9]{8}">/); expect(w).not.toContai
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 25 [P com a 26]: PKCE do OpenRouter (D-10)
+### Task 25 [P com a 26]: PKCE do OpenRouter (D-10)
 
 **Arquivos:** criar `lib/client/ai/pkce.ts` e `app/(local)/configuracoes/callback/page.tsx`; teste em `tests/unit/client/ai/pkce.test.ts`
 
@@ -859,7 +859,7 @@ expect(await completeOpenRouterAuth('c')).toBe('sk-or-x'); expect(sessionStorage
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 26 [P com a 25]: Tela de Configurações de IA (US-03, RF-11)
+### Task 26 [P com a 25]: Tela de Configurações de IA (US-03, RF-11)
 
 **Arquivos:** criar `app/(local)/configuracoes/page.tsx` e `components/settings/{ProviderCard,AddKeyDialog,TaskModelRow,PrivacyConsentDialog,LocalAiGuide}.tsx`; teste em `tests/e2e/settings.spec.ts`
 
@@ -875,7 +875,7 @@ expect(await completeOpenRouterAuth('c')).toBe('sk-or-x'); expect(sessionStorage
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 27 [P com as 23–24]: Extração de currículo no navegador (RF-12, SEC-09, D-12)
+### Task 27 [P com as 23–24]: Extração de currículo no navegador (RF-12, SEC-09, D-12)
 
 **Arquivos:** criar `lib/client/extract/index.ts` e `lib/client/extract/contact.ts`; testes em `tests/unit/client/extract.test.ts` e nas fixtures `tests/fixtures/cv/{texto.pdf,escaneado.pdf,colunas.pdf,cv.docx,zipbomb.docx,fake.pdf}`
 
@@ -905,7 +905,7 @@ expect(redactContact('ana@x.com (11) 98888-7777')).toBe('[EMAIL] [TELEFONE]')
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 28: Perfil — schema, prompt de extração e tela (US-04, RF-13, RF-14)
+### Task 28: Perfil — schema, prompt de extração e tela (US-04, RF-13, RF-14)
 
 **Arquivos:**
 - Criar: `lib/shared/schemas/profile.ts`, `lib/client/ai/prompts/profile.extract.v1.ts`, `lib/client/profile/import.ts`, `app/(local)/perfil/page.tsx` e `components/profile/{ImportPanel,ProfileEditor,SkillChips,ExperienceEditor}.tsx`
@@ -932,7 +932,7 @@ expect(redactContact('ana@x.com (11) 98888-7777')).toBe('[EMAIL] [TELEFONE]')
 - [ ] **Passo 5:** rodar os testes. Esperado: PASS.
 - [ ] **Passo 6:** commitar.
 
-### Tarefa 29 [P com a 30]: Score local e filtro de chance (RF-15, RN-06, D-13)
+### Task 29 [P com a 30]: Score local e filtro de chance (RF-15, RN-06, D-13)
 
 **Arquivos:** criar `lib/client/score/score.ts` e `lib/client/jobs/use-jobs-with-chance.ts`; modificar `components/jobs/{JobCard,ChanceBadge,FiltersPanel}.tsx` e `components/jobs/JobDetail.tsx`; teste em `tests/unit/client/score.test.ts`
 
@@ -959,7 +959,7 @@ expect(scoreJob(pi(...), job({ seniority: null }), now).breakdown.find(b => b.cr
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 30 [P com a 29]: Análise com IA (RF-16, US-05)
+### Task 30 [P com a 29]: Análise com IA (RF-16, US-05)
 
 **Arquivos:** criar `lib/shared/schemas/fit.ts`, `lib/client/ai/prompts/job.fit.v1.ts` e `lib/client/jobs/analyze.ts`; modificar `components/jobs/JobDetail.tsx`; testes em `tests/unit/client/analyze.test.ts` e `tests/e2e/analysis.spec.ts`
 
@@ -985,7 +985,7 @@ expect(scoreJob(pi(...), job({ seniority: null }), now).breakdown.find(b => b.cr
 
 ## Fase 3: CV e carta
 
-### Tarefa 31: Schema e prompt de geração, e montagem do CV (RF-17, RN-07 camada 1, RN-08)
+### Task 31: Schema e prompt de geração, e montagem do CV (RF-17, RN-07 camada 1, RN-08)
 
 **Arquivos:** criar `lib/shared/schemas/tailored.ts`, `lib/client/ai/prompts/cv.tailor.v1.ts` e `lib/client/cv/assemble.ts`; teste em `tests/unit/client/cv-assemble.test.ts`
 
@@ -1013,7 +1013,7 @@ expect(CV_TAILOR_V1.buildUser(input)).not.toContain(profile.contact.email!)
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 32: Validador anti-alucinação (RN-07 camadas 2 e 3)
+### Task 32: Validador anti-alucinação (RN-07 camadas 2 e 3)
 
 **Arquivos:** criar `lib/client/cv/validate.ts`; teste em `tests/unit/client/cv-validate.test.ts`
 
@@ -1041,7 +1041,7 @@ expect(validateTailored(profile, withBullet('exp_1', '1.000 usuários', ['exp_1.
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 33 [P com a 32]: PDF do CV e da carta (RF-18, D-14)
+### Task 33 [P com a 32]: PDF do CV e da carta (RF-18, D-14)
 
 **Arquivos:** criar `lib/client/pdf/{CvDocument,CoverLetterDocument}.tsx`, `lib/client/pdf/fonts.ts`, `lib/client/pdf/filename.ts`, `lib/client/pdf/render.ts` e `public/fonts/Inter-{Regular,Bold}.ttf`; teste em `tests/unit/client/pdf.test.ts` (node)
 
@@ -1066,7 +1066,7 @@ expect(cvFileName('Ana Souza', 'Lumen Pay', 'Frontend Sênior')).toBe('CV-Ana-So
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 34: Tela do Gerador (US-06)
+### Task 34: Tela do Gerador (US-06)
 
 **Arquivos:** criar `app/(local)/gerador/[jobId]/page.tsx`, `components/generator/{GeneratorToolbar,TailoredEditor,ReviewBanner,PdfPreview,GapsPanel}.tsx` e `lib/client/cv/generate.ts`; teste em `tests/e2e/generator.spec.ts`
 
@@ -1086,7 +1086,7 @@ expect(cvFileName('Ana Souza', 'Lumen Pay', 'Frontend Sênior')).toBe('CV-Ana-So
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 35: Avaliação da IA com 10 pares
+### Task 35: Avaliação da IA com 10 pares
 
 **Arquivos:** criar `scripts/eval-ai.ts` e `tests/fixtures/ai/pairs/{01..10}.json` (perfil e vaga, sem dados reais)
 
@@ -1103,7 +1103,7 @@ expect(cvFileName('Ana Souza', 'Lumen Pay', 'Frontend Sênior')).toBe('CV-Ana-So
 
 As tarefas desta fase são independentes entre si. A 36 e a 37 dependem da 21 (store); as demais dependem da Fase 1.
 
-### Tarefa 36 [P]: Favoritos, ocultar, status e Minhas vagas (US-07, RF-19)
+### Task 36 [P]: Favoritos, ocultar, status e Minhas vagas (US-07, RF-19)
 
 **Arquivos:** criar `lib/client/jobs/job-state.ts`, `app/(local)/minhas-vagas/page.tsx` e `components/my-jobs/{Board,Column,JobMiniCard}.tsx`; modificar `components/jobs/JobCard.tsx` e `JobDetail.tsx`; testes em `tests/unit/client/job-state.test.ts` e `tests/e2e/my-jobs.spec.ts`
 
@@ -1123,7 +1123,7 @@ As tarefas desta fase são independentes entre si. A 36 e a 37 dependem da 21 (s
 - [ ] **Passo 4:** rodar os testes. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 37 [P]: Backup — exportar e importar (US-08, RF-20, SEC-10, SEC-11)
+### Task 37 [P]: Backup — exportar e importar (US-08, RF-20, SEC-10, SEC-11)
 
 **Arquivos:** criar `lib/client/storage/backup.ts`; modificar a seção de backup de `app/(local)/configuracoes/page.tsx`; teste em `tests/unit/client/backup.test.ts`
 
@@ -1152,7 +1152,7 @@ expect((await parseBackup(withKeyFile)).keyHints.openai).toBe('1234')      // mo
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 38 [P]: Conectores GitHub, We Work Remotely, RemoteOK e HN
+### Task 38 [P]: Conectores GitHub, We Work Remotely, RemoteOK e HN
 
 Seguem o mesmo molde das Tarefas 11 a 14. Cada conector tem asserções próprias:
 
@@ -1167,7 +1167,7 @@ Seguem o mesmo molde das Tarefas 11 a 14. Cada conector tem asserções própria
 
 Depois dos conectores, incluir cada fonte no `docs/fontes.md` e commitar cada uma separadamente.
 
-### Tarefa 39 [P]: Status das fontes, página Fontes e Privacidade (RF-21, LGPD)
+### Task 39 [P]: Status das fontes, página Fontes e Privacidade (RF-21, LGPD)
 
 **Arquivos:** criar `app/api/sources/status/route.ts`, `app/(site)/fontes/page.tsx` e `app/(site)/privacidade/page.tsx`; testes em `tests/integration/api/sources-status.test.ts` e `tests/e2e/sources.spec.ts`
 
@@ -1180,7 +1180,7 @@ Depois dos conectores, incluir cada fonte no `docs/fontes.md` e commitar cada um
 - [ ] **Passo 4:** rodar os testes. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Tarefa 40 [P]: Testes de contrato agendados e validação de slugs
+### Task 40 [P]: Testes de contrato agendados e validação de slugs
 
 **Arquivos:** criar `.github/workflows/contracts.yml` e `tests/contract/sources.contract.test.ts` (fora dos projetos `unit` e `integration`; roda com `vitest run tests/contract`)
 
@@ -1189,7 +1189,7 @@ Depois dos conectores, incluir cada fonte no `docs/fontes.md` e commitar cada um
 - [ ] **Passo 3:** rodar localmente com `pnpm vitest run tests/contract`. Esperado: PASS, ou falha listando o slug ou a fonte quebrada.
 - [ ] **Passo 4:** commitar.
 
-### Tarefa 41 [P]: Filtros salvos, selo "Nova" e salário (RF-22, RF-23)
+### Task 41 [P]: Filtros salvos, selo "Nova" e salário (RF-22, RF-23)
 
 **Arquivos:** modificar `components/jobs/{JobsPage,JobCard,FiltersPanel}.tsx` e `lib/client/jobs/use-jobs.ts`; teste em `tests/e2e/home-extras.spec.ts`
 

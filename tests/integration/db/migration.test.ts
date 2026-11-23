@@ -3,12 +3,12 @@ import { beforeEach, describe, expect, it } from "vitest";
 import type { Db, getHttpDb, getPoolDb } from "@/lib/server/db/client";
 import { insertJobRaw, resetDb, testDb } from "../setup";
 
-// Verificação de tipos: os três drivers precisam ser aceitos como `Db`.
-export const aceitaDb = (db: Db) => db;
-export type DriversAceitos = [
-  Parameters<typeof aceitaDb>[0],
-  ReturnType<typeof getHttpDb> extends Db ? true : never,
-  ReturnType<typeof getPoolDb> extends Db ? true : never,
+// Verificação de tipos: os três drivers precisam ser atribuíveis a `Db`.
+// Se algum deixar de ser, `pnpm typecheck` falha aqui.
+const aceitaDb = (db: Db) => db;
+type TestDb = Awaited<ReturnType<typeof testDb>>;
+export const driversAceitos: Array<(h: ReturnType<typeof getHttpDb>, p: ReturnType<typeof getPoolDb>, n: TestDb) => Db[]> = [
+  (h, p, n) => [aceitaDb(h), aceitaDb(p), aceitaDb(n)],
 ];
 
 describe("migração inicial do banco", () => {

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
-import { htmlToText, JOB_FIT_V1, projectProfile } from "@/lib/client/ai/prompts/job.fit.v1";
+import { JOB_FIT_V1 } from "@/lib/client/ai/prompts/job.fit.v1";
+import { htmlToText, projectProfile } from "@/lib/client/ai/prompts/shared";
 import { defaultAiSettings } from "@/lib/client/ai/settings";
 import { analysisStore } from "@/lib/client/jobs/analysis-store";
 import { analyzeJob } from "@/lib/client/jobs/analyze";

@@ -18,8 +18,9 @@ Regras comuns a todos os conectores:
 | Ashby | `https://api.ashbyhq.com/posting-api/job-board/<slug>?includeCompensation=true` | A confirmar. [Docs da API pública](https://developers.ashbyhq.com/docs/public-job-posting-api), checada em 2026-11-23: a página não traz termos, atribuição nem rate limit | Link para a vaga (decisão da spec, não exigência confirmada). Registro: rótulo "Ashby", sem dofollow | Sim | 12 boards curados (abaixo); até 3 requisições simultâneas |
 | Lever | `https://api.lever.co/v0/postings/<slug>?mode=json` | A confirmar. [Postings API](https://github.com/lever/postings-api), checada em 2026-11-23: vagas `published` são públicas; a página não traz termos de uso nem atribuição (o limite de 2 POST/s vale só para candidaturas) | Link para a vaga (decisão da spec, não exigência confirmada). Registro: rótulo "Lever", sem dofollow | Sim | 5 boards curados (abaixo); até 3 requisições simultâneas |
 | Jobicy | `https://jobicy.com/api/v2/remote-jobs?count=50&industry=engineering&geo=brazil` e `geo=latam` | [Docs da API/feed](https://jobicy.com/jobs-rss-feed), checada em 2026-11-23: uso em produtos próprios sem pedir permissão, inclusive comercial; armazenar e cachear é permitido se vagas fechadas ou expiradas forem marcadas como indisponíveis; o Jobicy deve ser creditado como fonte original, sem apagar a atribuição. Os Termos de Serviço (`jobicy.com/terms-and-conditions`) não foram lidos: a confirmar | Crédito com link para o Jobicy; candidatura pelo link do Jobicy. Registro: rótulo "Jobicy", sem dofollow | Não (incremental, janela de 7 dias) | 50 vagas por consulta (2 consultas, ids duplicados descartados); a doc pede no máximo 1 requisição/s por IP e cache, e o projeto coleta no máximo 1 vez por hora (`minIntervalMinutes: 60`). Atenção: a doc atual cita `GET /api/jobs`, enquanto o conector usa `/api/v2/remote-jobs`; verificar se o caminho ainda vale |
+| GitHub issues | `https://api.github.com/repos/<dono>/<repo>/issues?state=open&per_page=100&page=<n>` (opcional: `Authorization: Bearer $GITHUB_TOKEN`) | [Docs da REST API de issues](https://docs.github.com/en/rest/issues/issues), checada em 2026-11-23: a API pública é de leitura livre e sujeita a rate limit; os Termos de Uso da API do GitHub não foram lidos: a confirmar. Cada issue é conteúdo de terceiros publicado em repositório público | Link para a issue (decisão da spec). Registro: rótulo "GitHub", sem dofollow | Sim (só issues abertas; issue fechada some da lista e expira em 3 coletas pela regra do runner) | 5 repositórios curados (abaixo); até 3 repositórios simultâneos; só `state=open`, 100 por página, no máximo 5 páginas por repositório; pull requests são descartados; 60 req/h sem token e 5.000 req/h com `GITHUB_TOKEN` (nunca registrado em log); intervalo mínimo de 60 min; fonte brasileira |
 
-Os hosts de Ashby e Lever estão em `ASHBY_HOST` e `LEVER_HOST` nos respectivos conectores (`allowedHosts`); os demais são `himalayas.app`, `boards-api.greenhouse.io` e `jobicy.com`.
+Os hosts de Ashby, Lever e GitHub estão em `ASHBY_HOST`, `LEVER_HOST` e `GITHUB_HOST` nos respectivos conectores (`allowedHosts`); os demais são `himalayas.app`, `boards-api.greenhouse.io` e `jobicy.com`.
 
 ### Boards curados
 
@@ -28,10 +29,11 @@ Nada além destas listas é consultado. Mudar a lista exige editar o conector.
 - **Greenhouse:** stone, c6bank, btgpactual, xpinc, inter, quintoandar, gympass, clara, ebanx, vtex, jusbrasil, wildlifestudios, getnet, gitlab, canonical, twilio, datadog, stripe, databricks.
 - **Ashby:** nubank, supabase, openai, posthog, linear, sanity, replit, vanta, plaid, ramp, notion, cohere.
 - **Lever:** ciandt, neon, swile, toptal, spotify.
+- **GitHub (`GITHUB_REPOS`):** frontendbr/vagas, backend-br/vagas, react-brasil/vagas, qa-brasil/vagas, androiddevbr/vagas.
 
 ## Fontes planejadas
 
-Planejadas para a Fase 4: GitHub issues, We Work Remotely (RSS), RemoteOK, Hacker News "Who is hiring" e SmartRecruiters. Fora da lista por termos de uso: Gupy, Coodesh e Remotive.
+Planejadas para a Fase 4: We Work Remotely (RSS), RemoteOK, Hacker News "Who is hiring" e SmartRecruiters. Fora da lista por termos de uso: Gupy, Coodesh e Remotive.
 
 ## Operação
 

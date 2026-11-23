@@ -30,8 +30,13 @@ const ROLE_KEYWORDS = [
 ];
 const ROLE_RE = new RegExp(`\\b(?:${ROLE_KEYWORDS.join("|")})\\b`);
 
+const NEGATIVE_RE =
+  /\b(?:sales|mechanical|civil|electrical|chemical|field service|customer|marketing|mecanico|eletrico|vendas)\b/;
+
 /** RN-01: vaga de tecnologia se o título/tags trazem stack ou o título traz cargo tech. */
 export function isTechJob(title: string, tags: string[]): boolean {
   if (extractStacks({ title, tags }).length > 0) return true;
-  return ROLE_RE.test(normalizeText(title));
+  const title_ = normalizeText(title);
+  if (NEGATIVE_RE.test(title_)) return false;
+  return ROLE_RE.test(title_);
 }

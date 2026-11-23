@@ -31,4 +31,13 @@ describe("isTechJob", () => {
   it("não casa dentro de palavras", () => {
     expect(isTechJob("Gerente de Qualidade Industrial", [])).toBe(false);
   });
+  it("cargos não tech com 'engineer' ou 'mobile' são falsos", () => {
+    expect(isTechJob("Sales Engineer", [])).toBe(false);
+    expect(isTechJob("Mechanical Engineer", [])).toBe(false);
+    expect(isTechJob("Mobile Sales Rep", [])).toBe(false);
+    expect(isTechJob("Engenheiro Civil", [])).toBe(false);
+  });
+  it("stack no título vence a lista negativa", () => {
+    expect(isTechJob("Sales Engineer (Python)", [])).toBe(true);
+  });
 });

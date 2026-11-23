@@ -14,8 +14,13 @@ const ACCEPTING_REGIONS = new Set([
   "brasil",
 ]);
 
-const RESTRICTIVE =
-  /\b(us|usa|u\.s\.|united states|uk|united kingdom|europe|european union|eu|emea|canada)\b/;
+const RESTRICTIVE_PHRASE =
+  /\b(?:us[ -]only|usa[ -]only|united states|u\.s\.|eu[ -]only|europe[ -]only|uk[ -]only|united kingdom)\b/;
+const RESTRICTIVE_TOKENS = new Set(["us", "usa", "uk", "eu", "europe", "emea", "canada"]);
+
+function isRestrictive(value: string): boolean {
+  return RESTRICTIVE_PHRASE.test(value) || RESTRICTIVE_TOKENS.has(value);
+}
 
 const BR_STATES = [
   "acre", "alagoas", "amapa", "amazonas", "bahia", "ceara", "distrito federal", "espirito santo",
@@ -57,13 +62,16 @@ export function classifyOrigin(i: {
   // País estruturado estrangeiro vence o texto.
   if (country) return international();
 
+  // Fonte brasileira indica origem nacional; regiões não provam empresa estrangeira.
+  if (i.sourceIsBrazilian) return { origin: "national", acceptsBrazil: true };
+
   // Remoto com regiões de elegibilidade é tratado como vaga de empresa estrangeira.
   const foreignRemote = regions.length > 0 && (REMOTE_TEXT.test(text) || text === "");
   if (foreignRemote) return international();
 
-  if (i.sourceIsBrazilian || BR_TEXT.test(text)) return { origin: "national", acceptsBrazil: true };
+  if (BR_TEXT.test(text)) return { origin: "national", acceptsBrazil: true };
 
-  if (regions.length > 0 || RESTRICTIVE.test(text)) return international();
+  if (regions.length > 0 || isRestrictive(text) || regions.some(isRestrictive)) return international();
 
   return { origin: "unknown", acceptsBrazil: null };
 }

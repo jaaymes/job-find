@@ -67,4 +67,20 @@ describe("classifyOrigin", () => {
       acceptsBrazil: false,
     });
   });
+  it("fonte brasileira com regiões é nacional", () => {
+    expect(
+      classifyOrigin({ ...base, sourceIsBrazilian: true, locationText: "Remoto", eligibleRegions: ["Brasil"] }),
+    ).toEqual({ origin: "national", acceptsBrazil: true });
+    expect(
+      classifyOrigin({ ...base, sourceIsBrazilian: true, locationText: "", eligibleRegions: ["LATAM"] }),
+    ).toEqual({ origin: "national", acceptsBrazil: true });
+  });
+  it("fonte estrangeira com LATAM continua internacional", () => {
+    expect(
+      classifyOrigin({ ...base, locationText: "Remote", eligibleRegions: ["LATAM"] }),
+    ).toEqual({ origin: "international", acceptsBrazil: true });
+  });
+  it("'join us' não é restrição", () => {
+    expect(classifyOrigin({ ...base, locationText: "Remote, come join us" }).acceptsBrazil).not.toBe(false);
+  });
 });

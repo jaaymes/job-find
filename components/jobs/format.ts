@@ -52,6 +52,14 @@ export function isStale(lastCollectedAt: string | null, now: number): boolean {
   return lastCollectedAt !== null && now - new Date(lastCollectedAt).getTime() > STALE_AFTER_MS;
 }
 
+/**
+ * Fonte com coleta parada: a última coleta com sucesso tem mais de 3 h, ou nunca houve sucesso mesmo havendo
+ * execuções registradas (`hasRuns`). Fonte sem nenhuma execução ainda não é "parada".
+ */
+export function isSourceStale(lastSuccessAt: string | null, hasRuns: boolean, now: number): boolean {
+  return lastSuccessAt === null ? hasRuns : isStale(lastSuccessAt, now);
+}
+
 /** Horário e data de uma coleta no fuso de São Paulo, ex.: `{ time: "10:15", date: "23/11/2026" }`. */
 export function formatCollectedAt(iso: string): { time: string; date: string } {
   const d = new Date(iso);

@@ -143,6 +143,7 @@ function capitalizedMidSentence(text: string): string[] {
   for (const m of text.matchAll(/(?<![\p{L}\d])\p{Lu}[\p{L}\d'’]*/gu)) {
     const word = m[0];
     if (word.length > 1 && word === word.toUpperCase()) continue; // sigla
+    if (text[m.index + word.length] === "." && /[a-z]/.test(text[m.index + word.length + 1] ?? "")) continue; // Three.js
     let i = m.index - 1;
     let newline = false;
     while (i >= 0 && /\s/.test(text[i])) {
@@ -162,30 +163,56 @@ function capitalizedMidSentence(text: string): string[] {
 // Grupos de termos equivalentes (já dobrados: sem acento, minúsculos). Um grupo vale se QUALQUER termo dele
 // aparece na fonte. Os cargos/senioridades valem também se aparecem na vaga.
 const SENIORITY_GROUPS = [
-  ["junior"], ["pleno", "mid-level", "mid level", "midlevel"], ["senior"], ["staff"], ["principal"],
-  ["tech lead", "lead", "lider"], ["head"], ["manager", "gerente"], ["coordenador", "coordenadora", "coordinator"],
+  ["junior"], ["pleno", "mid-level", "mid level", "midlevel"], ["senior"], ["staff"],
+  ["principal engineer", "principal developer"], ["tech lead", "team lead", "lider tecnico", "lider de equipe"],
+  ["head of"], ["engineering manager", "gerente de engenharia"], ["coordenador", "coordenadora", "coordinator"],
   ["architect", "arquiteto", "arquiteta"], ["director", "diretor", "diretora"], ["cto"], ["vp"],
 ];
+// Palavras que, logo antes ou depois do termo, indicam que ele descreve OUTRAS pessoas ("devs júnior").
+const OTHER_PEOPLE = new Set(
+  ["devs", "dev", "developers", "engineers", "engenheiros", "engenheiras", "desenvolvedores", "desenvolvedoras",
+    "times", "equipe", "equipes", "teams", "profissionais", "pessoas", "people", "colegas", "analistas"],
+);
 const CREDENTIAL_GROUPS = [
-  ["certified", "certification", "certifications", "certificate", "certificacao", "certificacoes", "certificado",
-    "certificada", "certificados", "certificadas"],
+  ["certified", "certification", "certifications", "certificacao", "certificacoes", "certificado em",
+    "certificada em", "certificados em", "certificadas em"],
   ["pmp"], ["csm"], ["mba"], ["mestrado", "master's", "msc"], ["doutorado", "phd"],
   ["bacharel", "bacharelado", "bachelor", "bachelor's"], ["pos-graduacao", "pos graduacao", "posgraduacao"],
 ];
-// "um/uma/one/a" ficam de fora (artigos). Limitação: "dois anos" só passa se "dois" está na fonte (não equivale a "2").
-const WRITTEN_NUMBERS = [
-  "dois", "duas", "tres", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze",
-  "catorze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove", "vinte", "cem", "cento", "mil",
-  "milhao", "milhoes", "dobrei", "dobrou", "dobramos", "triplicou", "triplicamos", "metade",
-  "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen",
-  "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen", "twenty", "hundred", "hundreds",
-  "thousand", "thousands", "million", "millions", "half", "double", "doubled", "tripled", "triple",
+// "um/uma/one/a" ficam de fora (artigos). Palavras numéricas valem se o VALOR está na fonte ("três" = "3") ou se
+// a própria palavra está nela; multiplicadores e quantidades vagas só valem se a palavra está na fonte.
+const NUMBER_WORD_VALUE: Record<string, string> = {
+  dois: "2", duas: "2", tres: "3", quatro: "4", cinco: "5", seis: "6", sete: "7", oito: "8", nove: "9", dez: "10",
+  onze: "11", doze: "12", treze: "13", catorze: "14", quatorze: "14", quinze: "15", dezesseis: "16", dezessete: "17",
+  dezoito: "18", dezenove: "19", vinte: "20", cem: "100", mil: "1000", milhao: "1000000",
+  two: "2", three: "3", four: "4", five: "5", six: "6", seven: "7", eight: "8", nine: "9", ten: "10", eleven: "11",
+  twelve: "12", thirteen: "13", fourteen: "14", fifteen: "15", sixteen: "16", seventeen: "17", eighteen: "18",
+  nineteen: "19", twenty: "20", hundred: "100", thousand: "1000", million: "1000000",
+};
+const WORD_ONLY_NUMBERS = [
+  "cento", "milhoes", "hundreds", "thousands", "millions", "dobrei", "dobrou", "dobramos", "triplicou", "triplicamos",
+  "metade", "half", "double", "doubled", "tripled", "triple",
 ];
+const WRITTEN_NUMBERS = [...Object.keys(NUMBER_WORD_VALUE), ...WORD_ONLY_NUMBERS];
 const ACRONYM_ALLOWLIST = new Set(
-  ["api", "rest", "ci", "cd", "ui", "ux", "sql", "http", "https", "json", "saas", "b2b", "b2c", "mvp", "kpi", "okr", "qa",
-    "tdd", "bdd", "sla", "sdk", "cli", "orm", "spa", "ssr", "pwa", "seo", "it", "ti", "rh", "hr", "cv", "pdf", "usa",
-    "eua", "br", "en", "pt", "ok", "pr", "url", "html", "css"],
+  [
+    "api", "rest", "ci", "cd", "ui", "ux", "sql", "http", "https", "json", "saas", "b2b", "b2c", "mvp", "kpi", "okr",
+    "qa", "tdd", "bdd", "sla", "sdk", "cli", "orm", "spa", "ssr", "pwa", "seo", "it", "ti", "rh", "hr", "cv", "pdf",
+    "usa", "eua", "br", "en", "pt", "ok", "url", "html", "css", "ia", "ai", "ml", "llm", "etl", "bi", "crm", "erp",
+    "ddd", "solid", "crud", "mvc", "jwt", "sso", "lgpd", "e2e", "ssl", "tls", "gdpr", "oauth", "rpc", "grpc", "ide",
+    "os", "gpu", "cpu", "ram", "dns", "vpn", "iot", "rpa", "dba", "sre", "poc", "mfa", "rbac", "cdn", "tcp", "udp",
+    "ftp", "ssh", "xml", "csv", "yaml", "pii", "nlp", "ocr", "gps",
+    // UFs
+    "ac", "al", "ap", "am", "ba", "ce", "df", "es", "go", "ma", "mt", "ms", "mg", "pa", "pb", "pr", "pe", "pi", "rj",
+    "rn", "rs", "ro", "rr", "sc", "sp", "se", "to",
+    // algarismos romanos (Dev II)
+    "ii", "iii", "iv", "vi", "vii", "viii", "ix",
+  ],
 );
+// Palavras antes das quais uma sigla desconhecida é tratada como nome de empresa ("na BTG", "at BTG").
+const COMPANY_PREPOSITIONS = new Set(["na", "no", "nas", "nos", "pela", "pelo", "at", "for", "em", "from", "da", "do", "para"]);
+// Produto/serviço colado a uma empresa ("Google Analytics", "AWS S3"): não é o nome da empresa em si.
+const PRODUCT_AFTER = /^\s+(?:s3|analytics|azure|cloud|workspace|ads|pay|maps|web|docs|drive|meet)(?![\p{L}\d])/u;
 // Empresas conhecidas, para pegar nomes em minúsculas ("na google"). Sem palavras comuns (meta, stone, vale).
 const KNOWN_COMPANIES = [
   "google", "itau", "nubank", "amazon", "microsoft", "facebook", "oracle", "netflix", "uber", "spotify", "bradesco",
@@ -338,7 +365,7 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
   };
 
   /** `sourceText`: texto cujos números/termos por extenso valem para este trecho. */
-  const checkText = (text: string, where: Where, key: string, sourceText: string) => {
+  const checkText = (text: string, where: Where, key: string, sourceText: string, selfDescription: boolean) => {
     const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
     for (const t of numberTokens(text)) {
       if (t.yearLike) {
@@ -353,29 +380,49 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     const flaggedNames = new Set<string>();
     const flagName = (w: string) => {
       flaggedNames.add(fold(w));
+      for (const part of fold(w).split(/\s+/)) flaggedNames.add(part); // "tech lead" também cobre "Lead"
       add("unknown_name", w, where, key);
     };
     const folded = foldText(text).replace(/hiring manager/g, " ");
 
-    // Senioridade/cargo (perfil ou vaga) e certificação/formação (só perfil).
-    SENIORITY_RES.forEach((re, i) => {
-      re.lastIndex = 0;
-      const m = re.exec(folded);
-      if (m && !facts.seniorityOk.has(i)) flagName(m[0]);
-    });
+    // Senioridade/cargo (perfil ou vaga): só na autodescrição (headline, summary, carta), nunca em bullets.
+    if (selfDescription) {
+      SENIORITY_RES.forEach((re, i) => {
+        if (facts.seniorityOk.has(i)) return;
+        re.lastIndex = 0;
+        for (const m of folded.matchAll(re)) {
+          const before = /([\p{L}]+)\s+$/u.exec(folded.slice(Math.max(0, m.index - 24), m.index))?.[1];
+          const after = /^\s+([\p{L}]+)/u.exec(folded.slice(m.index + m[0].length, m.index + m[0].length + 24))?.[1];
+          if ((before && OTHER_PEOPLE.has(before)) || (after && OTHER_PEOPLE.has(after))) continue;
+          flagName(m[0]);
+          break;
+        }
+      });
+    }
+    // Certificação/formação: só perfil.
     CREDENTIAL_RES.forEach((re, i) => {
       re.lastIndex = 0;
       const m = re.exec(folded);
       if (m && !facts.credentialOk.has(i)) flagName(m[0]);
     });
 
-    // Números por extenso, fora dos trechos já lidos como numerais ("1,5 mil"); valem se estão na fonte.
-    const noDigits = foldText(text).replace(NUMBER_RE, " ");
+    // Números por extenso, fora dos trechos já lidos como numerais ("1,5 mil"). Valem se o valor ou a própria
+    // palavra está na fonte; "dez" colado a ano/dia é mês; "two-factor"/"Three.js" não são números.
+    const f0 = foldText(text);
+    const noDigits = f0.replace(NUMBER_RE, (x) => " ".repeat(x.length));
     const sourceFolded = foldText(sourceText);
-    WRITTEN_RE.lastIndex = 0;
+    const sourceWords = wordSet(sourceFolded);
     for (const m of noDigits.matchAll(WRITTEN_RE)) {
-      const re = new RegExp(`(?<![\\p{L}\\d])${esc(m[0])}(?![\\p{L}\\d])`, "u");
-      if (!re.test(sourceFolded)) add("unknown_number", m[0], where, key);
+      const w = m[0];
+      const end = m.index + w.length;
+      const next = f0[end];
+      if (next === "-" || (next === "." && /[\p{L}\d]/u.test(f0[end + 1] ?? ""))) continue;
+      if (f0[m.index - 1] === "-") continue;
+      if (w === "dez" && (/\d\s*$/.test(f0.slice(Math.max(0, m.index - 8), m.index)) || /^\s*\d/.test(f0.slice(end, end + 8)))) continue;
+      if (w === "cento" && /por\s+$/.test(f0.slice(Math.max(0, m.index - 8), m.index))) continue;
+      const value = NUMBER_WORD_VALUE[w];
+      if (sourceWords.has(w) || (value !== undefined && sourceNumbers.has(value))) continue;
+      add("unknown_number", w, where, key);
     }
 
     for (const w of capitalizedMidSentence(text)) {
@@ -386,16 +433,21 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
 
     // Empresas conhecidas em minúsculas.
     for (const m of folded.matchAll(COMPANY_RE)) {
+      const after = folded.slice(m.index + m[0].length, m.index + m[0].length + 24);
+      const compound = /^-\p{L}/u.test(after) || /\p{L}-$/u.test(folded.slice(Math.max(0, m.index - 2), m.index));
+      if (compound || PRODUCT_AFTER.test(after)) continue;
       if (!facts.words.has(m[0]) && !jobWords.has(m[0]) && !flaggedNames.has(m[0])) flagName(m[0]);
     }
 
-    // Siglas desconhecidas (fora do perfil, da vaga, do catálogo e da lista de siglas comuns).
+    // Siglas desconhecidas, só como nome de empresa (depois de "na", "no", "at", "for"...). As demais ficam com
+    // `unknown_stack` (catálogo) e com a lista de siglas comuns.
     for (const m of text.matchAll(ACRONYM_RE)) {
       const f = fold(m[0]);
       const base = f.endsWith("s") ? f.slice(0, -1) : f;
       const known = (x: string) => ACRONYM_ALLOWLIST.has(x) || CATALOG_WORDS.has(x) || facts.words.has(x) || jobWords.has(x);
       if (known(f) || known(base) || flaggedNames.has(f)) continue;
-      flagName(m[0]);
+      const prev = /([\p{L}]+)\s+$/u.exec(text.slice(Math.max(0, m.index - 16), m.index))?.[1];
+      if (prev && COMPANY_PREPOSITIONS.has(prev.toLowerCase())) flagName(m[0]);
     }
   };
 
@@ -407,8 +459,8 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     const ok = id ? facts.stacks.has(id) : facts.skillNames.has(fold(skill.trim()));
     if (!ok) add("unknown_skill", skill, cvWhere, skillKey(i, skill));
   });
-  checkText(docs.cv.headline, cvWhere, headlineKey(docs.cv.headline), facts.all);
-  checkText(docs.cv.summary, cvWhere, summaryKey(docs.cv.summary), facts.all);
+  checkText(docs.cv.headline, cvWhere, headlineKey(docs.cv.headline), facts.all, true);
+  checkText(docs.cv.summary, cvWhere, summaryKey(docs.cv.summary), facts.all, true);
 
   // experiências e bullets
   const bulletById = new Map<string, { expId: string; text: string }>();
@@ -435,11 +487,11 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
         else sources.push(src.text);
       }
       if (b.sourceBulletIds.length === 0) add("unknown_exp", "sem fonte", where, key);
-      checkText(b.text, where, key, sources.join("\n"));
+      checkText(b.text, where, key, sources.join("\n"), false);
     });
   }
 
-  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all);
+  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all, true);
   return out;
 }
 

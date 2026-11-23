@@ -17,6 +17,8 @@ export function textHash(text: string): string {
 /**
  * Chaves estáveis dos trechos. Todas terminam em `:<hash do texto>`: se o texto mudar (regeneração ou edição),
  * a aprovação guardada em `approvedFlags` deixa de valer.
+ * ATENÇÃO (Tarefa 34): como o hash segue o texto, TODA edição do usuário exige rodar `validateTailored` de novo e
+ * só então `assembleCv(..., { violations, approvedFlags })`; violações antigas têm chave do texto antigo.
  * - bullet: `${expId}@${ocorrência}#${bulletIndex}:${hash}` (a ocorrência separa um `expId` repetido);
  * - `cv#headline:h`, `cv#summary:h`, `cv#skill#${i}:h`, `letter:h`.
  */

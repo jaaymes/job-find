@@ -169,8 +169,8 @@ describe("senioridade, certificação, números por extenso, siglas e empresas",
 
   it("senioridade e cargos inventados", () => {
     expect(texts(letter("Sou desenvolvedora sênior React"))).toContain("senior");
-    expect(texts(letter("Sou staff engineer e líder técnico"))).toEqual(expect.arrayContaining(["staff", "lider"]));
-    expect(texts(letter("Atuei como arquiteto e gerente"))).toEqual(expect.arrayContaining(["arquiteto", "gerente"]));
+    expect(texts(letter("Sou staff engineer e líder técnico"))).toEqual(expect.arrayContaining(["staff", "lider tecnico"]));
+    expect(texts(letter("Atuei como arquiteto e diretor"))).toEqual(expect.arrayContaining(["arquiteto", "diretor"]));
   });
   it("termo presente no perfil ou na vaga não gera violação", () => {
     expect(letter("Sou desenvolvedora pleno com React.")).toEqual([]);
@@ -179,7 +179,7 @@ describe("senioridade, certificação, números por extenso, siglas e empresas",
   });
   it("certificações e formação inventadas", () => {
     expect(texts(letter("Tenho mestrado e MBA"))).toEqual(expect.arrayContaining(["mestrado", "mba"]));
-    expect(texts(letter("Certificada PMP e CSM"))).toEqual(expect.arrayContaining(["certificada", "pmp", "csm"]));
+    expect(texts(letter("Certificada PMP e CSM"))).toEqual(expect.arrayContaining(["pmp", "csm"]));
     const withCert: Profile = { ...profile, summary: "Certificada PMP. Mestrado em computação." };
     expect(validateTailored(withCert, withLetter("Tenho certificado PMP e mestrado."))).toEqual([]);
   });
@@ -202,6 +202,57 @@ describe("senioridade, certificação, números por extenso, siglas e empresas",
     expect(validateTailored(profile, withLetter("Entrei em Jan e saí em Dec. Trabalho em React desde 2021."))).toEqual([]);
     const y = new Date().getFullYear();
     expect(validateTailored(profile, withLetter(`Atuo com React de 2021 a ${y}.`))).toEqual([]);
+  });
+});
+
+describe("rodada 2: falsos positivos", () => {
+  const texts = (v: Violation[]) => v.map((x) => x.text.toLowerCase());
+  const bullet = (t: string) => validateTailored(profile, withBullet("exp_1", t, ["exp_1.b1"]));
+  const mid: Profile = { ...profile, seniority: "mid", experiences: profile.experiences.map((e) => ({ ...e, title: "Dev Pleno" })) };
+
+  it("siglas técnicas comuns não são nomes; 'na BTG' ainda é", () => {
+    for (const a of ["IA", "AI", "ML", "LLM", "ETL", "BI", "CRM", "ERP", "DDD", "SOLID", "CRUD", "MVC", "JWT", "SSO", "LGPD", "E2E", "SSL", "RJ"]) {
+      expect(bullet(`Liderou a migração para React com ${a} em RJ`).filter((v) => v.kind === "unknown_name"), a).toEqual([]);
+    }
+    expect(bullet("Liderou a migração para React, Dev II").filter((v) => v.kind === "unknown_name")).toEqual([]);
+    expect(bullet("Liderou a migração para React na BTG").map((v) => v.text.toLowerCase())).toContain("btg");
+    expect(bullet("Liderou a migração para React no BTG").map((v) => v.text.toLowerCase())).toContain("btg");
+    expect(bullet("Liderou a migração para React na XYZW").map((v) => v.text)).toContain("XYZW");
+    expect(bullet("Liderou a migração para React com XYZW").filter((v) => v.kind === "unknown_name")).toEqual([]);
+    expect(kinds(bullet("Liderou a migração para React com PMP"))).toContain("unknown_name");
+  });
+
+  it("senioridade de outras pessoas não é autodescrição", () => {
+    for (const t of ["Mentorei devs júnior", "Worked with senior engineers", "Reportava ao CTO", "Usei um state manager", "I lead frontend projects"]) {
+      expect(bullet(t).filter((v) => v.kind === "unknown_name"), t).toEqual([]);
+    }
+    const sum = (t: string) => validateTailored(mid, docs({ summary: t }));
+    expect(sum("Mentorei devs júnior e engenheiros sênior")).toEqual([]);
+    expect(sum("Trabalho com times seniores e I lead frontend projects")).toEqual([]);
+    expect(texts(validateTailored(mid, docs({ headline: "Desenvolvedora sênior" })))).toContain("senior");
+    expect(validateTailored(mid, docs({ headline: "Desenvolvedora pleno" }))).toEqual([]);
+  });
+
+  it("Tech Lead gera uma só violação", () => {
+    expect(validateTailored(mid, docs({ headline: "Tech Lead React" })).filter((v) => v.kind === "unknown_name")).toHaveLength(1);
+  });
+
+  it("números por extenso casam com os dígitos", () => {
+    const p3: Profile = { ...profile, summary: "3 anos de React." };
+    const L = (t: string, p = p3) => validateTailored(p, withLetter(t));
+    expect(L("Tenho três anos de React")).toEqual([]);
+    expect(L("Tenho dez anos de React").map((v) => v.text)).toEqual(["dez"]);
+    expect(L("Saí em dez 2021 e em 12 dez, com React")).toEqual([]);
+    expect(L("Usei two-factor, double-check e Three.js com React")).toEqual([]);
+    expect(L("Cem por cento React").filter((v) => v.kind === "unknown_number").length).toBeLessThanOrEqual(1);
+    expect(L("Tenho 3 anos")).toEqual([]);
+  });
+
+  it("empresas: produto e palavra composta não contam; certificados SSL não são credencial", () => {
+    expect(validateTailored({ ...profile, summary: "AWS" }, withLetter("Usei google analytics e AWS S3 com React"))).toEqual([]);
+    expect(validateTailored(profile, withLetter("Atuei em empresas norte-americanas com React"))).toEqual([]);
+    expect(validateTailored(profile, withLetter("Renovei certificados SSL com React"))).toEqual([]);
+    expect(texts(validateTailored(profile, withLetter("Sou certificado em Scrum")))).toContain("certificado em");
   });
 });
 

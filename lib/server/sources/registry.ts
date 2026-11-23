@@ -1,9 +1,12 @@
 import "server-only";
 import type { SourceId } from "@/lib/shared/types/job";
 import type { Connector } from "@/lib/server/sources/types";
+import { himalayas } from "@/lib/server/sources/himalayas";
 
 /** Preenchido pelas Tarefas 11–14 e 38; começa vazio. */
-export const CONNECTORS: Partial<Record<SourceId, Connector>> = {};
+export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
+  himalayas,
+};
 
 export function attributionFor(source: SourceId): { label: string; dofollow: boolean } | null {
   const a = CONNECTORS[source]?.attribution;

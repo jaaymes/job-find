@@ -1,0 +1,159 @@
+import { sql } from "drizzle-orm";
+import { beforeEach, describe, expect, it } from "vitest";
+import { upsertJob } from "@/lib/server/jobs/upsert";
+import { resetDb, testDb } from "../setup";
+import { addDays, getRow, getSource, makeJob, T0 } from "./helpers";
+
+const ref = { source: "greenhouse", externalId: "g-1", url: "https://boards.example.com/acme/1" } as const;
+const ref2 = { source: "himalayas", externalId: "h-1", url: "https://himalayas.app/acme/1" } as const;
+
+describe("upsertJob", () => {
+  beforeEach(resetDb);
+
+  it("insere, depois não altera quando nada mudou, e registra job_sources", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const a = await upsertJob(db, job, ref, T0);
+    expect(a.status).toBe("inserted");
+    const t1 = addDays(T0, 1);
+    const b = await upsertJob(db, job, ref, t1);
+    expect(b.status).toBe("unchanged");
+    expect(b.jobId).toBe(a.jobId);
+    const row = await getRow(db, a.jobId);
+    expect(row.sources).toEqual(["greenhouse"]);
+    expect(row.firstSeenAt).toEqual(T0);
+    expect(row.updatedAt).toEqual(T0);
+    const src = await getSource(db, "greenhouse", "g-1");
+    expect(src?.lastSeenAt).toEqual(t1);
+    expect(src?.missedRuns).toBe(0);
+  });
+
+  it("zera missed_runs ao rever a vaga", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    await upsertJob(db, job, ref, T0);
+    await db.execute(sql`UPDATE job_sources SET missed_runs = 2`);
+    await upsertJob(db, job, ref, addDays(T0, 1));
+    expect((await getSource(db, "greenhouse", "g-1"))?.missedRuns).toBe(0);
+  });
+
+  it("junta a mesma vaga vinda de outra fonte (mesmo dedupe_key)", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const a = await upsertJob(db, job, ref, T0);
+    const t1 = addDays(T0, 1);
+    const c = await upsertJob(
+      db,
+      { ...job, title: `${job.title} `, urlCanonical: "https://himalayas.app/acme/1", contentHash: "h2" },
+      ref2,
+      t1,
+    );
+    expect(c.status).toBe("updated");
+    expect(c.jobId).toBe(a.jobId);
+    const row = await getRow(db, a.jobId);
+    expect(row.sources).toEqual(["greenhouse", "himalayas"]);
+    expect(row.updatedAt).toEqual(t1);
+  });
+
+  it("atualiza a vaga quando o conteúdo da mesma fonte muda", async () => {
+    const db = await testDb();
+    const a = await upsertJob(db, makeJob(), ref, T0);
+    const b = await upsertJob(
+      db,
+      makeJob({ contentHash: "h-novo", descriptionHtml: "<p>Nova</p>", stacks: ["react", "node"] }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(b).toEqual({ jobId: a.jobId, status: "updated" });
+    const row = await getRow(db, a.jobId);
+    expect(row.descriptionHtml).toBe("<p>Nova</p>");
+    expect(row.stacks).toEqual(["react", "node"]);
+  });
+
+  it("mesma URL canônica com dedupe_key diferente continua sendo a mesma vaga", async () => {
+    const db = await testDb();
+    const a = await upsertJob(db, makeJob(), ref, T0);
+    const b = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-outro", contentHash: "h2" }),
+      { ...ref2, url: "https://boards.example.com/acme/1" },
+      addDays(T0, 1),
+    );
+    expect(b.jobId).toBe(a.jobId);
+    expect((await getRow(db, a.jobId)).sources).toEqual(["greenhouse", "himalayas"]);
+  });
+
+  it("published_at nunca sobe, futuro vira now e ausente vira first_seen", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const a = await upsertJob(db, job, ref, T0);
+    await upsertJob(
+      db,
+      { ...job, publishedAt: addDays(job.publishedAt as Date, 3), contentHash: "h2" },
+      ref,
+      addDays(T0, 1),
+    );
+    expect((await getRow(db, a.jobId)).publishedAt).toEqual(job.publishedAt);
+    await upsertJob(
+      db,
+      { ...job, publishedAt: addDays(T0, -9), contentHash: "h3" },
+      ref,
+      addDays(T0, 2),
+    );
+    expect((await getRow(db, a.jobId)).publishedAt).toEqual(addDays(T0, -9));
+
+    const f = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-2", urlCanonical: "https://x.example.com/2", publishedAt: addDays(T0, 10) }),
+      { source: "ashby", externalId: "a-2", url: "https://x.example.com/2" },
+      T0,
+    );
+    expect((await getRow(db, f.jobId)).publishedAt).toEqual(T0);
+    const g = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-3", urlCanonical: "https://x.example.com/3", publishedAt: null }),
+      { source: "ashby", externalId: "a-3", url: "https://x.example.com/3" },
+      T0,
+    );
+    expect((await getRow(db, g.jobId)).publishedAt).toEqual(T0);
+  });
+
+  it("janela de 30 dias: vaga igual depois de 31 dias expira a antiga e insere nova", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const a = await upsertJob(db, job, ref, T0);
+    const t31 = addDays(T0, 31);
+    const d = await upsertJob(
+      db,
+      { ...job, urlCanonical: "https://boards.example.com/acme/novo" },
+      { source: "greenhouse", externalId: "g-novo", url: "https://boards.example.com/acme/novo" },
+      t31,
+    );
+    expect(d.status).toBe("inserted");
+    expect(d.jobId).not.toBe(a.jobId);
+    expect((await getRow(db, a.jobId)).expiredAt).toEqual(t31);
+    expect((await getRow(db, d.jobId)).expiredAt).toBeNull();
+  });
+
+  it("não expira pela janela quando é a mesma publicação da mesma fonte", async () => {
+    const db = await testDb();
+    const a = await upsertJob(db, makeJob(), ref, T0);
+    const b = await upsertJob(db, makeJob(), ref, addDays(T0, 40));
+    expect(b.jobId).toBe(a.jobId);
+    expect((await getRow(db, a.jobId)).expiredAt).toBeNull();
+  });
+
+  it("converte salário para as colunas numéricas", async () => {
+    const db = await testDb();
+    const a = await upsertJob(
+      db,
+      makeJob({ salaryMin: 5000, salaryMax: 8000.5, salaryCurrency: "BRL", salaryPeriod: "month" }),
+      ref,
+      T0,
+    );
+    const row = await getRow(db, a.jobId);
+    expect(row.salaryMin).toBe("5000.00");
+    expect(row.salaryMax).toBe("8000.50");
+    expect(row.salaryCurrency).toBe("BRL");
+  });
+});

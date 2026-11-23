@@ -15,14 +15,24 @@ const YEAR_RANGE_RE = /^(?:19|20)\d{2}\s*[-–/]\s*(?:19|20)\d{2}$/;
 
 // Endereço (D-11): logradouro brasileiro com número, CEP e formato inglês "123 Main St". Heurística conservadora:
 // exige número depois do nome da rua; quantificadores limitados (sem backtracking quadrático). Cidade/estado ficam.
-const STREET_BR_RE =
-  /(?<![\p{L}\p{N}])(?:Rua|R\.|Avenida|Av\.|Travessa|Tv\.|Alameda|Al\.|Rodovia|Rod\.|Estrada|Pra[çc]a|Largo)[ \t]+[^\n,;|()]{1,60}?,?[ \t]*(?:n[º°o.]?[ \t]*)?(?<!\d)(?!(?:19|20)\d\d(?!\d))\d{1,5}(?!\d|[ \t]*[-–/][ \t]*\d{4})(?:[ \t]*[-,][ \t]*(?:apto?\.?|apartamento|bloco|sala|conj\.?|casa)[ \t]*\w{1,6})?/giu;
+// Número do endereço: marcador opcional ("nº", "n.º", "No.", "número"), sem ano (19xx/20xx) e com milhar ("1.234").
+const STREET_TAIL = String.raw`[^\n,;|()]{1,60}?,?[ \t]*(?:(?:n[.º°o]{1,2}|número|numero)[ \t]*)?(?<!\d)(?!(?:19|20)\d\d(?!\d))(?:\d{1,3}(?:\.\d{3})+|\d{1,5})(?!\d|[ \t]*[-–/][ \t]*\d{4})(?:[ \t]*[-,][ \t]*(?:apto?\.?|ap\.?|apartamento|bloco|sala|conj\.?|casa)[ \t]*\w{1,6})?`;
+const STREET_HEAD = String.raw`(?<![\p{L}\p{N}])`;
+// Palavras inteiras sem diferenciar caixa; abreviações só com a inicial maiúscula ("et al. 3 papers" não casa).
+const STREET_BR_RE = new RegExp(
+  `${STREET_HEAD}(?:Rua|Avenida|Travessa|Alameda|Rodovia|Estrada|Pra[çc]a|Largo)[ \\t]+${STREET_TAIL}`,
+  "giu",
+);
+const STREET_BR_ABBR_RE = new RegExp(`${STREET_HEAD}(?:R|Av|Tv|Al|Rod)\\.[ \\t]+${STREET_TAIL}`, "gu");
 const STREET_EN_RE =
   /(?<![\p{L}\p{N}])\d{1,5}[ \t]+(?:[A-Z][\p{L}.'-]{0,20}[ \t]+){1,3}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr)\b\.?/gu;
 const CEP_RE = /(?<![\p{L}\p{N}])(?:CEP:?[ \t]*\d{5}-?\d{3}|\d{5}-\d{3})(?!\d)/giu;
 
 function redactAddress(text: string): string {
-  return text.replace(STREET_BR_RE, "[ENDERECO]").replace(STREET_EN_RE, "[ENDERECO]").replace(CEP_RE, "[ENDERECO]");
+  return text
+    .replace(STREET_BR_RE, "[ENDERECO]")
+    .replace(STREET_BR_ABBR_RE, "[ENDERECO]")
+    .replace(STREET_EN_RE, "[ENDERECO]").replace(CEP_RE, "[ENDERECO]");
 }
 
 export type Contact = { email: string | null; phone: string | null; links: string[] };

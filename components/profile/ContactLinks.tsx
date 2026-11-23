@@ -42,7 +42,7 @@ export function ContactLinks({ links, onChange }: { links: string[]; onChange: (
               <span className="min-w-0 break-all">{l}</span>
               <button
                 type="button"
-                className={BTN_OUTLINE}
+                className={`${BTN_OUTLINE} min-w-11`}
                 aria-label={`Remover link ${l}`}
                 onClick={() => onChange(links.filter((x) => x !== l))}
               >

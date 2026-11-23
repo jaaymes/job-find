@@ -80,7 +80,7 @@ function Row({
                 />
                 <button
                   type="button"
-                  className={BTN_OUTLINE}
+                  className={`${BTN_OUTLINE} min-w-11`}
                   aria-label={`Remover realização ${i + 1}`}
                   onClick={() => set({ bullets: exp.bullets.filter((x) => x.id !== b.id) })}
                 >

@@ -129,6 +129,17 @@ describe("extractText", () => {
     expect(w.terminate).toHaveBeenCalled();
   });
 
+  it("código desconhecido vindo do worker vira failed", async () => {
+    const w: WorkerLike = {
+      onmessage: null,
+      onerror: null,
+      onmessageerror: null,
+      terminate: vi.fn(),
+      postMessage: () => w.onmessage?.({ data: { ok: false, code: "inventado" } }),
+    };
+    await expect(realExtractText(fixture("texto.pdf"), { createWorker: () => w })).rejects.toMatchObject({ code: "failed" });
+  });
+
   it("postMessage que lança vira failed e encerra o worker", async () => {
     const w: WorkerLike = {
       onmessage: null,
@@ -218,6 +229,25 @@ describe("contact", () => {
     expect(redactContact("Av. Paulista 1000, Bela Vista")).not.toContain("1000");
     expect(redactContact("Mora na Avenida Brasil, nº 55")).not.toContain("55");
     expect(redactContact("01234-567 São Paulo")).toBe("[ENDERECO] São Paulo");
+  });
+
+  it("redactContact cobre marcadores de número, complemento e milhar", () => {
+    for (const t of [
+      "Rua das Flores, n.º 123",
+      "Rua das Flores, nº 123",
+      "Rua das Flores, número 123",
+      "Rua das Flores, No. 123",
+      "Rua das Flores, 123 - ap. 45",
+      "Rua das Flores, 123, ap 45",
+      "Av. Brasil, 1.234",
+    ]) {
+      expect(redactContact(t), t).toBe("[ENDERECO]");
+    }
+  });
+
+  it("redactContact não trata abreviações em minúsculas como logradouro", () => {
+    expect(redactContact("Smith et al. published 3 papers")).toBe("Smith et al. published 3 papers");
+    expect(redactContact("see al. 5 and tv. 2")).toBe("see al. 5 and tv. 2");
   });
 
   it("redactContact redige endereço em inglês", () => {

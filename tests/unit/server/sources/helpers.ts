@@ -9,6 +9,8 @@ export type FakeCtxOptions = {
 export type FakeCtx = ConnectorContext & {
   requests: { url: string; headers: Record<string, string> }[];
   cursors: (string | null)[];
+  /** Falhas parciais reportadas pelo conector via `reportPartial`. */
+  partials: { label: string; error: unknown }[];
 };
 
 function response(url: string, status: number, body: unknown): SafeResponse {
@@ -26,6 +28,7 @@ function response(url: string, status: number, body: unknown): SafeResponse {
 export function fakeCtx(opts: FakeCtxOptions): FakeCtx {
   const requests: FakeCtx["requests"] = [];
   const cursors: FakeCtx["cursors"] = [];
+  const partials: FakeCtx["partials"] = [];
   const fetcher: SafeFetch = async (url, init) => {
     requests.push({ url, headers: init?.headers ?? {} });
     const body = opts.serve(new URL(url));
@@ -38,10 +41,14 @@ export function fakeCtx(opts: FakeCtxOptions): FakeCtx {
     setCursor: (c) => {
       cursors.push(c);
     },
+    reportPartial: (label, error) => {
+      partials.push({ label, error });
+    },
     signal: new AbortController().signal,
     now: new Date("2026-11-23T12:00:00Z"),
     requests,
     cursors,
+    partials,
   };
 }
 

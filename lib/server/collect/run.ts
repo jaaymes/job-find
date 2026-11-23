@@ -21,6 +21,9 @@ const INTERVAL_TOLERANCE_MS = 60_000;
 /** Reserva no fim do budget para expireJobs/retenção/invalidação: as fontes são cortadas antes. */
 const TAIL_MARGIN_MS = 5_000;
 const MAX_ERROR_LENGTH = 500;
+/** Quantas falhas (boards ou vagas) entram, com detalhe, no resumo de `source_runs.error`. */
+const MAX_LISTED_FAILURES = 5;
+const MAX_FAILURE_DETAIL = 120;
 /** A retenção (DELETE diário) roda na execução das 03:17 UTC (cron da Vercel é UTC). */
 const PURGE_HOUR_UTC = 3;
 
@@ -35,6 +38,7 @@ export type SourceRunResult = {
   expired: number;
   /** Vagas individuais que falharam no upsert (a fonte segue 'ok'). */
   errors: number;
+  /** Com status 'error', o motivo; com 'ok', o resumo das falhas parciais (o mesmo de `source_runs.error`). */
   error?: string;
 };
 
@@ -65,6 +69,29 @@ function describeError(e: unknown): string {
   return msg.slice(0, MAX_ERROR_LENGTH);
 }
 
+/** "Classe: mensagem", curto, para os resumos de falha parcial. */
+function shortError(e: unknown): string {
+  const text = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+  return text.replace(/\s+/g, " ").slice(0, MAX_FAILURE_DETAIL);
+}
+
+function listFailures(title: string, items: string[]): string {
+  const shown = items.slice(0, MAX_LISTED_FAILURES).join("; ");
+  const more = items.length > MAX_LISTED_FAILURES ? `; +${items.length - MAX_LISTED_FAILURES}` : "";
+  return `${items.length} ${title}: ${shown}${more}`;
+}
+
+/** Resumo das falhas parciais de uma coleta ok (boards e vagas), ou `null` se não houve. */
+function partialSummary(boards: string[], jobErrors: string[], errorCount: number): string | null {
+  const parts: string[] = [];
+  if (boards.length > 0) parts.push(listFailures("board(s) com falha", boards));
+  if (errorCount > 0) {
+    const listed = jobErrors.length < errorCount ? [...jobErrors, `+${errorCount - jobErrors.length}`] : jobErrors;
+    parts.push(`${errorCount} vaga(s) com erro: ${listed.join("; ")}`);
+  }
+  return parts.length > 0 ? parts.join(" | ").slice(0, MAX_ERROR_LENGTH) : null;
+}
+
 const BUDGET_ERROR = "budget esgotado";
 
 /** Itera o conector sem ficar preso: a corrida com o sinal corta até quem ignora o abort. */
@@ -89,6 +116,8 @@ async function* withAbort<T>(iterable: AsyncIterable<T>, signal: AbortSignal): A
 }
 
 type Counts = { fetched: number; inserted: number; updated: number; unchanged: number; errors: number };
+/** Primeiras falhas de upsert, "external_id: Classe: mensagem", para o resumo em `source_runs.error`. */
+type JobErrors = string[];
 
 async function processBatch(
   db: Db,
@@ -96,6 +125,7 @@ async function processBatch(
   raws: unknown[],
   now: Date,
   counts: Counts,
+  jobErrors: JobErrors,
 ): Promise<void> {
   const normalized: NormalizedJob[] = [];
   for (const raw of raws) {
@@ -150,6 +180,7 @@ async function processBatch(
         else if (status === "unchanged") counts.unchanged += 1;
       } catch (e) {
         counts.errors += 1;
+        if (jobErrors.length < MAX_LISTED_FAILURES) jobErrors.push(`${n.externalId}: ${shortError(e)}`);
         console.error(`[coleta] ${conn.id}: falha ao gravar a vaga ${n.externalId}: ${describeError(e)}`);
       }
     }
@@ -196,6 +227,8 @@ async function runSource(
     runId = run.id;
 
     const counts: Counts = { fetched: 0, inserted: 0, updated: 0, unchanged: 0, errors: 0 };
+    const jobErrors: JobErrors = [];
+    const partialBoards: string[] = [];
     let cursor = state?.cursor ?? null;
     let cursorChanged = false;
     try {
@@ -207,6 +240,10 @@ async function runSource(
           cursor = c;
           cursorChanged = true;
         },
+        reportPartial(label: string, error: unknown) {
+          partialBoards.push(`${label}: ${shortError(error)}`);
+          console.warn(`[coleta] ${source}: falha parcial em ${label}: ${shortError(error)}`);
+        },
         signal: controller.signal,
         now,
       };
@@ -215,12 +252,12 @@ async function runSource(
         counts.fetched += 1;
         batch.push(raw);
         if (batch.length >= BATCH_SIZE) {
-          await processBatch(db, conn, batch, now, counts);
+          await processBatch(db, conn, batch, now, counts, jobErrors);
           batch = [];
         }
       }
       if (controller.signal.aborted) throw new Error(BUDGET_ERROR);
-      if (batch.length > 0) await processBatch(db, conn, batch, now, counts);
+      if (batch.length > 0) await processBatch(db, conn, batch, now, counts, jobErrors);
     } catch (e) {
       const message = describeError(e);
       await db
@@ -242,12 +279,12 @@ async function runSource(
       return { source, status: "error", ...counts, expired: 0, error: message };
     }
 
-    // Fonte de snapshot completo: o que não apareceu conta uma coleta perdida.
-    // Risco aceito: conectores multi-board engolem falha de um board isolado, então
-    // um board que falhe 3 coletas seguidas pode expirar as vagas dele.
-    if (conn.fullSnapshot) {
+    // Fonte de snapshot completo: o que não apareceu conta uma coleta perdida. Com falha parcial
+    // (ex.: um board fora do ar), o snapshot está incompleto e nada conta como perdido.
+    if (conn.fullSnapshot && partialBoards.length === 0) {
       await markMissedRuns(db, source, now, counts.fetched, state?.lastFetchedCount ?? null);
     }
+    const partial = partialSummary(partialBoards, jobErrors, counts.errors);
     await db
       .update(sourceState)
       .set({
@@ -266,9 +303,10 @@ async function runSource(
         newCount: counts.inserted,
         updatedCount: counts.updated,
         expiredCount: 0,
+        error: partial,
       })
       .where(eq(sourceRuns.id, runId));
-    return { source, status: "ok", ...counts, expired: 0 };
+    return { source, status: "ok", ...counts, expired: 0, ...(partial ? { error: partial } : {}) };
   } finally {
     await releaseLock(db, source).catch((e: unknown) =>
       console.error(`[coleta] ${source}: falha ao liberar o lock: ${describeError(e)}`),

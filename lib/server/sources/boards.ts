@@ -5,7 +5,8 @@ const CONCURRENCY = 3;
 
 /**
  * Coleta uma lista curada de boards com no máximo 3 requisições simultâneas.
- * Um board fora do ar (404, rede, formato) é ignorado; se todos falharem, lança, para o runner
+ * Um board fora do ar (404, rede, formato) é pulado e reportado via `ctx.reportPartial` (o runner
+ * registra e não conta coleta perdida nessa execução); se todos falharem, lança, para o runner
  * distinguir fonte quebrada de coleta vazia. Um abort de `ctx.signal` para o agendamento e é
  * relançado, nunca contado como falha de board.
  */
@@ -26,6 +27,7 @@ export async function* fetchBoardsPooled(
       } catch (error) {
         if (ctx.signal.aborted) throw ctx.signal.reason ?? error;
         failures++;
+        ctx.reportPartial(boards[i]!, error);
       }
     }
   };

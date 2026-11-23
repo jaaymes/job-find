@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { jobSources, jobs, sourceRuns, sourceState } from "@/lib/server/db/schema";
 import { acquireLock, releaseLock } from "@/lib/server/collect/lock";
 import { runCollection } from "@/lib/server/collect/run";
+import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import * as enrich from "@/lib/server/jobs/enrich-job";
 import * as expire from "@/lib/server/jobs/expire";
 import * as upsert from "@/lib/server/jobs/upsert";
@@ -227,6 +228,12 @@ describe("runCollection", () => {
     expect(r.inserted).toBe(2);
     expect(r.errors).toBe(1);
     expect(await countJobs(db)).toBe(2);
+    // Status ok, mas o resumo das vagas que falharam fica em source_runs.error.
+    const [run] = await db.select().from(sourceRuns);
+    expect(run.status).toBe("ok");
+    expect(run.error).toMatch(/1 vaga\(s\) com erro/);
+    expect(run.error).toContain("j1");
+    expect(r.error).toBe(run.error);
   });
 
   it("descarta não-tech silenciosamente e conta 'skipped' do upsert como nem novo nem atualizado", async () => {
@@ -451,6 +458,49 @@ describe("runCollection", () => {
       expect(j.descriptionHtml).toBe("<p>Vaga de React j0</p>");
       expect(j.sanitizerVersion).toBe(SANITIZER_VERSION);
       expect(j.contentHash).toBe(enrich.computeContentHash(norm({ id: "j0" })!));
+    });
+  });
+
+  describe("falha parcial de board", () => {
+    const BOARDS = ["acme", "globex"] as const;
+    const multiBoard = (failing: string | null) =>
+      conn("greenhouse", {
+        fetch: (ctx) =>
+          fetchBoardsPooled(ctx, "Greenhouse", BOARDS, async (board) => {
+            if (board === failing) throw new TypeError(`HTTP 503 em ${board}`);
+            return [{ id: `${board}-1` }, { id: `${board}-2` }];
+          }),
+      });
+
+    it("registra o board em source_runs.error e não conta coleta perdida para ninguém", async () => {
+      const db = await testDb();
+      await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: multiBoard(null) } });
+      const markSpy = vi.spyOn(expire, "markMissedRuns");
+      const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+      try {
+        const T1 = new Date(T0.getTime() + 3_600_000);
+        const [r] = await runCollection({ db, sources: ["greenhouse"], now: T1, connectors: { greenhouse: multiBoard("globex") } });
+        expect(r).toMatchObject({ status: "ok", fetched: 2 });
+        expect(r.error).toContain("globex");
+        expect(markSpy).not.toHaveBeenCalled();
+      } finally {
+        markSpy.mockRestore();
+        warn.mockRestore();
+      }
+
+      const runs = await db.select().from(sourceRuns).orderBy(sourceRuns.id);
+      expect(runs[0].error).toBeNull();
+      expect(runs[1].status).toBe("ok");
+      expect(runs[1].error).toContain("globex");
+      expect(runs[1].error).toContain("TypeError: HTTP 503 em globex");
+      expect(runs[1].error).not.toContain("acme");
+      const srcs = await db.select().from(jobSources).orderBy(jobSources.externalId);
+      expect(srcs.map((s) => [s.externalId, s.missedRuns])).toEqual([
+        ["acme-1", 0],
+        ["acme-2", 0],
+        ["globex-1", 0],
+        ["globex-2", 0],
+      ]);
     });
   });
 });

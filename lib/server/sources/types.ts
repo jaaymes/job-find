@@ -45,6 +45,12 @@ export type ConnectorContext = {
   fetchText: SafeFetch;
   cursor: string | null;
   setCursor(c: string | null): void;
+  /**
+   * Falha parcial que não derruba a fonte (ex.: um board fora do ar num conector multi-board).
+   * O runner registra o resumo em `source_runs.error` e, nessa coleta, não conta coleta perdida
+   * (`markMissedRuns`), porque o snapshot ficou incompleto.
+   */
+  reportPartial(label: string, error: unknown): void;
   signal: AbortSignal;
   now: Date;
 };

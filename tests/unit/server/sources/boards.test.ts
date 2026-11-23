@@ -19,6 +19,7 @@ describe("fetchBoardsPooled", () => {
     );
     await expect(run).rejects.toThrow("cancelado");
     expect(started.length).toBeLessThan(BOARDS.length);
+    expect(ctx.partials).toEqual([]); // abort não é falha de board
   });
 
   it("não inicia nenhum board se o signal já chegou abortado", async () => {
@@ -41,6 +42,9 @@ describe("fetchBoardsPooled", () => {
       }),
     );
     expect(some).toEqual([1, 2]);
+    // Cada board que falhou fica registrado para o runner (falha parcial), com o erro original.
+    expect(ctx.partials.map((p) => p.label).sort()).toEqual(["a", "b", "d", "e", "f", "g"]);
+    expect(ctx.partials.every((p) => p.error instanceof Error && p.error.message === "x")).toBe(true);
     await expect(
       collect(fetchBoardsPooled(ctx, "Teste", BOARDS, async () => { throw new Error("x"); })),
     ).rejects.toThrow("Teste: todos os boards falharam");

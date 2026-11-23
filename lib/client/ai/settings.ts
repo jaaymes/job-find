@@ -1,6 +1,6 @@
 import "client-only";
 
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { createStore } from "@/lib/client/storage/store";
 import { safeUrl } from "@/lib/shared/url";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "./providers";

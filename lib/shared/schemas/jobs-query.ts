@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { normalizeSkill } from "@/lib/shared/stacks";
 import type { SourceId } from "@/lib/shared/types/job";
 

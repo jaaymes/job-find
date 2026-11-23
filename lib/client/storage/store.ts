@@ -1,7 +1,7 @@
 import "client-only";
 
 import { useSyncExternalStore } from "react";
-import type { z } from "zod";
+import type { z } from "@/lib/shared/zod";
 import { STORAGE_PREFIX, type StorageKey } from "./keys";
 
 /** Notificação na mesma aba (o evento nativo `storage` só dispara em outras abas). */

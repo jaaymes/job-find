@@ -1,5 +1,5 @@
 import "server-only";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import { countryCodeFromName, parseLocation } from "@/lib/server/sources/location";
 import { safeUrl } from "@/lib/shared/url";

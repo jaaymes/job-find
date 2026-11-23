@@ -2,7 +2,7 @@ import "client-only";
 
 import { Output, parsePartialJson, streamText } from "ai";
 import { jsonrepair } from "jsonrepair";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { AiError, isAbortError, mapProviderError } from "./errors";
 import { resolveTaskModel } from "./model";
 import type { AiTask, ProviderDef, ProviderId } from "./providers";

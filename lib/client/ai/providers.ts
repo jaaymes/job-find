@@ -1,7 +1,7 @@
 import "client-only";
 
 import type { ProviderV4 } from "@ai-sdk/provider";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { AiError } from "./errors";
 
 export type AiTask = "extract" | "analyze" | "cv";

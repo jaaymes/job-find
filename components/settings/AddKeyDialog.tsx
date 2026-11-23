@@ -84,7 +84,7 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
             <Button
               type="button"
               variant="outline"
-              size="icon"
+              size="icon" className="size-11"
               aria-label={reveal ? "Ocultar chave" : "Mostrar chave"}
               aria-pressed={reveal}
               onClick={() => setReveal((v) => !v)}
@@ -100,10 +100,10 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
         </p>
       )}
       <DialogFooter>
-        <Button type="button" variant="outline" onClick={onClose}>
+        <Button type="button" variant="outline" className="min-h-11" onClick={onClose}>
           Cancelar
         </Button>
-        <Button type="submit">Salvar</Button>
+        <Button type="submit" className="min-h-11">Salvar</Button>
       </DialogFooter>
     </form>
   );

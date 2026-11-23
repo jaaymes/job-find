@@ -133,7 +133,7 @@ export function AiSettingsScreen() {
         </h2>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-3.5">{MUST.map(card)}</div>
         <details className="rounded-[14px] border border-jf-line bg-jf-surface px-[18px] py-4">
-          <summary className="min-h-7 cursor-pointer font-semibold">Mais provedores ({SHOULD.length})</summary>
+          <summary className="flex min-h-11 cursor-pointer items-center font-semibold">Mais provedores ({SHOULD.length})</summary>
           <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-3.5">
             {SHOULD.map(card)}
           </div>
@@ -165,19 +165,19 @@ export function AiSettingsScreen() {
           <h2 id="priv-t" className="text-lg font-semibold">
             Privacidade
           </h2>
-          <label className="flex items-start gap-2.5 text-sm">
+          <label className="flex min-h-11 items-center gap-2.5 text-sm">
             <input
               type="checkbox"
-              className="mt-1 size-4"
+              className="size-5 shrink-0"
               checked={settings.dataCollectionDeny}
               onChange={(e) => update((s) => ({ ...s, dataCollectionDeny: e.target.checked }))}
             />
             <span>Pedir ao OpenRouter que use só provedores que não guardam meus dados</span>
           </label>
-          <label className="flex items-start gap-2.5 text-sm">
+          <label className="flex min-h-11 items-center gap-2.5 text-sm">
             <input
               type="checkbox"
-              className="mt-1 size-4"
+              className="size-5 shrink-0"
               checked={settings.minimizePii}
               onChange={(e) => update((s) => ({ ...s, minimizePii: e.target.checked }))}
             />
@@ -193,8 +193,8 @@ export function AiSettingsScreen() {
           <p className="text-sm text-jf-ink-2">
             Perfil, favoritos, status e CVs ocupam {usedMb} MB de 5 MB. Faça backup: limpar o navegador apaga tudo.
           </p>
-          <label className="flex items-center gap-2.5 text-sm text-jf-ink-3">
-            <input type="checkbox" className="size-4" disabled />
+          <label className="flex min-h-11 items-center gap-2.5 text-sm text-jf-ink-3">
+            <input type="checkbox" className="size-5" disabled />
             Incluir chaves no arquivo de backup
           </label>
           <div className="flex flex-wrap gap-2">

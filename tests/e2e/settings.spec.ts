@@ -225,6 +225,24 @@ test.describe("Configurações de IA", () => {
     await expect(guide).toContainText("127.0.0.1");
   });
 
+  test("/configuracoes hidrata sem violações de CSP", async ({ page }) => {
+    const problems: string[] = [];
+    page.on("console", (m) => {
+      if (/content security policy|refused to (load|apply|execute|connect)/i.test(m.text())) problems.push(m.text());
+    });
+    await page.addInitScript(() => {
+      (window as unknown as { __v: string[] }).__v = [];
+      document.addEventListener("securitypolicyviolation", (e) =>
+        (window as unknown as { __v: string[] }).__v.push(`${e.violatedDirective} ${e.blockedURI}`),
+      );
+    });
+    await page.goto("/configuracoes");
+    await expect(page.getByRole("heading", { name: "Provedores" })).toBeVisible();
+    await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
+    expect(await page.evaluate(() => (window as unknown as { __v: string[] }).__v)).toEqual([]);
+    expect(problems).toEqual([]);
+  });
+
   test("o backup aparece desabilitado com o texto em breve", async ({ page }) => {
     await page.goto("/configuracoes");
     await expect(page.getByRole("button", { name: /Exportar dados/ })).toBeDisabled();

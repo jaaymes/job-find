@@ -23,10 +23,10 @@ export function PrivacyConsentDialog({ provider, onConfirm, onCancel }: Props) {
               <DialogDescription>{provider.privacyNote}</DialogDescription>
             </DialogHeader>
             <DialogFooter>
-              <Button variant="outline" onClick={onCancel}>
+              <Button variant="outline" className="min-h-11" onClick={onCancel}>
                 Cancelar
               </Button>
-              <Button onClick={onConfirm}>Entendi e aceito</Button>
+              <Button className="min-h-11" onClick={onConfirm}>Entendi e aceito</Button>
             </DialogFooter>
           </>
         )}

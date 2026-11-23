@@ -118,14 +118,14 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
       <div className="flex flex-wrap gap-2">
         {connected ? (
           <>
-            <Button className="h-10 bg-jf-ink px-3.5 text-sm font-semibold text-white hover:bg-jf-ink-2" onClick={runTest} disabled={test.state === "loading"}>
+            <Button className="min-h-11 bg-jf-ink px-3.5 text-sm font-semibold text-white hover:bg-jf-ink-2" onClick={runTest} disabled={test.state === "loading"}>
               Testar conexão
             </Button>
-            <Button variant="outline" className="h-10 border-jf-line-strong px-3 text-sm" onClick={remove}>
+            <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={remove}>
               {def.auth === "paste" ? "Remover chave" : "Desconectar"}
             </Button>
             {needsReview && (
-              <Button variant="outline" className="h-10 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
+              <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
                 Revisar aviso de privacidade
               </Button>
             )}
@@ -133,7 +133,7 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
         ) : (
           <>
             <Button
-              className="h-10 bg-jf-brand px-3.5 text-sm font-semibold text-white hover:bg-jf-brand-dark"
+              className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-white hover:bg-jf-brand-dark"
               onClick={def.auth === "pkce" ? onConnectPkce : onAdd}
             >
               {def.auth === "pkce" ? "Conectar" : isLocal ? "Configurar" : "Adicionar chave"}
@@ -143,7 +143,7 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
                 href={def.keyDocsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-10 items-center rounded-lg border border-jf-line-strong px-3 text-sm text-jf-ink no-underline hover:bg-jf-chip"
+                className="inline-flex min-h-11 items-center rounded-lg border border-jf-line-strong px-3 text-sm text-jf-ink no-underline hover:bg-jf-chip"
               >
                 Como criar a chave
                 <span className="sr-only"> (abre em nova aba)</span>
@@ -154,7 +154,7 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
         {isLocal && (
           <Button
             variant="outline"
-            className="h-10 border-jf-line-strong px-3 text-sm"
+            className="min-h-11 border-jf-line-strong px-3 text-sm"
             aria-expanded={showGuide}
             onClick={() => setShowGuide((v) => !v)}
           >

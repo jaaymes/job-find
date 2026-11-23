@@ -12,15 +12,24 @@ import {
 // `rel` nunca vem do HTML de entrada: não está em ALLOWED_ATTR e é sempre
 // definido aqui, a partir da opção (chamada síncrona, sem concorrência).
 let currentRel = REL_NOFOLLOW;
-DOMPurify.addHook("afterSanitizeAttributes", (node) => {
-  if (node.nodeName === "A") node.setAttribute("rel", currentRel);
-});
+let hookInstalled = false;
+
+// Registrado na primeira chamada, não ao importar: o módulo também é avaliado no SSR do shell,
+// onde não há `window` e o DOMPurify não expõe `addHook`.
+function installHook(): void {
+  if (hookInstalled) return;
+  DOMPurify.addHook("afterSanitizeAttributes", (node) => {
+    if (node.nodeName === "A") node.setAttribute("rel", currentRel);
+  });
+  hookInstalled = true;
+}
 
 /**
  * Segunda camada de sanitização (SEC-02): roda no navegador antes de renderizar,
  * com a mesma allowlist do servidor (lib/shared/sanitize-policy.ts).
  */
 export function toSafeHtml(html: string, opts: { dofollow?: boolean } = {}): string {
+  installHook();
   currentRel = opts.dofollow ? REL_DOFOLLOW : REL_NOFOLLOW;
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [...ALLOWED_TAGS],

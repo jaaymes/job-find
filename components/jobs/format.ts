@@ -77,3 +77,26 @@ export function sourceLabel(sources: SourceId[]): string {
   const name = SOURCE_LABELS[first];
   return sources.length > 1 ? `${name} +${sources.length - 1}` : name;
 }
+
+const PERIOD_LABELS: Record<NonNullable<JobSummary["salaryPeriod"]>, string> = {
+  hour: "hora",
+  month: "mês",
+  year: "ano",
+};
+
+/** "R$ 14.000 – 18.000 / mês", "US$ 120.000 / ano"; `null` quando a vaga não informa salário. */
+export function formatSalary(
+  job: Pick<JobSummary, "salaryMin" | "salaryMax" | "salaryCurrency" | "salaryPeriod">,
+): string | null {
+  const { salaryMin: min, salaryMax: max } = job;
+  if (min === null && max === null) return null;
+  const nf = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
+  const code = job.salaryCurrency?.toUpperCase() ?? null;
+  const symbol = code === "BRL" ? "R$" : code === "USD" ? "US$" : code === "EUR" ? "€" : code;
+  const amount =
+    min !== null && max !== null && min !== max
+      ? `${nf.format(min)} – ${nf.format(max)}`
+      : nf.format((min ?? max) as number);
+  const period = job.salaryPeriod ? ` / ${PERIOD_LABELS[job.salaryPeriod]}` : "";
+  return `${symbol ? `${symbol} ` : ""}${amount}${period}`;
+}

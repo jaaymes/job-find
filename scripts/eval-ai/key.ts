@@ -64,16 +64,29 @@ function gitIgnored(path: string, cwd: string): boolean {
   }
 }
 
+/**
+ * Recusa um caminho dentro do repositório que o git não ignora (evita commitar a chave ou textos gerados).
+ * Vale para o `--key-file` e para o diretório do `--out`.
+ */
+export function assertOutsideRepoOrIgnored(
+  path: string,
+  opts: { repoRoot: string; isIgnored?: (absPath: string) => boolean },
+  what: string,
+): string {
+  const abs = resolve(path);
+  const isIgnored = opts.isIgnored ?? ((p: string) => gitIgnored(p, opts.repoRoot));
+  if (insideDir(opts.repoRoot, abs) && !isIgnored(abs)) {
+    throw new Error(`${what} está dentro do repositório e não é ignorado pelo git; mova-o para fora ou ignore-o`);
+  }
+  return abs;
+}
+
 /** Lê a chave de um arquivo. Recusa arquivo dentro do repositório que o git não ignora (evita commitar a chave). */
 export async function readKeyFile(
   path: string,
   opts: { repoRoot: string; isIgnored?: (absPath: string) => boolean } = { repoRoot: process.cwd() },
 ): Promise<string> {
-  const abs = resolve(path);
-  const isIgnored = opts.isIgnored ?? ((p: string) => gitIgnored(p, opts.repoRoot));
-  if (insideDir(opts.repoRoot, abs) && !isIgnored(abs)) {
-    throw new Error("o arquivo da chave está dentro do repositório e não é ignorado pelo git; mova-o para fora ou ignore-o");
-  }
+  const abs = assertOutsideRepoOrIgnored(path, opts, "o arquivo da chave");
   let raw: string;
   try {
     raw = await readFile(abs, "utf8");

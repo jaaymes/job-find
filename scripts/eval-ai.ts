@@ -1,9 +1,11 @@
 /**
- * Avaliação da geração de CV (`CV_TAILOR_V1`) em 10 pares fictícios de perfil e vaga (Tarefa 35).
+ * Avaliação da geração de CV (`CV_TAILOR_V1`) em 11 pares fictícios de perfil e vaga (Tarefa 35; o par 11, de perfil
+ * abaixo da senioridade da vaga e com ferramentas da vaga fora do perfil, veio na revisão final).
  *
  *   pnpm tsx scripts/eval-ai.ts --provider openrouter            (a chave é pedida sem eco)
  *   pnpm tsx scripts/eval-ai.ts --provider openrouter --key-file ~/segredos/openrouter.key
  *   pnpm tsx scripts/eval-ai.ts --mock                           (modelo falso, sem rede nem chave)
+ *   pnpm tsx scripts/eval-ai.ts --mock --out ~/eval-cv           (grava o CV e a carta de cada par em texto)
  *
  * A chave nunca vem por argumento (iria para o histórico do shell e para o `ps`) nem por variável de ambiente,
  * e nunca é impressa.
@@ -13,14 +15,26 @@ import { parseArgs } from "node:util";
 import { PROVIDER_IDS, PROVIDERS, type ProviderId } from "@/lib/client/ai/providers";
 import { defaultAiSettings, type AiSettings } from "@/lib/client/ai/settings";
 import { pickLanguage } from "@/lib/client/ai/prompts/cv.tailor.v1";
-import { evaluatePair, loadPairs, renderReport, summarize, type PairResult, type Price } from "./eval-ai/core";
-import { readHiddenLine, readKeyFile } from "./eval-ai/key";
+import {
+  abortReason,
+  evaluatePair,
+  loadPairs,
+  renderReport,
+  summarize,
+  writeOutputs,
+  type Aborted,
+  type PairResult,
+  type Price,
+} from "./eval-ai/core";
+import { assertOutsideRepoOrIgnored, readHiddenLine, readKeyFile } from "./eval-ai/key";
 
 const HELP = `Uso: pnpm tsx scripts/eval-ai.ts [opções]
   --provider <id>    provedor do app (padrão: openrouter): ${PROVIDER_IDS.join(", ")}
   --model <id>       modelo (padrão: o modelo de CV do provedor em providers.ts)
   --key-file <path>  arquivo com a chave (fora do repositório ou ignorado pelo git); sem ele, a chave é pedida sem eco
   --accept-privacy   aceita o aviso de privacidade do provedor, quando houver
+  --out <dir>        grava o CV e a carta (texto montado) de cada par em <dir>, fora do repositório ou ignorado
+                     pelo git; sem ele, nada é gravado
   --mock             usa um modelo falso (valida o encanamento, não avalia modelo algum)
   --help`;
 
@@ -55,6 +69,7 @@ async function main() {
         model: { type: "string" },
         "key-file": { type: "string" },
         "accept-privacy": { type: "boolean", default: false },
+        out: { type: "string" },
         mock: { type: "boolean", default: false },
         help: { type: "boolean", default: false },
       },
@@ -70,6 +85,15 @@ async function main() {
   const providerId = values.provider as ProviderId;
   const def = PROVIDERS[providerId];
   const modelId = values.model ?? def.defaultModels.cv;
+
+  let outDir: string | undefined;
+  if (values.out) {
+    try {
+      outDir = assertOutsideRepoOrIgnored(values.out, { repoRoot: process.cwd() }, "o diretório do --out");
+    } catch (e) {
+      fail(e instanceof Error ? e.message : "diretório do --out inválido");
+    }
+  }
 
   await ensureDomParser();
   const pairs = await loadPairs(resolve(import.meta.dirname, "../tests/fixtures/ai/pairs"));
@@ -115,15 +139,26 @@ async function main() {
   }
 
   const results: PairResult[] = [];
+  let aborted: Aborted | null = null;
   for (const [i, pair] of pairs.entries()) {
     process.stderr.write(`par ${pair.id}... `);
     const r = await evaluatePair(pair, { settings, resolveModel: resolverFor?.(i) });
     process.stderr.write(`${r.validJson ? "ok" : "falhou"}\n`);
     results.push(r);
+    // Chave inválida, sem crédito ou sem rede: os próximos pares falhariam igual.
+    const reason = abortReason(r);
+    if (reason) {
+      aborted = { after: pair.id, reason, skipped: pairs.length - i - 1 };
+      break;
+    }
   }
 
-  const summary = summarize(results, price);
-  console.log(`\n${renderReport(results, price, summary)}`);
+  const summary = summarize(results, price, undefined, aborted);
+  console.log(`\n${renderReport(results, price, summary, aborted)}`);
+  if (outDir) {
+    const written = await writeOutputs(outDir, pairs, results);
+    console.log(`\nTextos gerados: ${written.length} arquivo(s) em ${outDir}`);
+  }
   process.exitCode = summary.pass ? 0 : 1;
 }
 

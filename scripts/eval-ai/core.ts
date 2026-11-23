@@ -1,9 +1,10 @@
-import { readdir, readFile } from "node:fs/promises";
+import { mkdir, readdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { AiError } from "@/lib/client/ai/errors";
 import { generateStructured, type GenerateArgs, type TokenUsage } from "@/lib/client/ai/generate";
 import { CV_TAILOR_V1, pickLanguage } from "@/lib/client/ai/prompts/cv.tailor.v1";
 import type { AiSettings } from "@/lib/client/ai/settings";
+import { assembleCv } from "@/lib/client/cv/assemble";
 import type { CvLang } from "@/lib/client/cv/period";
 import { toPromptFeedback, validateTailored, type Violation } from "@/lib/client/cv/validate";
 import { Profile } from "@/lib/shared/schemas/profile";
@@ -89,7 +90,23 @@ export type PairResult = {
   usage: TokenUsage | null;
   /** Código do erro (nunca a mensagem, que poderia carregar dados do provedor). */
   error: string | null;
+  /** Falha de rede reconhecível (sem status HTTP). */
+  network?: boolean;
+  /** Documentos finais devolvidos pelo modelo (para `--out`); `null` quando falhou. */
+  docs?: TailoredDocs | null;
 };
+
+/** Erros que se repetiriam em todos os pares: a avaliação para no primeiro (não gasta chamadas à toa). */
+const ABORT_CODES = new Set(["invalid_key", "no_credit", "budget"]);
+
+/** Motivo para interromper os pares restantes, ou `null` para seguir. */
+export function abortReason(r: PairResult): string | null {
+  if (r.error && ABORT_CODES.has(r.error)) return r.error;
+  if (r.network) return "rede";
+  return null;
+}
+
+export type Aborted = { after: string; reason: string; skipped: number };
 
 export type EvaluateOpts = {
   settings: AiSettings;
@@ -126,9 +143,12 @@ export async function evaluatePair(pair: Pair, opts: EvaluateOpts): Promise<Pair
       ms: Math.round(now() - started),
       usage: r.usage,
       error: null,
+      docs: r.data,
     };
   } catch (e) {
     const code = e instanceof AiError ? e.code : "unexpected";
+    // `mapProviderError`: sem status HTTP (rede, DNS, conexão recusada) vira `unavailable` sem `meta.status`.
+    const network = e instanceof AiError && code === "unavailable" && e.meta?.status === undefined;
     return {
       id: pair.id,
       lang,
@@ -138,8 +158,52 @@ export async function evaluatePair(pair: Pair, opts: EvaluateOpts): Promise<Pair
       ms: Math.round(now() - started),
       usage: null,
       error: code,
+      network,
+      docs: null,
     };
   }
+}
+
+// ---------------------------------------------------------------------------
+// Texto gerado (--out)
+// ---------------------------------------------------------------------------
+
+/** CV montado como no app (`assembleCv`), em texto puro; trechos que o validador marcou levam `[REVISAR]`. */
+export function cvText(pair: Pair, docs: TailoredDocs, lang: CvLang, violations: Violation[]): string {
+  const cv = assembleCv(pair.profile, docs, lang, { violations });
+  const mark = (flagged: boolean) => (flagged ? "[REVISAR] " : "");
+  const out = [cv.name, `${mark(cv.flags.headline.flagged)}${cv.headline}`, cv.contactLine, "", "Resumo", `${mark(cv.flags.summary.flagged)}${cv.summary}`, "", "Experiência"];
+  for (const x of cv.experiences) {
+    out.push(`${x.role} – ${x.company}${x.occurrence > 0 ? " [REPETIDA]" : ""}`, x.period);
+    for (const b of x.bullets) out.push(`- ${mark(b.flagged)}${b.text}`);
+    out.push("");
+  }
+  out.push("Competências", cv.skills.map((sk, i) => `${mark(cv.flags.skills[i]?.flagged ?? false)}${sk}`).join(", "));
+  if (cv.education.length > 0) out.push("", "Formação", ...cv.education);
+  const flagged = violations.map((v) => `- ${v.kind} "${v.text}" (${v.where.part === "letter" ? "carta" : "CV"})`);
+  if (flagged.length > 0) out.push("", "Violações:", ...flagged);
+  return `${out.join("\n")}\n`;
+}
+
+/** Grava `<id>-cv.txt` e `<id>-carta.txt` de cada par que gerou documentos. Devolve os arquivos escritos. */
+export async function writeOutputs(dir: string, pairs: Pair[], results: PairResult[]): Promise<string[]> {
+  await mkdir(dir, { recursive: true });
+  const written: string[] = [];
+  for (const r of results) {
+    const pair = pairs.find((p) => p.id === r.id);
+    if (!pair || !r.docs) continue;
+    const cvFile = join(dir, `${r.id}-cv.txt`);
+    await writeFile(cvFile, cvText(pair, r.docs, r.lang, r.violations), "utf8");
+    written.push(cvFile);
+    if (r.docs.coverLetter !== null) {
+      const letterFile = join(dir, `${r.id}-carta.txt`);
+      const letterViolations = r.violations.filter((v) => v.where.part === "letter");
+      const head = letterViolations.length > 0 ? "[REVISAR] " : "";
+      await writeFile(letterFile, `${head}${r.docs.coverLetter}\n`, "utf8");
+      written.push(letterFile);
+    }
+  }
+  return written;
 }
 
 // ---------------------------------------------------------------------------
@@ -188,7 +252,7 @@ export type Summary = {
   pass: boolean;
 };
 
-export function summarize(results: PairResult[], price: Price | null, limitMs = P95_LIMIT_MS): Summary {
+export function summarize(results: PairResult[], price: Price | null, limitMs = P95_LIMIT_MS, aborted: Aborted | null = null): Summary {
   const times = results.map((r) => r.ms);
   const persistentTotal = results.reduce((n, r) => n + r.violations.length, 0);
   const invalidJson = results.filter((r) => !r.validJson).length;
@@ -199,6 +263,7 @@ export function summarize(results: PairResult[], price: Price | null, limitMs = 
   if (persistentTotal > 0) failures.push(`${persistentTotal} violação(ões) persistente(s)`);
   if (invalidJson > 0) failures.push(`${invalidJson} par(es) sem JSON válido`);
   if (Number.isNaN(p95Ms) || p95Ms > limitMs) failures.push(`p95 acima de ${limitMs / 1000} s`);
+  if (aborted) failures.push(`interrompida no par ${aborted.after} (${aborted.reason}); ${aborted.skipped} par(es) não rodaram`);
   return {
     pairs: results.length,
     persistentTotal,
@@ -214,7 +279,12 @@ export function summarize(results: PairResult[], price: Price | null, limitMs = 
 }
 
 /** Tabela em texto monoespaçado, mais o resumo e o detalhe das violações. */
-export function renderReport(results: PairResult[], price: Price | null, summary = summarize(results, price)): string {
+export function renderReport(
+  results: PairResult[],
+  price: Price | null,
+  summary = summarize(results, price),
+  aborted: Aborted | null = null,
+): string {
   const head = ["Par", "Idioma", "JSON válido", "Chamadas", "Violações", "Tempo", "Tokens (ent/saí)", "Custo"];
   const rows = results.map((r) => [
     r.id,
@@ -237,6 +307,9 @@ export function renderReport(results: PairResult[], price: Price | null, summary
     `Custo total: ${formatCost(summary.costUsd)}${price ? "" : " (sem preço conhecido para o modelo)"}`,
     `Resultado: ${summary.pass ? "APROVADO" : `REPROVADO (${summary.failures.join("; ")})`}`,
   );
+  if (aborted) {
+    out.push(`Avaliação interrompida no par ${aborted.after} por ${aborted.reason}: ${aborted.skipped} par(es) restante(s) não rodaram.`);
+  }
   const details = results.flatMap((r) =>
     r.violations.map((v) => `  par ${r.id}: ${v.kind} "${v.text}"`).concat(r.error ? [`  par ${r.id}: erro ${r.error}`] : []),
   );

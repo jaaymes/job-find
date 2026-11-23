@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { PassThrough } from "node:stream";
 import { describe, expect, it } from "vitest";
-import { readHiddenLine, readKeyFile } from "@/scripts/eval-ai/key";
+import { assertOutsideRepoOrIgnored, readHiddenLine, readKeyFile } from "@/scripts/eval-ai/key";
 
 describe("readHiddenLine", () => {
   it("lê a 1ª linha do stdin redirecionado e não escreve a chave na saída", async () => {
@@ -48,5 +48,15 @@ describe("readKeyFile", () => {
   });
   it("arquivo inexistente: erro sem o caminho do conteúdo", async () => {
     await expect(readKeyFile("/nao/existe/k", { repoRoot: "/x" })).rejects.toThrow("não foi possível ler");
+  });
+});
+
+describe("assertOutsideRepoOrIgnored (--out)", () => {
+  it("recusa diretório dentro do repositório não ignorado; aceita fora ou ignorado", () => {
+    expect(() => assertOutsideRepoOrIgnored("/repo/x/out", { repoRoot: "/repo/x", isIgnored: () => false }, "o diretório do --out")).toThrow(
+      /o diretório do --out está dentro do repositório/,
+    );
+    expect(assertOutsideRepoOrIgnored("/repo/x/out", { repoRoot: "/repo/x", isIgnored: () => true }, "d")).toBe("/repo/x/out");
+    expect(assertOutsideRepoOrIgnored("/fora/out", { repoRoot: "/repo/x", isIgnored: () => false }, "d")).toBe("/fora/out");
   });
 });

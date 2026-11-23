@@ -58,15 +58,15 @@ export const STACKS: StackDef[] = [
   def("wordpress", "WordPress", "other", ["wordpress"]),
 
   // Linguagens
-  def("javascript", "JavaScript", "lang", ["javascript", "ecmascript", "es6"], { adjacent: ["typescript"] }),
-  def("typescript", "TypeScript", "lang", ["typescript"], { adjacent: ["javascript"] }),
+  def("javascript", "JavaScript", "lang", ["javascript", "ecmascript", "es6", "js"], { adjacent: ["typescript"] }),
+  def("typescript", "TypeScript", "lang", ["typescript", "ts"], { adjacent: ["javascript"] }),
   def("python", "Python", "lang", ["python"]),
   def("java", "Java", "lang", ["java"], { adjacent: ["kotlin"] }),
   def("kotlin", "Kotlin", "lang", ["kotlin"], { adjacent: ["java"] }),
   def("swift", "Swift", "lang", ["swift", "swiftui"]),
   def("csharp", "C#", "lang", ["c#", "csharp", "c sharp"], { adjacent: ["dotnet"] }),
   def("cpp", "C++", "lang", ["c++", "cpp"]),
-  def("c", "C", "lang", ["linguagem c", "c language"]),
+  def("c", "C", "lang", ["linguagem c", "c language", "programação em c", "programming in c", "written in c", "plain c", "pure c"]),
   def("go", "Go", "lang", ["golang", "go"]),
   def("rust", "Rust", "lang", ["rust"]),
   def("php", "PHP", "lang", ["php"]),
@@ -146,39 +146,56 @@ export const STACKS: StackDef[] = [
 ];
 
 /**
- * Sinônimos ambíguos: casam só com a grafia exata (maiúsculas) e, quando
- * `body` é falso, só no título/tags — ou no corpo em contextos que indicam
- * linguagem (ex.: "com Go", "Rust, Go"). Nunca casam sem diferenciar caixa.
+ * Sinônimos ambíguos: casam só com a grafia exata (maiúsculas), nunca sem
+ * diferenciar caixa. `title`/`body` liberam o texto puro no título/tags e no
+ * corpo; `ctx` são padrões extras (título/tags e corpo) que indicam a stack
+ * pelo contexto ("com Go", "Experiência: Go.", "Next 14", "Oracle" fora de
+ * contexto de empregador).
  */
-type CaseRule = { id: string; text: string; body: boolean; bodyContext?: string[] };
+type CaseRule = { id: string; text: string; title: boolean; body: boolean; ctx?: string[] };
+
+const LANG_CUE = String.raw`(?:com|with|in|em|using|usando|use|uses|usamos|write|writes|linguagem|language)`;
+const LIST_CUE = String.raw`(?:or|ou|and|e)`;
+const NOT_B = String.raw`(?<![\w.#+$-])`;
+const NOT_A = String.raw`(?![\w#+$-])`;
+/** Contextos em que uma letra/palavra ambígua capitalizada indica a linguagem. */
+const bareCtx = (word: string, nouns: string[] = []): string[] => [
+  String.raw`${LANG_CUE}\s+${word}${NOT_A}`,
+  String.raw`\b${LIST_CUE}\s+${word}(?=\s*(?:[,.;!)]|$))`,
+  String.raw`[,/(:]\s*${word}${NOT_A}(?!\s+(?:ahead|to|on|for)\b)`,
+  String.raw`${NOT_B}${word}(?=\s*[,/)]|[.!](?:\s|$))`,
+  String.raw`${NOT_B}${word}(?=\s+${LIST_CUE}\s+[A-Z])`,
+  ...(nouns.length ? [String.raw`${NOT_B}${word}\s+(?:${nouns.join("|")})\b`] : []),
+];
 
 const CASE_RULES: CaseRule[] = [
   {
     id: "go",
     text: "Go",
+    title: true,
     body: false,
-    bodyContext: [
-      String.raw`(?:com|with|in|em|using|usando|linguagem|language)\s+Go(?![\w#+$-])`,
-      String.raw`\b(?:or|ou|and|e)\s+Go(?=\s*(?:[,.;)]|$))`,
-      String.raw`[,/(]\s*Go(?![\w#+$-])`,
-      String.raw`(?<![\w.#+-])Go(?=\s*[,/)])`,
-      String.raw`(?<![\w.#+-])Go(?=\s+(?:ou|or|and|e)\s+[A-Z])`,
-    ],
+    ctx: bareCtx("Go", [
+      "developers?", "engineers?", "devs?", "services?", "programmers?", "code", "codebase",
+      "microservices?", "backend", "fundamentals", "experience", "team", "stack",
+    ]),
   },
+  { id: "r", text: "R", title: true, body: false, ctx: bareCtx("R") },
+  { id: "swift", text: "Swift", title: true, body: true },
+  { id: "spring", text: "Spring", title: true, body: false, ctx: bareCtx("Spring") },
+  { id: "spark", text: "Spark", title: true, body: true },
+  { id: "rest", text: "REST", title: true, body: true },
+  { id: "typescript", text: "TS", title: true, body: true },
+  { id: "javascript", text: "JS", title: true, body: true },
   {
-    id: "r",
-    text: "R",
+    // "Oracle" como empregador ("na Oracle", "at Oracle", "ex-Oracle") não é o banco.
+    id: "oracle",
+    text: "Oracle",
+    title: true,
     body: false,
-    bodyContext: [
-      String.raw`(?:com|with|in|em|using|usando|linguagem|language)\s+R(?![\w#+$-])`,
-      String.raw`(?<![\w.#+$-])R(?=\s*[,/)]|\s+(?:ou|or|and|e)\s+[A-Z])`,
-    ],
+    ctx: [String.raw`(?<!\b(?:[Nn]a|[Aa]t|[Ff]or|[Ff]rom|[Dd]a|[Dd]e|[Pp]ela|[Pp]elo)\s+|\b[Ee]x-)${NOT_B}Oracle(?![\w#+-])`],
   },
-  { id: "swift", text: "Swift", body: true },
-  { id: "spring", text: "Spring", body: true },
-  { id: "spark", text: "Spark", body: true },
-  { id: "oracle", text: "Oracle", body: true },
-  { id: "rest", text: "REST", body: true },
+  // "Next 14" / "Next 15": sem ".js", só com versão.
+  { id: "nextjs", text: "Next", title: false, body: false, ctx: [String.raw`${NOT_B}Next\s+1\d(?![\w.])`] },
 ];
 
 // ---------------------------------------------------------------------------
@@ -189,6 +206,12 @@ const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
 const BEFORE = String.raw`(?<![\w.#+-])`;
 const AFTER = String.raw`(?![\w#+-])`;
 const wordSource = (s: string) => escapeRe(s.trim()).replace(/\s+/g, String.raw`\s+`);
+
+/** Sufixos de versão colados que o lookahead padrão rejeitaria (ex.: "C++17"). */
+const VERSIONED: Record<string, string[]> = {
+  cpp: [String.raw`c\+\+\d{2}`],
+  linux: [String.raw`linux-based`],
+};
 
 const csTexts = new Map<string, Set<string>>();
 for (const r of CASE_RULES) {
@@ -201,8 +224,9 @@ type Compiled = {
   id: string;
   /** Casa sem diferenciar caixa, em qualquer parte. */
   ci: RegExp | null;
-  /** Casa diferenciando caixa, em título/tags (e corpo se `bodyAll`). */
+  /** Casa diferenciando caixa, em título/tags. */
   csTitle: RegExp | null;
+  /** Casa diferenciando caixa, no corpo. */
   csBody: RegExp | null;
 };
 
@@ -211,26 +235,24 @@ function boundary(sources: string[], flags: string): RegExp | null {
   return new RegExp(`${BEFORE}(?:${sources.join("|")})${AFTER}`, flags);
 }
 
+function caseRegex(texts: string[], ctx: string[]): RegExp | null {
+  const parts = [...(texts.length ? [`${BEFORE}(?:${texts.join("|")})${AFTER}`] : []), ...ctx];
+  return parts.length ? new RegExp(parts.join("|"), "g") : null;
+}
+
 const COMPILED: Compiled[] = STACKS.map((st) => {
   const cs = csTexts.get(st.id);
-  const plain = st.synonyms
-    .filter((syn) => !cs?.has(syn.toLowerCase()))
-    .sort((a, b) => b.length - a.length)
-    .map(wordSource);
+  const plain = [
+    ...(VERSIONED[st.id] ?? []),
+    ...st.synonyms.filter((syn) => !cs?.has(syn.toLowerCase())).map(wordSource),
+  ].sort((a, b) => b.length - a.length);
   const rules = CASE_RULES.filter((r) => r.id === st.id);
-  const csAll = rules.filter((r) => r.body).map((r) => wordSource(r.text));
-  const csTitleOnly = rules.map((r) => wordSource(r.text));
-  const ctx = rules.flatMap((r) => r.bodyContext ?? []);
+  const ctx = rules.flatMap((r) => r.ctx ?? []);
   return {
     id: st.id,
     ci: boundary(plain, "gi"),
-    csTitle: boundary(csTitleOnly, "g"),
-    csBody: csAll.length || ctx.length
-      ? new RegExp(
-          [...(csAll.length ? [`${BEFORE}(?:${csAll.join("|")})${AFTER}`] : []), ...ctx].join("|"),
-          "g",
-        )
-      : null,
+    csTitle: caseRegex(rules.filter((r) => r.title).map((r) => wordSource(r.text)), ctx),
+    csBody: caseRegex(rules.filter((r) => r.body).map((r) => wordSource(r.text)), ctx),
   };
 });
 

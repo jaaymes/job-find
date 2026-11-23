@@ -4,18 +4,22 @@ import { extractStacks, normalizeSkill, STACKS, STACKS_VERSION } from "@/lib/sha
 
 type Sample = { title: string; tags?: string[]; body: string; expected: string[] };
 
-/** Fração de vagas cujo conjunto de ids extraídos é exatamente igual ao rotulado à mão. */
-function precision(sample: Sample[]): number {
-  let ok = 0;
+/**
+ * Fração de vagas cujo conjunto de ids extraídos é exatamente igual ao rotulado à mão.
+ * Devolve também as vagas erradas, para a mensagem de falha.
+ */
+function precision(sample: Sample[]): { value: number; misses: string[] } {
+  const misses: string[] = [];
   for (const job of sample) {
     const got = extractStacks({ title: job.title, tags: job.tags, body: job.body })
       .map((s) => s.id)
       .sort();
     const want = [...job.expected].sort();
-    if (JSON.stringify(got) === JSON.stringify(want)) ok++;
-    else console.info(`MISS "${job.title}": got=${got.join(",")} want=${want.join(",")}`);
+    if (JSON.stringify(got) !== JSON.stringify(want)) {
+      misses.push(`"${job.title}": got=${got.join(",")} want=${want.join(",")}`);
+    }
   }
-  return ok / sample.length;
+  return { value: (sample.length - misses.length) / sample.length, misses };
 }
 
 describe("normalizeSkill", () => {
@@ -62,6 +66,29 @@ describe("extractStacks", () => {
     expect(ids({ title: "Dev", body: "Golang" })).toEqual(["go"]);
   });
 
+  it("generaliza para Go/R soltos, TS/JS, C++17, Next 14 e Oracle empregador", () => {
+    const ids = (b: string, title = "Dev") =>
+      extractStacks({ title, body: b }).map((s) => s.id).sort();
+    expect(ids("Experiência: Go.")).toEqual(["go"]);
+    expect(ids("Buscamos um Go developer sênior")).toEqual(["go"]);
+    expect(ids("Go ahead and apply! Go-getters, let's go, go-to-market.")).toEqual([]);
+    expect(ids("Salário R$ 8.000 e linguagem R para análise")).toEqual(["r"]);
+    expect(ids("Salário R$ 8.000")).toEqual([]);
+    expect(ids("Linguagens: Python e R.")).toEqual(["python", "r"]);
+    expect(ids("We love TS and JS")).toEqual(["javascript", "typescript"]);
+    expect(ids("some C++17 and C++20 code")).toEqual(["cpp"]);
+    expect(ids("Next 14 app")).toEqual(["nextjs", "react"]);
+    expect(ids("Next.js 14 app")).toEqual(["nextjs", "react"]);
+    expect(ids("Trabalhe na Oracle. Nosso CTO é ex-Oracle. At Oracle we grow.")).toEqual([]);
+    expect(ids("Legado roda em Oracle e PL/SQL")).toEqual(["oracle"]);
+    expect(ids("Spring is our busiest season")).toEqual([]);
+    expect(ids("Java, Spring e Kafka")).toEqual(["java", "kafka", "spring"]);
+    expect(ids("fast and swift delivery")).toEqual([]);
+    expect(normalizeSkill("TS")).toBe("typescript");
+    expect(normalizeSkill("ts")).toBe("typescript");
+    expect(normalizeSkill("js")).toBe("javascript");
+  });
+
   it("usa tags e não duplica", () => {
     const r = extractStacks({ title: "Dev React", tags: ["react", "Vue.js"], body: "React" });
     expect(r.map((s) => s.id).sort()).toEqual(["react", "vue"]);
@@ -92,8 +119,7 @@ describe("dicionário", () => {
 describe("precisão na amostra rotulada", () => {
   it("tem 100 vagas e acerta pelo menos 90%", () => {
     expect(sample100).toHaveLength(100);
-    const p = precision(sample100 as Sample[]);
-    console.info(`PRECISION=${p}`);
-    expect(p).toBeGreaterThanOrEqual(0.9);
+    const { value, misses } = precision(sample100 as Sample[]);
+    expect(value, `precisão ${value}\n${misses.join("\n")}`).toBeGreaterThanOrEqual(0.9);
   });
 });

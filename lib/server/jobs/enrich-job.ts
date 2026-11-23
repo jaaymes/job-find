@@ -94,17 +94,18 @@ export function computeContentHash(n: NormalizedJob, sanitizerVersion: number = 
  * Normaliza e enriquece uma vaga de uma fonte. Devolve `null` quando não é vaga
  * de tecnologia (RN-01) ou a URL é inválida (SEC-03). Quando `prev.contentHash`
  * é igual ao hash do conteúdo bruto, reaproveita o HTML já sanitizado (poupa CPU).
+ * `hash` aceita o `computeContentHash(n)` já calculado por quem chama.
  */
 export function enrichJob(
   n: NormalizedJob,
   src: { id: SourceId; brazilian: boolean; dofollow: boolean },
   prev?: { contentHash: string; descriptionHtml: string } | null,
+  hash: string = computeContentHash(n),
 ): EnrichedJob | null {
   if (!isTechJob(n.title, n.tags)) return null;
   const urlCanonical = canonicalUrl(n.url);
   if (!urlCanonical) return null;
 
-  const hash = computeContentHash(n);
 
   const descriptionHtml =
     prev && prev.contentHash === hash

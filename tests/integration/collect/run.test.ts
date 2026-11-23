@@ -1,9 +1,12 @@
 import { eq, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { jobs, sourceRuns, sourceState } from "@/lib/server/db/schema";
+import { jobSources, jobs, sourceRuns, sourceState } from "@/lib/server/db/schema";
 import { acquireLock, releaseLock } from "@/lib/server/collect/lock";
 import { runCollection } from "@/lib/server/collect/run";
+import * as enrich from "@/lib/server/jobs/enrich-job";
 import * as expire from "@/lib/server/jobs/expire";
+import * as upsert from "@/lib/server/jobs/upsert";
+import { SANITIZER_VERSION } from "@/lib/server/sanitize";
 import type { Connector, NormalizedJob } from "@/lib/server/sources/types";
 import type { SourceId } from "@/lib/shared/types/job";
 import { insertJobRaw, resetDb, testDb } from "../setup";
@@ -383,5 +386,71 @@ describe("runCollection", () => {
     } finally {
       err.mockRestore();
     }
+  });
+
+  describe("atalho de vagas inalteradas", () => {
+    const T1 = new Date(T0.getTime() + 3_600_000);
+
+    it("hash igual: pula enrich e upsert, renova last_seen_at e missed_runs num UPDATE só e não toca jobs", async () => {
+      const db = await testDb();
+      const c = conn("greenhouse", { items: range(3) });
+      await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: c } });
+      await db.update(jobSources).set({ missedRuns: 2 });
+      const before = await db.select({ id: jobs.id, updatedAt: jobs.updatedAt }).from(jobs).orderBy(jobs.id);
+
+      const enrichSpy = vi.spyOn(enrich, "enrichJob");
+      const upsertSpy = vi.spyOn(upsert, "upsertJob");
+      try {
+        const [r] = await runCollection({ db, sources: ["greenhouse"], now: T1, connectors: { greenhouse: c } });
+        expect(r).toMatchObject({ status: "ok", fetched: 3, inserted: 0, updated: 0, unchanged: 3, errors: 0 });
+        expect(enrichSpy).not.toHaveBeenCalled();
+        expect(upsertSpy).not.toHaveBeenCalled();
+      } finally {
+        enrichSpy.mockRestore();
+        upsertSpy.mockRestore();
+      }
+
+      const srcs = await db.select().from(jobSources);
+      expect(srcs).toHaveLength(3);
+      for (const s of srcs) expect(s).toMatchObject({ lastSeenAt: T1, missedRuns: 0 });
+      const after = await db.select({ id: jobs.id, updatedAt: jobs.updatedAt }).from(jobs).orderBy(jobs.id);
+      expect(after).toEqual(before);
+      expect(after.every((j) => j.updatedAt.getTime() === T0.getTime())).toBe(true);
+    });
+
+    it("conteúdo novo ou URL nova na fonte seguem o caminho completo", async () => {
+      const db = await testDb();
+      await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: conn("greenhouse", { items: range(2) }) } });
+      const changed = conn("greenhouse", {
+        items: range(2),
+        normalize(raw) {
+          const n = norm(raw);
+          if (!n) return n;
+          if (n.externalId === "j0") return { ...n, descriptionHtml: "<p>Vaga de React j0, agora com Node</p>" };
+          return { ...n, url: `${n.url}?gh_jid=2` };
+        },
+      });
+      const [r] = await runCollection({ db, sources: ["greenhouse"], now: T1, connectors: { greenhouse: changed } });
+      expect(r).toMatchObject({ status: "ok", updated: 1, unchanged: 1 });
+      const [j1] = await db.select().from(jobSources).where(eq(jobSources.externalId, "j1"));
+      expect(j1.url).toBe("https://boards.example.com/acme/j1?gh_jid=2");
+      expect(j1.lastSeenAt).toEqual(T1);
+    });
+
+    it("subir a versão do sanitizador tira a vaga do atalho e re-sanitiza o HTML", async () => {
+      const db = await testDb();
+      const c = conn("greenhouse", { items: [{ id: "j0" }] });
+      await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: c } });
+      // Simula a vaga gravada pela versão anterior do sanitizador.
+      const oldHash = enrich.computeContentHash(norm({ id: "j0" })!, SANITIZER_VERSION - 1);
+      await db.update(jobs).set({ contentHash: oldHash, descriptionHtml: "<p>velho</p>", sanitizerVersion: SANITIZER_VERSION - 1 });
+
+      const [r] = await runCollection({ db, sources: ["greenhouse"], now: T1, connectors: { greenhouse: c } });
+      expect(r).toMatchObject({ status: "ok", updated: 1, unchanged: 0 });
+      const [j] = await db.select().from(jobs);
+      expect(j.descriptionHtml).toBe("<p>Vaga de React j0</p>");
+      expect(j.sanitizerVersion).toBe(SANITIZER_VERSION);
+      expect(j.contentHash).toBe(enrich.computeContentHash(norm({ id: "j0" })!));
+    });
   });
 });

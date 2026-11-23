@@ -3,7 +3,7 @@ import { and, desc, eq, inArray } from "drizzle-orm";
 import { acquireLock, releaseLock } from "@/lib/server/collect/lock";
 import type { Db } from "@/lib/server/db/client";
 import { jobSources, jobs, sourceRuns, sourceState } from "@/lib/server/db/schema";
-import { enrichJob } from "@/lib/server/jobs/enrich-job";
+import { computeContentHash, enrichJob } from "@/lib/server/jobs/enrich-job";
 import { expireJobs, markMissedRuns, purgeExpired } from "@/lib/server/jobs/expire";
 import { upsertJob } from "@/lib/server/jobs/upsert";
 import { createSafeFetch } from "@/lib/server/sources/http";
@@ -30,6 +30,8 @@ export type SourceRunResult = {
   fetched: number;
   inserted: number;
   updated: number;
+  /** Vagas vistas de novo sem mudança (atalho do hash ou upsert sem alteração). */
+  unchanged: number;
   expired: number;
   /** Vagas individuais que falharam no upsert (a fonte segue 'ok'). */
   errors: number;
@@ -52,6 +54,7 @@ const empty = (source: SourceId, status: SourceRunResult["status"], error?: stri
   fetched: 0,
   inserted: 0,
   updated: 0,
+  unchanged: 0,
   expired: 0,
   errors: 0,
   ...(error ? { error } : {}),
@@ -85,7 +88,7 @@ async function* withAbort<T>(iterable: AsyncIterable<T>, signal: AbortSignal): A
   }
 }
 
-type Counts = { fetched: number; inserted: number; updated: number; errors: number };
+type Counts = { fetched: number; inserted: number; updated: number; unchanged: number; errors: number };
 
 async function processBatch(
   db: Db,
@@ -103,12 +106,14 @@ async function processBatch(
   const src = { id: conn.id, brazilian: conn.brazilian, dofollow: conn.attribution.dofollow };
 
   await db.transaction(async (tx) => {
-    // Uma consulta por lote: hash e HTML já sanitizado, para o enrichJob poupar CPU.
+    // Uma consulta por lote: hash, HTML já sanitizado e URL da fonte, para decidir o atalho.
     const prevRows = await tx
       .select({
         externalId: jobSources.externalId,
+        url: jobSources.url,
         contentHash: jobs.contentHash,
         descriptionHtml: jobs.descriptionHtml,
+        expiredAt: jobs.expiredAt,
       })
       .from(jobSources)
       .innerJoin(jobs, eq(jobs.id, jobSources.jobId))
@@ -123,10 +128,18 @@ async function processBatch(
       );
     const prevByExternal = new Map(prevRows.map((r) => [r.externalId, r]));
 
+    // Atalho: mesma publicação, ativa, com o mesmo hash (que inclui a versão do sanitizador) e a
+    // mesma URL na fonte. Nada a enriquecer nem regravar: só renova a presença, num UPDATE por lote.
+    const unchangedIds: string[] = [];
     for (const n of normalized) {
       try {
+        const hash = computeContentHash(n);
         const prev = prevByExternal.get(n.externalId) ?? null;
-        const enriched = enrichJob(n, src, prev && { contentHash: prev.contentHash, descriptionHtml: prev.descriptionHtml });
+        if (prev && prev.expiredAt === null && prev.contentHash === hash && prev.url === n.url) {
+          unchangedIds.push(n.externalId);
+          continue;
+        }
+        const enriched = enrichJob(n, src, prev && { contentHash: prev.contentHash, descriptionHtml: prev.descriptionHtml }, hash);
         if (!enriched) continue;
         // Savepoint: se o upsert falhar (ex.: 23505), só esta vaga é desfeita.
         const { status } = await tx.transaction((sp) =>
@@ -134,10 +147,20 @@ async function processBatch(
         );
         if (status === "inserted") counts.inserted += 1;
         else if (status === "updated") counts.updated += 1;
+        else if (status === "unchanged") counts.unchanged += 1;
       } catch (e) {
         counts.errors += 1;
         console.error(`[coleta] ${conn.id}: falha ao gravar a vaga ${n.externalId}: ${describeError(e)}`);
       }
+    }
+
+    if (unchangedIds.length > 0) {
+      // Mesma semântica do upsert para markMissedRuns/expiração: vista agora, nenhuma coleta perdida.
+      await tx
+        .update(jobSources)
+        .set({ lastSeenAt: now, missedRuns: 0 })
+        .where(and(eq(jobSources.source, conn.id), inArray(jobSources.externalId, unchangedIds)));
+      counts.unchanged += unchangedIds.length;
     }
   });
 }
@@ -172,7 +195,7 @@ async function runSource(
       .returning({ id: sourceRuns.id });
     runId = run.id;
 
-    const counts: Counts = { fetched: 0, inserted: 0, updated: 0, errors: 0 };
+    const counts: Counts = { fetched: 0, inserted: 0, updated: 0, unchanged: 0, errors: 0 };
     let cursor = state?.cursor ?? null;
     let cursorChanged = false;
     try {

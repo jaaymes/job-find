@@ -38,7 +38,7 @@ async function collectInBackground(sources: SourceId[]): Promise<void> {
     console.log(
       "[cron/collect]",
       results
-        .map((r) => `${r.source}:${r.status} +${r.inserted} ~${r.updated} -${r.expired} err=${r.errors}`)
+        .map((r) => `${r.source}:${r.status} +${r.inserted} ~${r.updated} =${r.unchanged} -${r.expired} err=${r.errors}`)
         .join(" | "),
     );
   } catch (e) {

@@ -198,12 +198,14 @@ function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
           <>
             <p className="text-[13px] text-jf-ink-3">Por que essa nota, critério a critério:</p>
             <ul aria-label="Detalhes da nota" className="flex flex-col gap-3">
-              {chance.breakdown.map((b) => (
+              {chance.breakdown.map((b) => {
+                const total = chance.breakdown.reduce((n, x) => n + (x.available ? x.weight : 0), 0);
+                return (
                 <li key={b.criterion} className="flex flex-col gap-1" data-criterion={b.criterion}>
                   <div className="flex items-baseline justify-between gap-3 text-sm">
                     <span className="font-semibold">{CRITERION_LABEL[b.criterion]}</span>
                     <span className="text-jf-ink-3">
-                      {b.available ? `${Math.round(b.value)}%` : "sem dados"} · peso {b.weight}
+                      {b.available ? `${Math.round(b.value)}% · peso ${Math.round((b.weight / total) * 100)}%` : "sem dados"}
                     </span>
                   </div>
                   <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-jf-chip">
@@ -211,7 +213,8 @@ function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
                   </div>
                   <p className="text-[13px] text-jf-ink-3">{b.reason}</p>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </>
         )}

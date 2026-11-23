@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { bandFor, indexProfile, scoreJob } from "@/lib/client/score/score";
+import { bandFor, indexProfile, resetTitleCacheForTests, scoreJob } from "@/lib/client/score/score";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 import type { JobSummary } from "@/lib/shared/types/job";
 
@@ -92,8 +92,10 @@ describe("scoreJob", () => {
     it("vaga em português não exige inglês", () => {
       expect(crit(scoreJob(pi(["react"], "senior", "none"), job({ language: "pt" }), NOW), "language").value).toBe(100);
     });
-    it("vaga em inglês e perfil sem nível de inglês: sem dado", () => {
-      expect(crit(scoreJob(pi(["react"], "senior", null), job({ language: "en" }), NOW), "language").available).toBe(false);
+    it("vaga em inglês e perfil sem nível de inglês vale 0 (RN-06)", () => {
+      const c = crit(scoreJob(pi(["react"], "senior", null), job({ language: "en" }), NOW), "language");
+      expect([c.value, c.available]).toEqual([0, true]);
+      expect(c.reason).toBe("Vaga em inglês; seu perfil não informa nível de inglês.");
     });
   });
 
@@ -192,7 +194,8 @@ describe("scoreJob", () => {
       job({ stacks: [], seniority: null, acceptsBrazil: null, language: "en", publishedAt: "invalid" }),
       NOW,
     );
-    expect(r.breakdown.every((b) => !b.available)).toBe(true);
+    // Idioma em inglês sem nível no perfil vale 0 e conta; os demais não têm dados.
+    expect(r.breakdown.filter((b) => b.available).map((b) => b.criterion)).toEqual(["language"]);
     expect(r.score).toBe(0);
     expect(r.band).toBe("baixa");
   });
@@ -230,5 +233,16 @@ describe("desempenho", () => {
     for (let i = 0; i < 10; i++) run();
     const times = Array.from({ length: 21 }, run).sort((a, b) => a - b);
     expect(times[10]).toBeLessThan(5);
+  });
+
+  it("caso frio (cache de títulos vazio, títulos distintos) fica abaixo de 200 ms (RF-15)", () => {
+    resetTitleCacheForTests();
+    const index = pi(["react", "typescript"]);
+    const jobs = Array.from({ length: 30 }, (_, i) =>
+      job({ id: i, title: `Engenheiro de Software ${i} React Node TypeScript Go Python AWS`, stacks: ["react", "go", "aws"], age: `${i + 1}h` }),
+    );
+    const t0 = performance.now();
+    for (const j of jobs) scoreJob(index, j, NOW);
+    expect(performance.now() - t0).toBeLessThan(200);
   });
 });

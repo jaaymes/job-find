@@ -25,7 +25,7 @@ const ORIGINS = [
 
 const FIELD = "rounded-lg border border-jf-line-strong bg-jf-surface p-2.5 text-[15px] font-normal outline-none focus-visible:ring-2 focus-visible:ring-jf-brand";
 const LEGEND = "mb-2 text-[13px] font-semibold text-jf-ink-2";
-const OPTION = "flex min-h-8 items-center gap-2";
+const OPTION = "flex min-h-11 items-center gap-2";
 const CONTROL = "size-4 accent-jf-brand";
 
 const CHANCES: { value: ChanceBand | undefined; label: string }[] = [
@@ -37,7 +37,7 @@ const CHANCES: { value: ChanceBand | undefined; label: string }[] = [
 
 export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile }: Props) {
   const seniority = filters.seniority ?? [];
-  const chance = filters.chance?.[0];
+  const chance = hasProfile ? filters.chance?.[0] : undefined;
 
   return (
     <aside

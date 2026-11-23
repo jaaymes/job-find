@@ -64,6 +64,7 @@ export function JobsPage() {
   const counts = query.counts;
   const lastCollectedAt = query.lastCollectedAt;
   const activeSidebar = SIDEBAR_KEYS.filter((k) => {
+    if (k === "chance" && !query.hasProfile) return false;
     const v = filters[k];
     return Array.isArray(v) ? v.length > 0 : v !== undefined;
   }).length;
@@ -159,9 +160,16 @@ export function JobsPage() {
             )}
 
             {query.isError && items.length > 0 && (
-              <p role="alert" className="text-center text-sm text-jf-danger-fg">
-                Não foi possível carregar mais vagas.
-              </p>
+              <div role="alert" className="flex flex-col items-center gap-2 text-center">
+                <p className="text-sm text-jf-danger-fg">Não foi possível carregar mais vagas.</p>
+                <button
+                  type="button"
+                  onClick={query.retryNext}
+                  className="min-h-11 rounded-xl border border-jf-line-strong bg-jf-surface px-5 font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand"
+                >
+                  Tentar de novo
+                </button>
+              </div>
             )}
             {query.hasMore && (
               <button

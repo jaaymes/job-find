@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
 import { FiltersPanel } from "@/components/jobs/FiltersPanel";
@@ -71,6 +71,9 @@ describe("JobDetailView: Sua chance", () => {
     expect(list.querySelectorAll("li")).toHaveLength(5);
     expect(screen.getByText("Alta · 100%")).toBeTruthy();
     expect(screen.getByText("Tecnologias")).toBeTruthy();
+    // Peso efetivo (stack 45 de 100) e nunca o nominal.
+    expect(list.textContent).toContain("peso 45%");
+    expect(list.textContent).not.toMatch(/peso \d+(?!%)\b(?!%)\s*$/);
   });
 
   it("sem perfil o convite leva para /perfil", () => {
@@ -86,6 +89,11 @@ describe("FiltersPanel: chance", () => {
     render(<FiltersPanel {...props} filters={{}} onChange={() => {}} hasProfile={false} />);
     expect(screen.getByRole("radio", { name: "Chance: Alta" }).matches(":disabled")).toBe(true);
     expect(screen.getByRole("link", { name: "Importe seu currículo" }).getAttribute("href")).toBe("/perfil");
+  });
+
+  it("sem perfil o rádio de chance não aparece marcado, mesmo com chance na URL", () => {
+    render(<FiltersPanel {...props} filters={{ chance: ["alta"] }} onChange={() => {}} hasProfile={false} />);
+    expect((screen.getByRole("radio", { name: "Chance: Alta" }) as HTMLInputElement).checked).toBe(false);
   });
 
   it("com perfil escolher Alta grava chance=['alta']", () => {
@@ -139,6 +147,45 @@ describe("useJobsWithChance", () => {
     await waitFor(() => expect(hook.result.current.items).toHaveLength(2));
     expect(hook.result.current.items.every((x) => x.chance === null)).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect((fetchMock.mock.calls[0] as unknown as [string])[0]).toBe("/api/jobs");
+  });
+
+  it("erro numa página não gera laço de requisições e expõe o erro", async () => {
+    withProfile();
+    const fetchMock = vi.fn(async () => new Response("{}", { status: 500 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
+    const hook = renderHook(() => useJobsWithChance({}, ["alta"]), { wrapper });
+    await waitFor(() => expect(hook.result.current.isError).toBe(true));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(hook.result.current.isFetchingNextPage).toBe(false);
+  });
+
+  it("erro na segunda página: para, mostra o erro e retryNext refaz só essa página", async () => {
+    withProfile();
+    let calls = 0;
+    const fetchMock = vi.fn(async () => {
+      calls++;
+      if (calls === 1) return Response.json({ items: [low(1)], nextCursor: "c1", lastCollectedAt: null });
+      if (calls === 2) return new Response("{}", { status: 503 });
+      return Response.json({ items: Array.from({ length: 30 }, (_, i) => summary(100 + i)), nextCursor: null, lastCollectedAt: null });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
+    const hook = renderHook(() => useJobsWithChance({}, ["alta"]), { wrapper });
+    await waitFor(() => expect(hook.result.current.isError).toBe(true));
+    await new Promise((r) => setTimeout(r, 200));
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    act(() => hook.result.current.retryNext());
+    await waitFor(() => expect(hook.result.current.items).toHaveLength(30));
+    expect(fetchMock).toHaveBeenCalledTimes(3);
   });
 
   it("sem filtro (bands null) usa a URL padrão e anexa o score", async () => {

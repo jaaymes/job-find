@@ -22,7 +22,8 @@ export type ScoredJob = { job: JobSummary; chance: ScoreResult | null };
  */
 export function useJobsWithChance(filters: JobsFilters, bands: Band[] | null) {
   const profile = useStore(profileStore);
-  const chanceMode = bands !== null && bands.length > 0;
+  // Sem perfil não há score: o filtro é ignorado e a busca usa o limite padrão.
+  const chanceMode = bands !== null && bands.length > 0 && profile !== null;
   const query = useInfiniteQuery(jobsInfiniteOptions(chanceMode ? { ...filters, limit: CHANCE_PAGE_LIMIT } : filters));
   const { data, dataUpdatedAt, hasNextPage, isFetching, isPlaceholderData, fetchNextPage } = query;
 
@@ -50,7 +51,7 @@ export function useJobsWithChance(filters: JobsFilters, bands: Band[] | null) {
   const { target, base } = batch;
   const pageCount = data?.pages.length ?? 0;
   const budgetLeft = pageCount - base < CHANCE_MAX_REQUESTS;
-  const searching = filtering && !isPlaceholderData && scored.length < target && Boolean(hasNextPage) && budgetLeft;
+  const searching = filtering && !isPlaceholderData && scored.length < target && Boolean(hasNextPage) && budgetLeft && !query.isError;
 
   // Busca mais páginas até reunir `target` itens ou gastar as 5 requisições do lote.
   useEffect(() => {
@@ -79,6 +80,8 @@ export function useJobsWithChance(filters: JobsFilters, bands: Band[] | null) {
     hasMore: filtering ? scored.length > target || Boolean(hasNextPage) : Boolean(hasNextPage),
     loadMore,
     refetch: query.refetch,
+    /** Tenta de novo a próxima página (depois de um erro com itens já na tela). */
+    retryNext: () => void fetchNextPage(),
     dataUpdatedAt,
     counts: pages[0]?.counts,
     lastCollectedAt: pages[0]?.lastCollectedAt ?? null,

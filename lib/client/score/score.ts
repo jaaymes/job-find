@@ -75,6 +75,11 @@ export function bandFor(score: number): Band {
   return score >= BAND_ALTA_MIN ? "alta" : score >= BAND_MEDIA_MIN ? "media" : "baixa";
 }
 
+/** Só para testes: esvazia o cache de stacks por título. */
+export function resetTitleCacheForTests(): void {
+  titleCache.clear();
+}
+
 // Stacks no título, por texto de título: a extração é cara (centenas de regex) e os títulos se repetem.
 const titleCache = new Map<string, Set<string>>();
 function titleStacks(title: string): Set<string> {
@@ -142,7 +147,7 @@ function seniorityItem(pi: ProfileIndex, job: JobSummary): BreakdownItem {
 function languageItem(pi: ProfileIndex, job: JobSummary): BreakdownItem {
   const base = { criterion: "language" as const, weight: WEIGHTS.language };
   if (job.language !== "en") return { ...base, value: 100, available: true, reason: "A vaga não exige inglês." };
-  if (!pi.englishLevel) return { ...base, value: 0, available: false, reason: "A vaga é em inglês e seu perfil não informa o nível." };
+  if (!pi.englishLevel) return { ...base, value: 0, available: true, reason: "Vaga em inglês; seu perfil não informa nível de inglês." };
   const ok = ENGLISH_OK.has(pi.englishLevel);
   return {
     ...base,

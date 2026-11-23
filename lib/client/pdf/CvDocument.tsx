@@ -14,7 +14,8 @@ export const SECTION_LABELS: Record<CvLang, { summary: string; experience: strin
 export const styles = StyleSheet.create({
   page: { fontFamily: PDF_FONT, fontSize: 10, lineHeight: 1.4, paddingVertical: 40, paddingHorizontal: 44, color: "#111111" },
   name: { fontSize: 20, fontWeight: 700 },
-  headline: { fontSize: 11.5, marginTop: 4 },
+  // Margem de 8: com menos (4), o extrator de texto (ATS) cola nome e título ("Ana SouzaDev").
+  headline: { fontSize: 11.5, marginTop: 8 },
   contact: { fontSize: 9, marginTop: 4, color: "#333333" },
   section: { marginTop: 12 },
   sectionTitle: { fontSize: 11, fontWeight: 700, borderBottomWidth: 0.75, borderBottomColor: "#111111", paddingBottom: 2, marginBottom: 5 },
@@ -25,14 +26,26 @@ export const styles = StyleSheet.create({
   paragraph: { marginBottom: 6 },
 });
 
-/** CV de coluna única: só texto, sem tabela nem imagem. Trechos com `flagged` ficam de fora; seção vazia não aparece. */
+const hasText = (s: string) => s.trim().length > 0;
+
+/** Experiência repetida (`occurrence > 0`) ou com violação de nível de experiência: não entra no PDF. */
+function isDuplicateOrInvalid(x: AssembledCv["experiences"][number]): boolean {
+  if (x.occurrence > 0) return true;
+  return x.bullets.some((b) => b.violations.some((v) => v.kind === "unknown_exp" && v.where.bulletIndex === undefined));
+}
+
+/**
+ * CV de coluna única: só texto, sem tabela nem imagem. Trechos com `flagged` ficam de fora; seção vazia não aparece.
+ * Trechos vazios (só espaços) também ficam de fora, e a experiência repetida não vira um cabeçalho duplicado.
+ */
 export function CvDocument({ cv }: { cv: AssembledCv }) {
   const L = SECTION_LABELS[cv.lang];
-  const headline = cv.flags.headline.flagged ? "" : cv.headline;
-  const summary = cv.flags.summary.flagged ? "" : cv.summary;
-  const skills = cv.skills.filter((_, i) => !cv.flags.skills[i]?.flagged);
+  const headline = cv.flags.headline.flagged || !hasText(cv.headline) ? "" : cv.headline.trim();
+  const summary = cv.flags.summary.flagged || !hasText(cv.summary) ? "" : cv.summary.trim();
+  const skills = cv.skills.filter((s, i) => !cv.flags.skills[i]?.flagged && hasText(s)).map((s) => s.trim());
   const experiences = cv.experiences
-    .map((x) => ({ ...x, bullets: x.bullets.filter((b) => !b.flagged) }))
+    .filter((x) => !isDuplicateOrInvalid(x))
+    .map((x) => ({ ...x, bullets: x.bullets.filter((b) => !b.flagged && hasText(b.text)) }))
     .filter((x) => x.bullets.length > 0 || x.company || x.role);
   const education = cv.education.filter(Boolean);
   return (

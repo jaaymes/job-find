@@ -57,6 +57,45 @@ describe("renderCvPdf", () => {
     expect(pages).toBeLessThanOrEqual(2);
   });
 
+  it("separa o nome do título no texto extraído (ATS)", async () => {
+    const text = await textOf((await renderCvPdf(cvFixture(), FONTS)).blob);
+    expect(text).toMatch(/Ana Souza\s+Engenheira Frontend Sênior/);
+  });
+
+  it("deixa de fora bullets, skills, resumo e título vazios (só espaços)", async () => {
+    const base = cvFixture();
+    const cv = cvFixture({
+      headline: "   ",
+      summary: " \n ",
+      skills: ["React", "  ", "TypeScript"],
+      flags: { headline: OK_FLAG, summary: OK_FLAG, skills: [OK_FLAG, OK_FLAG, OK_FLAG] },
+      experiences: [
+        { ...base.experiences[0], bullets: [{ key: "b1", text: "Liderou a migração.", flagged: false, violations: [] }, { key: "b3", text: "   ", flagged: false, violations: [] }] },
+      ],
+    });
+    const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
+    expect(text).not.toContain("Resumo");
+    expect(text).toContain("React, TypeScript");
+    expect(text).not.toMatch(/-\s*$/m);
+    expect(text).not.toMatch(/^\s*-\s*$/m);
+  });
+
+  it("experiência repetida (occurrence > 0) ou com violação de experiência não vira cabeçalho duplicado", async () => {
+    const base = cvFixture().experiences[0];
+    const expViolation = { kind: "unknown_exp" as const, text: "exp_1", where: { expId: "exp_1", part: "cv" as const }, key: "e" };
+    const cv = cvFixture({
+      experiences: [
+        { ...base, bullets: [base.bullets[0]] },
+        { ...base, occurrence: 1, bullets: [{ key: "r1", text: "Bullet da repetição", flagged: false, violations: [] }] },
+        { ...base, expId: "exp_2", company: "Outra Repetida", bullets: [{ key: "x1", text: "Bullet inválido", flagged: false, violations: [expViolation] }] },
+      ],
+    });
+    const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
+    expect(text.match(/Lumen Pay/g)).toHaveLength(1);
+    expect(text).not.toContain("Bullet da repetição");
+    expect(text).not.toContain("Outra Repetida");
+  });
+
   it("deixa de fora summary e headline sinalizados, e seção vazia", async () => {
     const cv = cvFixture({ flags: { headline: { ...OK_FLAG, flagged: true }, summary: { ...OK_FLAG, flagged: true }, skills: [] }, skills: [] });
     const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
@@ -109,5 +148,18 @@ describe("cvFileName", () => {
     expect(n.length).toBeLessThanOrEqual(120);
     expect(n.endsWith(".pdf")).toBe(true);
     expect(n.includes("-.pdf")).toBe(false);
+  });
+  it("remove invisíveis e controles bidi (\\p{Cf})", () => {
+    expect(cvFileName("Ana\u200b Souza", "Acme\u202Efdp.exe", "Dev\u2066")).toBe("CV-Ana-Souza-Acmefdp.exe-Dev.pdf");
+  });
+  it("não parte um emoji (par substituto) ao truncar", () => {
+    const n = cvFileName("a".repeat(112), "😀😀😀", "c");
+    expect(n.length).toBeLessThanOrEqual(120);
+    expect(n).not.toMatch(/[\uD800-\uDBFF](?![\uDC00-\uDFFF])/);
+    expect(n.endsWith(".pdf")).toBe(true);
+  });
+  it("não termina em '..pdf'", () => {
+    expect(cvFileName("Ana", "Acme", "Dev Sr.")).toBe("CV-Ana-Acme-Dev-Sr.pdf");
+    expect(cvFileName("Ana", "Acme", "...")).toBe("CV-Ana-Acme.pdf");
   });
 });

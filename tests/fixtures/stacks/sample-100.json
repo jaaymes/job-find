@@ -1,0 +1,957 @@
+[
+  {
+    "title": "Desenvolvedor Front-end React Pleno",
+    "body": "Buscamos pessoa desenvolvedora com experiência em React, TypeScript, Redux e testes com Jest. Diferencial: Next.js.",
+    "expected": [
+      "jest",
+      "nextjs",
+      "react",
+      "redux",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Senior Backend Engineer (Go)",
+    "tags": [
+      "Go",
+      "Kubernetes"
+    ],
+    "body": "We build payment services in Go and PostgreSQL, deployed on Kubernetes on AWS. Experience with gRPC is a plus.",
+    "expected": [
+      "aws",
+      "go",
+      "grpc",
+      "kubernetes",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software Java Sênior",
+    "body": "Java 17, Spring Boot, microsserviços, Kafka, Oracle Database, Docker.",
+    "expected": [
+      "docker",
+      "java",
+      "kafka",
+      "oracle",
+      "spring"
+    ]
+  },
+  {
+    "title": "Desenvolvedor .NET",
+    "body": "C#, ASP.NET Core, SQL Server, Azure DevOps, Entity Framework.",
+    "expected": [
+      "azure",
+      "csharp",
+      "dotnet",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Mobile Developer React Native",
+    "body": "Build apps for iOS and Android using React Native and TypeScript. Experience with Redux and Jest.",
+    "expected": [
+      "android",
+      "ios",
+      "jest",
+      "react",
+      "react-native",
+      "redux",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Dev Flutter Júnior",
+    "body": "Dart, Flutter, Firebase, APIs REST.",
+    "expected": [
+      "dart",
+      "firebase",
+      "flutter",
+      "rest"
+    ]
+  },
+  {
+    "title": "Android Developer Kotlin",
+    "body": "Kotlin, Jetpack Compose, Coroutines, MVVM, Git.",
+    "expected": [
+      "android",
+      "git",
+      "kotlin"
+    ]
+  },
+  {
+    "title": "iOS Engineer",
+    "body": "Swift, SwiftUI, Combine, XCTest. Experience publishing apps to the App Store.",
+    "expected": [
+      "ios",
+      "swift"
+    ]
+  },
+  {
+    "title": "Cientista de Dados Pleno",
+    "body": "Python, pandas, SQL, Power BI e machine learning. Conhecimento em R é um diferencial.",
+    "expected": [
+      "pandas",
+      "powerbi",
+      "python",
+      "r",
+      "sql"
+    ]
+  },
+  {
+    "title": "Engenheiro de Dados",
+    "body": "Spark, Airflow, dbt, Snowflake, Python e SQL. Cloud: AWS.",
+    "expected": [
+      "airflow",
+      "aws",
+      "dbt",
+      "python",
+      "snowflake",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "DevOps Engineer",
+    "body": "Terraform, Kubernetes, Docker, Jenkins, GitHub Actions; monitoring with Prometheus. Linux.",
+    "expected": [
+      "docker",
+      "githubactions",
+      "jenkins",
+      "kubernetes",
+      "linux",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Analista de QA Automação",
+    "body": "Selenium, Cypress, Java, Jenkins e BDD.",
+    "expected": [
+      "cypress",
+      "java",
+      "jenkins",
+      "selenium"
+    ]
+  },
+  {
+    "title": "QA Engineer",
+    "body": "Playwright with TypeScript, API testing with Postman, CI on GitLab CI.",
+    "expected": [
+      "gitlab-ci",
+      "playwright",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Desenvolvedor PHP Laravel",
+    "body": "PHP 8, Laravel, MySQL, Redis, Docker, Vue.js.",
+    "expected": [
+      "docker",
+      "laravel",
+      "mysql",
+      "php",
+      "redis",
+      "vue"
+    ]
+  },
+  {
+    "title": "Ruby on Rails Developer",
+    "body": "Ruby on Rails, PostgreSQL, Sidekiq, Redis, RSpec.",
+    "expected": [
+      "postgresql",
+      "rails",
+      "redis",
+      "ruby"
+    ]
+  },
+  {
+    "title": "Full Stack Developer (Node.js + React)",
+    "body": "Node.js, Express.js, React, MongoDB e AWS.",
+    "expected": [
+      "aws",
+      "express",
+      "mongodb",
+      "nodejs",
+      "react"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Backend NestJS",
+    "body": "NestJS, TypeScript, PostgreSQL, RabbitMQ, Docker.",
+    "expected": [
+      "docker",
+      "nestjs",
+      "nodejs",
+      "postgresql",
+      "rabbitmq",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Frontend Angular Sênior",
+    "body": "Angular 15+, RxJS, TypeScript, NgRx, testes com Jasmine.",
+    "expected": [
+      "angular",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Vue.js Developer",
+    "body": "Vue 3, Nuxt, Pinia, Tailwind CSS, Vite.",
+    "expected": [
+      "nuxt",
+      "tailwind",
+      "vue"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Python Django",
+    "body": "Python, Django, APIs REST, PostgreSQL, Celery, Redis, Docker.",
+    "expected": [
+      "django",
+      "docker",
+      "postgresql",
+      "python",
+      "redis",
+      "rest"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software C++",
+    "body": "C++17, Linux, CMake, multithreading, Boost.",
+    "expected": [
+      "cpp",
+      "linux"
+    ]
+  },
+  {
+    "title": "Rust Engineer",
+    "body": "Rust, Tokio, WebAssembly, Linux. Experience with Go is a plus.",
+    "expected": [
+      "go",
+      "linux",
+      "rust"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Go Pleno",
+    "body": "Go, gRPC, PostgreSQL, Kafka, Docker.",
+    "expected": [
+      "docker",
+      "go",
+      "grpc",
+      "kafka",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Backend Developer",
+    "body": "We are going fast and need a go-to person for our Node.js services with Redis.",
+    "expected": [
+      "nodejs",
+      "redis"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Fullstack Pleno",
+    "body": "Excel avançado, pacote Office, SQL e C#.",
+    "expected": [
+      "csharp",
+      "sql"
+    ]
+  },
+  {
+    "title": "Analista de Dados",
+    "body": "Excel, Power BI, SQL, Tableau. Pacote Office.",
+    "expected": [
+      "powerbi",
+      "sql",
+      "tableau"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Java",
+    "body": "Experiência com JavaScript e Java para integrações.",
+    "expected": [
+      "java",
+      "javascript"
+    ]
+  },
+  {
+    "title": "JavaScript Developer",
+    "body": "Vanilla JavaScript, jQuery, HTML5 e CSS3.",
+    "expected": [
+      "css",
+      "html",
+      "javascript",
+      "jquery"
+    ]
+  },
+  {
+    "title": "Engenheiro de Machine Learning",
+    "body": "PyTorch, TensorFlow, Python, Docker, AWS SageMaker.",
+    "expected": [
+      "aws",
+      "docker",
+      "python",
+      "pytorch",
+      "tensorflow"
+    ]
+  },
+  {
+    "title": "Site Reliability Engineer",
+    "body": "GCP, Kubernetes, Terraform, Go ou Python.",
+    "expected": [
+      "gcp",
+      "go",
+      "kubernetes",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Tech Lead Backend",
+    "body": "Liderança técnica; stack: Java, Spring, Kafka, AWS (EKS, RDS) e PostgreSQL.",
+    "expected": [
+      "aws",
+      "java",
+      "kafka",
+      "postgresql",
+      "spring"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Mobile Híbrido Ionic",
+    "body": "Ionic, Angular, Capacitor, TypeScript.",
+    "expected": [
+      "angular",
+      "ionic",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software Scala",
+    "body": "Scala, Akka, Spark, Kafka, AWS.",
+    "expected": [
+      "aws",
+      "kafka",
+      "scala",
+      "spark"
+    ]
+  },
+  {
+    "title": "Elixir Developer",
+    "body": "Elixir, Phoenix, PostgreSQL, Docker.",
+    "expected": [
+      "docker",
+      "elixir",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "DBA PostgreSQL",
+    "body": "PostgreSQL, MySQL, tuning, replicação, backup. Linux.",
+    "expected": [
+      "linux",
+      "mysql",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Analista de Banco de Dados Oracle",
+    "body": "Oracle Database, PL/SQL, SQL Server, MySQL.",
+    "expected": [
+      "mysql",
+      "oracle",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Desenvolvedor WordPress",
+    "body": "WordPress, PHP, MySQL, JavaScript, HTML e CSS.",
+    "expected": [
+      "css",
+      "html",
+      "javascript",
+      "mysql",
+      "php",
+      "wordpress"
+    ]
+  },
+  {
+    "title": "Product Engineer (TypeScript)",
+    "body": "TypeScript, React, Node, GraphQL, PostgreSQL.",
+    "expected": [
+      "graphql",
+      "nodejs",
+      "postgresql",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Engenheiro Frontend",
+    "body": "React, Next.js, Tailwind, Storybook, Cypress.",
+    "expected": [
+      "cypress",
+      "nextjs",
+      "react",
+      "tailwind"
+    ]
+  },
+  {
+    "title": "Dev Next.js",
+    "body": "Vamos going forward com TypeScript.",
+    "expected": [
+      "nextjs",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Analista de Suporte",
+    "body": "Conhecimentos em Windows, pacote Office, Excel e Word.",
+    "expected": []
+  },
+  {
+    "title": "Gerente de Projetos de TI",
+    "body": "Scrum, Kanban, Jira. Excel avançado.",
+    "expected": []
+  },
+  {
+    "title": "UX Designer",
+    "body": "Figma, pesquisa com usuários, design system.",
+    "expected": []
+  },
+  {
+    "title": "Engenheiro de Dados Sênior",
+    "body": "BigQuery, dbt, Airflow, GCP, Python, SQL.",
+    "expected": [
+      "airflow",
+      "bigquery",
+      "dbt",
+      "gcp",
+      "python",
+      "sql"
+    ]
+  },
+  {
+    "title": "Databricks Engineer",
+    "body": "Databricks, PySpark, Delta Lake, Azure, SQL.",
+    "expected": [
+      "azure",
+      "databricks",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Backend Node.js Júnior",
+    "body": "Node.js, Express.js, MongoDB, Git.",
+    "expected": [
+      "express",
+      "git",
+      "mongodb",
+      "nodejs"
+    ]
+  },
+  {
+    "title": "Frontend Developer",
+    "body": "HTML, CSS, JavaScript, React.js e Git/GitHub.",
+    "expected": [
+      "css",
+      "git",
+      "html",
+      "javascript",
+      "react"
+    ]
+  },
+  {
+    "title": "Mobile Engineer",
+    "body": "Swift ou Kotlin; experiência com arquitetura limpa e CI/CD.",
+    "expected": [
+      "kotlin",
+      "swift"
+    ]
+  },
+  {
+    "title": "Full Stack .NET + Angular",
+    "body": "ASP.NET Core, C#, Angular, SQL Server, Docker.",
+    "expected": [
+      "angular",
+      "csharp",
+      "docker",
+      "dotnet",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Java Developer",
+    "body": "Java EE, Hibernate, Maven, JUnit, MySQL.",
+    "expected": [
+      "java",
+      "junit",
+      "mysql"
+    ]
+  },
+  {
+    "title": "Engenheiro DevOps AWS",
+    "body": "AWS (EC2, S3, Lambda), Terraform, Docker, GitLab CI, Linux, Bash.",
+    "expected": [
+      "aws",
+      "docker",
+      "gitlab-ci",
+      "linux",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Cloud Architect",
+    "body": "Azure, AWS e GCP; Kubernetes; Terraform.",
+    "expected": [
+      "aws",
+      "azure",
+      "gcp",
+      "kubernetes",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Analista de Testes",
+    "body": "Testes manuais, Jira, SQL básico, Postman.",
+    "expected": [
+      "sql"
+    ]
+  },
+  {
+    "title": "SDET",
+    "body": "Java, Selenium, JUnit, Appium, CI/CD with Jenkins.",
+    "expected": [
+      "appium",
+      "java",
+      "jenkins",
+      "junit",
+      "selenium"
+    ]
+  },
+  {
+    "title": "Desenvolvedor React Native",
+    "body": "React Native, Expo, TypeScript, Firebase.",
+    "expected": [
+      "firebase",
+      "react",
+      "react-native",
+      "typescript"
+    ]
+  },
+  {
+    "title": "React Developer",
+    "body": "React, Redux, hooks, REST APIs, Jest.",
+    "expected": [
+      "jest",
+      "react",
+      "redux",
+      "rest"
+    ]
+  },
+  {
+    "title": "Engenheira de Software Python",
+    "body": "Python, FastAPI, SQLAlchemy, PostgreSQL, Docker, AWS.",
+    "expected": [
+      "aws",
+      "docker",
+      "fastapi",
+      "postgresql",
+      "python"
+    ]
+  },
+  {
+    "title": "Flask Developer",
+    "body": "Flask, Python, Redis, Celery.",
+    "expected": [
+      "flask",
+      "python",
+      "redis"
+    ]
+  },
+  {
+    "title": "Dev Backend Sênior",
+    "body": "Kotlin, Spring Boot, Kafka, Kubernetes.",
+    "expected": [
+      "java",
+      "kafka",
+      "kotlin",
+      "kubernetes",
+      "spring"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Fullstack",
+    "body": "Experiência com Vue.js, Node e MongoDB.",
+    "expected": [
+      "mongodb",
+      "nodejs",
+      "vue"
+    ]
+  },
+  {
+    "title": "Svelte Developer",
+    "body": "SvelteKit, TypeScript, Tailwind.",
+    "expected": [
+      "svelte",
+      "tailwind",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Engenheiro de Observabilidade",
+    "body": "Elasticsearch, Kafka, Kubernetes, Linux, Go.",
+    "expected": [
+      "elasticsearch",
+      "go",
+      "kafka",
+      "kubernetes",
+      "linux"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Unity",
+    "body": "C#, Unity, jogos 3D.",
+    "expected": [
+      "csharp"
+    ]
+  },
+  {
+    "title": "Engenheiro Embarcado",
+    "body": "Linguagem C, C++, RTOS, Linux embarcado.",
+    "expected": [
+      "c",
+      "cpp",
+      "linux"
+    ]
+  },
+  {
+    "title": "Analista de Dados R",
+    "body": "Linguagem R, RStudio, SQL, estatística.",
+    "expected": [
+      "r",
+      "sql"
+    ]
+  },
+  {
+    "title": "Estatístico Data Analyst",
+    "body": "R, Python, SQL e Tableau.",
+    "expected": [
+      "python",
+      "r",
+      "sql",
+      "tableau"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software Pleno",
+    "body": "Nossa stack: Go, React e PostgreSQL.",
+    "expected": [
+      "go",
+      "postgresql",
+      "react"
+    ]
+  },
+  {
+    "title": "Backend Developer (Golang)",
+    "body": "Golang, REST, MongoDB.",
+    "expected": [
+      "go",
+      "mongodb",
+      "rest"
+    ]
+  },
+  {
+    "title": "SAP ABAP Developer",
+    "body": "ABAP, SAP S/4HANA.",
+    "expected": []
+  },
+  {
+    "title": "Salesforce Developer",
+    "body": "Apex, LWC, Salesforce.",
+    "expected": []
+  },
+  {
+    "title": "Desenvolvedor Backend",
+    "body": "We use Node and Python; going all in on cloud with AWS.",
+    "expected": [
+      "aws",
+      "nodejs",
+      "python"
+    ]
+  },
+  {
+    "title": "Data Scientist",
+    "body": "Python (pandas, NumPy), SQL, MLflow, Spark.",
+    "expected": [
+      "pandas",
+      "python",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "Analista BI",
+    "body": "Power BI, DAX, SQL Server, Excel.",
+    "expected": [
+      "powerbi",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Software Engineer, Platform",
+    "body": "gRPC, Kubernetes, Rust or Go.",
+    "expected": [
+      "go",
+      "grpc",
+      "kubernetes",
+      "rust"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Python",
+    "body": "Python 3, Django, DRF, Postgres.",
+    "expected": [
+      "django",
+      "postgresql",
+      "python"
+    ]
+  },
+  {
+    "title": "Engenheiro SRE",
+    "body": "Prometheus, Grafana, Kubernetes, Terraform, Python.",
+    "expected": [
+      "kubernetes",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Frontend Engineer",
+    "body": "Vue.js 3, TypeScript, Vite, Vitest.",
+    "expected": [
+      "typescript",
+      "vue"
+    ]
+  },
+  {
+    "title": "Analista Desenvolvedor",
+    "body": "Experiência com Oracle e PL/SQL.",
+    "expected": [
+      "oracle"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Mobile",
+    "body": "Android nativo (Java/Kotlin) ou iOS (Swift).",
+    "expected": [
+      "android",
+      "ios",
+      "java",
+      "kotlin",
+      "swift"
+    ]
+  },
+  {
+    "title": "Senior Frontend Engineer",
+    "body": "React, TypeScript, GraphQL, Next.js; remote-first company.",
+    "expected": [
+      "graphql",
+      "nextjs",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "QA Mobile",
+    "body": "Appium, Android, iOS, Cypress.",
+    "expected": [
+      "android",
+      "appium",
+      "cypress",
+      "ios"
+    ]
+  },
+  {
+    "title": "Engenheiro de Plataforma",
+    "body": "Docker, Kubernetes, ArgoCD, GitHub Actions, AWS, Terraform.",
+    "expected": [
+      "aws",
+      "docker",
+      "githubactions",
+      "kubernetes",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Node.js",
+    "body": "Node.js, TypeScript, Redis, RabbitMQ, MongoDB.",
+    "expected": [
+      "mongodb",
+      "nodejs",
+      "rabbitmq",
+      "redis",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Backend Kotlin",
+    "body": "Ktor, Kotlin, PostgreSQL.",
+    "expected": [
+      "kotlin",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Dev Fullstack C#",
+    "body": "C#, .NET 8, React, PostgreSQL.",
+    "expected": [
+      "csharp",
+      "dotnet",
+      "postgresql",
+      "react"
+    ]
+  },
+  {
+    "title": "Tech Recruiter de TI",
+    "body": "Recrutamos para vagas Java, .NET e React.",
+    "expected": [
+      "dotnet",
+      "java",
+      "react"
+    ]
+  },
+  {
+    "title": "Estágio em Desenvolvimento",
+    "body": "Lógica de programação, Python ou JavaScript, Git.",
+    "expected": [
+      "git",
+      "javascript",
+      "python"
+    ]
+  },
+  {
+    "title": "Engenheiro de Dados Pleno",
+    "body": "Kafka, Spark, Scala, Hadoop.",
+    "expected": [
+      "hadoop",
+      "kafka",
+      "scala",
+      "spark"
+    ]
+  },
+  {
+    "title": "Desenvolvedor PHP Legado",
+    "body": "PHP 7, jQuery, MySQL, Linux.",
+    "expected": [
+      "jquery",
+      "linux",
+      "mysql",
+      "php"
+    ]
+  },
+  {
+    "title": "Cloud Engineer GCP",
+    "body": "Google Cloud Platform, Terraform, BigQuery, Python.",
+    "expected": [
+      "bigquery",
+      "gcp",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Web",
+    "body": "Conhecimento em React Native é um diferencial; foco em React no dia a dia.",
+    "expected": [
+      "react",
+      "react-native"
+    ]
+  },
+  {
+    "title": "Staff Engineer",
+    "body": "TypeScript, Node.js, AWS, DynamoDB.",
+    "expected": [
+      "aws",
+      "nodejs",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Dev Nuxt",
+    "body": "Nuxt 3, Vue, TypeScript.",
+    "expected": [
+      "nuxt",
+      "typescript",
+      "vue"
+    ]
+  },
+  {
+    "title": "AngularJS to Angular Migration",
+    "body": "AngularJS legado e Angular moderno, TypeScript.",
+    "expected": [
+      "angular",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Laravel/Vue",
+    "body": "Laravel, Vue.js, MySQL, Redis.",
+    "expected": [
+      "laravel",
+      "mysql",
+      "php",
+      "redis",
+      "vue"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software",
+    "body": "Experiência com Rust e WebAssembly; Swift é bônus.",
+    "expected": [
+      "rust",
+      "swift"
+    ]
+  },
+  {
+    "title": "Analista Programador",
+    "body": "Visual Basic, Delphi, SQL Server.",
+    "expected": [
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Engenheiro de Dados",
+    "body": "Redshift, S3, Glue, Python, SQL: AWS.",
+    "expected": [
+      "aws",
+      "python",
+      "sql"
+    ]
+  },
+  {
+    "title": "Fullstack Engineer",
+    "body": "MySQL e PostgreSQL; Docker Compose; React & Node.js.",
+    "expected": [
+      "docker",
+      "mysql",
+      "nodejs",
+      "postgresql",
+      "react"
+    ]
+  },
+  {
+    "title": "Frontend Lead",
+    "body": "Angular ou React; testes com Jest e Cypress.",
+    "expected": [
+      "angular",
+      "cypress",
+      "jest",
+      "react"
+    ]
+  }
+]

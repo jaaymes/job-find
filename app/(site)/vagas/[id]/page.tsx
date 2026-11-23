@@ -3,7 +3,8 @@ import { JobDetail } from "@/components/jobs/JobDetail";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 
-export const metadata: Metadata = { title: "Job Find — Detalhe da vaga" };
+// Fora do índice dos buscadores: o conteúdo é das fontes, e algumas proíbem repassá-lo ao Google (D-07).
+export const metadata: Metadata = { title: "Job Find — Detalhe da vaga", robots: { index: false } };
 
 // Cada id é renderizado uma vez, sob demanda, e fica em cache; nenhum id é pré-gerado no build.
 export function generateStaticParams(): { id: string }[] {

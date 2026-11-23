@@ -134,6 +134,14 @@ test("descrição com payload XSS não executa script nem mantém atributos peri
   await expect(origin).toHaveAttribute("href", XSS_SOURCE_URL);
 });
 
+test("detalhe da vaga tem noindex e o robots.txt bloqueia a API", async ({ page, request }) => {
+  await page.goto("/vagas/1");
+  await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /noindex/);
+  const robots = await request.get("/robots.txt");
+  expect(robots.ok()).toBe(true);
+  expect(await robots.text()).toMatch(/^Disallow: \/api\/$/m);
+});
+
 test("vaga inexistente mostra 'Vaga não encontrada' com link para a lista", async ({ page }) => {
   await page.goto("/vagas/999999");
   await expect(page.getByRole("heading", { name: "Vaga não encontrada" })).toBeVisible();

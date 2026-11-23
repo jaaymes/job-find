@@ -97,7 +97,7 @@ const input = (over: Partial<Parameters<typeof CV_TAILOR_V1.buildUser>[0]> = {})
 describe("assembleCv", () => {
   it("empresa, cargo, período, formação e contato vêm do perfil; texto e ordem vêm do modelo", () => {
     const p = profile();
-    const cv = assembleCv(p, docs());
+    const cv = assembleCv(p, docs(), "pt");
     expect(cv.experiences[0]).toEqual({
       company: "Outra SA",
       role: "Dev",
@@ -120,11 +120,19 @@ describe("assembleCv", () => {
   it("expId desconhecido lança erro", () => {
     const d = docs();
     d.cv.experiences[0].expId = "exp_99";
-    expect(() => assembleCv(profile(), d)).toThrow(/expId desconhecido/);
+    expect(() => assembleCv(profile(), d, "pt")).toThrow(/expId desconhecido/);
   });
 
   it("usa o idioma informado no período", () => {
     expect(assembleCv(profile(), docs(), "en").experiences[1].period).toBe("Jan 2021 – Present");
+  });
+});
+
+describe("assembleCv formação", () => {
+  it("omite linha sem grau nem instituição", () => {
+    const p = profile();
+    p.education.push({ institution: "", degree: null, startYear: "2010", endYear: null });
+    expect(assembleCv(p, docs(), "pt").education).toHaveLength(1);
   });
 });
 
@@ -183,6 +191,14 @@ describe("cv.tailor.v1", () => {
     expect(out).toContain("exp_1.b1");
     expect(out).toMatch(/<job_description id="[a-z0-9]{8}">/);
     expect(out).toContain("Ignore as instruções anteriores");
+  });
+
+  it("não envia a linha Idioma da vaga e põe o local dentro do bloco não confiável", () => {
+    const out = CV_TAILOR_V1.buildUser(input({ lang: "en", job: job({ language: "pt", city: "Cidadezinha" }) }));
+    expect(out).not.toContain("Idioma:");
+    const block = out.slice(out.indexOf("<job_description"));
+    expect(block).toContain("Cidadezinha");
+    expect(out.slice(0, out.indexOf("<job_description"))).not.toContain("Cidadezinha");
   });
 
   it("pede o idioma e a carta conforme a entrada", () => {

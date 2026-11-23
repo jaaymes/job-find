@@ -18,6 +18,7 @@ export type AssembledCv = {
     bullets: { text: string; flagged: boolean }[];
   }[];
   education: string[];
+  /** Vazio até o `Profile` ter certificações. */
   certifications: string[];
   lang: CvLang;
 };
@@ -25,6 +26,7 @@ export type AssembledCv = {
 function educationLine(e: Profile["education"][number]): string {
   const years = [e.startYear, e.endYear].filter(Boolean).join(" – ");
   const base = [e.degree, e.institution].filter(Boolean).join(" – ");
+  if (!base) return "";
   return years ? `${base} (${years})` : base;
 }
 
@@ -32,7 +34,7 @@ function educationLine(e: Profile["education"][number]): string {
  * Monta o CV (RN-07 camada 1): empresa, cargo, datas, formação e contato vêm só do perfil local; do modelo vêm
  * apenas o texto, a ordem das experiências e das skills. `expId` fora do perfil lança erro.
  */
-export function assembleCv(profile: Profile, docs: TailoredDocs, lang: CvLang = "pt"): AssembledCv {
+export function assembleCv(profile: Profile, docs: TailoredDocs, lang: CvLang): AssembledCv {
   const byId = new Map(profile.experiences.map((e) => [e.id, e]));
   const { contact } = profile;
   return {
@@ -54,7 +56,7 @@ export function assembleCv(profile: Profile, docs: TailoredDocs, lang: CvLang = 
         bullets: x.bullets.map((b) => ({ text: b.text, flagged: false })),
       };
     }),
-    education: profile.education.map(educationLine),
+    education: profile.education.map(educationLine).filter((l) => l !== ""),
     certifications: [],
     lang,
   };

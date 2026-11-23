@@ -55,20 +55,21 @@ export function projectProfile(p: Profile) {
   };
 }
 
-export function jobFacts(job: JobDetail): string {
+export function jobFacts(job: JobDetail, opts: { language?: boolean; place?: boolean } = {}): string {
   const place = [job.city, job.country].filter(Boolean).join(", ") || ANSWER_PLACEHOLDER;
   return [
     `Modalidade: ${job.workMode}`,
     `Senioridade: ${job.seniority ?? ANSWER_PLACEHOLDER}`,
-    `Idioma: ${job.language}`,
-    `Local: ${place}`,
+    ...(opts.language === false ? [] : [`Idioma: ${job.language}`]),
+    ...(opts.place === false ? [] : [`Local: ${place}`]),
     `Tecnologias detectadas: ${job.stacks.join(", ") || ANSWER_PLACEHOLDER}`,
   ].join("\n");
 }
 
 /** Vaga como texto não confiável delimitado (título, empresa e descrição), truncada em `JOB_MAX_CHARS`. */
-export function wrapJobDescription(job: JobDetail): string {
-  return wrapUntrusted("job_description", `${job.title} - ${job.company}\n\n${htmlToText(job.descriptionHtml)}`, JOB_MAX_CHARS);
+export function wrapJobDescription(job: JobDetail, extraLines: string[] = []): string {
+  const head = [`${job.title} - ${job.company}`, ...extraLines].join("\n");
+  return wrapUntrusted("job_description", `${head}\n\n${htmlToText(job.descriptionHtml)}`, JOB_MAX_CHARS);
 }
 
 /**

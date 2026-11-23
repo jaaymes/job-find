@@ -21,13 +21,14 @@ function parseSources(raw: string | null): SourceId[] | null {
   const all = Object.keys(CONNECTORS) as SourceId[];
   if (raw === null) return all;
   const ids = raw.split(",").map((s) => s.trim()).filter(Boolean);
-  if (ids.length === 0 || !ids.every((id) => id in CONNECTORS)) return null;
+  if (ids.length === 0 || !ids.every((id) => Object.hasOwn(CONNECTORS, id))) return null;
   return [...new Set(ids)] as SourceId[];
 }
 
 async function collectInBackground(sources: SourceId[]): Promise<void> {
-  const db = getPoolDb();
+  let db: ReturnType<typeof getPoolDb> | undefined;
   try {
+    db = getPoolDb();
     const results = await runCollection({
       db,
       sources,
@@ -44,7 +45,7 @@ async function collectInBackground(sources: SourceId[]): Promise<void> {
     console.error("[cron/collect] coleta falhou:", e instanceof Error ? e.message : String(e));
   } finally {
     try {
-      await db.$client.end();
+      await db?.$client.end();
     } catch (e) {
       console.error("[cron/collect] falha ao fechar o pool:", e instanceof Error ? e.message : String(e));
     }

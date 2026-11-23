@@ -5,6 +5,7 @@ const m = vi.hoisted(() => ({
   invalidateByTag: vi.fn<(tag: string) => Promise<void>>(async () => undefined),
   runCollection: vi.fn<(opts: unknown) => Promise<unknown[]>>(async () => []),
   end: vi.fn(async () => undefined),
+  getPoolDb: vi.fn(),
 }));
 const { afterCallbacks, invalidateByTag, runCollection, end } = m;
 const fakeDb = { $client: { end } };
@@ -16,7 +17,7 @@ vi.mock("next/server", () => ({
 }));
 vi.mock("@vercel/functions", () => ({ invalidateByTag: m.invalidateByTag }));
 vi.mock("@/lib/server/collect/run", () => ({ runCollection: m.runCollection }));
-vi.mock("@/lib/server/db/client", () => ({ getPoolDb: () => ({ $client: { end: m.end } }) }));
+vi.mock("@/lib/server/db/client", () => ({ getPoolDb: m.getPoolDb }));
 
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { GET, POST, maxDuration } from "@/app/api/cron/collect/route";
@@ -29,6 +30,7 @@ describe("/api/cron/collect", () => {
   beforeEach(() => {
     afterCallbacks.length = 0;
     vi.clearAllMocks();
+    m.getPoolDb.mockImplementation(() => ({ $client: { end: m.end } }));
     vi.stubEnv("CRON_SECRET", "s3cr3t");
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.spyOn(console, "log").mockImplementation(() => undefined);
@@ -89,6 +91,25 @@ describe("/api/cron/collect", () => {
     expect(opts.now).toBeInstanceOf(Date);
     await opts.invalidate("jobs");
     expect(invalidateByTag).toHaveBeenCalledWith("jobs");
+  });
+
+  it("400 para chaves do protótipo como fonte", async () => {
+    for (const id of ["constructor", "toString", "__proto__"]) {
+      const res = await GET(req(`?sources=${id}`, "Bearer s3cr3t"));
+      expect(res.status).toBe(400);
+    }
+    expect(afterCallbacks).toHaveLength(0);
+  });
+
+  it("getPoolDb que lança dentro do after é capturado e logado", async () => {
+    m.getPoolDb.mockImplementationOnce(() => {
+      throw new Error("sem banco");
+    });
+    await GET(req("", "Bearer s3cr3t"));
+    await expect(afterCallbacks[0]()).resolves.toBeUndefined();
+    expect(console.error).toHaveBeenCalled();
+    expect(runCollection).not.toHaveBeenCalled();
+    expect(end).not.toHaveBeenCalled();
   });
 
   it("falha dentro do after é capturada e o pool é fechado", async () => {

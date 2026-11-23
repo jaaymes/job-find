@@ -100,10 +100,11 @@ describe("assembleCv", () => {
     const cv = assembleCv(p, docs(), "pt");
     expect(cv.experiences[0]).toEqual({
       expId: "exp_2",
+      occurrence: 0,
       company: "Outra SA",
       role: "Dev",
       period: "2018 – dez 2020",
-      bullets: [{ key: "exp_2#0", text: "APIs em Node.js", flagged: false, violations: [] }],
+      bullets: [{ key: expect.stringMatching(/^exp_2@0#0:/), text: "APIs em Node.js", flagged: false, violations: [] }],
     });
     expect(cv.experiences[1].company).toBe("Empresa Ficticia");
     expect(cv.experiences[1].period).toBe("jan 2021 – atual");

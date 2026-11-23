@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { assembleCv } from "@/lib/client/cv/assemble";
-import { countFlagged, flagBullets } from "@/lib/client/cv/flags";
+import { countFlagged, flagBullets, letterFlags, violationKey } from "@/lib/client/cv/flags";
 import { toPromptFeedback, validateTailored, type Violation } from "@/lib/client/cv/validate";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
@@ -125,7 +125,7 @@ describe("validateTailored", () => {
         ],
       }),
     );
-    expect(dup).toEqual([{ kind: "unknown_exp", text: "exp_1", where: { expId: "exp_1", part: "cv" } }]);
+    expect(dup).toEqual([{ kind: "unknown_exp", text: "exp_1", where: { expId: "exp_1", part: "cv" }, key: "exp_1@1" }]);
   });
 
   it("sourceBulletIds de outra experiência, inexistente ou vazio geram violação; números só das fontes válidas", () => {
@@ -137,17 +137,71 @@ describe("validateTailored", () => {
     expect(validateTailored(profile, withBullet("exp_1", "Migração", []))[0].text).toBe("sem fonte");
   });
 
-  it("não trava com entrada patológica (regex linear)", () => {
+  it("não trava com entrada patológica (varredura linear)", () => {
+    const big: Profile = {
+      ...profile,
+      experiences: Array.from({ length: 200 }, (_, i) => ({
+        id: `exp_${i + 1}`,
+        company: `Empresa ${i}`,
+        title: "Dev",
+        startDate: "2020",
+        endDate: "2021",
+        bullets: Array.from({ length: 10 }, (_, j) => ({ id: `exp_${i + 1}.b${j + 1}`, text: `Fez a coisa ${j}` })),
+      })),
+    };
     const t = Date.now();
-    validateTailored(profile, withLetter(`${"1.".repeat(20000)}x ${"A".repeat(50000)}`));
-    expect(Date.now() - t).toBeLessThan(2000);
+    validateTailored(big, withLetter(`${"\n".repeat(30000)}${"a Q ".repeat(200)}${"1.".repeat(20000)}x ${"A".repeat(50000)}`));
+    expect(Date.now() - t).toBeLessThan(500);
   });
 });
 
 describe("toPromptFeedback", () => {
   it("gera uma frase curta em pt-BR por violação", () => {
     const fb = toPromptFeedback(validateTailored(profile, withBullet("exp_1", "Reduzi 40% do LCP", ["exp_1.b3"])));
-    expect(fb).toEqual(['no bullet 1 de exp_1: o número "40%" não está no texto de origem; remova-o ou use só números do perfil']);
+    expect(fb).toEqual(['no bullet 1 de exp_1: o número "40%" não está na fonte citada; use só números do bullet de origem (sourceBulletIds) ou remova-o']);
+  });
+});
+
+describe("senioridade, certificação, números por extenso, siglas e empresas", () => {
+  const letter = (t: string, job?: Parameters<typeof validateTailored>[2]) =>
+    validateTailored({ ...profile, seniority: "mid", headline: "Dev pleno", experiences: profile.experiences.map((e) => ({ ...e, title: "Dev Pleno" })) }, withLetter(t), job);
+  const texts = (v: Violation[]) => v.map((x) => x.text.toLowerCase());
+
+  it("senioridade e cargos inventados", () => {
+    expect(texts(letter("Sou desenvolvedora sênior React"))).toContain("senior");
+    expect(texts(letter("Sou staff engineer e líder técnico"))).toEqual(expect.arrayContaining(["staff", "lider"]));
+    expect(texts(letter("Atuei como arquiteto e gerente"))).toEqual(expect.arrayContaining(["arquiteto", "gerente"]));
+  });
+  it("termo presente no perfil ou na vaga não gera violação", () => {
+    expect(letter("Sou desenvolvedora pleno com React.")).toEqual([]);
+    expect(letter("Quero ser sênior", { title: "Dev Sênior" })).toEqual([]);
+    expect(letter("Dear Hiring Manager, tenho React.")).toEqual([]);
+  });
+  it("certificações e formação inventadas", () => {
+    expect(texts(letter("Tenho mestrado e MBA"))).toEqual(expect.arrayContaining(["mestrado", "mba"]));
+    expect(texts(letter("Certificada PMP e CSM"))).toEqual(expect.arrayContaining(["certificada", "pmp", "csm"]));
+    const withCert: Profile = { ...profile, summary: "Certificada PMP. Mestrado em computação." };
+    expect(validateTailored(withCert, withLetter("Tenho certificado PMP e mestrado."))).toEqual([]);
+  });
+  it("números por extenso", () => {
+    for (const t of ["Trabalhei dez anos", "Worked ten years", "Dobrei a receita", "Cortei pela metade", "Served hundreds of users"]) {
+      expect(kinds(letter(t)), t).toContain("unknown_number");
+    }
+    expect(letter("Entreguei um projeto e a feature")).toEqual([]);
+    const src: Profile = { ...profile, summary: "Dobrei a receita em dez meses." };
+    expect(validateTailored(src, withLetter("Dobrei a receita em dez meses."))).toEqual([]);
+    expect(validateTailored(profile, withBullet("exp_2", "Gerou 1,5 mil por mês", ["exp_2.b1"]))).toEqual([]);
+  });
+  it("siglas desconhecidas e empresas em minúsculas", () => {
+    expect(texts(letter("Trabalhei na AWS e no BTG")).filter((t) => t !== "aws")).toEqual(["btg"]);
+    expect(texts(letter("Trabalhei no itaú e na google"))).toEqual(expect.arrayContaining(["itau", "google"]));
+    expect(letter("Trabalhei com a API e CI/CD, KPI, UX e LCP")).toEqual([]);
+    expect(letter("Trabalhei na Empresa Ficticia e na google", { company: "Google" })).toEqual([]);
+  });
+  it("mês abreviado e ano corrente em experiência atual", () => {
+    expect(validateTailored(profile, withLetter("Entrei em Jan e saí em Dec. Trabalho em React desde 2021."))).toEqual([]);
+    const y = new Date().getFullYear();
+    expect(validateTailored(profile, withLetter(`Atuo com React de 2021 a ${y}.`))).toEqual([]);
   });
 });
 
@@ -157,12 +211,21 @@ describe("flagBullets / assembleCv com revisão", () => {
 
   it("marca o bullet, conta e respeita approvedFlags", () => {
     const cv = assembleCv(profile, d, "pt", { violations });
-    expect(cv.experiences[0].bullets[0]).toMatchObject({ key: "exp_1#0", flagged: true });
+    const key = cv.experiences[0].bullets[0].key;
+    expect(key).toMatch(/^exp_1@0#0:/);
+    expect(cv.experiences[0].bullets[0].flagged).toBe(true);
     expect(countFlagged(cv)).toBe(1);
-    const ok = assembleCv(profile, d, "pt", { violations, approvedFlags: ["exp_1#0"] });
+    const ok = assembleCv(profile, d, "pt", { violations, approvedFlags: [key] });
     expect(ok.experiences[0].bullets[0].flagged).toBe(false);
     expect(ok.experiences[0].bullets[0].violations).toHaveLength(1);
     expect(countFlagged(ok)).toBe(0);
+  });
+
+  it("a aprovação se perde quando o texto muda", () => {
+    const key = assembleCv(profile, d, "pt", { violations }).experiences[0].bullets[0].key;
+    const d2 = withBullet("exp_1", "Reduzi 41% do LCP", ["exp_1.b3"]);
+    const cv2 = assembleCv(profile, d2, "pt", { violations: validateTailored(profile, d2), approvedFlags: [key] });
+    expect(cv2.experiences[0].bullets[0].flagged).toBe(true);
   });
 
   it("sem revisão nada é marcado; flagBullets é pura", () => {
@@ -172,9 +235,52 @@ describe("flagBullets / assembleCv com revisão", () => {
     expect(countFlagged(cv)).toBe(0);
   });
 
-  it("violação de experiência repetida marca todos os bullets do expId", () => {
-    const cv = assembleCv(profile, d, "pt");
-    const flagged = flagBullets(cv, [{ kind: "unknown_exp", text: "exp_1", where: { expId: "exp_1", part: "cv" } }]);
-    expect(countFlagged(flagged)).toBe(1);
+  it("expId repetido: chaves distintas e a repetição não é aprovável", () => {
+    const dup = docs({
+      experiences: [
+        { expId: "exp_1", bullets: [{ text: "Migração para React", sourceBulletIds: ["exp_1.b1"] }] },
+        { expId: "exp_1", bullets: [{ text: "Migração para React", sourceBulletIds: ["exp_1.b1"] }] },
+      ],
+    });
+    const v = validateTailored(profile, dup);
+    const cv = assembleCv(profile, dup, "pt", { violations: v });
+    const [a, b] = cv.experiences;
+    expect(a.bullets[0].key).not.toBe(b.bullets[0].key);
+    expect(a.bullets[0].flagged).toBe(false);
+    expect(b.bullets[0].flagged).toBe(true);
+    const approved = assembleCv(profile, dup, "pt", { violations: v, approvedFlags: [a.bullets[0].key, b.bullets[0].key, "exp_1@1"] });
+    expect(approved.experiences[1].bullets[0].flagged).toBe(true);
+  });
+
+  it("headline, summary e skills também são destacados e aprováveis", () => {
+    const dd = docs({ headline: "Staff engineer React", summary: "Dez anos de React.", skills: ["React", "Kubernetes"] });
+    const v = validateTailored(profile, dd);
+    const cv = assembleCv(profile, dd, "pt", { violations: v });
+    expect(cv.flags.headline.flagged).toBe(true);
+    expect(cv.flags.summary.flagged).toBe(true);
+    expect(cv.flags.skills.map((s) => s.flagged)).toEqual([false, true]);
+    expect(countFlagged(cv)).toBe(3);
+    expect(v.every((x) => violationKey(x) === x.key)).toBe(true);
+    const ok = assembleCv(profile, dd, "pt", { violations: v, approvedFlags: [cv.flags.headline.key, cv.flags.skills[1].key] });
+    expect(ok.flags.headline.flagged).toBe(false);
+    expect(ok.flags.skills[1].flagged).toBe(false);
+    expect(ok.flags.summary.flagged).toBe(true);
+    expect(cv.flags.skills[1].key).toMatch(/^cv#skill#1:/);
+  });
+
+  it("carta: letterFlags", () => {
+    const v = validateTailored(profile, withLetter("Tenho 10 anos de AWS"));
+    const lf = letterFlags(v);
+    expect(lf.flagged).toBe(true);
+    expect(lf.key).toMatch(/^letter:/);
+    expect(letterFlags(v, [lf.key!]).flagged).toBe(false);
+    expect(letterFlags(validateTailored(profile, withLetter("Tenho React.")), []).flagged).toBe(false);
+  });
+
+  it("expId desconhecido: lança sem review, pula com review", () => {
+    const bad = withBullet("exp_9", "x", ["exp_9.b1"]);
+    expect(() => assembleCv(profile, bad, "pt")).toThrow();
+    const cv = assembleCv(profile, bad, "pt", { violations: validateTailored(profile, bad) });
+    expect(cv.experiences).toEqual([]);
   });
 });

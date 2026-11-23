@@ -15,6 +15,7 @@ Regras:
 - gaps: o que a vaga pede e o perfil não mostra. Marque "(importante)" no fim quando for requisito central da vaga.
 - missingKeywords: termos e tecnologias da vaga que não aparecem no perfil, do jeito que estão escritos na vaga (úteis para filtros de triagem). Só inclua o que a pessoa poderia mesmo declarar sem mentir; se não houver, lista vazia.
 - revisedScore: número de 0 a 100 com a sua nota de aderência. A nota local calculada pelo app vem no contexto; revise-a com o que você leu na descrição, sem se prender a ela.
+- [NOME] marca o nome da pessoa, ocultado por privacidade: não escreva [NOME]; refira-se a ela como "você".
 - Escreva em português do Brasil, em texto simples, sem Markdown nem HTML.`;
 
 function localContext(local: ScoreResult): string {

@@ -19,6 +19,7 @@ Regras:
 - headline e summary: resumo curto e honesto, usando termos da vaga apenas quando o perfil os sustenta.
 - coverLetter: quando solicitada, de 3 a 4 parágrafos curtos, citando a empresa e a vaga, apoiada só em fatos do perfil, sem inventar. Quando não solicitada, deve ser null.
 - Mantenha nomes de tecnologias e termos técnicos consagrados como no original ("React", "Kubernetes", "deploy"), mesmo em CV em português ou espanhol.
+- [NOME] marca o nome da pessoa, ocultado por privacidade: não escreva [NOME] nem tente adivinhar o nome.
 - Texto simples, sem Markdown nem HTML, no idioma pedido.`;
 
 export type CvTailorInput = { profile: Profile; job: JobDetail; lang: CvLang; withCoverLetter: boolean };

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
+import { CV_TAILOR_V1 } from "@/lib/client/ai/prompts/cv.tailor.v1";
+import { nameRegex, projectProfileForTailor } from "@/lib/client/ai/prompts/shared";
 import { defaultAiSettings } from "@/lib/client/ai/settings";
 import { generateDocs } from "@/lib/client/cv/generate";
 import { generatedStore, docsOf, type GeneratedRecord } from "@/lib/client/cv/generated-store";
@@ -135,5 +137,41 @@ describe("reviewDocs", () => {
     const r = reviewDocs(profile(), d, "pt", [], job);
     expect(r.removedExperiences).toBe(1);
     expect(r.cv.experiences).toHaveLength(1);
+  });
+});
+
+describe("privacidade do prompt do CV", () => {
+  const withName = (): Profile => ({
+    ...profile(),
+    name: "Ana Conceição dos Santos",
+    location: "Rua Secreta, Bairro Oculto, São Paulo",
+    headline: "Dev da Ana",
+    summary: "Ana Conceição dos Santos é dev. A Conceicao gosta de dados dos usuários.",
+    experiences: profile().experiences.map((e) => ({ ...e, bullets: [{ id: "exp_1.b1", text: "SANTOS liderou a migração; Banana não é nome." }] })),
+  });
+
+  it("troca o nome (inteiro e partes com 3+ letras) por [NOME] nos textos livres", () => {
+    const p = projectProfileForTailor(withName());
+    expect(p.summary).toBe("[NOME] é dev. A [NOME] gosta de dados dos usuários.");
+    expect(p.headline).toBe("Dev da [NOME]");
+    expect(p.experiences[0].bullets[0].text).toBe("[NOME] liderou a migração; Banana não é nome.");
+    const user = CV_TAILOR_V1.buildUser({ profile: withName(), job, lang: "pt", withCoverLetter: true });
+    for (const secret of ["Ana", "Conceição", "Conceicao", "Santos", "SANTOS"]) expect(user).not.toMatch(new RegExp(`(?<![\\p{L}])${secret}(?![\\p{L}])`, "u"));
+    expect(user).toContain("Banana");
+  });
+
+  it("não leva o local (location) do perfil", () => {
+    const user = CV_TAILOR_V1.buildUser({ profile: withName(), job, lang: "pt", withCoverLetter: false });
+    expect(projectProfileForTailor(withName())).not.toHaveProperty("location");
+    expect(user).not.toContain("Rua Secreta");
+    expect(user).not.toContain("Bairro Oculto");
+  });
+
+  it("sem nome, nada muda; partículas curtas e 'dos' não viram [NOME]", () => {
+    expect(nameRegex(null)).toBeNull();
+    expect(nameRegex("  ")).toBeNull();
+    expect(projectProfileForTailor({ ...withName(), name: null }).summary).toContain("Ana Conceição dos Santos");
+    expect("Jo da Silva dos".replace(nameRegex("Jo da Silva dos")!, "[NOME]")).toBe("[NOME]");
+    expect("os dados dos usuários".replace(nameRegex("Ana dos Santos")!, "[NOME]")).toBe("os dados dos usuários");
   });
 });

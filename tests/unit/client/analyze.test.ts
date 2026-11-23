@@ -92,6 +92,13 @@ describe("job.fit.v1", () => {
     expect(sent).toContain("React");
   });
 
+  it("troca o nome do usuário escrito no resumo e nos bullets por [NOME]", () => {
+    const p = { ...profile(), name: "Ana Exemplo", summary: "Ana Exemplo é dev; a Exemplo gosta de React." };
+    const projected = projectProfile(p);
+    expect(projected.summary).toBe("[NOME] é dev; a [NOME] gosta de React.");
+    expect(JSON.stringify(projected)).not.toMatch(/Ana Exemplo|\bExemplo\b/);
+  });
+
   it("projeta o perfil sem `contact`", () => {
     expect(projectProfile(profile())).not.toHaveProperty("contact");
     expect(projectProfile(profile())).not.toHaveProperty("name");

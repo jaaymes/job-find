@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "if [ \"$VERCEL_ENV\" = production ]; then pnpm db:migrate; fi && next build",
@@ -35,7 +38,7 @@
   "devDependencies": {
     "@playwright/test": "^1.65.1",
     "@tailwindcss/turbopack": "4.3.3",
-    "@types/node": "^20",
+    "@types/node": "^24.19.2",
     "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",

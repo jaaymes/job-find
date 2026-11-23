@@ -75,11 +75,20 @@ describe("buildNonceCsp (rotas (local))", () => {
   });
 
   it("mantém todas as demais diretivas iguais às da CSP estática", () => {
-    const others = (c: string) => c.split("; ").filter((d) => !d.startsWith("script-src"));
+    const others = (c: string) =>
+      c.split("; ").filter((d) => !d.startsWith("script-src") && !d.startsWith("connect-src"));
     expect(others(csp)).toEqual(others(buildCsp(AI_CSP_HOSTS)));
-    expect(directive(csp, "connect-src").split(" ")).toEqual(
-      directive(buildCsp(AI_CSP_HOSTS), "connect-src").split(" "),
-    );
+  });
+
+  it("connect-src = o da estática + data: (WASM do yoga-layout), só nas rotas (local)", () => {
+    const local = directive(csp, "connect-src").split(" ");
+    const pub = directive(buildCsp(AI_CSP_HOSTS), "connect-src").split(" ");
+    expect(local).toContain("data:");
+    expect(pub).not.toContain("data:");
+    expect(local.filter((s) => s !== "data:")).toEqual(pub);
+    expect(local).not.toContain("https:");
+    expect(local).not.toContain("*");
+    expect(directive(csp, "script-src")).not.toContain("'unsafe-inline'");
   });
 
   it("muda o nonce a cada chamada com nonces diferentes", () => {

@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
+import { fixMojibake } from "@/lib/server/sources/text";
 import { parseLocation } from "@/lib/server/sources/location";
 import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
 
@@ -60,11 +61,11 @@ export const remoteok: Connector = {
     return {
       externalId: String(j.id),
       url,
-      title: j.position,
-      company: j.company,
+      title: fixMojibake(j.position),
+      company: fixMojibake(j.company),
       // Nunca exibimos o logo do RemoteOK (marca registrada): o campo `company_logo` é ignorado.
       companyLogoUrl: null,
-      descriptionHtml: j.description ?? "",
+      descriptionHtml: fixMojibake(j.description ?? ""),
       descriptionFormat: "html",
       country: loc?.country ?? null,
       city: null,

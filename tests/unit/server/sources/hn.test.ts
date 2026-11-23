@@ -152,7 +152,7 @@ const LABELS: Record<number, Label | null> = {
   50339641: L("CNH", "AI Engineer Intern", "onsite"),
   50339735: null,
   50339750: L("Stream", "Multiple Positions", "remote"),
-  50339853: L("Better Stack", "/^Full-?stack Engineer$/i", "remote"),
+  50339853: L("Better Stack", "Full-stack Engineer", "remote"),
   50339881: null,
   50339895: L("UMH", "Product Engineer", "onsite"),
   50339975: L("humans&", "Product Engineer (Member of Technical Staff)", "onsite"),
@@ -211,6 +211,12 @@ describe("precisão do parser de comentários", () => {
   it("acerta empresa, cargo e modelo de trabalho em pelo menos 80% dos comentários rotulados", () => {
     const accuracy = results.filter((r) => r.ok).length / results.length;
     expect(accuracy, JSON.stringify(results.filter((r) => !r.ok))).toBeGreaterThanOrEqual(0.8);
+  });
+
+  it("acerta pelo menos 80% só entre os comentários no formato (sem o acerto trivial dos descartes)", () => {
+    const inFormat = results.filter((r) => r.label !== null);
+    const accuracy = inFormat.filter((r) => r.ok).length / inFormat.length;
+    expect(accuracy, `${inFormat.filter((r) => r.ok).length}/${inFormat.length}`).toBeGreaterThanOrEqual(0.8);
   });
 
   it("não aceita nenhum comentário fora do formato (sem falso positivo)", () => {

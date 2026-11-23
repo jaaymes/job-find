@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
-import { decodeEntities } from "@/lib/server/sources/greenhouse";
+import { decodeEntities } from "@/lib/server/sources/text";
 import { countryCodeFromName } from "@/lib/server/sources/location";
 import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
 

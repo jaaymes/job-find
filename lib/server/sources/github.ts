@@ -75,15 +75,23 @@ function fetchRepos(ctx: ConnectorContext): AsyncGenerator<unknown> {
 // --- normalização -----------------------------------------------------------------------------
 
 const TITLE_PREFIX = /^\s*\[([^\]]*)\]\s*/;
-/** "… na Empresa", "… at Empresa", "… @ Empresa": a empresa vem no fim do título. */
-const COMPANY_SUFFIX = /\s+(?:na|no|at|@|-|–|—)\s+([^()]+?)\s*$/i;
+/** Sufixo de regime de contratação ("| PJ", "| CLT") que não faz parte da empresa. */
+const CONTRACT_SUFFIX = /\s*\|\s*(?:pj|clt|pj\s*\/\s*clt|clt\s*\/\s*pj)\s*$/i;
+/** "… na Empresa", "… at Empresa", "… @ Empresa": a empresa vem no fim; o `(.*)` guloso pega o último separador. */
+const COMPANY_PREP = /^(.*\S)\s+(?:na|no|at|@)\s+([^()]+?)\s*$/i;
+/** Sem preposição, "Cargo - Empresa": vale o último " - " (o cargo pode ter outros). */
+const COMPANY_DASH = /^(.*\S)\s+[-–—]\s+([^()]+?)\s*$/;
 
 function splitTitle(raw: string): { place: string | null; title: string; company: string | null } {
-  const prefix = TITLE_PREFIX.exec(raw);
-  const rest = prefix ? raw.slice(prefix[0].length) : raw;
-  const company = COMPANY_SUFFIX.exec(rest);
-  const title = (company ? rest.slice(0, company.index) : rest).trim();
-  return { place: prefix?.[1]?.trim() || null, title: title || rest.trim(), company: company?.[1]?.trim() || null };
+  let rest = raw.trim();
+  let place: string | null = null;
+  for (let tag = TITLE_PREFIX.exec(rest); tag; tag = TITLE_PREFIX.exec(rest)) {
+    place ??= tag[1]?.trim() || null;
+    rest = rest.slice(tag[0].length);
+  }
+  rest = rest.replace(CONTRACT_SUFFIX, "").trim();
+  const m = COMPANY_PREP.exec(rest) ?? COMPANY_DASH.exec(rest);
+  return { place, title: (m ? m[1]! : rest).trim() || rest, company: m?.[2]?.trim() || null };
 }
 
 export const github: Connector = {

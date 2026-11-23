@@ -167,4 +167,34 @@ describe("conector GitHub issues", () => {
     expect(seniority("Especialista")).toBe("lead");
     expect(seniority("PJ")).toBeNull();
   });
+
+  it("separa a empresa do cargo em títulos reais com vários ' - ', preposição e sufixo '| PJ'", () => {
+    const parse = (title: string) => {
+      const j = github.normalize({ number: 1, title, html_url: "https://github.com/a/b/issues/1", repo: "a/b", labels: [] })!;
+      return { title: j.title, company: j.company };
+    };
+    expect(parse("[Remoto] Desenvolvedor(a) Backend Pleno - White Label e Plataforma - Mimix AI")).toEqual({
+      title: "Desenvolvedor(a) Backend Pleno - White Label e Plataforma",
+      company: "Mimix AI",
+    });
+    expect(parse("[Remoto] Desenvolvedor(a) Back-end Júnior - Python / AI Coding & Agentic AI - MKdigital")).toEqual({
+      title: "Desenvolvedor(a) Back-end Júnior - Python / AI Coding & Agentic AI",
+      company: "MKdigital",
+    });
+    expect(parse("[Remoto] Full-Stack Sênior na Igma | PJ")).toEqual({ title: "Full-Stack Sênior", company: "Igma" });
+    expect(parse("[Híbrido] Sr Software Engineer - Stealth")).toEqual({ title: "Sr Software Engineer", company: "Stealth" });
+    expect(parse("[Remoto] Back-end Developer JR - PORT LOUIS")).toEqual({ title: "Back-end Developer JR", company: "PORT LOUIS" });
+    expect(parse("[Remoto] React Native Developer (Dev Co-founder, Sênior) na Still").company).toBe("Still");
+    expect(parse("[HÍBRIDO] [São Paulo] Tech Lead | Data Foundation")).toEqual({
+      title: "Tech Lead | Data Foundation",
+      company: "Não informada",
+    });
+  });
+
+  it("títulos da fixture não carregam separadores nem sufixo no nome da empresa", async () => {
+    const raws = await collect(github.fetch(fakeCtx({ serve })));
+    for (const j of raws.map(github.normalize).filter((j) => j !== null)) {
+      expect(j.company).not.toMatch(/ - |\|/);
+    }
+  });
 });

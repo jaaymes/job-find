@@ -99,4 +99,27 @@ describe("conector RemoteOK", () => {
     await expect(collect(remoteok.fetch(fakeCtx({ serve: () => undefined })))).rejects.toThrow();
     await expect(collect(remoteok.fetch(fakeCtx({ serve: () => ({ erro: true }) })))).rejects.toThrow();
   });
+
+  it("repara mojibake (UTF-8 lido como latin1) em título, empresa e descrição, e preserva texto correto", () => {
+    const broken = "It\u00e2\u0080\u0099s \u00c5\u008cURA";
+    const job = remoteok.normalize({
+      ...fixture[1],
+      position: "Engenheiro S\u00c3\u00a3o",
+      company: "\u00c5\u008cURA",
+      description: `<p>${broken}</p>`,
+    })!;
+    expect(job.title).toBe("Engenheiro São");
+    expect(job.company).toBe("ŌURA");
+    expect(job.descriptionHtml).toBe("<p>It\u2019s \u014cURA</p>");
+
+    const ok = remoteok.normalize({ ...fixture[1], position: "Dev em São Paulo", company: "Naïve", description: "<p>naïve café — it\u2019s</p>" })!;
+    expect(ok.title).toBe("Dev em São Paulo");
+    expect(ok.company).toBe("Naïve");
+    expect(ok.descriptionHtml).toBe("<p>naïve café — it\u2019s</p>");
+  });
+
+  it("nenhuma descrição da fixture sai com mojibake", async () => {
+    const jobs = (await collect(remoteok.fetch(fakeCtx({ serve })))).map(remoteok.normalize).filter((j) => j !== null);
+    for (const j of jobs) expect(`${j.title}${j.company}${j.descriptionHtml}`).not.toMatch(/[\u00c2-\u00f4][\u0080-\u00bf]/);
+  });
 });

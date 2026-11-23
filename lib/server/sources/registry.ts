@@ -5,6 +5,7 @@ import { ashby } from "@/lib/server/sources/ashby";
 import { github } from "@/lib/server/sources/github";
 import { greenhouse } from "@/lib/server/sources/greenhouse";
 import { himalayas } from "@/lib/server/sources/himalayas";
+import { hn } from "@/lib/server/sources/hn";
 import { jobicy } from "@/lib/server/sources/jobicy";
 import { lever } from "@/lib/server/sources/lever";
 import { remoteok } from "@/lib/server/sources/remoteok";
@@ -16,6 +17,7 @@ export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
   github,
   greenhouse,
   himalayas,
+  hn,
   jobicy,
   lever,
   remoteok,

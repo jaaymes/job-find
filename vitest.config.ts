@@ -5,6 +5,8 @@ const alias = {
   "@": resolve(import.meta.dirname),
   // "server-only" lança fora do bundler do Next; nos testes vira um módulo vazio.
   "server-only": resolve(import.meta.dirname, "tests/stubs/empty.ts"),
+  // "client-only" também é fornecido pelo Next no build; nos testes vira um módulo vazio.
+  "client-only": resolve(import.meta.dirname, "tests/stubs/empty.ts"),
 };
 
 export default defineConfig({

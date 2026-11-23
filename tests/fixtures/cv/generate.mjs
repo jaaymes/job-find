@@ -98,7 +98,7 @@ const docxBase = (zip, bodyXml) => {
 };
 const p = (t) => `<w:p><w:r><w:t xml:space="preserve">${t}</w:t></w:r></w:p>`;
 const zipOpts = { type: "uint8array", compression: "DEFLATE", compressionOptions: { level: 9 } };
-const zdate = { date: FIXED };
+const zdate = { date: FIXED, createFolders: false };
 
 // cv.docx
 {
@@ -117,5 +117,43 @@ const zdate = { date: FIXED };
   docxBase({ file: (n, c) => zip.file(n, c, zdate) }, p("Ana Exemplo"));
   zip.file("word/media/lixo.bin", Buffer.alloc(64 * 1024 * 1024, 0), zdate);
   out("zipbomb.docx", await zip.generateAsync(zipOpts));
+}
+// vazio.docx: DOCX válido sem nenhum texto.
+{
+  const zip = new JSZip();
+  docxBase({ file: (n, c) => zip.file(n, c, zdate) }, "<w:p/>");
+  out("vazio.docx", await zip.generateAsync(zipOpts));
+}
+
+// zipbomb-mentiroso.docx: o word/document.xml real tem dezenas de MB, mas os tamanhos declarados no
+// cabeçalho são pequenos (o mammoth só infla o que lê, então a bomba precisa estar no document.xml).
+{
+  const zip = new JSZip();
+  docxBase({ file: (n, c) => zip.file(n, c, zdate) }, "");
+  const par = p("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  const head = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>';
+  const tail = "</w:body></w:document>";
+  const body = par.repeat(Math.ceil((64 * 1024 * 1024) / par.length));
+  zip.file("word/document.xml", head + body + tail, zdate);
+  const buf = Buffer.from(await zip.generateAsync(zipOpts));
+  // Cabeçalho local (0x04034b50, tamanho em +22) e diretório central (0x02014b50, tamanho em +24, offset local em +42).
+  for (let i = 0; i + 46 < buf.length; i++) {
+    if (buf.readUInt32LE(i) === 0x02014b50 && buf.readUInt32LE(i + 24) > 1000) {
+      buf.writeUInt32LE(1000, i + 24);
+      buf.writeUInt32LE(1000, buf.readUInt32LE(i + 42) + 22);
+    }
+  }
+  out("zipbomb-mentiroso.docx", buf);
+}
+
+// muitas-paginas.pdf: 11 páginas (acima do limite de 10).
+{
+  const pdf = await newPdf();
+  const font = await pdf.embedFont(StandardFonts.Helvetica);
+  for (let n = 1; n <= 11; n++) {
+    const page = pdf.addPage([595, 842]);
+    page.drawText(`Pagina ${n} do curriculo ficticio de Ana Exemplo`, { x: 40, y: 800, size: 10, font });
+  }
+  out("muitas-paginas.pdf", await pdf.save({ useObjectStreams: false }));
 }
 console.log("fixtures geradas em", dir);

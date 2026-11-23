@@ -1,13 +1,34 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { extractContact, redactContact } from "@/lib/client/extract/contact";
-import { ExtractError, extractText } from "@/lib/client/extract";
+import { ExtractError, extractText as realExtractText, type ExtractOptions, type WorkerLike } from "@/lib/client/extract";
+import { extractCore } from "@/lib/client/extract/extract-core";
 
 const fixture = (name: string, type = "") => {
   const bytes = readFileSync(resolve(import.meta.dirname, "../../fixtures/cv", name));
   return new File([new Uint8Array(bytes)], name, { type });
 };
+
+/** Worker falso que executa a lógica real (extractCore) na mesma thread. */
+function inlineWorker(): WorkerLike {
+  const w: WorkerLike = {
+    onmessage: null,
+    onerror: null,
+    onmessageerror: null,
+    terminate: vi.fn(),
+    postMessage(msg) {
+      const { kind, bytes } = msg as { kind: "pdf" | "docx"; bytes: Uint8Array };
+      extractCore(bytes, kind).then(
+        (result) => w.onmessage?.({ data: { ok: true, result } }),
+        (e: { code?: string }) => w.onmessage?.({ data: { ok: false, code: e.code } }),
+      );
+    },
+  };
+  return w;
+}
+const opts: ExtractOptions = { createWorker: inlineWorker };
+const extractText = (f: File, o: ExtractOptions = opts) => realExtractText(f, o);
 
 describe("extractText", () => {
   it("rejeita arquivo acima de 5 MB (too_large)", async () => {
@@ -57,6 +78,46 @@ describe("extractText", () => {
     });
   });
 
+  it("rejeita DOCX com magic bytes errados (bad_type)", async () => {
+    const f = new File([new Uint8Array(readFileSync(resolve(import.meta.dirname, "../../fixtures/cv/fake.pdf")))], "cv.docx");
+    await expect(extractText(f)).rejects.toMatchObject({ code: "bad_type" });
+  });
+
+  it("rejeita PDF com mais de 10 páginas (too_many_pages)", async () => {
+    await expect(extractText(fixture("muitas-paginas.pdf"))).rejects.toMatchObject({ code: "too_many_pages" });
+  });
+
+  it("DOCX sem texto vira empty", async () => {
+    await expect(extractText(fixture("vazio.docx"))).rejects.toMatchObject({ code: "empty" });
+  });
+
+  it("zip bomb com tamanhos declarados mentirosos não passa (teto ou erro de integridade)", async () => {
+    await expect(extractText(fixture("zipbomb-mentiroso.docx"))).rejects.toMatchObject({
+      code: expect.stringMatching(/timeout|too_large|bad_type/),
+    });
+  }, 30_000);
+
+  it("no timeout encerra o worker (terminate) e rejeita com timeout", async () => {
+    const terminate = vi.fn();
+    const hang: WorkerLike = { onmessage: null, onerror: null, onmessageerror: null, terminate, postMessage: () => undefined };
+    await expect(extractText(fixture("texto.pdf"), { createWorker: () => hang, timeoutMs: 30 })).rejects.toMatchObject({
+      code: "timeout",
+    });
+    expect(terminate).toHaveBeenCalledTimes(1);
+  });
+
+  it("encerra o worker também ao terminar com sucesso", async () => {
+    const w = inlineWorker();
+    await realExtractText(fixture("cv.docx"), { createWorker: () => w });
+    expect(w.terminate).toHaveBeenCalledTimes(1);
+  });
+
+  it("erro do worker vira ExtractError estável", async () => {
+    const w: WorkerLike = { onmessage: null, onerror: null, onmessageerror: null, terminate: vi.fn(), postMessage: () => w.onerror?.({}) };
+    await expect(realExtractText(fixture("texto.pdf"), { createWorker: () => w })).rejects.toMatchObject({ code: "bad_type" });
+    expect(w.terminate).toHaveBeenCalled();
+  });
+
   it("cria ExtractError com code estável", () => {
     expect(new ExtractError("empty").code).toBe("empty");
   });
@@ -66,6 +127,32 @@ describe("contact", () => {
   it("redactContact troca e-mail e telefone", () => {
     expect(redactContact("ana@x.com (11) 98888-7777")).toBe("[EMAIL] [TELEFONE]");
     expect(redactContact("fone +55 11 98888-7777, 11988887777")).toBe("fone [TELEFONE], [TELEFONE]");
+  });
+
+  it("redactContact cobre telefones internacionais e separadores com espaço", () => {
+    expect(redactContact("+1 415 555 0123")).toBe("[TELEFONE]");
+    expect(redactContact("+351 912 345 678")).toBe("[TELEFONE]");
+    expect(redactContact("+44 7700 900123")).toBe("[TELEFONE]");
+    expect(redactContact("(11) 98888 - 7777")).toBe("[TELEFONE]");
+    expect(redactContact("Tel: (11) 98888-7777.")).toBe("Tel: [TELEFONE].");
+  });
+
+  it("redactContact acha o telefone mesmo após anos vizinhos", () => {
+    expect(redactContact("em 2020 2026 (11) 98888-7777")).toBe("em 2020 2026 [TELEFONE]");
+  });
+
+  it("redactContact cobre e-mail com acentos e não toca números em URLs", () => {
+    expect(redactContact("joão.silva@x.com")).toBe("[EMAIL]");
+    expect(redactContact("linkedin.com/in/ana-98888777 e https://linkedin.com/in/ana-98888777")).toBe(
+      "linkedin.com/in/ana-98888777 e https://linkedin.com/in/ana-98888777",
+    );
+  });
+
+  it("redactContact é linear em 30k caracteres sem @ nem dígitos", () => {
+    const t0 = performance.now();
+    redactContact("a".repeat(30_000));
+    redactContact("1 ".repeat(15_000));
+    expect(performance.now() - t0).toBeLessThan(1000);
   });
 
   it("redactContact não toca em anos nem números curtos", () => {

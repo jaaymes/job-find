@@ -18,6 +18,8 @@ const BATCH_SIZE = 100;
 const LOCK_MARGIN_MS = 60_000;
 /** Tolerância para o cron disparar alguns segundos antes do intervalo mínimo. */
 const INTERVAL_TOLERANCE_MS = 60_000;
+/** Reserva no fim do budget para expireJobs/retenção/invalidação: as fontes são cortadas antes. */
+const TAIL_MARGIN_MS = 5_000;
 const MAX_ERROR_LENGTH = 500;
 /** A retenção (DELETE diário) roda na execução das 03:17 UTC (cron da Vercel é UTC). */
 const PURGE_HOUR_UTC = 3;
@@ -141,14 +143,14 @@ async function processBatch(
 }
 
 async function runSource(
-  opts: Required<Pick<RunCollectionOptions, "db" | "now" | "budgetMs">> & { conn: Connector },
+  opts: { db: Db; now: Date; conn: Connector; controller: AbortController; budgetEndsAt: number },
 ): Promise<SourceRunResult> {
-  const { db, now, budgetMs, conn } = opts;
+  const { db, now, conn, controller, budgetEndsAt } = opts;
   const source = conn.id;
-  if (!(await acquireLock(db, source, budgetMs + LOCK_MARGIN_MS))) return empty(source, "skipped");
+  if (controller.signal.aborted) return empty(source, "skipped", `${BUDGET_ERROR} antes de iniciar`);
+  const remainingMs = Math.max(budgetEndsAt - Date.now(), 0);
+  if (!(await acquireLock(db, source, remainingMs + LOCK_MARGIN_MS))) return empty(source, "skipped");
 
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(new Error(BUDGET_ERROR)), budgetMs);
   let runId: number | null = null;
   try {
     const [state] = await db.select().from(sourceState).where(eq(sourceState.source, source));
@@ -197,7 +199,7 @@ async function runSource(
       if (controller.signal.aborted) throw new Error(BUDGET_ERROR);
       if (batch.length > 0) await processBatch(db, conn, batch, now, counts);
     } catch (e) {
-      const message = controller.signal.aborted ? BUDGET_ERROR : describeError(e);
+      const message = describeError(e);
       await db
         .update(sourceRuns)
         .set({
@@ -245,7 +247,6 @@ async function runSource(
       .where(eq(sourceRuns.id, runId));
     return { source, status: "ok", ...counts, expired: 0 };
   } finally {
-    clearTimeout(timer);
     await releaseLock(db, source).catch((e: unknown) =>
       console.error(`[coleta] ${source}: falha ao liberar o lock: ${describeError(e)}`),
     );
@@ -284,14 +285,20 @@ export async function runCollection(opts: RunCollectionOptions): Promise<SourceR
     invalidate = async () => undefined,
   } = opts;
 
+  // Um único relógio para a execução inteira; as fontes param TAIL_MARGIN_MS antes do fim.
+  const budgetEndsAt = Date.now() + budgetMs;
+  const tailMs = Math.min(TAIL_MARGIN_MS, budgetMs / 10);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(new Error(BUDGET_ERROR)), budgetMs - tailMs);
+
   const settled = await allSettledLimited(
     sources.map((source) => async (): Promise<SourceRunResult> => {
       const conn = connectors[source];
       if (!conn) return empty(source, "error", `conector não encontrado para a fonte ${source}`);
-      return runSource({ db, now, budgetMs, conn });
+      return runSource({ db, now, conn, controller, budgetEndsAt });
     }),
     concurrency,
-  );
+  ).finally(() => clearTimeout(timer));
   const results = settled.map((s, i): SourceRunResult =>
     s.status === "fulfilled" ? s.value : empty(sources[i], "error", describeError(s.reason)),
   );

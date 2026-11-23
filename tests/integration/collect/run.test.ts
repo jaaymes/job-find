@@ -288,6 +288,35 @@ describe("runCollection", () => {
     expect(r.error).toContain("budget esgotado");
   });
 
+  it("o budget é da execução inteira: segunda fonte não ganha relógio novo", async () => {
+    const db = await testDb();
+    const slow = (id: SourceId) =>
+      conn(id, {
+        async *fetch(ctx) {
+          await new Promise<never>((_, reject) => {
+            ctx.signal.addEventListener("abort", () => reject(ctx.signal.reason), { once: true });
+          });
+          yield 1;
+        },
+      });
+    const old = await insertJobRaw(db, { published_at: addDays(T0, -100) });
+    const started = Date.now();
+    const res = await runCollection({
+      db,
+      sources: ["greenhouse", "ashby"],
+      now: T0,
+      budgetMs: 400,
+      concurrency: 1,
+      connectors: { greenhouse: slow("greenhouse"), ashby: slow("ashby") },
+    });
+    expect(Date.now() - started).toBeLessThan(400 + 150);
+    expect(res[0]).toMatchObject({ status: "error", error: "budget esgotado" });
+    expect(res[1]).toMatchObject({ status: "skipped", error: "budget esgotado antes de iniciar" });
+    expect(await db.select().from(sourceRuns).where(eq(sourceRuns.source, "ashby"))).toHaveLength(0);
+    const [o] = await db.select().from(jobs).where(eq(jobs.id, old.id));
+    expect(o.expiredAt).not.toBeNull(); // expireJobs ainda rodou
+  });
+
   it("respeita o limite de concorrência", async () => {
     const db = await testDb();
     let running = 0;

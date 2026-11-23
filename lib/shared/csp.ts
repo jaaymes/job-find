@@ -32,9 +32,13 @@ function buildDirectives(aiHosts: string[], scriptSrc: string[]): string {
 export function buildCsp(aiHosts: string[], options: CspOptions = {}): string {
   // DÍVIDA REMANESCENTE (rotas públicas): o SRI não cobre os scripts inline do
   // Next (bootstrap do Turbopack e payload RSC), então aqui o script-src ainda
-  // precisa de 'unsafe-inline'. Isso é aceitável porque as rotas públicas não
-  // guardam dados pessoais. As rotas `(local)` (perfil, configurações, gerador,
-  // minhas vagas) já usam nonce + 'strict-dynamic' (buildNonceCsp, via proxy.ts).
+  // precisa de 'unsafe-inline'. RISCO ACEITO (spec, seção 8): `/vagas/[id]` lê as
+  // chaves de IA e o perfil do localStorage para a análise, e o localStorage é por
+  // origem, então um XSS em qualquer rota pública alcançaria esses dados de
+  // qualquer jeito. A mitigação é o DOMPurify mais a saída da IA renderizada só
+  // como texto. A solução completa seria nonce em todas as rotas, ao custo de
+  // deixar as páginas dinâmicas. As rotas `(local)` (perfil, configurações,
+  // gerador, minhas vagas) já usam nonce + 'strict-dynamic' (buildNonceCsp, via proxy.ts).
   // 'strict-dynamic' fica de fora aqui de propósito: com ele os navegadores
   // ignoram 'unsafe-inline' e a hidratação das páginas estáticas quebraria.
   const scriptSrc = ["'self'", "'unsafe-inline'"];

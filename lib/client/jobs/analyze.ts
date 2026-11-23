@@ -4,26 +4,11 @@ import { generateStructured, type GenerateArgs } from "@/lib/client/ai/generate"
 import { JOB_FIT_V1 } from "@/lib/client/ai/prompts/job.fit.v1";
 import type { AiSettings } from "@/lib/client/ai/settings";
 import { indexProfile, scoreJob } from "@/lib/client/score/score";
-import { createStore, type SetResult, type Store } from "@/lib/client/storage/store";
-import { FitAnalysis, normalizeFit } from "@/lib/shared/schemas/fit";
+import { analysisStore, type AnalysisRecord } from "@/lib/client/jobs/analysis-store";
+import type { SetResult, Store } from "@/lib/client/storage/store";
+import { normalizeFit, type FitAnalysis } from "@/lib/shared/schemas/fit";
 import type { Profile } from "@/lib/shared/schemas/profile";
-import { z } from "@/lib/shared/zod";
 import type { JobDetail } from "@/lib/shared/types/job";
-
-export const AnalysisRecord = FitAnalysis.extend({
-  provider: z.string(),
-  model: z.string(),
-  promptVersion: z.number(),
-  createdAt: z.string(),
-});
-export type AnalysisRecord = z.infer<typeof AnalysisRecord>;
-
-/** Um único store, com todas as análises: `jobId` -> registro. */
-export const analysisStore: Store<Record<string, AnalysisRecord>> = createStore(
-  "jobfind:v1:aiAnalysis",
-  z.record(z.string(), AnalysisRecord),
-  { version: 1, initial: {} },
-);
 
 export type AnalyzeArgs = {
   job: JobDetail;

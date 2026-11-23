@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
-import { resolveTaskModel } from "@/lib/client/ai/model";
+import { hasUsableProvider, resolveTaskModel } from "@/lib/client/ai/model";
 import { defaultAiSettings, type AiSettings } from "@/lib/client/ai/settings";
 
 const at = "2026-11-23T00:00:00.000Z";
@@ -72,5 +72,39 @@ describe("resolveTaskModel", () => {
       tasks: { extract: { provider: "deepseek", model: "deepseek-chat" }, analyze: null, cv: null },
     };
     await expect(resolveTaskModel(s, "extract")).rejects.toMatchObject({ code: "blocked_by_privacy" });
+  });
+});
+
+describe("hasUsableProvider", () => {
+  const withKey = (extra: Partial<AiSettings> = {}): AiSettings => ({
+    ...defaultAiSettings(),
+    providers: { openai: { key: "sk-test", addedAt: at, source: "paste" } },
+    ...extra,
+  });
+
+  it("false sem provedor; true com um conectado (automático)", () => {
+    expect(hasUsableProvider(defaultAiSettings(), "analyze")).toBe(false);
+    expect(hasUsableProvider(withKey(), "analyze")).toBe(true);
+  });
+
+  it("com escolha explícita, exige o provedor escolhido conectado", () => {
+    const s = withKey({ tasks: { extract: null, analyze: { provider: "anthropic", model: "m" }, cv: null } });
+    expect(hasUsableProvider(s, "analyze")).toBe(false);
+    expect(hasUsableProvider(s, "extract")).toBe(true);
+    const ok = withKey({ tasks: { extract: null, analyze: { provider: "openai", model: "m" }, cv: null } });
+    expect(hasUsableProvider(ok, "analyze")).toBe(true);
+  });
+
+  it("provedor com aviso de privacidade não aceito não conta", () => {
+    const s: AiSettings = {
+      ...defaultAiSettings(),
+      providers: { deepseek: { key: "k", addedAt: at, source: "paste" } },
+    };
+    expect(hasUsableProvider(s, "extract")).toBe(false);
+    const accepted: AiSettings = {
+      ...s,
+      providers: { deepseek: { key: "k", addedAt: at, source: "paste", privacyAccepted: true } },
+    };
+    expect(hasUsableProvider(accepted, "extract")).toBe(true);
   });
 });

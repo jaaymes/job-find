@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
 import { htmlToText, JOB_FIT_V1, projectProfile } from "@/lib/client/ai/prompts/job.fit.v1";
 import { defaultAiSettings } from "@/lib/client/ai/settings";
-import { analysisStore, analyzeJob } from "@/lib/client/jobs/analyze";
+import { analysisStore } from "@/lib/client/jobs/analysis-store";
+import { analyzeJob } from "@/lib/client/jobs/analyze";
 import { indexProfile, scoreJob } from "@/lib/client/score/score";
 import { normalizeFit } from "@/lib/shared/schemas/fit";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
@@ -167,6 +168,18 @@ describe("analyzeJob", () => {
 });
 
 describe("aiFailure", () => {
+  const ctx = { noProvider: "", truncated: "", fallback: "" };
+  it("data_policy manda trocar de modelo ou desmarcar a opção do OpenRouter, sem falar em aviso", () => {
+    const text = aiFailure(new AiError("data_policy"), ctx);
+    expect(text).toBe(
+      "Nenhum provedor do OpenRouter atende este modelo sem guardar dados. Escolha outro modelo ou desmarque 'Pedir ao OpenRouter que use só provedores que não guardam meus dados' em Configurações.",
+    );
+    expect(text).not.toMatch(/aviso/i);
+  });
+  it("blocked_by_privacy continua mandando aceitar o aviso", () => {
+    expect(aiFailure(new AiError("blocked_by_privacy"), ctx)).toContain("Aceite o aviso de privacidade");
+  });
+
   it("no_credit mostra a mensagem exata", () => {
     expect(aiFailure(new AiError("no_credit"), { noProvider: "", truncated: "", fallback: "" })).toBe("Sem crédito, recarregue");
   });

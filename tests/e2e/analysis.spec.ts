@@ -216,6 +216,17 @@ test("erro 402 mostra 'Sem crédito, recarregue' com 'Tentar de novo', que refaz
   expect(mock.bodies).toHaveLength(2);
 });
 
+test("erro 401 não oferece 'Tentar de novo': leva às Configurações", async ({ page }) => {
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  mock.statuses.push(401);
+  await page.goto("/vagas/1");
+  await panel(page).getByRole("button", { name: "Analisar com IA" }).click();
+
+  await expect(panel(page).getByText("Chave inválida")).toBeVisible();
+  await expect(panel(page).getByRole("button", { name: "Tentar de novo" })).toHaveCount(0);
+  await expect(panel(page).getByRole("link", { name: "Abrir Configurações" })).toHaveAttribute("href", "/configuracoes");
+});
+
 test("sem perfil, convida a importar o currículo", async ({ page }) => {
   await seedStorage(page, { [AI_KEY]: AI_SETTINGS });
   await page.goto("/vagas/1");

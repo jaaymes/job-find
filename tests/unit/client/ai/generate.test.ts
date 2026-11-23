@@ -245,9 +245,9 @@ describe("mapProviderError", () => {
     expect(mapProviderError(api(403, { responseBody: '{"error":{"metadata":{"limit_usd":5}}}' })).code).toBe("budget");
   });
 
-  it("503 do OpenRouter com data_collection -> blocked_by_privacy", () => {
+  it("503 do OpenRouter com data_collection -> data_policy", () => {
     const e = mapProviderError(api(503, { responseBody: "no endpoints: data_collection deny" }));
-    expect(e).toMatchObject({ code: "blocked_by_privacy", retryable: false });
+    expect(e).toMatchObject({ code: "data_policy", retryable: false });
   });
 
   it("erro sem status (corpo com HTTP 200) -> unavailable retryable", () => {
@@ -286,15 +286,15 @@ describe("mapProviderError", () => {
     }
   });
 
-  it("404 do OpenRouter com data policy -> blocked_by_privacy", () => {
+  it("404 do OpenRouter com data policy -> data_policy", () => {
     const e = mapProviderError(api(404, { responseBody: "No endpoints found matching your data policy" }));
-    expect(e).toMatchObject({ code: "blocked_by_privacy", retryable: false });
+    expect(e).toMatchObject({ code: "data_policy", retryable: false });
   });
 
-  it("403 sem limit_usd -> invalid_key com meta.excerpt", () => {
+  it("403 sem limit_usd -> invalid_key", () => {
     const e = mapProviderError(api(403, { responseBody: '{"error":"moderado:  conteúdo"}' }));
     expect(e.code).toBe("invalid_key");
-    expect(e.meta?.excerpt).toContain("moderado");
+    expect(e.meta).toEqual({ status: 403 });
   });
 
   it("não reembrulha AiError", () => {

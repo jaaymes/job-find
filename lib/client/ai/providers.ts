@@ -99,6 +99,7 @@ async function getJson(url: string, headers: Record<string, string>): Promise<un
     throw new AiError("unavailable", { retryable: true, cause });
   }
   if (res.status === 401 || res.status === 403) throw new AiError("invalid_key");
+  if (res.status === 402) throw new AiError("no_credit", { meta: { status: 402 } });
   if (!res.ok) {
     throw new AiError(res.status === 429 ? "rate_limit" : "unavailable", {
       retryable: true,

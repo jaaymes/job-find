@@ -9,9 +9,10 @@ import {
   type Profile,
 } from "@/lib/shared/schemas/profile";
 import { ContactLinks } from "./ContactLinks";
+import { EducationEditor } from "./EducationEditor";
 import { ExperienceEditor } from "./ExperienceEditor";
 import { SkillChips } from "./SkillChips";
-import { CARD, FIELD, FIELD_LABEL } from "./styles";
+import { CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 
 type Props = {
   profile: Profile;
@@ -137,19 +138,7 @@ export function ProfileEditor({ profile, onSave }: Props) {
       <SkillChips skills={draft.skills} onChange={(skills) => patch({ skills })} />
       <ExperienceEditor experiences={draft.experiences} onChange={(experiences) => patch({ experiences })} />
 
-      {draft.education.length > 0 && (
-        <div className="flex flex-col gap-2">
-          <h3 className="text-[15px] font-semibold">Formação</h3>
-          <ul className="flex flex-col gap-1 text-sm text-jf-ink-2">
-            {draft.education.map((e, i) => (
-              <li key={i}>
-                {[e.degree, e.institution].filter(Boolean).join(" · ")}
-                {e.endYear ? ` (${e.endYear})` : ""}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <EducationEditor education={draft.education} onChange={(education) => patch({ education })} />
     </section>
   );
 }

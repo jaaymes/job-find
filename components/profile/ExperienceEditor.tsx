@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { Profile } from "@/lib/shared/schemas/profile";
-import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "./styles";
+import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 
 type Experience = Profile["experiences"][number];
 

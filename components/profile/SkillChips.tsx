@@ -3,7 +3,7 @@
 import { useId, useState, type FormEvent } from "react";
 import { normalizeSkill } from "@/lib/shared/stacks";
 import type { Profile } from "@/lib/shared/schemas/profile";
-import { BTN_OUTLINE, FIELD } from "./styles";
+import { BTN_OUTLINE, FIELD } from "@/components/ui/styles";
 
 type Skill = Profile["skills"][number];
 

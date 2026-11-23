@@ -1,6 +1,7 @@
 "use client";
 
 import { useId, useState } from "react";
+import { aiFailure } from "@/components/ai/messages";
 import { Button } from "@/components/ui/button";
 import { AiError } from "@/lib/client/ai/errors";
 import { type ProviderDef, type ProviderId } from "@/lib/client/ai/providers";
@@ -30,17 +31,11 @@ const DESCRIPTIONS: Record<ProviderId, string> = {
 
 function failureText(e: unknown): string {
   if (e instanceof AiError) {
-    switch (e.code) {
-      case "invalid_key":
-        return "Chave inválida";
-      case "no_credit":
-        return "Sem créditos nesta conta do provedor.";
-      case "rate_limit":
-        return "Limite de uso atingido. Tente de novo em instantes.";
-      case "local_blocked":
-        return "Não foi possível acessar a IA local. Veja o guia: o servidor precisa liberar esta página (CORS).";
-      default:
-    }
+    return aiFailure(e, {
+      noProvider: "Conecte uma IA para usá-la.",
+      truncated: "A resposta da IA foi cortada.",
+      fallback: "Não foi possível falar com o provedor. Verifique a conexão e tente de novo.",
+    });
   }
   return "Não foi possível falar com o provedor. Verifique a conexão e tente de novo.";
 }

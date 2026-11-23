@@ -277,3 +277,33 @@ test("headline e links de contato são editáveis (só http/https)", async ({ pa
   expect(saved?.headline).toBe("Dev Full Stack");
   expect((saved?.contact as { links: string[] }).links).toEqual(["https://github.com/ana"]);
 });
+
+test("formação é editável: adicionar, salvar e continuar lá depois do reload (RF-14)", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByRole("button", { name: "Preencher manualmente" }).click();
+  await page.getByRole("button", { name: "+ Formação" }).click();
+  await page.getByLabel("Instituição", { exact: true }).fill("Universidade Exemplo");
+  await page.getByLabel("Curso ou grau").fill("Bacharelado em Sistemas de Informação");
+  await page.getByLabel(/^Ano de início/).fill("2014");
+  await page.getByLabel(/^Ano de conclusão/).fill("2018");
+  await page.getByRole("button", { name: "Salvar perfil" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Perfil salvo" })).toBeVisible();
+
+  await page.reload();
+  await expect(page.locator("strong", { hasText: "Bacharelado em Sistemas de Informação · Universidade Exemplo" })).toBeVisible();
+  await expect(page.getByText("2014 – 2018")).toBeVisible();
+  const saved = await storedProfile(page);
+  expect(saved?.education).toEqual([
+    {
+      institution: "Universidade Exemplo",
+      degree: "Bacharelado em Sistemas de Informação",
+      startYear: "2014",
+      endYear: "2018",
+    },
+  ]);
+
+  await page.getByRole("button", { name: /^Remover formação/ }).click();
+  await page.getByRole("button", { name: "Salvar perfil" }).click();
+  await page.reload();
+  await expect(page.getByRole("button", { name: /^Editar formação/ })).toHaveCount(0);
+});

@@ -119,7 +119,11 @@ test.describe("Configurações de IA", () => {
 
     openaiStatus = 401;
     await openai.getByRole("button", { name: "Testar conexão" }).click();
-    await expect(openai.getByRole("status")).toHaveText("Chave inválida");
+    await expect(openai.getByRole("status")).toHaveText("Chave inválida. Confira a chave em Configurações.");
+
+    openaiStatus = 402;
+    await openai.getByRole("button", { name: "Testar conexão" }).click();
+    await expect(openai.getByRole("status")).toHaveText("Sem crédito, recarregue");
   });
 
   test("OpenRouter: Conectar vai para openrouter.ai/auth e o retorno do callback deixa o provedor conectado", async ({ page }) => {

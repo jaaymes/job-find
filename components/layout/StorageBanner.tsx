@@ -55,7 +55,7 @@ export function StorageBanner() {
       role="status"
       className="rounded-lg border border-jf-new-fg/30 bg-jf-new-bg px-4 py-3 text-[13px] leading-snug text-jf-new-fg"
     >
-      Seus dados estão perto do limite. Exporte um backup e apague CVs antigos.{" "}
+      Seus dados estão perto do limite. Libere espaço no navegador apagando dados antigos do Job Find.{" "}
       <Link href="/configuracoes" className="font-medium underline underline-offset-2">
         Ir para Configurações
       </Link>

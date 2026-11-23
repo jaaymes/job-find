@@ -174,15 +174,7 @@ export function AiSettingsScreen() {
             />
             <span>Pedir ao OpenRouter que use só provedores que não guardam meus dados</span>
           </label>
-          <label className="flex min-h-11 items-center gap-2.5 text-sm">
-            <input
-              type="checkbox"
-              className="size-5 shrink-0"
-              checked={settings.minimizePii}
-              onChange={(e) => update((s) => ({ ...s, minimizePii: e.target.checked }))}
-            />
-            <span>Não enviar e-mail, telefone e endereço para a IA (são preenchidos depois, no PDF)</span>
-          </label>
+          <p className="text-sm text-jf-ink-2">E-mail, telefone e endereço nunca são enviados à IA.</p>
           <p className="text-[13px] text-jf-ink-3">Cada provedor tem a própria política de dados.</p>
         </section>
 

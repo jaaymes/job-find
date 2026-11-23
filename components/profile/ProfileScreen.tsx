@@ -11,15 +11,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { isConnected } from "@/lib/client/ai/model";
-import { PROVIDER_IDS } from "@/lib/client/ai/providers";
+import { hasUsableProvider } from "@/lib/client/ai/model";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { profileStore } from "@/lib/client/profile/store";
 import { useStore } from "@/lib/client/storage/store";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 import { ImportPanel, type ImportMeta } from "./ImportPanel";
 import { ProfileEditor } from "./ProfileEditor";
-import { CARD } from "./styles";
+import { CARD } from "@/components/ui/styles";
 
 const noop = () => () => {};
 
@@ -38,7 +37,7 @@ export function ProfileScreen() {
     return <div aria-busy="true" className={`${CARD} h-64 animate-pulse`} />;
   }
 
-  const canUseAi = PROVIDER_IDS.some((id) => isConnected(settings, id));
+  const canUseAi = hasUsableProvider(settings, "extract");
 
   /** `replace`: o perfil gravado substitui o que o editor mostra (importação), então o editor é recriado. */
   function persist(p: Profile, replace: boolean, meta?: ImportMeta): boolean {
@@ -68,10 +67,10 @@ export function ProfileScreen() {
           nossos servidores.
         </p>
       </div>
-      <NoProviderCta />
+      <NoProviderCta task="extract" />
       {saveError && (
         <p role="alert" className="rounded-lg border border-jf-danger-fg/30 bg-jf-danger-bg px-4 py-3 text-sm text-jf-danger-fg">
-          Não foi possível salvar. O armazenamento do navegador está cheio ou bloqueado; exporte um backup em Configurações ou libere espaço.
+          Não foi possível salvar. O armazenamento do navegador está cheio ou bloqueado; libere espaço no navegador apagando dados antigos do Job Find.
         </p>
       )}
       <div className="flex flex-wrap items-start gap-6">

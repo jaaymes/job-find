@@ -146,10 +146,6 @@ export function probeStorage(): StorageProbe {
   return probeCache;
 }
 
-export function isStorageAvailable(): boolean {
-  return probeStorage() !== "unavailable";
-}
-
 /** Somente para testes: descarta o resultado cacheado da sonda. */
 export function resetStorageProbeForTests(): void {
   probeCache = null;

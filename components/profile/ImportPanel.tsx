@@ -4,10 +4,9 @@ import { useEffect, useId, useRef, useState } from "react";
 import { isAbortError } from "@/lib/client/ai/errors";
 import type { AiSettings } from "@/lib/client/ai/settings";
 import { extractText } from "@/lib/client/extract";
-import { importProfile } from "@/lib/client/profile/import";
 import type { Profile } from "@/lib/shared/schemas/profile";
 import { toFailure, SCANNED_MESSAGE, type Failure } from "./messages";
-import { BTN_OUTLINE, BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "./styles";
+import { BTN_OUTLINE, BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 
 export type ImportMeta = { source: string; pages: number | null };
 
@@ -75,6 +74,7 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
         meta = { source: "Texto colado", pages: null };
       }
       setStatus("analyzing");
+      const { importProfile } = await import("@/lib/client/profile/import");
       const profile = await importProfile(cvText, settings, ctrl.signal);
       if (ctrl.signal.aborted) return;
       setStatus("idle");

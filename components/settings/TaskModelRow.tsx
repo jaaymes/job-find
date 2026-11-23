@@ -16,6 +16,8 @@ export const TASK_COPY: Record<AiTask, { name: string; desc: string }> = {
 const SELECT =
   "min-h-11 rounded-lg border border-jf-line-strong bg-jf-surface px-2.5 text-[15px] font-normal text-jf-ink outline-none focus-visible:ring-2 focus-visible:ring-jf-brand disabled:opacity-60";
 
+const STALE = "__stale";
+
 type Props = {
   task: AiTask;
   settings: AiSettings;
@@ -42,6 +44,8 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
   const choice = settings.tasks[task];
   const connected = PROVIDER_IDS.filter((id) => isConnected(settings, id));
   const active = choice && connected.includes(choice.provider) ? choice : null;
+  // Escolha salva cujo provedor foi desconectado: `resolveTaskModel` falha com `no_provider`, não cai no automático.
+  const stale = choice && !active ? choice : null;
   const models = useModels(active?.provider, settings);
 
   const def = active ? PROVIDERS[active.provider] : null;
@@ -73,13 +77,19 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
           <select
             id={providerId}
             className={SELECT}
-            value={active?.provider ?? ""}
+            value={active?.provider ?? (stale ? STALE : "")}
             onChange={(e) => {
               const next = e.target.value as ProviderId | "";
+              if ((e.target.value as string) === STALE) return;
               onChange(next === "" ? null : { provider: next, model: PROVIDERS[next].defaultModels[task] });
             }}
           >
             <option value="">Automático (primeiro provedor conectado)</option>
+            {stale && (
+              <option value={STALE} disabled>
+                {PROVIDERS[stale.provider].label} (não conectado)
+              </option>
+            )}
             {connected.map((id) => (
               <option key={id} value={id}>
                 {PROVIDERS[id].label}
@@ -110,6 +120,12 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
           {active ? (models.isPending ? "Carregando preços…" : estimateCost(task, current)) : "custo depende do modelo"}
         </span>
       </div>
+      {stale && (
+        <p role="alert" className="text-[13px] text-jf-danger-fg">
+          Provedor escolhido não está conectado. Conecte {PROVIDERS[stale.provider].label} ou escolha outro provedor, ou
+          volte para o automático; enquanto isso, esta tarefa não roda.
+        </p>
+      )}
       {active && models.isError && (
         <p className="text-[13px] text-jf-ink-3">
           Não foi possível carregar a lista de modelos agora. Você ainda pode usar o modelo recomendado.

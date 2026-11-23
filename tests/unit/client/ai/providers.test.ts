@@ -118,6 +118,11 @@ describe("listModels (fetch mockado)", () => {
     vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 401 })));
     await expect(PROVIDERS.openai.listModels({ apiKey: "bad" })).rejects.toMatchObject({ code: "invalid_key" });
   });
+
+  it("402 vira AiError no_credit", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("{}", { status: 402 })));
+    await expect(PROVIDERS.openai.listModels({ apiKey: "k" })).rejects.toMatchObject({ code: "no_credit" });
+  });
 });
 
 describe("AiSettings", () => {
@@ -157,6 +162,7 @@ describe("AiSettings", () => {
   it("padrões: privacidade ligada e nenhuma tarefa configurada", () => {
     const d = AiSettings.parse({ providers: {}, tasks: { extract: null, analyze: null, cv: null } });
     expect(d.dataCollectionDeny).toBe(true);
-    expect(d.minimizePii).toBe(true);
+    expect(d.minimizePii).toBeUndefined();
+    expect(AiSettings.safeParse({ ...d, minimizePii: false }).success).toBe(true);
   });
 });

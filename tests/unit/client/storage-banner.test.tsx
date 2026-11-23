@@ -5,32 +5,11 @@ import { act } from "react";
 import { z } from "zod";
 import {
   createStore,
-  isStorageAvailable,
   resetStorageProbeForTests,
 } from "@/lib/client/storage/store";
 
 const UNAVAILABLE = "Não foi possível salvar neste navegador. A busca de vagas funciona normalmente.";
-const NEAR_LIMIT = "Seus dados estão perto do limite. Exporte um backup e apague CVs antigos.";
-
-describe("isStorageAvailable", () => {
-  beforeEach(() => {
-    localStorage.clear();
-    resetStorageProbeForTests();
-  });
-  afterEach(() => vi.restoreAllMocks());
-
-  it("true quando o localStorage funciona e não deixa a chave de teste", () => {
-    expect(isStorageAvailable()).toBe(true);
-    expect(localStorage.length).toBe(0);
-  });
-
-  it("false quando setItem lança", () => {
-    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
-      throw new DOMException("x", "SecurityError");
-    });
-    expect(isStorageAvailable()).toBe(false);
-  });
-});
+const NEAR_LIMIT = "Seus dados estão perto do limite. Libere espaço no navegador apagando dados antigos do Job Find.";
 
 describe("StorageBanner", () => {
   beforeEach(() => {

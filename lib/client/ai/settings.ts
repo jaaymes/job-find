@@ -33,7 +33,8 @@ export const AiSettings = z
     ),
     tasks: z.object({ extract: TaskChoice, analyze: TaskChoice, cv: TaskChoice }),
     dataCollectionDeny: z.boolean().default(true),
-    minimizePii: z.boolean().default(true),
+    /** Legado: ignorado. A redação de e-mail, telefone e endereço é sempre aplicada (D-11). */
+    minimizePii: z.boolean().optional(),
   })
   .superRefine((s, ctx) => {
     for (const [id, cfg] of Object.entries(s.providers)) {
@@ -56,7 +57,6 @@ export function defaultAiSettings(): AiSettings {
     providers: {},
     tasks: { extract: null, analyze: null, cv: null },
     dataCollectionDeny: true,
-    minimizePii: true,
   };
 }
 

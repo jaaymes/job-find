@@ -14,6 +14,7 @@ export type AiErrorCode =
   | "truncated"
   | "invalid_output"
   | "blocked_by_privacy"
+  | "data_policy"
   | "local_blocked";
 
 /** Erro da camada de IA. `mapProviderError` converte erros de provedor em `AiError`. */
@@ -63,12 +64,6 @@ function bodyText(e: unknown): string {
   return `${e.responseBody ?? ""} ${data}`;
 }
 
-/** Trecho curto da resposta do provedor para a UI (ex.: mensagem de moderação). */
-function excerptOf(body: string): string | undefined {
-  const t = body.replace(/\s+/g, " ").trim().slice(0, 200);
-  return t === "" ? undefined : t;
-}
-
 const RETRYABLE: ReadonlySet<AiErrorCode> = new Set(["rate_limit", "timeout", "unavailable"]);
 
 /**
@@ -83,8 +78,7 @@ export function mapProviderError(e: unknown, ctx: { provider?: ProviderId } = {}
   if (isAbortError(e)) throw e;
   const status = statusOf(e);
   const body = bodyText(e);
-  const excerpt = excerptOf(body);
-  const meta: Record<string, unknown> = { ...(status ? { status } : {}), ...(excerpt ? { excerpt } : {}) };
+  const meta: Record<string, unknown> = status ? { status } : {};
   const make = (code: AiErrorCode, retryable = RETRYABLE.has(code)) => new AiError(code, { retryable, meta });
   if (errName(e) === "TimeoutError") return make("timeout");
   const privacy = /data_collection|data policy/i.test(body);
@@ -101,7 +95,7 @@ export function mapProviderError(e: unknown, ctx: { provider?: ProviderId } = {}
       return make("timeout");
     case 404:
     case 503:
-      if (privacy) return make("blocked_by_privacy");
+      if (privacy) return make("data_policy");
       return make("unavailable", status === 503);
     default:
   }

@@ -52,7 +52,7 @@ const PHONE_PARAM_RE = /([?&](?:phone|tel|fone|whatsapp|celular)=\+?)\d{8,}/gi;
 /** Redige números de telefone dentro de uma URL (wa.me, whatsapp, parâmetros de telefone ou 10+ dígitos). */
 function redactUrl(url: string): string {
   const host = /^(?:https?:\/\/)?([^/?#:]+)/i.exec(url)?.[1] ?? "";
-  const withParam = url.replace(PHONE_PARAM_RE, "$1[TELEFONE]");
+  const withParam = url.replace(EMAIL_RE, "[EMAIL]").replace(PHONE_PARAM_RE, "$1[TELEFONE]");
   // Outras URLs (ex.: linkedin.com/in/ana-98888777) só perdem sequências longas de dígitos.
   return withParam.replace(WA_HOST_RE.test(host) ? /\+?\d{8,}/g : /\d{10,}/g, "[TELEFONE]");
 }

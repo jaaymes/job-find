@@ -17,6 +17,17 @@ function needsPrivacyAck(s: AiSettings, id: ProviderId): boolean {
 }
 
 /**
+ * Há como rodar a tarefa agora? Mesma regra do `resolveTaskModel`: com escolha explícita, o provedor
+ * escolhido precisa estar conectado e com o aviso de privacidade aceito; sem escolha, basta algum
+ * provedor conectado e liberado.
+ */
+export function hasUsableProvider(s: AiSettings, task: AiTask): boolean {
+  const choice = s.tasks[task];
+  if (choice) return isConnected(s, choice.provider) && !needsPrivacyAck(s, choice.provider);
+  return PROVIDER_IDS.some((p) => isConnected(s, p) && !needsPrivacyAck(s, p));
+}
+
+/**
  * Resolve o modelo de uma tarefa. Usa a escolha explícita da tarefa; sem ela, cai no
  * primeiro provedor conectado (ordem do registro) com o modelo padrão da tarefa.
  * Provedores com `privacyNote` sem `privacyAccepted` são pulados no fallback e bloqueiam a escolha

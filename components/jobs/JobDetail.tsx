@@ -225,7 +225,7 @@ function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
             : "Com o currículo importado, mostramos aqui uma estimativa de aderência entre o seu perfil e esta vaga. Não é a probabilidade real de contratação."}
         </p>
       </section>
-      <AiAnalysis job={job} />
+      <AiAnalysis key={job.id} job={job} />
     </aside>
   );
 }

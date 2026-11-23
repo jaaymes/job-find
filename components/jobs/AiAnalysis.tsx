@@ -3,22 +3,24 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
-import { BTN_OUTLINE, BTN_PRIMARY } from "@/components/profile/styles";
+import { BTN_OUTLINE, BTN_PRIMARY, CARD } from "@/components/ui/styles";
 import { NoProviderCta } from "@/components/settings/NoProviderCta";
 import { AiError, isAbortError } from "@/lib/client/ai/errors";
-import { isConnected } from "@/lib/client/ai/model";
-import { PROVIDER_IDS, PROVIDERS } from "@/lib/client/ai/providers";
+import { hasUsableProvider } from "@/lib/client/ai/model";
+import { PROVIDERS } from "@/lib/client/ai/providers";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
-import { analysisStore, analyzeJob, type AnalysisRecord } from "@/lib/client/jobs/analyze";
+import { analysisStore, type AnalysisRecord } from "@/lib/client/jobs/analysis-store";
 import { profileStore } from "@/lib/client/profile/store";
 import { useStore } from "@/lib/client/storage/store";
 import type { JobDetail } from "@/lib/shared/types/job";
 
-const CARD = "rounded-2xl border border-jf-line bg-jf-surface";
 /** Teto da chamada: o critério de aceite é 30 s; a folga cobre modelos lentos antes de desistir. */
 const ANALYSIS_TIMEOUT_MS = 90_000;
 
-type Failure = { text: string };
+type Failure = { text: string; retry: boolean; settingsLink: boolean };
+
+/** Erros que só se resolvem em Configurações: repetir a chamada não adianta. */
+const NEEDS_SETTINGS = new Set(["invalid_key", "blocked_by_privacy", "data_policy"]);
 
 const failureOf = (e: unknown): Failure => {
   if (e instanceof AiError) {
@@ -28,9 +30,12 @@ const failureOf = (e: unknown): Failure => {
         truncated: "A resposta da IA foi cortada. Tente de novo.",
         fallback: "Não foi possível analisar a vaga.",
       }),
+      // `no_credit` é exceção explícita: a pessoa pode recarregar e tentar de novo.
+      retry: e.retryable || e.code === "no_credit",
+      settingsLink: NEEDS_SETTINGS.has(e.code),
     };
   }
-  return { text: "Algo deu errado ao analisar a vaga. Tente de novo." };
+  return { text: "Algo deu errado ao analisar a vaga. Tente de novo.", retry: true, settingsLink: false };
 };
 
 /** Tudo aqui é texto: a saída da IA nunca vira HTML. */
@@ -106,6 +111,7 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
     return () => {
       abortRef.current?.abort();
       abortRef.current = null;
+      setRunning(false);
     };
   }, [job.id]);
 
@@ -117,6 +123,7 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
     setFailure(null);
     setSaveFailed(false);
     try {
+      const { analyzeJob } = await import("@/lib/client/jobs/analyze");
       const { record, saved: result } = await analyzeJob({
         job,
         profile,
@@ -145,7 +152,7 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
   };
 
   const record = (fresh?.jobId === job.id ? fresh.record : null) ?? saved?.[String(job.id)] ?? null;
-  const hasProvider = settings !== null && PROVIDER_IDS.some((id) => isConnected(settings, id));
+  const hasProvider = settings !== null && hasUsableProvider(settings, "analyze");
 
   return (
     <section aria-labelledby="ia-t" className={`${CARD} flex flex-col gap-3.5 p-5 sm:p-6`}>
@@ -168,9 +175,16 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
       {failure && (
         <div role="alert" className="flex flex-col gap-2 rounded-xl border border-jf-line-strong p-3 text-sm">
           <p>{failure.text}</p>
-          <button type="button" className={`${BTN_OUTLINE} self-start`} onClick={() => void run()} disabled={running}>
-            Tentar de novo
-          </button>
+          {failure.retry && (
+            <button type="button" className={`${BTN_OUTLINE} self-start`} onClick={() => void run()} disabled={running}>
+              Tentar de novo
+            </button>
+          )}
+          {failure.settingsLink && (
+            <Link href="/configuracoes" className={`${BTN_OUTLINE} self-start no-underline`}>
+              Abrir Configurações
+            </Link>
+          )}
         </div>
       )}
 
@@ -185,7 +199,7 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
         </div>
       )}
 
-      {profile && !hasProvider && settings !== null && <NoProviderCta />}
+      {profile && !hasProvider && settings !== null && <NoProviderCta task="analyze" />}
 
       {profile && hasProvider && (
         <div className="flex flex-wrap gap-2">

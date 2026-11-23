@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useState, type FormEvent } from "react";
-import { BTN_OUTLINE, FIELD, FIELD_LABEL } from "./styles";
+import { BTN_OUTLINE, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 
 /** Aceita só http(s); devolve a URL normalizada ou null. */
 export function parseHttpUrl(raw: string): string | null {

@@ -14,12 +14,21 @@ async function checkOpenRouterKey(apiKey: string | undefined): Promise<void> {
     throw new AiError("unavailable", { retryable: true, cause });
   }
   if (res.status === 401 || res.status === 403) throw new AiError("invalid_key");
+  if (res.status === 402) throw new AiError("no_credit", { meta: { status: 402 } });
   if (!res.ok) {
     throw new AiError(res.status === 429 ? "rate_limit" : "unavailable", {
       retryable: true,
       meta: { status: res.status },
     });
   }
+  // Chave sem saldo/limite: `limit_remaining` é número (<= 0 esgotou) ou null (sem limite).
+  const data = await res.json().then(
+    (j: unknown) => (typeof j === "object" && j !== null ? (j as { data?: unknown }).data : undefined),
+    () => undefined,
+  );
+  const remaining =
+    typeof data === "object" && data !== null ? (data as { limit_remaining?: unknown }).limit_remaining : undefined;
+  if (typeof remaining === "number" && remaining <= 0) throw new AiError("budget");
 }
 
 /**

@@ -167,7 +167,13 @@ describe("extractText", () => {
 });
 
 describe("contact", () => {
-  it("redactContact troca e-mail e telefone", () => {
+  it("redactContact tira o e-mail de dentro de uma URL", () => {
+  const out = redactContact("Meu site https://x.com/?email=ana@x.com e pronto");
+  expect(out).not.toContain("ana@x.com");
+  expect(out).toContain("https://x.com/?email=[EMAIL]");
+});
+
+it("redactContact troca e-mail e telefone", () => {
     expect(redactContact("ana@x.com (11) 98888-7777")).toBe("[EMAIL] [TELEFONE]");
     expect(redactContact("fone +55 11 98888-7777, 11988887777")).toBe("fone [TELEFONE], [TELEFONE]");
   });

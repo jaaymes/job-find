@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { isConnected } from "@/lib/client/ai/model";
-import { PROVIDER_IDS } from "@/lib/client/ai/providers";
+import { hasUsableProvider } from "@/lib/client/ai/model";
+import type { AiTask } from "@/lib/client/ai/providers";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { useStore } from "@/lib/client/storage/store";
 
-/** Convite para conectar uma IA; some quando já há algum provedor conectado. */
-export function NoProviderCta() {
+/** Convite para conectar uma IA; some quando a tarefa já tem um provedor utilizável. */
+export function NoProviderCta({ task }: { task: AiTask }) {
   const settings = useStore(aiSettingsStore);
-  if (!settings || PROVIDER_IDS.some((id) => isConnected(settings, id))) return null;
+  if (!settings || hasUsableProvider(settings, task)) return null;
   return (
     <div className="flex flex-col gap-2 rounded-[14px] border border-jf-line bg-jf-surface p-5">
       <p className="text-sm text-jf-ink-3">

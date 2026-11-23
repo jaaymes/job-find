@@ -1,10 +1,13 @@
+import { connection } from "next/server";
 import type { ReactNode } from "react";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { StorageBanner } from "@/components/layout/StorageBanner";
 
-// Páginas com dados pessoais do navegador (perfil, configurações): shell estático + aviso de armazenamento.
-export default function LocalLayout({ children }: { children: ReactNode }) {
+// Páginas com dados pessoais do navegador (perfil, configurações): aviso de armazenamento.
+// Renderização dinâmica por requisição: o Next só aplica o nonce do proxy.ts (CSP) assim.
+export default async function LocalLayout({ children }: { children: ReactNode }) {
+  await connection();
   return (
     <>
       <SiteHeader />

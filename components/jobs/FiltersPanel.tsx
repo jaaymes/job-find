@@ -138,6 +138,16 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile 
         </select>
       </label>
 
+      <label className={OPTION}>
+        <input
+          type="checkbox"
+          className={CONTROL}
+          checked={filters.showHidden === true}
+          onChange={(e) => onChange({ showHidden: e.target.checked ? true : undefined })}
+        />
+        Mostrar vagas ocultas
+      </label>
+
       <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-jf-ink-2">
         Fonte
         <select

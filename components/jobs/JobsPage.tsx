@@ -1,8 +1,10 @@
 "use client";
 
 import { SlidersHorizontal } from "lucide-react";
-import { useId, useState } from "react";
+import { useEffect, useId, useMemo, useState } from "react";
 import { CLEAR_FILTERS, useJobsFilters } from "@/lib/client/jobs/use-jobs";
+import { syncSnapshots, setHidden, useJobStates } from "@/lib/client/jobs/job-state";
+import type { JobSummary } from "@/lib/shared/types/job";
 import { useJobsWithChance } from "@/lib/client/jobs/use-jobs-with-chance";
 import { FiltersPanel } from "./FiltersPanel";
 import { JobCard } from "./JobCard";
@@ -12,7 +14,8 @@ import { StackChips } from "./StackChips";
 import { formatAge, formatCollectedAt, isStale } from "./format";
 
 const FILTERS_ID = "jobs-filters";
-const SIDEBAR_KEYS = ["origin", "acceptsBrazil", "chance", "seniority", "lang", "source"] as const;
+const SIDEBAR_KEYS = ["origin", "acceptsBrazil", "chance", "seniority", "lang", "source", "showHidden"] as const;
+const UNDO_MS = 8000;
 
 function JobCardSkeleton() {
   return (
@@ -53,14 +56,32 @@ function Heading({ lastCollectedAt, now }: { lastCollectedAt: string | null; now
 
 export function JobsPage() {
   const [filters, setFilters] = useJobsFilters();
-  const { chance, ...apiFilters } = filters;
+  const { chance, showHidden, ...apiFilters } = filters;
   const query = useJobsWithChance(apiFilters, chance ?? null);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const panelId = useId();
   // Relógio do cliente = instante em que os dados chegaram (o pré-render não conhece a hora).
   const now = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null;
 
-  const items = query.items;
+  const states = useJobStates();
+  // Vagas ocultas são filtradas aqui, depois do fetch (o estado vive só no navegador): uma página pode ficar com
+  // menos itens do que o limite, e o "Carregar mais vagas" continua valendo para as seguintes.
+  const items = useMemo(
+    () => (showHidden || !states ? query.items : query.items.filter((x) => !states[String(x.job.id)]?.hidden)),
+    [query.items, states, showHidden],
+  );
+  const hiddenCount = query.items.length - items.length;
+  // Vaga vista de novo com dados novos: atualiza a cópia guardada para "Minhas vagas".
+  useEffect(() => {
+    syncSnapshots(query.items.map((x) => x.job));
+  }, [query.items]);
+
+  const [undo, setUndo] = useState<JobSummary | null>(null);
+  useEffect(() => {
+    if (!undo) return;
+    const t = setTimeout(() => setUndo(null), UNDO_MS);
+    return () => clearTimeout(t);
+  }, [undo]);
   const counts = query.counts;
   const lastCollectedAt = query.lastCollectedAt;
   const activeSidebar = SIDEBAR_KEYS.filter((k) => {
@@ -139,6 +160,18 @@ export function JobsPage() {
               </div>
             ) : query.isPending || (items.length === 0 && query.isFetchingNextPage) ? (
               [0, 1, 2, 3].map((i) => <JobCardSkeleton key={i} />)
+            ) : items.length === 0 && hiddenCount > 0 ? (
+              <div className="flex flex-col items-center gap-3 rounded-2xl border border-jf-line bg-jf-surface p-8 text-center">
+                <p className="font-semibold">As vagas carregadas estão ocultas</p>
+                <p className="text-sm text-jf-ink-3">Você ocultou todas as vagas desta página.</p>
+                <button
+                  type="button"
+                  onClick={() => setFilters({ showHidden: true })}
+                  className="min-h-11 rounded-xl border border-jf-line-strong bg-jf-surface px-5 font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand"
+                >
+                  Mostrar vagas ocultas
+                </button>
+              </div>
             ) : items.length === 0 ? (
               <div className="flex flex-col items-center gap-3 rounded-2xl border border-jf-line bg-jf-surface p-8 text-center">
                 <p className="font-semibold">Nenhuma vaga encontrada</p>
@@ -155,7 +188,13 @@ export function JobsPage() {
               </div>
             ) : (
               items.map(({ job, chance: score }) => (
-                <JobCard key={job.id} job={job} chance={score} now={now ?? new Date(job.publishedAt).getTime()} />
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  chance={score}
+                  now={now ?? new Date(job.publishedAt).getTime()}
+                  onHidden={setUndo}
+                />
               ))
             )}
 
@@ -183,6 +222,24 @@ export function JobsPage() {
             )}
           </div>
         </section>
+      </div>
+
+      <div aria-live="polite" data-testid="undo-region" className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex justify-center">
+        {undo && (
+          <div className="pointer-events-auto flex items-center gap-3 rounded-xl bg-jf-ink py-1.5 pr-1.5 pl-4 text-sm text-white shadow-lg">
+            <span>Vaga oculta</span>
+            <button
+              type="button"
+              onClick={() => {
+                setHidden(undo, false);
+                setUndo(null);
+              }}
+              className="min-h-11 rounded-lg px-3 font-semibold text-white underline outline-none hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white"
+            >
+              Desfazer
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

@@ -1,0 +1,111 @@
+"use client";
+
+import { Star } from "lucide-react";
+import {
+  JOB_STATUSES,
+  STATUS_LABELS,
+  appliedAt,
+  setFavorite,
+  setHidden,
+  setStatus,
+  useJobStates,
+  type JobState,
+  type JobStatus,
+  type SnapshotSource,
+} from "@/lib/client/jobs/job-state";
+import { BTN_OUTLINE } from "@/components/ui/styles";
+import { cn } from "@/lib/utils";
+
+/** Estado da vaga lido do localStorage; `undefined` no pré-render e antes da hidratação. */
+export function useJobState(id: number): JobState | undefined {
+  return useJobStates()?.[String(id)];
+}
+
+const dateFormat = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "America/Sao_Paulo" });
+
+/** "23/11/2026", sempre no horário de Brasília. */
+export function formatStatusDate(iso: string): string {
+  return dateFormat.format(new Date(iso));
+}
+
+/** Selo de status da listagem; "Aplicada" mostra também a data. Nada sem status. */
+export function StatusBadge({ state }: { state: JobState | undefined }) {
+  if (!state || state.status === "none") return null;
+  const date = appliedAt(state);
+  return (
+    <span
+      data-testid="status-badge"
+      className="rounded-md bg-jf-brand-soft px-2 py-0.5 text-xs font-semibold text-jf-brand-dark"
+    >
+      {STATUS_LABELS[state.status]}
+      {date ? ` em ${formatStatusDate(date)}` : ""}
+    </span>
+  );
+}
+
+export function FavoriteButton({ job, className }: { job: SnapshotSource; className?: string }) {
+  const favorite = useJobState(job.id)?.favorite ?? false;
+  return (
+    <button
+      type="button"
+      aria-pressed={favorite}
+      aria-label={`Favoritar ${job.title}`}
+      title={favorite ? "Remover dos favoritos" : "Favoritar"}
+      onClick={() => setFavorite(job, !favorite)}
+      className={cn(
+        "inline-flex size-11 items-center justify-center rounded-lg border border-jf-line-strong bg-jf-surface outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand",
+        favorite ? "text-amber-500" : "text-jf-ink-2",
+        className,
+      )}
+    >
+      <Star aria-hidden="true" className="size-5" fill={favorite ? "currentColor" : "none"} />
+    </button>
+  );
+}
+
+/** Oculta (e, com `onHidden`, deixa a tela oferecer o "Desfazer"); numa vaga já oculta vira "Mostrar de novo". */
+export function HideButton({
+  job,
+  onHidden,
+  className,
+}: {
+  job: SnapshotSource;
+  onHidden?: (job: SnapshotSource) => void;
+  className?: string;
+}) {
+  const hidden = useJobState(job.id)?.hidden ?? false;
+  return (
+    <button
+      type="button"
+      aria-label={`${hidden ? "Mostrar de novo" : "Ocultar"} ${job.title}`}
+      onClick={() => {
+        setHidden(job, !hidden);
+        if (!hidden) onHidden?.(job);
+      }}
+      className={cn(BTN_OUTLINE, "text-[13px]", className)}
+    >
+      {hidden ? "Mostrar de novo" : "Ocultar"}
+    </button>
+  );
+}
+
+export function StatusSelect({ job, className }: { job: SnapshotSource; className?: string }) {
+  const status = useJobState(job.id)?.status ?? "none";
+  return (
+    <select
+      aria-label={`Status da candidatura: ${job.title}`}
+      value={status}
+      onChange={(e) => setStatus(job, e.target.value as JobStatus)}
+      className={cn(
+        "min-h-11 rounded-lg border border-jf-line-strong bg-jf-surface px-2.5 text-[13px] text-jf-ink outline-none focus-visible:ring-2 focus-visible:ring-jf-brand",
+        className,
+      )}
+    >
+      {JOB_STATUSES.map((s) => (
+        <option key={s} value={s}>
+          {STATUS_LABELS[s]}
+        </option>
+      ))}
+    </select>
+  );
+}

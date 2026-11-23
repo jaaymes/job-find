@@ -12,6 +12,7 @@ import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { docsOf, generatedStore, type GeneratedRecord } from "@/lib/client/cv/generated-store";
 import type { CvLang } from "@/lib/client/cv/period";
 import { reviewDocs } from "@/lib/client/cv/review";
+import { useJobStates } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { cvFileName } from "@/lib/client/pdf/filename";
 import { profileStore } from "@/lib/client/profile/store";
@@ -432,7 +433,43 @@ function Generator({ job }: { job: JobDetail }) {
   );
 }
 
-function NotFound() {
+/** Só http(s) vira link externo. */
+function safeUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  try {
+    const { protocol } = new URL(url);
+    return protocol === "https:" || protocol === "http:" ? url : null;
+  } catch {
+    return null;
+  }
+}
+
+function NotFound({ id }: { id: number | null }) {
+  const states = useJobStates();
+  const snapshot = id === null ? undefined : states?.[String(id)]?.snapshot;
+  // Vaga que o usuário marcou e que saiu do índice: sem a descrição não há o que adaptar ao CV.
+  if (snapshot) {
+    const source = safeUrl(snapshot.urlCanonical);
+    return (
+      <section className={`${CARD} flex flex-col items-start gap-3 p-6 sm:p-8`}>
+        <h1 className="font-display text-2xl font-bold sm:text-3xl">{snapshot.title}</h1>
+        <p className="text-[15px] text-jf-ink-2">
+          {snapshot.company}. Esta vaga saiu do índice. Sem a descrição não dá para gerar o CV.
+        </p>
+        <div className="flex flex-wrap gap-2">
+          {source && (
+            <a href={source} target="_blank" rel="noopener noreferrer nofollow" className={`${BTN_OUTLINE} no-underline`}>
+              Ver a vaga na fonte <span aria-hidden="true">&nbsp;↗</span>
+              <span className="sr-only"> (abre em nova aba)</span>
+            </a>
+          )}
+          <HardLink href="/minhas-vagas" className={`${BTN_PRIMARY} no-underline`}>
+            Voltar para Minhas vagas
+          </HardLink>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className={`${CARD} flex flex-col items-start gap-3 p-6 sm:p-8`}>
       <h1 className="font-display text-2xl font-bold sm:text-3xl">Vaga não encontrada</h1>
@@ -447,7 +484,7 @@ function NotFound() {
 export function GeneratorScreen({ jobId }: { jobId: string }) {
   const id = parseJobId(jobId);
   const { data, error, isPending, refetch } = useJob(id);
-  if (id === null || error instanceof JobNotFoundError) return <NotFound />;
+  if (id === null || error instanceof JobNotFoundError) return <NotFound id={id} />;
   if (error) {
     return (
       <section role="alert" className={`${CARD} flex flex-col items-start gap-3 p-6`}>

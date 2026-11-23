@@ -2,7 +2,8 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { syncSnapshots } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { profileStore } from "@/lib/client/profile/store";
 import { toSafeHtml } from "@/lib/client/render-html";
@@ -12,6 +13,7 @@ import { STACKS } from "@/lib/shared/stacks";
 import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/types/job";
 import { AiAnalysis } from "./AiAnalysis";
 import { ChanceBadge } from "./ChanceBadge";
+import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobState } from "./JobActions";
 import {
   LANGUAGE_LABELS,
   SENIORITY_LABELS,
@@ -238,6 +240,11 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
   // URL bruta da fonte, sem tirar parâmetros (D-07); `urlCanonical` serve só à deduplicação.
   const applyUrl = job.applyUrl ? safeExternalUrl(job.applyUrl) : null;
   const stacks = job.stacks;
+  const state = useJobState(job.id);
+  // Vaga já favoritada/marcada: a cópia de "Minhas vagas" ganha o link da fonte e os dados novos.
+  useEffect(() => {
+    syncSnapshots([job]);
+  }, [job]);
 
   return (
     <>
@@ -291,6 +298,12 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
           >
             Gerar CV + carta
           </HardLink>
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Organizar vaga">
+            <FavoriteButton job={job} />
+            <StatusSelect job={job} className="flex-1" />
+            <HideButton job={job} />
+          </div>
+          <StatusBadge state={state} />
         </div>
       </section>
       <div className="flex flex-wrap items-start gap-6">

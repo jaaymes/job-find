@@ -133,6 +133,14 @@ describe("sanitizeJobHtml", () => {
     expect(out).not.toContain("�");
   });
 
+  it("degrada para texto em <p> quando o aninhamento é patológico", () => {
+    const out = sanitizeJobHtml("<blockquote>".repeat(5000) + "x", { dofollow: false });
+    expect(out.length).toBeGreaterThan(0);
+    expect(Buffer.byteLength(out)).toBeLessThanOrEqual(MAX_HTML_BYTES);
+    expect(out).toContain("x");
+    expect(sanitizeJobHtml(out, { dofollow: false })).toBe(out);
+  });
+
   it("trunca texto puro grande sem cortar entidades", () => {
     const out = sanitizeJobHtml("<p>" + "a&amp;b ".repeat(20000) + "</p>", { dofollow: false });
     expect(Buffer.byteLength(out)).toBeLessThanOrEqual(MAX_HTML_BYTES);

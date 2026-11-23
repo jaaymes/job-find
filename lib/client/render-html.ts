@@ -5,21 +5,26 @@ import {
   ALLOWED_HREF,
   ALLOWED_TAGS,
   DISCARD_CONTENT_TAGS,
+  REL_DOFOLLOW,
   REL_NOFOLLOW,
 } from "@/lib/shared/sanitize-policy";
 
+// `rel` nunca vem do HTML de entrada: não está em ALLOWED_ATTR e é sempre
+// definido aqui, a partir da opção (chamada síncrona, sem concorrência).
+let currentRel = REL_NOFOLLOW;
 DOMPurify.addHook("afterSanitizeAttributes", (node) => {
-  if (node.nodeName === "A") node.setAttribute("rel", REL_NOFOLLOW);
+  if (node.nodeName === "A") node.setAttribute("rel", currentRel);
 });
 
 /**
  * Segunda camada de sanitização (SEC-02): roda no navegador antes de renderizar,
  * com a mesma allowlist do servidor (lib/shared/sanitize-policy.ts).
  */
-export function toSafeHtml(html: string): string {
+export function toSafeHtml(html: string, opts: { dofollow?: boolean } = {}): string {
+  currentRel = opts.dofollow ? REL_DOFOLLOW : REL_NOFOLLOW;
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [...ALLOWED_TAGS],
-    ALLOWED_ATTR: [...ALLOWED_ATTRIBUTES, "rel"],
+    ALLOWED_ATTR: [...ALLOWED_ATTRIBUTES],
     ALLOWED_URI_REGEXP: ALLOWED_HREF,
     ALLOW_DATA_ATTR: false,
     ALLOW_ARIA_ATTR: false,

@@ -65,7 +65,12 @@ export function sanitizeJobHtml(html: string, opts: { dofollow: boolean }): stri
     limit -= size - MAX_HTML_BYTES + 1;
     if (limit <= 0) break;
   }
-  return "";
+  // Não convergiu (ex.: aninhamento patológico): degrada para texto puro em <p>.
+  const text = htmlToText(html)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  return sanitizeHtml(`<p>${cutAt(text, MAX_HTML_BYTES - 7)}</p>`, o);
 }
 
 const escapeHtml = (s: string) =>

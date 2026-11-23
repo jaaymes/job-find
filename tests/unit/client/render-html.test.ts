@@ -54,4 +54,17 @@ describe("toSafeHtml (jsdom)", () => {
     const html = '<p>a <strong>b</strong> <a href="mailto:a@b.co" rel="noopener noreferrer nofollow">m</a></p>';
     expect(toSafeHtml(html)).toBe(html);
   });
+
+  it("dofollow mantém rel sem nofollow; o padrão é nofollow", () => {
+    const a = '<a href="https://x.com">x</a>';
+    expect(toSafeHtml(a, { dofollow: true })).toBe('<a href="https://x.com" rel="noopener noreferrer">x</a>');
+    expect(toSafeHtml(a)).toBe('<a href="https://x.com" rel="noopener noreferrer nofollow">x</a>');
+    expect(toSafeHtml(a, { dofollow: false })).toContain("nofollow");
+  });
+
+  it("sobrescreve um rel vindo no HTML", () => {
+    const a = '<a href="https://x.com" rel="noopener">x</a>';
+    expect(toSafeHtml(a)).toBe('<a href="https://x.com" rel="noopener noreferrer nofollow">x</a>');
+    expect(toSafeHtml(a, { dofollow: true })).toBe('<a href="https://x.com" rel="noopener noreferrer">x</a>');
+  });
 });

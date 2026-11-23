@@ -4,6 +4,7 @@ import type { Connector } from "@/lib/server/sources/types";
 import { ashby } from "@/lib/server/sources/ashby";
 import { greenhouse } from "@/lib/server/sources/greenhouse";
 import { himalayas } from "@/lib/server/sources/himalayas";
+import { jobicy } from "@/lib/server/sources/jobicy";
 import { lever } from "@/lib/server/sources/lever";
 
 /** Preenchido pelas Tarefas 11–14 e 38; começa vazio. */
@@ -11,6 +12,7 @@ export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
   ashby,
   greenhouse,
   himalayas,
+  jobicy,
   lever,
 };
 

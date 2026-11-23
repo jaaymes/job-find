@@ -272,8 +272,8 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
             ))}
           </div>
         </div>
-        {applyUrl && (
-          <div className="flex flex-1 basis-full flex-col gap-2.5 sm:basis-[260px]">
+        <div className="flex flex-1 basis-full flex-col gap-2.5 sm:basis-[260px]">
+          {applyUrl && (
             <a
               href={applyUrl}
               target="_blank"
@@ -283,8 +283,14 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
               Candidatar na página da vaga <span aria-hidden="true">↗</span>
               <NewTabHint />
             </a>
-          </div>
-        )}
+          )}
+          <Link
+            href={`/gerador/${job.id}`}
+            className="flex min-h-12 items-center justify-center rounded-xl border border-jf-line-strong bg-jf-surface px-4 text-center font-semibold text-jf-ink no-underline hover:bg-jf-chip"
+          >
+            Gerar CV + carta
+          </Link>
+        </div>
       </section>
       <div className="flex flex-wrap items-start gap-6">
         <Description job={job} />

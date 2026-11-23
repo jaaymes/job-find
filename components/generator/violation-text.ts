@@ -16,7 +16,9 @@ export function describeViolation(v: Violation): string {
     case "unknown_number":
       return `O número "${v.text}" não aparece no seu perfil.`;
     case "unknown_name":
-      return `O termo "${v.text}" não aparece no seu perfil nem na vaga.`;
+      return v.where.part === "letter"
+        ? `O termo "${v.text}" não aparece no seu perfil nem na vaga.`
+        : `O termo "${v.text}" não aparece no seu perfil.`;
   }
 }
 

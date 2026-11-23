@@ -26,7 +26,7 @@ export type Violation = {
   key: string;
 };
 
-/** Contexto opcional da vaga: nomes que aparecem nela (empresa, cargo, descrição) não são "inventados". */
+/** Contexto opcional da vaga: nomes que aparecem nela (empresa, cargo, descrição) não são "inventados" NA CARTA. */
 export type JobContext = {
   title?: string | null;
   company?: string | null;
@@ -110,13 +110,19 @@ const COMMON_CAPITALIZED = new Set(
     // termos genéricos de carta
     "hiring", "manager", "team", "recruiter", "recruiting", "equipe", "time", "senhor", "senhora",
     "brasil", "brazil", "remote", "remoto",
-    // cargos e áreas comuns em títulos (en/es). Senioridade (Senior, Staff, Lead...) fica de fora: tem checagem própria.
+  ].map(fold),
+);
+// Cargos e áreas comuns em títulos (en/es). Senioridade (Senior, Staff, Lead...) fica de fora: tem checagem própria.
+// São "comuns" só FORA de contexto de empresa: "at Cloud Data Software" é um nome de empresa (ver `companyRunStarts`).
+const COMMON_ROLE_WORDS = new Set(
+  [
     "developer", "engineer", "software", "frontend", "front-end", "backend", "back-end", "full", "stack", "fullstack",
     "full-stack", "mobile", "web", "platform", "data", "cloud", "devops", "product", "designer", "analyst",
     "consultant", "specialist", "programmer", "architect", "engineering", "development",
     "desarrollador", "desarrolladora", "ingeniero", "ingeniera", "analista",
   ].map(fold),
 );
+for (const w of COMMON_ROLE_WORDS) COMMON_CAPITALIZED.add(w);
 
 // Palavras do catálogo de stacks (React, Node, Next...) ficam a cargo de `unknown_stack`.
 const CATALOG_WORDS = new Set<string>();
@@ -143,6 +149,22 @@ const SENTENCE_END = new Set([".", "!", "?", ":", ";", "•", "*", "-", "–", "
  * Palavras com inicial maiúscula fora do início de frase/linha. Siglas (tudo maiúsculo) são ignoradas aqui.
  * Para decidir o início de frase anda para trás só sobre o espaço em branco entre duas palavras (O(n) no total).
  */
+// Sequência de palavras com inicial maiúscula logo depois de uma preposição de empresa ("at Cloud Data Software",
+// "na Data Software"). Linear: cada repetição consome espaço e uma maiúscula.
+const COMPANY_RUN_RE =
+  /(?<![\p{L}\d])(?:at|na|no|nas|nos|for|em|pela|pelo)[ \t]+(\p{Lu}[\p{L}\d'’]*(?:[ \t]+\p{Lu}[\p{L}\d'’]*)*)/gu;
+
+/** Início (índice) de cada palavra que está em contexto de empresa. */
+function companyRunStarts(text: string): Set<number> {
+  const out = new Set<number>();
+  for (const m of text.matchAll(COMPANY_RUN_RE)) {
+    const run = m[1];
+    const base = m.index + m[0].length - run.length;
+    for (const w of run.matchAll(/\p{Lu}[\p{L}\d'’]*/gu)) out.add(base + w.index);
+  }
+  return out;
+}
+
 function capitalizedMidSentence(text: string): { word: string; end: number }[] {
   const out: { word: string; end: number }[] = [];
   for (const m of text.matchAll(/(?<![\p{L}\d])\p{Lu}[\p{L}\d'’]*/gu)) {
@@ -166,7 +188,7 @@ function capitalizedMidSentence(text: string): { word: string; end: number }[] {
 // ---------------------------------------------------------------------------
 
 // Grupos de termos equivalentes (já dobrados: sem acento, minúsculos). Um grupo vale se QUALQUER termo dele
-// aparece na fonte. Os cargos/senioridades valem também se aparecem na vaga.
+// aparece na fonte. Os cargos/senioridades valem também se aparecem na vaga, mas só na carta (ver `checkText`).
 const SENIORITY_GROUPS = [
   ["junior"], ["pleno", "mid-level", "mid level", "midlevel"], ["senior"], ["staff"],
   ["principal engineer", "principal developer"], ["tech lead", "team lead", "lider tecnico", "lider de equipe"],
@@ -265,7 +287,7 @@ type Facts = {
   words: Set<string>;
   stacks: Set<string>;
   skillNames: Set<string>;
-  /** Grupos de senioridade/cargo presentes no perfil ou na vaga. */
+  /** Grupos de senioridade/cargo presentes no perfil. */
   seniorityOk: Set<number>;
   /** Grupos de certificação/formação presentes no perfil. */
   credentialOk: Set<number>;
@@ -287,7 +309,9 @@ function stackIdsIn(text: string): string[] {
   return extractStacks({ title: "", body: text }).map((s) => s.id);
 }
 
-function buildFacts(profile: Profile, job?: JobContext): { profile: Facts; jobWords: Set<string> } {
+type BuiltFacts = { profile: Facts; jobWords: Set<string>; jobSeniorityOk: Set<number> };
+
+function buildFacts(profile: Profile, job?: JobContext): BuiltFacts {
   const parts: string[] = [
     profile.name ?? "",
     profile.headline ?? "",
@@ -315,7 +339,7 @@ function buildFacts(profile: Profile, job?: JobContext): { profile: Facts; jobWo
     .join("\n");
   const folded = foldText(all);
   const jobFolded = foldText(jobText);
-  const seniorityOk = groupsHit(`${folded}\n${jobFolded}`, SENIORITY_RES);
+  const seniorityOk = groupsHit(folded, SENIORITY_RES);
   const years = new Set(yearsIn(all));
   // Experiência atual (endDate null): o ano corrente é um ano válido ("2021–2026").
   if (profile.experiences.some((e) => e.endDate === null)) years.add(String(new Date().getFullYear()));
@@ -332,7 +356,35 @@ function buildFacts(profile: Profile, job?: JobContext): { profile: Facts; jobWo
       skillNames,
     },
     jobWords: wordSet(jobText),
+    jobSeniorityOk: groupsHit(jobFolded, SENIORITY_RES),
   };
+}
+
+/** Fatos já calculados de um par perfil/vaga (opaco): ver `prepareFacts`. */
+export type PreparedFacts = { readonly __prepared: true; readonly profile: Profile; readonly job: JobContext | undefined };
+type PreparedInternal = PreparedFacts & { built: BuiltFacts };
+
+const NO_JOB: JobContext = {};
+const factsCache = new WeakMap<Profile, WeakMap<JobContext, PreparedInternal>>();
+
+/**
+ * Pré-calcula os fatos do perfil e da vaga (texto, números, stacks, HTML da vaga sem tags). O resultado fica em
+ * cache por objeto de perfil/vaga (WeakMap): revalidar a cada tecla não reprocessa o perfil e a vaga inteiros.
+ * Perfis e vagas são imutáveis no app (cada mudança gera um objeto novo), então o cache nunca fica velho.
+ */
+export function prepareFacts(profile: Profile, job?: JobContext): PreparedFacts {
+  let byJob = factsCache.get(profile);
+  if (!byJob) {
+    byJob = new WeakMap();
+    factsCache.set(profile, byJob);
+  }
+  const k = job ?? NO_JOB;
+  let p = byJob.get(k);
+  if (!p) {
+    p = { __prepared: true, profile, job, built: buildFacts(profile, job) };
+    byJob.set(k, p);
+  }
+  return p;
 }
 
 // ---------------------------------------------------------------------------
@@ -345,7 +397,7 @@ type Where = Violation["where"];
  * @param profile perfil local do usuário (fonte de verdade).
  * @param docs saída do modelo.
  * @param job contexto opcional da vaga (3º parâmetro, compatível com a assinatura do brief): empresa, cargo
- *   e nomes da descrição não geram `unknown_name`.
+ *   e nomes da descrição não geram `unknown_name` na carta (no CV, só o perfil vale).
  *
  * Escolhas documentadas:
  * - `expId` ausente do perfil, ou repetido em `cv.experiences` (a repetição só vale a 1ª vez), gera `unknown_exp`
@@ -359,9 +411,17 @@ type Where = Violation["where"];
  *   "sem fonte") e `where.bulletIndex` preenchido. Só os textos de origem válidos entram na comparação de números.
  * - Stacks, anos e nomes de bullets são comparados com o perfil inteiro; números, só com as fontes válidas.
  *   Headline, summary e carta são comparados com o perfil inteiro, inclusive números.
+ * - A vaga só libera termos na CARTA (que pode citar o cargo e a empresa da vaga). No CV (título, resumo, bullets,
+ *   skills), senioridade, cargos, nomes, siglas e empresas valem só se estão no perfil: "Sênior" copiado de uma
+ *   vaga Sênior com perfil Pleno é violação. Tecnologia da vaga ausente do perfil continua `unknown_stack`.
+ * - Em contexto de empresa (depois de at/na/no/for/em/pela/pelo), palavras comuns de cargo/área ("Cloud Data
+ *   Software") não isentam o nome: só valem se estão no perfil (ou na vaga, na carta).
+ *
+ * @param prepared opcional: fatos de `prepareFacts(profile, job)` (o cache é usado de qualquer forma).
  */
-export function validateTailored(profile: Profile, docs: TailoredDocs, job?: JobContext): Violation[] {
-  const { profile: facts, jobWords } = buildFacts(profile, job);
+export function validateTailored(profile: Profile, docs: TailoredDocs, job?: JobContext, prepared?: PreparedFacts): Violation[] {
+  const p = prepared && prepared.profile === profile && prepared.job === job ? prepared : prepareFacts(profile, job);
+  const { profile: facts, jobWords, jobSeniorityOk } = (p as PreparedInternal).built;
   const out: Violation[] = [];
   const seen = new Set<string>();
   const add = (kind: ViolationKind, text: string, where: Where, key: string) => {
@@ -371,8 +431,12 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     out.push({ kind, text, where, key });
   };
 
-  /** `sourceText`: texto cujos números/termos por extenso valem para este trecho. */
-  const checkText = (text: string, where: Where, key: string, sourceText: string) => {
+  /**
+   * `sourceText`: texto cujos números/termos por extenso valem para este trecho.
+   * `allowJob`: termos da vaga (nomes, siglas, cargo/senioridade) valem; só na carta.
+   */
+  const checkText = (text: string, where: Where, key: string, sourceText: string, allowJob = false) => {
+    const inJob = (w: string) => allowJob && jobWords.has(w);
     const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
     for (const t of numberTokens(text)) {
       if (t.yearLike) {
@@ -390,12 +454,13 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
       for (const part of fold(w).split(/\s+/)) flaggedNames.add(part); // "tech lead" também cobre "Lead"
       add("unknown_name", w, where, key);
     };
-    const folded = foldText(text).replace(/hiring manager/g, " ");
+    // Mesmo comprimento: os índices de `folded` são usados também sobre `text` (ver "à" abaixo).
+    const folded = foldText(text).replace(/hiring manager/g, (x) => " ".repeat(x.length));
 
-    // Senioridade/cargo (perfil ou vaga), em qualquer trecho; termo que descreve outras pessoas não conta.
+    // Senioridade/cargo (perfil; vaga só na carta); termo que descreve outras pessoas não conta.
     {
       SENIORITY_RES.forEach((re, i) => {
-        if (facts.seniorityOk.has(i)) return;
+        if (facts.seniorityOk.has(i) || (allowJob && jobSeniorityOk.has(i))) return;
         re.lastIndex = 0;
         for (const m of folded.matchAll(re)) {
           const before = /([\p{L}]+)\s+$/u.exec(folded.slice(Math.max(0, m.index - 24), m.index))?.[1];
@@ -436,11 +501,13 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
       add("unknown_number", w, where, key);
     }
 
+    const companyStarts = companyRunStarts(text);
     for (const { word: w, end } of capitalizedMidSentence(text)) {
       const f = fold(w);
       // Produto colado a uma empresa ("Amazon S3", "Google Analytics").
       if (PRODUCT_WORDS.has(f) || PRODUCT_AFTER.test(foldText(text.slice(end, end + 24)))) continue;
-      if (COMMON_CAPITALIZED.has(f) || CATALOG_WORDS.has(f) || facts.words.has(f) || jobWords.has(f) || flaggedNames.has(f)) continue;
+      const common = COMMON_CAPITALIZED.has(f) && !(COMMON_ROLE_WORDS.has(f) && companyStarts.has(end - w.length));
+      if (common || CATALOG_WORDS.has(f) || facts.words.has(f) || inJob(f) || flaggedNames.has(f)) continue;
       flagName(w);
     }
 
@@ -449,7 +516,7 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
       const after = folded.slice(m.index + m[0].length, m.index + m[0].length + 24);
       const compound = /^-\p{L}/u.test(after) || /\p{L}-$/u.test(folded.slice(Math.max(0, m.index - 2), m.index));
       if (compound || PRODUCT_AFTER.test(after)) continue;
-      if (!facts.words.has(m[0]) && !jobWords.has(m[0]) && !flaggedNames.has(m[0])) flagName(m[0]);
+      if (!facts.words.has(m[0]) && !inJob(m[0]) && !flaggedNames.has(m[0])) flagName(m[0]);
     }
 
     // Siglas desconhecidas, só como nome de empresa (depois de "na", "no", "at", "for"...). As demais ficam com
@@ -457,7 +524,7 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     for (const m of text.matchAll(ACRONYM_RE)) {
       const f = fold(m[0]);
       const base = f.endsWith("s") ? f.slice(0, -1) : f;
-      const known = (x: string) => ACRONYM_ALLOWLIST.has(x) || CATALOG_WORDS.has(x) || facts.words.has(x) || jobWords.has(x);
+      const known = (x: string) => ACRONYM_ALLOWLIST.has(x) || CATALOG_WORDS.has(x) || facts.words.has(x) || inJob(x);
       if (known(f) || known(base) || flaggedNames.has(f)) continue;
       const prev = /([\p{L}]+)\s+$/u.exec(text.slice(Math.max(0, m.index - 16), m.index))?.[1];
       if (prev && COMPANY_PREPOSITIONS.has(prev.toLowerCase())) flagName(m[0]);
@@ -504,7 +571,7 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     });
   }
 
-  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all);
+  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all, true);
   return out;
 }
 
@@ -537,7 +604,9 @@ export function toPromptFeedback(violations: Violation[]): string[] {
           ? `${at}: o número "${v.text}" não está na fonte citada; use só números do bullet de origem (sourceBulletIds) ou remova-o`
           : `${at}: o número "${v.text}" não está no perfil; remova-o ou use só números do perfil`;
       case "unknown_name":
-        return `${at}: o termo "${v.text}" (nome, sigla, cargo, senioridade ou certificação) não aparece no perfil nem na vaga; remova-o`;
+        return v.where.part === "letter"
+          ? `${at}: o termo "${v.text}" (nome, sigla, cargo, senioridade ou certificação) não aparece no perfil nem na vaga; remova-o`
+          : `${at}: o termo "${v.text}" (nome, sigla, cargo, senioridade ou certificação) não aparece no perfil; no CV, use só o que está no perfil (não copie da vaga); remova-o`;
     }
   });
 }

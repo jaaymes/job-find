@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { assembleCv } from "@/lib/client/cv/assemble";
 import { countFlagged, flagBullets, letterFlags, violationKey } from "@/lib/client/cv/flags";
-import { toPromptFeedback, validateTailored, type Violation } from "@/lib/client/cv/validate";
+import { prepareFacts, toPromptFeedback, validateTailored, type Violation } from "@/lib/client/cv/validate";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
 
@@ -174,7 +174,9 @@ describe("senioridade, certificação, números por extenso, siglas e empresas",
   });
   it("termo presente no perfil ou na vaga não gera violação", () => {
     expect(letter("Sou desenvolvedora pleno com React.")).toEqual([]);
+    // Na carta, a vaga vale como fonte (citar o cargo e a empresa da vaga).
     expect(letter("Quero ser sênior", { title: "Dev Sênior" })).toEqual([]);
+    expect(letter("Quero a vaga de Dev Sênior", { title: "Dev Sênior" })).toEqual([]);
     expect(letter("Dear Hiring Manager, tenho React.")).toEqual([]);
   });
   it("certificações e formação inventadas", () => {
@@ -367,5 +369,70 @@ describe("títulos em inglês com perfil em português", () => {
   });
   it("continua marcando cargo de liderança inventado", () => {
     expect(titled("Staff Engineer", mid).map((v) => v.text.toLowerCase())).toContain("staff");
+  });
+});
+
+describe("vaga como fonte só na carta (revisão final)", () => {
+  const mid: Profile = { ...profile, seniority: "mid", headline: "Dev pleno", experiences: profile.experiences.map((e) => ({ ...e, title: "Dev Pleno" })) };
+  const seniorJob = { title: "Desenvolvedora Sênior", company: "Acme", descriptionHtml: "<p>Monitoramento com Datadog e Sênior</p>" };
+  const texts = (v: Violation[]) => v.map((x) => x.text.toLowerCase());
+
+  it("CV: senioridade copiada da vaga (perfil Pleno, vaga Sênior) é violação; na carta, não", () => {
+    expect(texts(validateTailored(mid, docs({ headline: "Desenvolvedora Sênior" }), seniorJob))).toContain("senior");
+    expect(texts(validateTailored(mid, docs({ summary: "Desenvolvedora Sênior com React." }), seniorJob))).toContain("senior");
+    expect(validateTailored(mid, withLetter("Quero a vaga de Dev Sênior"), seniorJob)).toEqual([]);
+  });
+
+  it("CV: ferramenta que só está na vaga é violação no bullet; na carta, não", () => {
+    const b = validateTailored(mid, withBullet("exp_1", "Monitorei com Datadog", ["exp_1.b1"]), seniorJob);
+    expect(b.map((v) => v.text)).toContain("Datadog");
+    expect(validateTailored(mid, withLetter("Monitorei com Datadog"), seniorJob)).toEqual([]);
+  });
+
+  it("CV: empresa e sigla que só estão na vaga também viram violação no CV", () => {
+    expect(texts(validateTailored(mid, docs({ summary: "Trabalhei na Acme com React." }), seniorJob))).toContain("acme");
+    const job = { company: "XPTO Pagamentos" };
+    expect(texts(validateTailored(mid, withBullet("exp_1", "Liderou a migração para React na XPTO", ["exp_1.b1"]), job))).toContain("xpto");
+    expect(validateTailored(mid, withLetter("Quero trabalhar na XPTO."), job)).toEqual([]);
+  });
+
+  it("empresa inventada com palavras comuns ('at Cloud Data Software') é violação", () => {
+    const v = validateTailored(profile, withBullet("exp_1", "Liderou a migração para React at Cloud Data Software", ["exp_1.b1"]));
+    expect(kinds(v)).toContain("unknown_name");
+    expect(validateTailored(profile, withBullet("exp_1", "Liderou a migração para React na Data Software", ["exp_1.b1"]))).not.toEqual([]);
+    // Fora de contexto de empresa, as mesmas palavras continuam comuns.
+    expect(validateTailored(profile, docs({ headline: "Cloud Data Software Engineer" }))).toEqual([]);
+    // Mês depois de "em" não é empresa.
+    expect(validateTailored(profile, withLetter("Entrei em Janeiro com React."))).toEqual([]);
+    // Empresa do perfil com palavras comuns continua valendo.
+    const own: Profile = { ...profile, experiences: profile.experiences.map((e, i) => (i === 0 ? { ...e, company: "Cloud Data Software" } : e)) };
+    expect(validateTailored(own, withBullet("exp_1", "Liderou a migração para React na Cloud Data Software", ["exp_1.b1"]))).toEqual([]);
+  });
+
+  it("feedback ao modelo: no CV, não sugere a vaga como fonte", () => {
+    const fb = toPromptFeedback(validateTailored(mid, docs({ headline: "Desenvolvedora Sênior" }), seniorJob));
+    expect(fb.join("\n")).toMatch(/não copie da vaga/);
+  });
+});
+
+describe("'Hiring Manager' não desloca os índices", () => {
+  it("termo depois de 'Hiring Manager' ainda vê o 'à' do texto original", () => {
+    const mid: Profile = { ...profile, seniority: "mid", experiences: profile.experiences.map((e) => ({ ...e, title: "Dev Pleno" })) };
+    expect(validateTailored(mid, withLetter("Dear Hiring Manager, reportei à diretora da área com React."))).toEqual([]);
+    expect(validateTailored(mid, withLetter("Dear Hiring Manager, sou diretora com React.")).map((v) => v.text)).toContain("diretora");
+  });
+});
+
+describe("prepareFacts (memoização)", () => {
+  it("devolve o mesmo objeto para o mesmo perfil/vaga e o resultado não muda", () => {
+    const job = { title: "Dev", company: "Acme", descriptionHtml: "<p>React</p>" };
+    const a = prepareFacts(profile, job);
+    expect(prepareFacts(profile, job)).toBe(a);
+    expect(prepareFacts(profile)).toBe(prepareFacts(profile));
+    expect(prepareFacts({ ...profile }, job)).not.toBe(a);
+    const d = withBullet("exp_1", "Reduzi 40% do LCP", ["exp_1.b3"]);
+    expect(validateTailored(profile, d, job, a)).toEqual(validateTailored(profile, d, job));
+    // Fatos de outro perfil não são usados por engano.
+    expect(validateTailored(profile, d, job, prepareFacts({ ...profile, experiences: [] }, job))).toEqual(validateTailored(profile, d, job));
   });
 });

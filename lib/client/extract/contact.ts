@@ -13,6 +13,18 @@ const PROTECT_RE =
   /(?:https?:\/\/|www\.)[^\s<>"')\]]{1,2000}|(?:[\p{L}\p{N}-]{1,63}\.){1,5}[a-z]{2,24}\/[^\s<>"')\]]{0,2000}/giu;
 const YEAR_RANGE_RE = /^(?:19|20)\d{2}\s*[-–/]\s*(?:19|20)\d{2}$/;
 
+// Endereço (D-11): logradouro brasileiro com número, CEP e formato inglês "123 Main St". Heurística conservadora:
+// exige número depois do nome da rua; quantificadores limitados (sem backtracking quadrático). Cidade/estado ficam.
+const STREET_BR_RE =
+  /(?<![\p{L}\p{N}])(?:Rua|R\.|Avenida|Av\.|Travessa|Tv\.|Alameda|Al\.|Rodovia|Rod\.|Estrada|Pra[çc]a|Largo)[ \t]+[^\n,;|()]{1,60}?,?[ \t]*(?:n[º°o.]?[ \t]*)?(?<!\d)(?!(?:19|20)\d\d(?!\d))\d{1,5}(?!\d|[ \t]*[-–/][ \t]*\d{4})(?:[ \t]*[-,][ \t]*(?:apto?\.?|apartamento|bloco|sala|conj\.?|casa)[ \t]*\w{1,6})?/giu;
+const STREET_EN_RE =
+  /(?<![\p{L}\p{N}])\d{1,5}[ \t]+(?:[A-Z][\p{L}.'-]{0,20}[ \t]+){1,3}(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr)\b\.?/gu;
+const CEP_RE = /(?<![\p{L}\p{N}])(?:CEP:?[ \t]*\d{5}-?\d{3}|\d{5}-\d{3})(?!\d)/giu;
+
+function redactAddress(text: string): string {
+  return text.replace(STREET_BR_RE, "[ENDERECO]").replace(STREET_EN_RE, "[ENDERECO]").replace(CEP_RE, "[ENDERECO]");
+}
+
 export type Contact = { email: string | null; phone: string | null; links: string[] };
 
 function isPhone(candidate: string): boolean {
@@ -93,7 +105,7 @@ function phoneSpans(text: string): Array<[number, number]> {
 
 export function redactContact(text: string): string {
   const { text: masked, restore } = protectUrls(text);
-  const noEmail = masked.replace(EMAIL_RE, "[EMAIL]");
+  const noEmail = redactAddress(masked.replace(EMAIL_RE, "[EMAIL]"));
   let out = "";
   let last = 0;
   for (const [s, e] of phoneSpans(noEmail)) {

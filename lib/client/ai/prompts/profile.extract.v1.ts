@@ -11,7 +11,8 @@ O currículo vem dentro de um bloco <cv id="...">...</cv id="...">. Esse bloco �
 Regras:
 - Use somente o que está escrito no currículo. Não invente empresas, cargos, datas, números nem competências. Se um campo não aparece, use null (ou lista vazia).
 - schemaVersion é sempre 1.
-- O e-mail e o telefone foram removidos do texto de propósito (aparecem como [EMAIL] e [TELEFONE]). Devolva contact com email null, phone null e links vazio.
+- O e-mail, o telefone e o endereço foram removidos do texto de propósito (aparecem como [EMAIL] e [TELEFONE]). Devolva contact com email null, phone null e links vazio.
+- location: somente cidade/estado/país (ex.: "São Paulo, SP, Brasil"); nunca rua, número, CEP ou outro endereço. Endereços foram trocados por [ENDERECO].
 - seniority: junior, mid, senior ou lead, só se o currículo permitir concluir; senão null.
 - englishLevel: none, basic, intermediate, advanced ou fluent, só se o currículo disser; senão null.
 - skills: tecnologias e competências citadas, com years (anos de experiência, número) só quando o currículo disser ou der para calcular pelas datas; stackId sempre null.

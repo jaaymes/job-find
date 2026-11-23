@@ -53,7 +53,9 @@ export function aiFailure(e: AiError): string {
 }
 
 export function toFailure(e: unknown): Failure {
-  if (e instanceof ExtractError) return { text: extractFailure(e), retryable: false };
+  if (e instanceof ExtractError) {
+    return { text: extractFailure(e), retryable: e.code === "timeout" || e.code === "failed" };
+  }
   if (e instanceof AiError) return { text: aiFailure(e), retryable: e.retryable };
   return { text: "Algo deu errado ao ler o currículo. Tente de novo.", retryable: true };
 }

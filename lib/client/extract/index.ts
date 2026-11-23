@@ -26,6 +26,15 @@ export interface WorkerLike {
 
 export type ExtractOptions = { createWorker?: () => WorkerLike; timeoutMs?: number };
 
+const CODES: ReadonlySet<ExtractErrorCode> = new Set([
+  "too_large",
+  "bad_type",
+  "too_many_pages",
+  "timeout",
+  "empty",
+  "failed",
+]);
+
 const defaultWorker = (): WorkerLike =>
   new Worker(new URL("./extract.worker.ts", import.meta.url), { type: "module" }) as unknown as WorkerLike;
 
@@ -68,7 +77,8 @@ function runInWorker(
       const d = ev.data as { ok?: unknown; result?: ExtractResult; code?: ExtractErrorCode } | null;
       // O Turbopack injeta no worker um protocolo próprio (ex.: {action:"ready"}); só vale a nossa resposta ({ok}).
       if (typeof d !== "object" || d === null || typeof d.ok !== "boolean") return;
-      finish(() => (d?.ok && d.result ? resolve(d.result) : reject(new ExtractError(d?.code ?? "failed"))));
+      const code = CODES.has(d.code as ExtractErrorCode) ? (d.code as ExtractErrorCode) : "failed";
+      finish(() => (d.ok && d.result ? resolve(d.result) : reject(new ExtractError(code))));
     };
     worker.onerror = () => finish(() => reject(new ExtractError("failed", "falha no worker")));
     worker.onmessageerror = worker.onerror;

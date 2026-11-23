@@ -210,6 +210,42 @@ describe("contact", () => {
     expect(redactContact("2020-2026, 40% em 3 anos")).toBe("2020-2026, 40% em 3 anos");
   });
 
+  it("redactContact redige endereço (logradouro com número e CEP) e mantém cidade/estado", () => {
+    const out = redactContact("Rua das Flores, 123, apto 45 - Centro, São Paulo - SP, CEP 01234-567");
+    expect(out).not.toMatch(/Flores|123|01234/);
+    expect(out).toContain("[ENDERECO]");
+    expect(out).toContain("São Paulo - SP");
+    expect(redactContact("Av. Paulista 1000, Bela Vista")).not.toContain("1000");
+    expect(redactContact("Mora na Avenida Brasil, nº 55")).not.toContain("55");
+    expect(redactContact("01234-567 São Paulo")).toBe("[ENDERECO] São Paulo");
+  });
+
+  it("redactContact redige endereço em inglês", () => {
+    expect(redactContact("Lives at 123 Main St, Austin, TX")).toBe("Lives at [ENDERECO], Austin, TX");
+    expect(redactContact("45 Oak Avenue")).toBe("[ENDERECO]");
+  });
+
+  it("redactContact não afeta empresas, cargos, cidades e períodos comuns", () => {
+    for (const t of [
+      "Estrada Digital Ltda (2020-2023)",
+      "Rua Tech Soluções, Desenvolvedora Pleno",
+      "Praça Capital - São Paulo, SP",
+      "Largo Software desde 2019",
+      "Senior Engineer at Street Labs, 5 years",
+      "R. Silva Consultoria 2018-2020",
+      "Desenvolvedora Full Stack em Belo Horizonte, MG",
+    ]) {
+      expect(redactContact(t), t).toBe(t);
+    }
+  });
+
+  it("redactContact de endereço é linear em entradas longas", () => {
+    const t0 = performance.now();
+    redactContact(`Rua ${"a ".repeat(15000)}`);
+    redactContact("12 ".repeat(10000));
+    expect(performance.now() - t0).toBeLessThan(1500);
+  });
+
   it("extractContact acha e-mail, telefone e links", () => {
     const r = extractContact(
       "ana@x.com (11) 98888-7777 https://github.com/ana, www.linkedin.com/in/ana. e https://github.com/ana",

@@ -31,6 +31,8 @@ export function ProfileScreen() {
   const [pending, setPending] = useState<{ profile: Profile; meta: ImportMeta } | null>(null);
   const [lastImport, setLastImport] = useState<ImportMeta | null>(null);
   const [saveError, setSaveError] = useState(false);
+  // "Preencher manualmente": rascunho só em memória até o primeiro "Salvar perfil".
+  const [manual, setManual] = useState(false);
 
   if (!hydrated || !settings) {
     return <div aria-busy="true" className={`${CARD} h-64 animate-pulse`} />;
@@ -46,6 +48,7 @@ export function ProfileScreen() {
       return false;
     }
     setSaveError(false);
+    setManual(false);
     if (replace) setRevision((n) => n + 1);
     if (meta) setLastImport(meta);
     return true;
@@ -77,14 +80,17 @@ export function ProfileScreen() {
             settings={settings}
             canUseAi={canUseAi}
             onImported={onImported}
-            onManual={() => persist(emptyProfile(), true)}
-            hasProfile={profile !== null}
+            onManual={() => {
+              setRevision((n) => n + 1);
+              setManual(true);
+            }}
+            hasProfile={profile !== null || manual}
             lastImport={lastImport}
           />
         </div>
         <div className="min-w-0 flex-[999_1_560px]">
-          {profile ? (
-            <ProfileEditor key={revision} profile={profile} onSave={(p) => persist(p, false)} />
+          {profile || manual ? (
+            <ProfileEditor key={revision} profile={profile ?? emptyProfile()} onSave={(p) => persist(p, false)} />
           ) : (
             <div className={`${CARD} p-6 text-jf-ink-3`}>
               Ainda não há perfil. Importe um currículo ou preencha manualmente para ver as suas chances nas vagas.

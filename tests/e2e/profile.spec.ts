@@ -248,6 +248,8 @@ test("se o localStorage recusar a gravação, mostra 'Não foi possível salvar'
   await page.goto("/perfil");
   await page.getByRole("button", { name: "Preencher manualmente" }).click();
   await expect(page.getByRole("heading", { name: "Dados do perfil" })).toBeVisible();
+  // Rascunho só em memória: nada gravado antes de "Salvar perfil".
+  expect(await storedProfile(page)).toBeNull();
   await page.evaluate(() => {
     const orig = Storage.prototype.setItem;
     Storage.prototype.setItem = function (k: string, v: string) {
@@ -258,4 +260,35 @@ test("se o localStorage recusar a gravação, mostra 'Não foi possível salvar'
   await page.getByLabel("Nome", { exact: true }).fill("Fulana");
   await page.getByRole("button", { name: "Salvar perfil" }).click();
   await expect(page.getByRole("alert").filter({ hasText: "Não foi possível salvar" })).toBeVisible();
+});
+
+test("Cancelar durante a leitura devolve o painel ao uso, mesmo com a extração terminando depois", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByLabel("Arquivo do currículo (PDF ou DOCX)").setInputFiles(fixture("texto.pdf"));
+  // A extração é rápida; o Cancelar clica assim que o status aparece, e o resultado tardio não pode travar nem importar.
+  const cancel = page.getByRole("button", { name: "Cancelar" });
+  await cancel.click({ timeout: 1000 }).catch(() => undefined);
+  await expect(page.getByLabel("Arquivo do currículo (PDF ou DOCX)")).toBeEnabled();
+  await page.waitForTimeout(1500);
+  await expect(page.getByLabel("Arquivo do currículo (PDF ou DOCX)")).toBeEnabled();
+  await expect(page.getByRole("status").filter({ hasText: /Lendo|Estruturando/ })).toHaveCount(0);
+  // Novo envio funciona.
+  await page.getByLabel("Arquivo do currículo (PDF ou DOCX)").setInputFiles(fixture("cv.docx"));
+  await expect(page.getByLabel("Nome", { exact: true })).toHaveValue("Ana Exemplo");
+});
+
+test("headline e links de contato são editáveis (só http/https)", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByRole("button", { name: "Preencher manualmente" }).click();
+  await page.getByLabel("Título profissional").fill("Dev Full Stack");
+  await page.getByLabel(/Novo link/).fill("javascript:alert(1)");
+  await page.getByRole("button", { name: "Adicionar link" }).click();
+  await expect(page.getByText("Use um endereço http ou https válido.")).toBeVisible();
+  await page.getByLabel(/Novo link/).fill("github.com/ana");
+  await page.getByRole("button", { name: "Adicionar link" }).click();
+  await expect(page.getByText("https://github.com/ana")).toBeVisible();
+  await page.getByRole("button", { name: "Salvar perfil" }).click();
+  const saved = await storedProfile(page);
+  expect(saved?.headline).toBe("Dev Full Stack");
+  expect((saved?.contact as { links: string[] }).links).toEqual(["https://github.com/ana"]);
 });

@@ -8,6 +8,7 @@ import {
   SENIORITY_LABEL,
   type Profile,
 } from "@/lib/shared/schemas/profile";
+import { ContactLinks } from "./ContactLinks";
 import { ExperienceEditor } from "./ExperienceEditor";
 import { SkillChips } from "./SkillChips";
 import { CARD, FIELD, FIELD_LABEL } from "./styles";
@@ -53,6 +54,14 @@ export function ProfileEditor({ profile, onSave }: Props) {
         <label className={FIELD_LABEL}>
           Nome
           <input className={FIELD} value={draft.name ?? ""} onChange={(e) => patch({ name: orNull(e.target.value) })} />
+        </label>
+        <label className={`${FIELD_LABEL} sm:col-span-2`}>
+          Título profissional
+          <input
+            className={FIELD}
+            value={draft.headline ?? ""}
+            onChange={(e) => patch({ headline: orNull(e.target.value) })}
+          />
         </label>
         <label className={FIELD_LABEL}>
           Cidade
@@ -111,6 +120,10 @@ export function ProfileEditor({ profile, onSave }: Props) {
           />
         </label>
       </div>
+      <ContactLinks
+        links={draft.contact.links}
+        onChange={(links) => patch({ contact: { ...draft.contact, links } })}
+      />
       <label className={FIELD_LABEL}>
         Resumo
         <textarea

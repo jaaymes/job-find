@@ -80,11 +80,10 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
       setStatus("idle");
       onImported(profile, meta);
     } catch (e) {
-      if (ctrl.signal.aborted || isAbortError(e)) {
-        setStatus("idle");
-        return;
-      }
+      // Execução cancelada ou já substituída por outra: não mexe no estado da nova (o Cancelar já zerou o status).
+      if (ctrl.signal.aborted || abortRef.current !== ctrl) return;
       setStatus("idle");
+      if (isAbortError(e)) return;
       setFailure(toFailure(e));
     } finally {
       if (fileRef.current) fileRef.current.value = "";
@@ -177,7 +176,11 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
             <p className="text-sm text-jf-ink-2">
               {status === "reading" ? "Lendo o arquivo..." : "Estruturando o currículo com IA..."}
             </p>
-            <button type="button" className={BTN_OUTLINE} onClick={() => abortRef.current?.abort()}>
+            <button type="button" className={BTN_OUTLINE} onClick={() => {
+                abortRef.current?.abort();
+                abortRef.current = null;
+                setStatus("idle");
+              }}>
               Cancelar
             </button>
           </div>

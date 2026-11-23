@@ -15,6 +15,10 @@ const SOURCE_IDS = [
   "smartrecruiters",
 ] as const satisfies readonly SourceId[];
 
+/**
+ * Nomes desconhecidos são descartados. Se nenhum sobra, fica `[]` (não `undefined`): a consulta
+ * trata a lista vazia como "nenhuma vaga casa", em vez de ignorar o filtro e devolver tudo.
+ */
 const stacksField = z
   .array(z.string())
   .max(10)

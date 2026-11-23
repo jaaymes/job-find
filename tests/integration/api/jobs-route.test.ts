@@ -29,6 +29,25 @@ describe("GET /api/jobs", () => {
     expect(res.headers.get("Vercel-CDN-Cache-Control")).toBeNull();
   });
 
+  it.each(["lixo", "bmFvLWUtY3Vyc29y", "a%20b"])("400 invalid_query para cursor inválido (%s)", async (cursor) => {
+    const db = await testDb();
+    await insertJobRaw(db, { title: "Vaga A" });
+    const res = await GET(new Request(`http://x/api/jobs?cursor=${cursor}`));
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({ error: { code: "invalid_query", message: "Parâmetro inválido: cursor" } });
+    expect(res.headers.get("Cache-Control")).toBe("no-store");
+  });
+
+  it("stacks só desconhecidas devolvem lista vazia, não a lista inteira", async () => {
+    const db = await testDb();
+    await insertJobRaw(db, { title: "Vaga A", stacks: ["react"] });
+    const res = await GET(new Request("http://x/api/jobs?stacks=naoexiste"));
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.items).toEqual([]);
+    expect(body.counts.all).toBe(0);
+  });
+
   it("200 com headers de cache, counts e lastCollectedAt", async () => {
     const db = await testDb();
     await insertJobRaw(db, { title: "Vaga A" });

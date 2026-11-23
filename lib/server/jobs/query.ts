@@ -16,6 +16,14 @@ export type ListJobsResult = {
 
 export type AttributionFor = (source: SourceId) => { label: string; dofollow: boolean } | null;
 
+/** Cursor que não decodifica: a rota responde 400 `invalid_query` em vez de voltar à página 1. */
+export class InvalidCursorError extends Error {
+  constructor() {
+    super("cursor inválido");
+    this.name = "InvalidCursorError";
+  }
+}
+
 const SINCE_MS = { "24h": 86_400_000, "7d": 7 * 86_400_000, "30d": 30 * 86_400_000 } as const;
 
 // Mesmas configurações usadas em `job_search_vector` (spec 5.2): `simple` cobre
@@ -75,8 +83,10 @@ function filterPredicates(q: JobsQuery, now: number): SQL[] {
     const any = or(...matches);
     if (any) p.push(any);
   }
-  if (q.stacks && q.stacks.length > 0) {
-    p.push(q.stacksMode === "all" ? arrayContains(jobs.stacks, q.stacks) : arrayOverlaps(jobs.stacks, q.stacks));
+  if (q.stacks) {
+    // Lista vazia = o usuário só pediu stacks desconhecidas: nenhuma vaga tem, então nada casa.
+    if (q.stacks.length === 0) p.push(sql`false`);
+    else p.push(q.stacksMode === "all" ? arrayContains(jobs.stacks, q.stacks) : arrayOverlaps(jobs.stacks, q.stacks));
   }
   if (q.origin) p.push(eq(jobs.origin, q.origin));
   if (q.acceptsBrazil !== undefined) p.push(eq(jobs.acceptsBrazil, q.acceptsBrazil));
@@ -124,6 +134,7 @@ export async function listJobs(db: Db, q: JobsQuery, withCounts: boolean): Promi
   const base = filterPredicates(q, now);
   const pagePredicates = [...base];
   const cursor = q.cursor ? decodeCursor(q.cursor) : null;
+  if (q.cursor && !cursor) throw new InvalidCursorError();
   if (cursor) {
     pagePredicates.push(
       sql`(${jobs.publishedAt}, ${jobs.id}) < (${cursor.publishedAt.toISOString()}::timestamptz, ${cursor.id})`,

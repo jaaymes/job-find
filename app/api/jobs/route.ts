@@ -2,7 +2,7 @@ import { and, desc, eq, isNotNull } from "drizzle-orm";
 import { getHttpDb } from "@/lib/server/db/client";
 import { sourceRuns } from "@/lib/server/db/schema";
 import { cachedJson, errorJson, internalError } from "@/lib/server/jobs/http";
-import { listJobs } from "@/lib/server/jobs/query";
+import { InvalidCursorError, listJobs } from "@/lib/server/jobs/query";
 import { parseJobsQuery } from "@/lib/shared/schemas/jobs-query";
 
 // Sem `cacheComponents`, o cache é só o da CDN (D-01/D-06): a rota nunca é pré-renderizada.
@@ -27,6 +27,9 @@ export async function GET(req: Request): Promise<Response> {
     ]);
     return cachedJson({ ...result, lastCollectedAt: lastRun?.finishedAt?.toISOString() ?? null }, "jobs");
   } catch (err) {
+    if (err instanceof InvalidCursorError) {
+      return errorJson(400, { code: "invalid_query", message: "Parâmetro inválido: cursor" });
+    }
     return internalError(err);
   }
 }

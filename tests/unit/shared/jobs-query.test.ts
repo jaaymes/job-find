@@ -36,6 +36,13 @@ describe("parseJobsQuery", () => {
     expect(r.ok && r.value.stacks).toEqual(["react", "vue"]);
   });
 
+  it("stacks só com nomes desconhecidos viram filtro vazio (sem resultado), não somem", () => {
+    const r = parse("stacks=naoexiste,outra");
+    expect(r.ok && r.value.stacks).toEqual([]);
+    const mixed = parse("stacks=naoexiste,react");
+    expect(mixed.ok && mixed.value.stacks).toEqual(["react"]);
+  });
+
   it("aceita no máximo 10 stacks", () => {
     const many = Array.from({ length: 11 }, (_, i) => `s${i}`).join(",");
     expect(parse(`stacks=${many}`).ok).toBe(false);

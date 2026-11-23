@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { sql } from "drizzle-orm";
 import { jobs, jobSources } from "@/lib/server/db/schema";
 import { decodeCursor } from "@/lib/server/jobs/cursor";
-import { getJob, listJobs } from "@/lib/server/jobs/query";
+import { getJob, InvalidCursorError, listJobs } from "@/lib/server/jobs/query";
 import { jobsQuerySchema, type JobsQuery } from "@/lib/shared/schemas/jobs-query";
 import type { JobSummary, SourceId, WorkMode } from "@/lib/shared/types/job";
 import { resetDb, testDb } from "../setup";
@@ -126,10 +126,17 @@ describe("listJobs", () => {
     expect(new Set(seen).size).toBe(40);
   });
 
-  it("cursor inválido vira primeira página", async () => {
+  it("filtro de stacks vazio (só stacks desconhecidas) não devolve nenhuma vaga", async () => {
     const db = await testDb();
-    const p = await listJobs(db, q({ cursor: "lixo" }), false);
-    expect(p.items).toHaveLength(30);
+    const r = await listJobs(db, q({ stacks: [], limit: 90 }), true);
+    expect(r.items).toEqual([]);
+    expect(r.nextCursor).toBeNull();
+    expect(r.counts).toEqual({ all: 0, remote: 0, hybrid: 0, onsite: 0 });
+  });
+
+  it("cursor inválido lança InvalidCursorError em vez de voltar à página 1", async () => {
+    const db = await testDb();
+    await expect(listJobs(db, q({ cursor: "nao-e-cursor" }), false)).rejects.toBeInstanceOf(InvalidCursorError);
   });
 
   it("filtra stacks (any e all)", async () => {

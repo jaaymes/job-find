@@ -48,6 +48,13 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:54329/jobfind_test
       - run: pnpm test:integration
+      # Build único: em CI o webServer do Playwright só sobe o `next start` deste build.
       - run: pnpm build
-      - run: pnpm test:e2e
+      - name: Navegador do Playwright
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Testes E2E
+        run: pnpm test:e2e
+        env:
+          # O seed dos E2E grava direto no Postgres de teste (serviço acima), já migrado.
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:54329/jobfind_test
       - run: pnpm audit --audit-level=high

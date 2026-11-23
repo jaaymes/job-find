@@ -9,8 +9,9 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   use: { baseURL: "http://localhost:3100" },
   // Porta própria (3100): evita reaproveitar, por engano, outro servidor de desenvolvimento na 3000.
+  // Em CI o workflow já rodou `pnpm build` no passo anterior: aqui só sobe o servidor (um build só).
   webServer: {
-    command: "pnpm build && exec next start -p 3100",
+    command: process.env.CI ? "exec next start -p 3100" : "pnpm build && exec next start -p 3100",
     url: "http://localhost:3100",
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

@@ -51,7 +51,7 @@ function runInWorker(
     try {
       worker = createWorker();
     } catch {
-      reject(new ExtractError("bad_type", "worker indisponível"));
+      reject(new ExtractError("failed", "worker indisponível"));
       return;
     }
     let done = false;
@@ -66,12 +66,16 @@ function runInWorker(
     const timer = setTimeout(() => finish(() => reject(new ExtractError("timeout"))), timeoutMs);
     worker.onmessage = (ev) => {
       const d = ev.data as { ok: boolean; result?: ExtractResult; code?: ExtractErrorCode };
-      finish(() => (d?.ok && d.result ? resolve(d.result) : reject(new ExtractError(d?.code ?? "bad_type"))));
+      finish(() => (d?.ok && d.result ? resolve(d.result) : reject(new ExtractError(d?.code ?? "failed"))));
     };
-    worker.onerror = () => finish(() => reject(new ExtractError("bad_type", "falha no worker")));
+    worker.onerror = () => finish(() => reject(new ExtractError("failed", "falha no worker")));
     worker.onmessageerror = worker.onerror;
     const copy = bytes.slice(); // o buffer é transferido; mantém `bytes` intacto
-    worker.postMessage({ kind, bytes: copy }, [copy.buffer]);
+    try {
+      worker.postMessage({ kind, bytes: copy }, [copy.buffer]);
+    } catch {
+      finish(() => reject(new ExtractError("failed", "falha ao enviar ao worker")));
+    }
   });
 }
 

@@ -1,3 +1,5 @@
+import "client-only";
+
 // Lógica pura de extração (PDF/DOCX). Roda dentro do Web Worker (extract.worker.ts)
 // e é testável direto. Não toca em DOM nem em window.
 import {
@@ -41,7 +43,7 @@ export function assertZipSafe(b: Uint8Array): void {
 function invalidRatio(text: string): number {
   if (!text.length) return 1;
   // U+FFFD, controles e Private Use Area (fontes sem mapeamento Unicode).
-  const bad = text.match(/[�\u0000-\u0008\u000B\u000C\u000E-\u001F-]/g)?.length ?? 0;
+  const bad = text.match(/[\uFFFD\u0000-\u0008\u000B\u000C\u000E-\u001F\uE000-\uF8FF]/g)?.length ?? 0;
   return bad / text.length;
 }
 

@@ -24,17 +24,44 @@ function isPhone(candidate: string): boolean {
   return !weak || digits === 10 || digits === 11;
 }
 
-/** Troca os trechos de URL por marcadores para que números dentro delas não sejam alterados. */
+const WA_HOST_RE = /wa\.me|whatsapp/i;
+const PHONE_PARAM_RE = /([?&](?:phone|tel|fone|whatsapp|celular)=\+?)\d{8,}/gi;
+
+/** Redige números de telefone dentro de uma URL (wa.me, whatsapp, parâmetros de telefone ou 10+ dígitos). */
+function redactUrl(url: string): string {
+  const host = /^(?:https?:\/\/)?([^/?#:]+)/i.exec(url)?.[1] ?? "";
+  const withParam = url.replace(PHONE_PARAM_RE, "$1[TELEFONE]");
+  // Outras URLs (ex.: linkedin.com/in/ana-98888777) só perdem sequências longas de dígitos.
+  return withParam.replace(WA_HOST_RE.test(host) ? /\+?\d{8,}/g : /\d{10,}/g, "[TELEFONE]");
+}
+
+/** Troca os trechos de URL por marcadores (um caractere PUA com o índice, entre NULs). */
 function protectUrls(text: string): { text: string; restore: (s: string) => string } {
   const urls: string[] = [];
-  const masked = text.replace(PROTECT_RE, (m) => `\u0000${urls.push(m) - 1}\u0000`);
-  return { text: masked, restore: (s) => s.replace(/\u0000(\d+)\u0000/g, (_, i: string) => urls[Number(i)] ?? "") };
+  // NUL não tem valor num CV e serve de delimitador: remove os que já existam.
+  const masked = text
+    .replace(/\u0000/g, "")
+    .replace(PROTECT_RE, (m) =>
+      urls.length < 6000 ? `\u0000${String.fromCharCode(0xe000 + urls.push(m) - 1)}\u0000` : m,
+    );
+  return {
+    text: masked,
+    restore: (s) => s.replace(/\u0000([\uE000-\uF8FF])\u0000/g, (_, c: string) => redactUrl(urls[c.charCodeAt(0) - 0xe000] ?? "")),
+  };
 }
+
+// Períodos "01.2020 - 12.2023", "03-2019", "1999 - 2003": viram filler para não serem lidos como telefone.
+const MY = String.raw`(?:(?:0?[1-9]|1[0-2])[./-])?(?:19|20)\d{2}(?!\d)`;
+const DATE_RE = new RegExp(
+  String.raw`(?<!\d)${MY}\s*[-–—]\s*${MY}|(?<!\d)(?:0?[1-9]|1[0-2])[./-](?:19|20)\d{2}(?!\d)`,
+  "g",
+);
+const maskDates = (t: string) => t.replace(DATE_RE, (m) => "\u0001".repeat(m.length));
 
 /** Posições [início, fim) dos telefones válidos; reduz candidatos gulosos demais ("2020 2026 (11) 98888-7777"). */
 function phoneSpans(text: string): Array<[number, number]> {
   const spans: Array<[number, number]> = [];
-  for (const m of text.matchAll(PHONE_RE)) {
+  for (const m of maskDates(text).matchAll(PHONE_RE)) {
     const base = m.index ?? 0;
     // Peças separadas por espaço, com a posição de cada uma dentro do candidato.
     const pieces: Array<{ s: number; e: number }> = [];

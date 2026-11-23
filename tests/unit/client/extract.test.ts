@@ -114,8 +114,29 @@ describe("extractText", () => {
 
   it("erro do worker vira ExtractError estável", async () => {
     const w: WorkerLike = { onmessage: null, onerror: null, onmessageerror: null, terminate: vi.fn(), postMessage: () => w.onerror?.({}) };
-    await expect(realExtractText(fixture("texto.pdf"), { createWorker: () => w })).rejects.toMatchObject({ code: "bad_type" });
+    await expect(realExtractText(fixture("texto.pdf"), { createWorker: () => w })).rejects.toMatchObject({ code: "failed" });
     expect(w.terminate).toHaveBeenCalled();
+  });
+
+  it("postMessage que lança vira failed e encerra o worker", async () => {
+    const w: WorkerLike = {
+      onmessage: null,
+      onerror: null,
+      onmessageerror: null,
+      terminate: vi.fn(),
+      postMessage: () => {
+        throw new Error("DataCloneError");
+      },
+    };
+    await expect(realExtractText(fixture("texto.pdf"), { createWorker: () => w })).rejects.toMatchObject({ code: "failed" });
+    expect(w.terminate).toHaveBeenCalledTimes(1);
+  });
+
+  it("falha ao criar o worker vira failed", async () => {
+    const createWorker = () => {
+      throw new Error("sem worker");
+    };
+    await expect(realExtractText(fixture("texto.pdf"), { createWorker })).rejects.toMatchObject({ code: "failed" });
   });
 
   it("cria ExtractError com code estável", () => {
@@ -153,6 +174,25 @@ describe("contact", () => {
     redactContact("a".repeat(30_000));
     redactContact("1 ".repeat(15_000));
     expect(performance.now() - t0).toBeLessThan(1000);
+  });
+
+  it("redactContact redige o número em URLs de WhatsApp e parâmetros de telefone", () => {
+    expect(redactContact("https://wa.me/5511988887777")).toBe("https://wa.me/[TELEFONE]");
+    expect(redactContact("api.whatsapp.com/send?phone=5511988887777")).toBe("api.whatsapp.com/send?phone=[TELEFONE]");
+    expect(redactContact("https://x.com/c?tel=11988887777&a=1")).toBe("https://x.com/c?tel=[TELEFONE]&a=1");
+    expect(redactContact("https://x.com/id/5511988887777")).toBe("https://x.com/id/[TELEFONE]");
+  });
+
+  it("redactContact preserva períodos mês/ano e anos vizinhos", () => {
+    expect(redactContact("01.2020 - 12.2023")).toBe("01.2020 - 12.2023");
+    expect(redactContact("03-2019 - 05-2021")).toBe("03-2019 - 05-2021");
+    expect(redactContact("2020-2026 e 05/2021")).toBe("2020-2026 e 05/2021");
+    expect(redactContact("1999 - 2003 98888-7777")).toBe("1999 - 2003 [TELEFONE]");
+    expect(redactContact("Dev (01.2020 - 12.2023) (11) 98888-7777")).toBe("Dev (01.2020 - 12.2023) [TELEFONE]");
+  });
+
+  it("redactContact ignora NUL pré-existente sem corromper URLs", () => {
+    expect(redactContact("a\u0000b https://x.com/in/ana-1\u00000")).toBe("ab https://x.com/in/ana-10");
   });
 
   it("redactContact não toca em anos nem números curtos", () => {

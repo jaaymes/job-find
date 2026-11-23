@@ -49,7 +49,7 @@ export function BackupSection() {
     document.body.append(link);
     link.click();
     link.remove();
-    URL.revokeObjectURL(url);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
     setMessage({ kind: "ok", text: `Backup exportado (${backupFilename()}).` });
   }
 
@@ -72,7 +72,7 @@ export function BackupSection() {
     setMessage(
       failed.length === 0
         ? { kind: "ok", text: "Backup importado." }
-        : { kind: "error", text: "Parte do backup não coube neste navegador e não foi importada." },
+        : { kind: "error", text: "Parte do backup não pôde ser gravada neste navegador (sem espaço ou armazenamento indisponível) e não foi importada." },
     );
   }
 
@@ -143,6 +143,12 @@ export function BackupSection() {
                   <li key={k}>{KEY_LABELS[k]}</li>
                 ))}
               </ul>
+              {pending.keys.includes("jobfind:v1:ai") && (
+                <p className="text-[13px] text-jf-ink-3">
+                  Sem importar as chaves, as configurações de IA vêm do arquivo, mas as chaves de API continuam as deste
+                  navegador (nenhuma chave nova é adicionada) e provedores que existem só aqui são mantidos.
+                </p>
+              )}
               {pending.skipped.length > 0 && (
                 <p className="text-[13px] text-jf-ink-3">
                   {pending.skipped.length} item(ns) do arquivo são inválidos ou não suportados e serão ignorados.
@@ -159,8 +165,8 @@ export function BackupSection() {
                     ))}
                   </ul>
                   <p className="text-[13px] text-jf-ink-3">
-                    Importe as chaves só se confiar neste arquivo. Sem elas, as suas chaves e provedores atuais ficam
-                    como estão.
+                    Importe as chaves só se confiar neste arquivo. Com as chaves, as suas chaves e provedores atuais são
+                    substituídos pelos do arquivo. Sem elas, as suas chaves atuais ficam como estão.
                   </p>
                 </div>
               )}

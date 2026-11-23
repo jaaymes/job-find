@@ -96,9 +96,7 @@ const Envelope = z.strictObject({
 // Sanitização do que entra (D-09, SEC-03): texto vira texto inerte; URL inválida é descartada ou vira null.
 // ---------------------------------------------------------------------------------------------------------------
 
-/** Remove marcação: `<img onerror=...>` vira nada, `<b>x</b>` vira `x`. Texto sem `<` passa intacto. */
-export function stripMarkup(text: string): string {
-  if (!text.includes("<")) return text;
+function stripOnce(text: string): string {
   const stripped = DOMPurify.sanitize(text, {
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
@@ -108,6 +106,21 @@ export function stripMarkup(text: string): string {
   // O DOMPurify devolve HTML serializado (`&amp;`); decodifica de volta para texto puro.
   const doc = new DOMParser().parseFromString(stripped, "text/html");
   return doc.body.textContent ?? "";
+}
+
+/**
+ * Remove marcação: `<img onerror=...>` vira nada, `<b>x</b>` vira `x`. Texto sem `<` passa intacto. Repete até o
+ * resultado parar de mudar, porque a decodificação de entidades pode revelar marcação nova (`&lt;img&gt;`).
+ * Efeito colateral aceito: texto como `List<String>` perde o trecho entre `<` e `>`.
+ */
+export function stripMarkup(text: string): string {
+  let current = text;
+  for (let i = 0; i < 10 && current.includes("<"); i++) {
+    const next = stripOnce(current);
+    if (next === current) break;
+    current = next;
+  }
+  return current;
 }
 
 function deepText<T>(value: T): T {
@@ -300,9 +313,32 @@ export async function parseBackup(file: File): Promise<ParseResult> {
 }
 
 /**
- * Grava cada chave inteira (sem deep merge). As configurações de IA só substituem as atuais com `acceptKeys` e se o
- * arquivo traz chaves: sem isso, todas as chaves e provedores existentes ficam exatamente como estão.
- * Devolve as chaves que não foram gravadas (cota cheia ou localStorage indisponível).
+ * Config de IA importada sem consentimento para chaves (SEC-10): vale o arquivo inteiro, exceto o campo `key`, que
+ * vem sempre da config local (ausente se não houver). Provedores locais que o arquivo não tem são mantidos.
+ * Única exceção deliberada a "sem deep merge". Lança se o resultado não passar no schema de `AiSettings`.
+ */
+function mergeAiWithoutKeys(imported: AiSettings, current: AiSettings): AiSettings {
+  const providers: AiSettings["providers"] = {};
+  const put = (id: string, cfg: unknown) =>
+    Object.defineProperty(providers, id, { value: cfg, enumerable: true, writable: true, configurable: true });
+  for (const [id, cfg] of Object.entries(imported.providers)) {
+    const { key: _ignored, ...rest } = cfg;
+    void _ignored;
+    const local = current.providers[id as ProviderId]?.key;
+    put(id, local === undefined ? rest : { ...rest, key: local });
+  }
+  for (const [id, cfg] of Object.entries(current.providers)) {
+    if (!Object.prototype.hasOwnProperty.call(providers, id)) put(id, cfg);
+  }
+  const merged = AiSettings.safeParse({ ...imported, providers });
+  if (!merged.success) throw new Error("configuração de IA inválida");
+  return merged.data;
+}
+
+/**
+ * Grava cada chave inteira (sem deep merge). Exceção: a config de IA sem consentimento para chaves (`acceptKeys`
+ * falso ou arquivo sem chaves) vem do arquivo, mas com as chaves de API sempre as locais (ver `mergeAiWithoutKeys`).
+ * Devolve as chaves que não foram gravadas (cota cheia, localStorage indisponível ou config de IA inválida).
  */
 export function applyBackup(b: Backup, opts: { acceptKeys: boolean }): BackupKey[] {
   const failed: BackupKey[] = [];
@@ -312,7 +348,12 @@ export function applyBackup(b: Backup, opts: { acceptKeys: boolean }): BackupKey
   const d = b.data;
   if (d[AI] !== undefined) {
     const ai = d[AI] as AiSettings;
-    if (opts.acceptKeys && Object.keys(providerKeys(ai)).length > 0) put(AI, aiSettingsStore.set(ai).ok);
+    try {
+      const whole = opts.acceptKeys && Object.keys(providerKeys(ai)).length > 0;
+      put(AI, aiSettingsStore.set(whole ? ai : mergeAiWithoutKeys(ai, aiSettingsStore.get())).ok);
+    } catch {
+      failed.push(AI);
+    }
   }
   if (d[PROFILE] !== undefined) put(PROFILE, profileStore.set(d[PROFILE] as Profile | null).ok);
   if (d[JOB_STATE] !== undefined) put(JOB_STATE, jobStateStore.set(d[JOB_STATE] as Record<string, JobState>).ok);

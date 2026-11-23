@@ -3,6 +3,7 @@ import { applyBackup, backupFilename, exportBackup, parseBackup, stripMarkup, ty
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 import { jobStateStore } from "@/lib/client/jobs/job-state";
 import { profileStore } from "@/lib/client/profile/store";
+import { generatedStore } from "@/lib/client/cv/generated-store";
 import { analysisStore } from "@/lib/client/jobs/analysis-store";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
 
@@ -202,12 +203,29 @@ describe("applyBackup", () => {
   const backupWithKey = async (): Promise<Backup> =>
     (await parsed(jsonFile(envelope({ [AI]: aiWith({ openai: ATTACKER_KEY }) })))).backup;
 
-  it("sem acceptKeys, chaves e provedores existentes ficam exatamente como estavam", async () => {
+  it("sem acceptKeys, restaura o resto e mantém as chaves locais idênticas; nunca adiciona chave nova", async () => {
     aiSettingsStore.set(aiWith({ openai: ORIGINAL_KEY, anthropic: "sk-ant-keep-0001" }));
-    const before = localStorage.getItem(AI);
-    applyBackup(await backupWithKey(), { acceptKeys: false });
+    const imported = {
+      providers: {
+        openai: { key: ATTACKER_KEY, addedAt: added, source: "paste" },
+        google: { key: "sk-google-evil", addedAt: added, source: "paste" },
+        local: { baseURL: "http://127.0.0.1:11434/v1", addedAt: added, source: "paste" },
+      },
+      tasks: { extract: { provider: "openai", model: "gpt-5-mini" }, analyze: null, cv: null },
+      dataCollectionDeny: false,
+    };
+    const b = (await parsed(jsonFile(envelope({ [AI]: imported })))).backup;
+    expect(applyBackup(b, { acceptKeys: false })).toEqual([]);
+    const now = aiSettingsStore.get();
+    expect(now.tasks.extract).toEqual({ provider: "openai", model: "gpt-5-mini" });
+    expect(now.dataCollectionDeny).toBe(false);
+    expect(now.providers.local?.baseURL).toBe("http://127.0.0.1:11434/v1");
     expect(currentKey("openai")).toBe(ORIGINAL_KEY);
-    expect(localStorage.getItem(AI)).toBe(before);
+    expect(currentKey("anthropic")).toBe("sk-ant-keep-0001");
+    expect(currentKey("google")).toBeUndefined();
+    expect(currentKey("local")).toBeUndefined();
+    expect(localStorage.getItem(AI)).not.toContain(ATTACKER_KEY);
+    expect(localStorage.getItem(AI)).not.toContain("sk-google-evil");
   });
 
   it("com acceptKeys, substitui a configuração de IA inteira", async () => {
@@ -217,11 +235,22 @@ describe("applyBackup", () => {
     expect(currentKey("anthropic")).toBeUndefined();
   });
 
-  it("backup sem chaves nunca apaga as chaves existentes, mesmo com acceptKeys", async () => {
+  it("backup sem chaves, mesmo com acceptKeys, mantém as chaves locais e restaura o resto", async () => {
     aiSettingsStore.set(aiWith({ openai: ORIGINAL_KEY }));
-    const b = (await parsed(jsonFile(envelope({ [AI]: defaultAiSettings() })))).backup;
+    const file = { ...defaultAiSettings(), tasks: { extract: null, analyze: null, cv: null }, dataCollectionDeny: false };
+    const b = (await parsed(jsonFile(envelope({ [AI]: file })))).backup;
     applyBackup(b, { acceptKeys: true });
     expect(currentKey("openai")).toBe(ORIGINAL_KEY);
+    expect(aiSettingsStore.get().dataCollectionDeny).toBe(false);
+  });
+
+  it("config de IA mesclada que viola o schema não é gravada e é reportada", async () => {
+    aiSettingsStore.set(aiWith({ openai: ORIGINAL_KEY }));
+    const before = localStorage.getItem(AI);
+    const b = (await parsed(jsonFile(envelope({ [AI]: defaultAiSettings() })))).backup;
+    (b.data[AI] as { providers: unknown }).providers = { openai: { baseURL: "https://evil.example", addedAt: added, source: "paste" } };
+    expect(applyBackup(b, { acceptKeys: false })).toEqual(["jobfind:v1:ai"]);
+    expect(localStorage.getItem(AI)).toBe(before);
   });
 
   it("substitui cada chave inteira, sem deep merge", async () => {
@@ -240,7 +269,56 @@ describe("applyBackup", () => {
   });
 });
 
+describe("round-trip", () => {
+  it("exportar com chaves, importar e aplicar restaura todas as stores sem nada ignorado", async () => {
+    const seeded = {
+      ai: aiWith({ openai: ORIGINAL_KEY }),
+      profile: { ...emptyProfile(), name: "Ana" },
+      jobState: { "7": jobState() },
+      analysis: {
+        "7": { strengths: ["a"], gaps: [], missingKeywords: [], revisedScore: 80, provider: "openai", model: "m", promptVersion: 1, createdAt: added },
+      },
+      generated: {
+        "7": {
+          cv: { headline: "h", summary: "s", skills: [], experiences: [] },
+          coverLetter: null,
+          provider: "openai",
+          model: "m",
+          promptVersion: 1,
+          createdAt: added,
+          lang: "pt",
+          includeLetter: false,
+          edits: null,
+          approvedFlags: [],
+        },
+      },
+    };
+    aiSettingsStore.set(seeded.ai);
+    profileStore.set(seeded.profile);
+    jobStateStore.set(seeded.jobState as never);
+    analysisStore.set(seeded.analysis as never);
+    generatedStore.set(seeded.generated as never);
+    const blob = exportBackup({ includeKeys: true });
+    const file = new File([await blob.text()], "b.json");
+    const before = { ...localStorage };
+    localStorage.clear();
+    const r = await parsed(file);
+    expect(r.skipped).toEqual([]);
+    expect(r.keys).toHaveLength(5);
+    expect(applyBackup(r.backup, { acceptKeys: true })).toEqual([]);
+    for (const k of Object.keys(before)) expect(JSON.parse(localStorage.getItem(k) ?? "null")).toEqual(JSON.parse(before[k]));
+  });
+});
+
 describe("stripMarkup", () => {
+  it("chega a um ponto fixo: marcação escondida em entidades também some", () => {
+    const out = stripMarkup("<b>&lt;img src=x onerror=alert(1)&gt;</b>");
+    expect(out).not.toContain("<");
+    expect(out).not.toContain("onerror");
+  });
+  it("documenta: genéricos como List<String> perdem o trecho entre < e >", () => {
+    expect(stripMarkup("Java List<String> e mais")).toBe("Java List e mais");
+  });
   it("mantém texto simples, &, < solto e acentos", () => {
     expect(stripMarkup("R&D em São Paulo")).toBe("R&D em São Paulo");
     expect(stripMarkup("a < b")).toBe("a < b");

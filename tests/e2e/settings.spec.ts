@@ -284,7 +284,7 @@ test.describe("Configurações de IA", () => {
       buffer: Buffer.from(JSON.stringify(backup)),
     });
     const dialog = page.getByRole("dialog", { name: "Importar backup" });
-    await expect(dialog.getByText("Configurações de IA")).toBeVisible();
+    await expect(dialog.getByText("Configurações de IA", { exact: true })).toBeVisible();
     await expect(dialog.getByText(/terminada em 7777/)).toBeVisible();
     await expect(page.getByText("sk-ant-api-wxyz7777")).toHaveCount(0);
 
@@ -303,7 +303,9 @@ test.describe("Configurações de IA", () => {
   });
 
   test("arquivo inválido ou grande demais mostra erro e não altera nada", async ({ page }) => {
+    await seed(page, { providers: { openai: openaiProvider } });
     await page.goto("/configuracoes");
+    const before = await stored(page);
     await page.getByLabel("Selecionar arquivo JSON").setInputFiles({ name: "x.json", mimeType: "application/json", buffer: Buffer.from("{não") });
     await expect(page.getByRole("alert").filter({ hasText: "não é um backup válido" })).toBeVisible();
     await page.getByLabel("Selecionar arquivo JSON").setInputFiles({
@@ -312,6 +314,7 @@ test.describe("Configurações de IA", () => {
       buffer: Buffer.alloc(5 * 1024 * 1024 + 1, 32),
     });
     await expect(page.getByRole("alert").filter({ hasText: "mais de 5 MB" })).toBeVisible();
+    expect(await stored(page)).toEqual(before);
   });
 
   test("Perfil sem provedor conectado mostra o CTA para Configurações", async ({ page }) => {

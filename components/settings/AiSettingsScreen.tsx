@@ -5,7 +5,8 @@ import { PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/cli
 import { startOpenRouterAuth } from "@/lib/client/ai/pkce";
 import { isConnected } from "@/lib/client/ai/model";
 import { aiSettingsStore, type AiSettings } from "@/lib/client/ai/settings";
-import { storageUsageBytes, useStore } from "@/lib/client/storage/store";
+import { useStore } from "@/lib/client/storage/store";
+import { BackupSection } from "./BackupSection";
 import { AddKeyDialog, type KeyDraft } from "./AddKeyDialog";
 import { PrivacyConsentDialog } from "./PrivacyConsentDialog";
 import { ProviderCard } from "./ProviderCard";
@@ -109,8 +110,6 @@ export function AiSettingsScreen() {
     />
   );
 
-  const usedMb = (storageUsageBytes() / 1024 / 1024).toLocaleString("pt-BR", { maximumFractionDigits: 1 });
-
   return (
     <div className="flex flex-col gap-6">
       <div>
@@ -178,31 +177,7 @@ export function AiSettingsScreen() {
           <p className="text-[13px] text-jf-ink-3">Cada provedor tem a própria política de dados.</p>
         </section>
 
-        <section aria-labelledby="bk-t" className={`${SECTION} flex-[1_1_420px]`}>
-          <h2 id="bk-t" className="text-lg font-semibold">
-            Seus dados neste navegador
-          </h2>
-          <p className="text-sm text-jf-ink-2">
-            Perfil, favoritos, status e CVs ocupam {usedMb} MB de 5 MB. Faça backup: limpar o navegador apaga tudo.
-          </p>
-          <label className="flex min-h-11 items-center gap-2.5 text-sm text-jf-ink-3">
-            <input type="checkbox" className="size-5" disabled />
-            Incluir chaves no arquivo de backup
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {["Exportar dados", "Importar backup"].map((label) => (
-              <button
-                key={label}
-                type="button"
-                disabled
-                className="min-h-11 rounded-[10px] border border-jf-line-strong bg-jf-surface px-4 font-semibold text-jf-ink-3 disabled:cursor-not-allowed"
-              >
-                {label} <span className="font-normal">(em breve)</span>
-              </button>
-            ))}
-          </div>
-          <p className="text-[13px] text-jf-ink-3">O backup chega em uma próxima versão.</p>
-        </section>
+        <BackupSection />
       </div>
 
       <PrivacyConsentDialog

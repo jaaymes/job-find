@@ -35,6 +35,7 @@ const summaryColumns = {
   title: jobs.title,
   company: jobs.company,
   companyLogoUrl: jobs.companyLogoUrl,
+  urlCanonical: jobs.urlCanonical,
   summary: jobs.summary,
   country: jobs.country,
   city: jobs.city,
@@ -179,7 +180,7 @@ export async function listJobs(db: Db, q: JobsQuery, withCounts: boolean): Promi
 
 export async function getJob(db: Db, id: number, attributionFor?: AttributionFor): Promise<JobDetail | null> {
   const [row] = await db
-    .select({ ...summaryColumns, urlCanonical: jobs.urlCanonical, descriptionHtml: jobs.descriptionHtml })
+    .select({ ...summaryColumns, descriptionHtml: jobs.descriptionHtml })
     .from(jobs)
     .where(and(eq(jobs.id, id), isNull(jobs.expiredAt)))
     .limit(1);
@@ -202,6 +203,6 @@ export async function getJob(db: Db, id: number, attributionFor?: AttributionFor
     null,
   );
 
-  const { urlCanonical, descriptionHtml, ...summary } = row;
-  return { ...toSummary(summary), urlCanonical, applyUrl: preferred?.url ?? null, descriptionHtml, attribution };
+  const { descriptionHtml, ...summary } = row;
+  return { ...toSummary(summary), applyUrl: preferred?.url ?? null, descriptionHtml, attribution };
 }

@@ -144,10 +144,7 @@ test("ocultar tira a vaga da home (com Desfazer) e Mostrar vagas ocultas a traz 
 test("vaga favorita que saiu do índice continua em Minhas vagas, e o gerador explica", async ({ page }) => {
   await openHome(page);
   await page.getByRole("button", { name: `Favoritar ${TITLE(3)}` }).click();
-  // O detalhe completa a cópia com o link da fonte (a listagem não traz a URL).
-  await page.goto("/vagas/4");
-  await expect(page.getByRole("heading", { level: 1, name: TITLE(3) })).toBeVisible();
-  await expect(page.getByRole("button", { name: `Favoritar ${TITLE(3)}` })).toHaveAttribute("aria-pressed", "true");
+  // Sem abrir o detalhe: a listagem já traz a URL da fonte para o snapshot.
   await expect
     .poll(() => page.evaluate((k) => localStorage.getItem(k), STATE_KEY))
     .toContain("https://boards.example.com/e2e/03");
@@ -157,6 +154,10 @@ test("vaga favorita que saiu do índice continua em Minhas vagas, e o gerador ex
   await page.goto("/minhas-vagas");
   await expect(card(page, 3)).toBeVisible();
   await expect(card(page, 3)).toContainText("Empresa 03");
+  await expect(card(page, 3).getByRole("link", { name: /Ver na fonte/ })).toHaveAttribute(
+    "href",
+    "https://boards.example.com/e2e/03",
+  );
 
   await page.goto("/gerador/4");
   await expect(page.getByText("Esta vaga saiu do índice. Sem a descrição não dá para gerar o CV.")).toBeVisible();

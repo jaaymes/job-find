@@ -5,26 +5,16 @@ import { FavoriteButton, HideButton, StatusBadge, StatusSelect } from "@/compone
 import { WORK_MODE_LABELS } from "@/components/jobs/format";
 import { BTN_OUTLINE, CARD } from "@/components/ui/styles";
 import type { JobState } from "@/lib/client/jobs/job-state";
+import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { STACKS } from "@/lib/shared/stacks";
 
 const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const MAX_STACKS = 5;
 
-/** Só http(s) vira link externo. */
-function safeUrl(url: string | null): string | null {
-  if (!url) return null;
-  try {
-    const { protocol } = new URL(url);
-    return protocol === "https:" || protocol === "http:" ? url : null;
-  } catch {
-    return null;
-  }
-}
-
 /** Cartão de "Minhas vagas": desenhado só com o snapshot, sem chamar a API. */
 export function JobMiniCard({ state }: { state: JobState }) {
   const { snapshot } = state;
-  const source = safeUrl(snapshot.urlCanonical);
+  const source = safeExternalUrl(snapshot.urlCanonical);
   return (
     <article className={`${CARD} flex flex-col gap-3 p-4`} data-job-id={snapshot.id}>
       <div className="flex flex-col gap-1.5">

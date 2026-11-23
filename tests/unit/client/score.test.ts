@@ -34,6 +34,7 @@ function job(over: Partial<JobSummary> & { age?: string } = {}): JobSummary {
     title: "Desenvolvedor",
     company: "Acme",
     companyLogoUrl: null,
+    urlCanonical: "https://x.test/1",
     summary: "",
     country: "BR",
     city: null,

@@ -9,6 +9,7 @@ import { profileStore } from "@/lib/client/profile/store";
 import { toSafeHtml } from "@/lib/client/render-html";
 import { indexProfile, scoreJob, type Criterion } from "@/lib/client/score/score";
 import { useStore } from "@/lib/client/storage/store";
+import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/types/job";
 import { AiAnalysis } from "./AiAnalysis";
@@ -28,16 +29,6 @@ const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
 const CARD = "rounded-2xl border border-jf-line bg-jf-surface";
 const LINK = "text-jf-brand hover:text-jf-brand-dark underline-offset-2 hover:underline";
-
-/** Só http(s) vira link externo; qualquer outro esquema (ou lixo) é descartado. */
-function safeExternalUrl(url: string): string | null {
-  try {
-    const { protocol } = new URL(url);
-    return protocol === "https:" || protocol === "http:" ? url : null;
-  } catch {
-    return null;
-  }
-}
 
 function BackLink() {
   return (

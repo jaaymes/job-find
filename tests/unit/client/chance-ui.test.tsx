@@ -15,6 +15,7 @@ function summary(id: number, over: Partial<JobSummary> = {}): JobSummary {
     title: "Desenvolvedor React",
     company: "Acme",
     companyLogoUrl: null,
+    urlCanonical: `https://x.test/${id}`,
     summary: "",
     country: "BR",
     city: null,

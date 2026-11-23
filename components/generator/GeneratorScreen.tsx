@@ -13,6 +13,7 @@ import { docsOf, generatedStore, type GeneratedRecord } from "@/lib/client/cv/ge
 import type { CvLang } from "@/lib/client/cv/period";
 import { reviewDocs } from "@/lib/client/cv/review";
 import { useJobStates } from "@/lib/client/jobs/job-state";
+import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { cvFileName } from "@/lib/client/pdf/filename";
 import { profileStore } from "@/lib/client/profile/store";
@@ -433,23 +434,14 @@ function Generator({ job }: { job: JobDetail }) {
   );
 }
 
-/** Só http(s) vira link externo. */
-function safeUrl(url: string | null | undefined): string | null {
-  if (!url) return null;
-  try {
-    const { protocol } = new URL(url);
-    return protocol === "https:" || protocol === "http:" ? url : null;
-  } catch {
-    return null;
-  }
-}
-
 function NotFound({ id }: { id: number | null }) {
   const states = useJobStates();
   const snapshot = id === null ? undefined : states?.[String(id)]?.snapshot;
+  // Antes da hidratação o estado ainda não foi lido: evita piscar "Vaga não encontrada".
+  if (states === null && id !== null) return <div role="status" aria-label="Carregando" className={`${CARD} h-40 animate-pulse`} />;
   // Vaga que o usuário marcou e que saiu do índice: sem a descrição não há o que adaptar ao CV.
   if (snapshot) {
-    const source = safeUrl(snapshot.urlCanonical);
+    const source = safeExternalUrl(snapshot.urlCanonical);
     return (
       <section className={`${CARD} flex flex-col items-start gap-3 p-6 sm:p-8`}>
         <h1 className="font-display text-2xl font-bold sm:text-3xl">{snapshot.title}</h1>

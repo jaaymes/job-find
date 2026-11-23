@@ -52,7 +52,9 @@ export function buildNonceCsp(
   nonce: string,
   options: CspOptions = {},
 ): string {
-  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"];
+  // 'wasm-unsafe-eval' só aqui (rotas `(local)`): o yoga-layout 3.x do @react-pdf/renderer 4.x instancia WebAssembly
+  // para gerar o PDF do CV no navegador (docs/tech, spec). Libera só WASM; não libera eval()/new Function.
+  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"];
   if (options.dev) scriptSrc.push("'unsafe-eval'");
   return buildDirectives(aiHosts, scriptSrc);
 }

@@ -57,10 +57,16 @@ describe("buildNonceCsp (rotas (local))", () => {
   const nonce = "dGVzdGUtbm9uY2U=";
   const csp = buildNonceCsp(AI_CSP_HOSTS, nonce);
 
-  it("script-src com nonce e strict-dynamic, sem unsafe-inline nem unsafe-eval", () => {
+  it("script-src com nonce, strict-dynamic e wasm-unsafe-eval, sem unsafe-inline nem unsafe-eval", () => {
     const script = directive(csp, "script-src").split(" ");
-    expect(script).toEqual(["script-src", "'self'", `'nonce-${nonce}'`, "'strict-dynamic'"]);
+    expect(script).toEqual(["script-src", "'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"]);
+    expect(csp).toContain("'wasm-unsafe-eval'");
     expect(csp).not.toContain("'unsafe-eval'");
+  });
+
+  it("a CSP estática das rotas públicas não tem wasm-unsafe-eval", () => {
+    expect(buildCsp(AI_CSP_HOSTS)).not.toContain("wasm-unsafe-eval");
+    expect(buildCsp(AI_CSP_HOSTS, { dev: true })).not.toContain("wasm-unsafe-eval");
   });
 
   it("só adiciona unsafe-eval em desenvolvimento", () => {

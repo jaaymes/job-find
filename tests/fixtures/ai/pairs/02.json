@@ -1,0 +1,135 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Bruno Teste",
+    "headline": "Senior Backend Engineer",
+    "location": "Curitiba, PR",
+    "seniority": "senior",
+    "englishLevel": "fluent",
+    "summary": "Backend engineer with 9 years building payment and messaging services in Go and Node.js.",
+    "contact": {
+      "email": "bruno.teste@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Go",
+        "years": 6,
+        "stackId": "go"
+      },
+      {
+        "name": "Node.js",
+        "years": 8,
+        "stackId": "nodejs"
+      },
+      {
+        "name": "PostgreSQL",
+        "years": 8,
+        "stackId": "postgresql"
+      },
+      {
+        "name": "Kafka",
+        "years": 4,
+        "stackId": "kafka"
+      },
+      {
+        "name": "Docker",
+        "years": 6,
+        "stackId": "docker"
+      },
+      {
+        "name": "AWS",
+        "years": 5,
+        "stackId": "aws"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Vetor Logística",
+        "title": "Senior Backend Engineer",
+        "startDate": "2020-03",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Designed an order-routing service in Go that handles 5,000 requests per second"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Cut infrastructure cost by 30% by moving batch jobs to spot instances on AWS"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Mentored 4 engineers and led the migration from a monolith to 8 services"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Casa do Código Fictícia",
+        "title": "Backend Developer",
+        "startDate": "2016-06",
+        "endDate": "2020-02",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Built REST APIs in Node.js and PostgreSQL used by 200 thousand users"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Introduced Kafka for order events, removing 3 nightly batch jobs"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Fictícia do Paraná",
+        "degree": "BSc in Computer Science",
+        "startYear": "2012",
+        "endYear": "2016"
+      }
+    ]
+  },
+  "job": {
+    "id": 9001,
+    "title": "Senior Backend Engineer (Go)",
+    "company": "Northwind Labs",
+    "companyLogoUrl": null,
+    "summary": "Senior backend role building distributed services in Go.",
+    "country": "US",
+    "city": null,
+    "origin": "international",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "senior",
+    "language": "en",
+    "stacks": [
+      "go",
+      "postgresql",
+      "kafka",
+      "aws"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9001",
+    "applyUrl": "https://vagas.exemplo.test/9001/apply",
+    "descriptionHtml": "<h3>About the role</h3><p>Northwind Labs is hiring a senior backend engineer to design and run high-throughput services.</p><h3>What you will do</h3><p>Own services end to end.</p><ul><li>Design and build services in Go</li><li>Operate PostgreSQL and Kafka in production on AWS</li><li>Mentor other engineers and review designs</li></ul><h3>Requirements</h3><p>Strong backend background.</p><ul><li>5+ years of backend experience</li><li>Go in production</li><li>Fluent English</li></ul>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9001",
+        "dofollow": true
+      }
+    ]
+  }
+}

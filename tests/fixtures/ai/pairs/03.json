@@ -1,0 +1,128 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Carla Prueba",
+    "headline": "Desarrolladora Mobile con React Native",
+    "location": "Montevideo, Uruguay",
+    "seniority": "mid",
+    "englishLevel": "intermediate",
+    "summary": "Desarrolladora mobile con 4 años de experiencia en aplicaciones React Native para banca y comercio.",
+    "contact": {
+      "email": "carla.prueba@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "React Native",
+        "years": 4,
+        "stackId": "react-native"
+      },
+      {
+        "name": "TypeScript",
+        "years": 4,
+        "stackId": "typescript"
+      },
+      {
+        "name": "Redux",
+        "years": 3,
+        "stackId": "redux"
+      },
+      {
+        "name": "Firebase",
+        "years": 3,
+        "stackId": "firebase"
+      },
+      {
+        "name": "Jest",
+        "years": 3,
+        "stackId": "jest"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Banco Estrella Ficticio",
+        "title": "Desarrolladora Mobile",
+        "startDate": "2022-05",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Desarrolló el módulo de transferencias de la app, usada por 120 mil clientes"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Redujo los cierres inesperados un 45% con monitoreo y correcciones"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Configuró pruebas con Jest y subió la cobertura al 70%"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Tienda Aurora",
+        "title": "Desarrolladora Junior",
+        "startDate": "2020-09",
+        "endDate": "2022-04",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Creó la app de pedidos con React Native y Firebase"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Publicó 18 versiones en las tiendas de aplicaciones"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidad Ficticia de la República",
+        "degree": "Ingeniería en Computación",
+        "startYear": "2016",
+        "endYear": "2020"
+      }
+    ]
+  },
+  "job": {
+    "id": 9002,
+    "title": "Desarrollador/a Mobile React Native",
+    "company": "Mercado Faro",
+    "companyLogoUrl": null,
+    "summary": "Se busca desarrollador/a mobile para la app de compras.",
+    "country": "UY",
+    "city": "Montevideo",
+    "origin": "international",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "mid",
+    "language": "es",
+    "stacks": [
+      "react-native",
+      "typescript"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9002",
+    "applyUrl": "https://vagas.exemplo.test/9002/apply",
+    "descriptionHtml": "<h3>Sobre el puesto</h3><p>Sumate al equipo mobile de Mercado Faro para evolucionar nuestra app de compras.</p><h3>Requisitos</h3><p>Experiencia comprobable en mobile.</p><ul><li>3 años o más con React Native</li><li>TypeScript</li><li>Pruebas automatizadas</li><li>Publicación en App Store y Google Play</li></ul><h3>Ofrecemos</h3><p>Trabajo remoto y horario flexible.</p>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9002",
+        "dofollow": true
+      }
+    ]
+  }
+}

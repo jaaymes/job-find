@@ -1,10 +1,12 @@
 import "server-only";
 import type { SourceId } from "@/lib/shared/types/job";
 import type { Connector } from "@/lib/server/sources/types";
+import { greenhouse } from "@/lib/server/sources/greenhouse";
 import { himalayas } from "@/lib/server/sources/himalayas";
 
 /** Preenchido pelas Tarefas 11–14 e 38; começa vazio. */
 export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
+  greenhouse,
   himalayas,
 };
 

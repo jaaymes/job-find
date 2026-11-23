@@ -107,6 +107,7 @@ describe("GET /api/jobs/[id]", () => {
     expect(body.title).toBe("Vaga B");
     expect(body.descriptionHtml).toBeDefined();
     expect(body.attribution).toEqual([]);
+    expect(body.applyUrl).toBeNull();
   });
 
   it("404 para vaga expirada", async () => {

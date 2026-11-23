@@ -15,6 +15,8 @@ const XSS_HTML =
 
 /** Id da vaga XSS (a 41ª, inserida depois das 40 da home). */
 let xssId: number;
+let himalayasId: number;
+const HIMALAYAS_APPLY_URL = "https://himalayas.app/companies/e2e/jobs/dev?utm_source=api";
 
 test.beforeAll(async () => {
   ({ db, close: closeDb } = await seedDatabase());
@@ -32,6 +34,17 @@ test.beforeAll(async () => {
   const { jobId } = await upsertJob(db, xss, { source: "greenhouse", externalId: "e2e-xss", url: XSS_SOURCE_URL }, now);
   if (jobId === null) throw new Error("vaga XSS não gravada");
   xssId = jobId;
+  // Vaga do Himalayas: a URL da fonte traz `?utm_source=api`, que o botão precisa manter (D-07).
+  const him = {
+    ...seedJob(51, now),
+    dedupeKey: "e2e-himalayas",
+    urlCanonical: "https://himalayas.app/companies/e2e/jobs/dev",
+    title: "Vaga Himalayas Desenvolvedor",
+    contentHash: "e2e-hash-himalayas",
+  };
+  const himRes = await upsertJob(db, him, { source: "himalayas", externalId: "e2e-him", url: HIMALAYAS_APPLY_URL }, now);
+  if (himRes.jobId === null) throw new Error("vaga Himalayas não gravada");
+  himalayasId = himRes.jobId;
 });
 
 test.afterAll(async () => {
@@ -79,7 +92,7 @@ test("mostra título, empresa, chips, descrição e atribuição com links para 
 
   const header = page.locator("section").first();
   await expect(header).toContainText("coletada de");
-  const origin = header.getByRole("link", { name: "Greenhouse", exact: true });
+  const origin = header.getByRole("link", { name: "Greenhouse (abre em nova aba)", exact: true });
   await expect(origin).toHaveAttribute("href", "https://boards.example.com/e2e/00");
   await expect(origin).toHaveAttribute("target", "_blank");
   await expect(origin).toHaveAttribute("rel", /noopener/);
@@ -93,6 +106,14 @@ test("mostra título, empresa, chips, descrição e atribuição com links para 
   await expect(page.getByRole("heading", { level: 2, name: "Sua chance" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Análise com IA" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Voltar para as vagas/ })).toHaveAttribute("href", "/");
+});
+
+test("o botão Candidatar mantém a URL da fonte intacta, com utm_source (Himalayas, D-07)", async ({ page }) => {
+  await page.goto(`/vagas/${himalayasId}`);
+  await expect(page.getByRole("heading", { level: 1, name: "Vaga Himalayas Desenvolvedor" })).toBeVisible();
+  const apply = page.getByRole("link", { name: /Candidatar na página da vaga/ });
+  await expect(apply).toHaveAttribute("href", HIMALAYAS_APPLY_URL);
+  await expect(apply).toContainText("(abre em nova aba)");
 });
 
 test("descrição com payload XSS não executa script nem mantém atributos perigosos", async ({ page }) => {
@@ -109,7 +130,7 @@ test("descrição com payload XSS não executa script nem mantém atributos peri
   expect(html).not.toMatch(/javascript:/i);
   await expect(page.locator("article img")).toHaveCount(0);
 
-  const origin = page.locator("section").first().getByRole("link", { name: "Greenhouse", exact: true });
+  const origin = page.locator("section").first().getByRole("link", { name: "Greenhouse (abre em nova aba)", exact: true });
   await expect(origin).toHaveAttribute("href", XSS_SOURCE_URL);
 });
 

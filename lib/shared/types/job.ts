@@ -50,7 +50,13 @@ export type JobAttribution = {
 };
 
 export type JobDetail = JobSummary & {
+  /** Só para deduplicação: sem parâmetros de rastreamento. Nunca vira link de candidatura. */
   urlCanonical: string;
+  /**
+   * Link de candidatura: a URL bruta (`job_sources.url`) da fonte vista por último, sem nenhuma
+   * alteração (D-07: o Himalayas exige o `applicationLink` intacto). `null` sem fonte registrada.
+   */
+  applyUrl: string | null;
   /** HTML já sanitizado na ingestão. */
   descriptionHtml: string;
   attribution: JobAttribution[];

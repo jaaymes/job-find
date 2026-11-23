@@ -175,7 +175,7 @@ export async function getJob(db: Db, id: number, attributionFor?: AttributionFor
   if (!row) return null;
 
   const srcRows = await db
-    .select({ source: jobSources.source, url: jobSources.url })
+    .select({ source: jobSources.source, url: jobSources.url, lastSeenAt: jobSources.lastSeenAt })
     .from(jobSources)
     .where(eq(jobSources.jobId, id))
     .orderBy(jobSources.source, jobSources.externalId);
@@ -185,6 +185,12 @@ export async function getJob(db: Db, id: number, attributionFor?: AttributionFor
     return { source: s.source, label: meta?.label ?? s.source, url: s.url, dofollow: meta?.dofollow ?? false };
   });
 
+  // Fonte preferida para candidatar: a vista por último (link mais fresco); empate fica na ordem acima.
+  const preferred = srcRows.reduce<(typeof srcRows)[number] | null>(
+    (best, s) => (!best || s.lastSeenAt.getTime() > best.lastSeenAt.getTime() ? s : best),
+    null,
+  );
+
   const { urlCanonical, descriptionHtml, ...summary } = row;
-  return { ...toSummary(summary), urlCanonical, descriptionHtml, attribution };
+  return { ...toSummary(summary), urlCanonical, applyUrl: preferred?.url ?? null, descriptionHtml, attribution };
 }

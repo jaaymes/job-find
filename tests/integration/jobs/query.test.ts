@@ -232,6 +232,22 @@ describe("getJob", () => {
     expect(d2!.attribution[0]).toMatchObject({ label: "Fonte lever", dofollow: true });
   });
 
+  it("applyUrl é a URL bruta da fonte vista por último, com os parâmetros intactos (D-07)", async () => {
+    const db = await testDb();
+    const [row] = await db.select({ id: jobs.id }).from(jobs).where(sql`dedupe_key = 'dk-0'`);
+    const himalayasUrl = "https://himalayas.app/companies/acme/jobs/dev?utm_source=api";
+    await db.insert(jobSources).values({
+      source: "himalayas",
+      externalId: "him-0",
+      jobId: Number(row.id),
+      url: himalayasUrl,
+      lastSeenAt: new Date(NOW + HOUR),
+    });
+    const d = await getJob(db, Number(row.id));
+    expect(d!.applyUrl).toBe(himalayasUrl);
+    expect(d!.urlCanonical).toBe("https://example.com/j/0");
+  });
+
   it("retorna null para id inexistente ou vaga expirada", async () => {
     const db = await testDb();
     expect(await getJob(db, 999_999)).toBeNull();

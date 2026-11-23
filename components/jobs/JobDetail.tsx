@@ -40,6 +40,11 @@ function BackLink() {
   );
 }
 
+/** Aviso só para leitor de tela: o link abre outra aba. */
+function NewTabHint() {
+  return <span className="sr-only"> (abre em nova aba)</span>;
+}
+
 function ExternalLink({ attribution, children }: { attribution: JobAttribution; children: React.ReactNode }) {
   const href = safeExternalUrl(attribution.url);
   if (!href) return <>{children}</>;
@@ -51,6 +56,7 @@ function ExternalLink({ attribution, children }: { attribution: JobAttribution; 
       className={LINK}
     >
       {children}
+      <NewTabHint />
     </a>
   );
 }
@@ -189,11 +195,12 @@ function Sidebar() {
   );
 }
 
-function Detail({ job }: { job: JobDetailData }) {
+export function JobDetailView({ job }: { job: JobDetailData }) {
   // Calculado uma vez por vaga carregada: os dados só existem no cliente.
   const [now] = useState(() => Date.now());
   const salary = formatSalary(job);
-  const applyUrl = safeExternalUrl(job.urlCanonical);
+  // URL bruta da fonte, sem tirar parâmetros (D-07); `urlCanonical` serve só à deduplicação.
+  const applyUrl = job.applyUrl ? safeExternalUrl(job.applyUrl) : null;
   const stacks = job.stacks;
 
   return (
@@ -238,7 +245,8 @@ function Detail({ job }: { job: JobDetailData }) {
               rel="noopener noreferrer"
               className="flex min-h-12 items-center justify-center rounded-xl bg-jf-brand px-4 text-center font-semibold text-white no-underline hover:bg-jf-brand-dark"
             >
-              Candidatar na página da vaga ↗
+              Candidatar na página da vaga <span aria-hidden="true">↗</span>
+              <NewTabHint />
             </a>
           </div>
         )}
@@ -258,5 +266,5 @@ export function JobDetail({ id: rawId }: { id: string }) {
   if (id === null || error instanceof JobNotFoundError) return <NotFound />;
   if (error) return <LoadError onRetry={() => void refetch()} />;
   if (isPending || !data) return <Skeleton />;
-  return <Detail job={data} />;
+  return <JobDetailView job={data} />;
 }

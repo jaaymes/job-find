@@ -10,6 +10,7 @@ import { indexProfile, scoreJob, type Criterion } from "@/lib/client/score/score
 import { useStore } from "@/lib/client/storage/store";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/types/job";
+import { AiAnalysis } from "./AiAnalysis";
 import { ChanceBadge } from "./ChanceBadge";
 import {
   LANGUAGE_LABELS,
@@ -224,15 +225,7 @@ function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
             : "Com o currículo importado, mostramos aqui uma estimativa de aderência entre o seu perfil e esta vaga. Não é a probabilidade real de contratação."}
         </p>
       </section>
-      <section aria-labelledby="ia-t" className={`${CARD} flex flex-col gap-3 p-5 sm:p-6`}>
-        <h2 id="ia-t" className="text-lg font-semibold">
-          Análise com IA
-        </h2>
-        <p className="text-[13px] text-jf-ink-3">
-          Em breve: pontos fortes, lacunas e palavras-chave que faltam no seu currículo para esta vaga, geradas com a
-          chave de IA que você configurar. Nada do seu perfil passa pelo nosso servidor.
-        </p>
-      </section>
+      <AiAnalysis job={job} />
     </aside>
   );
 }

@@ -1,13 +1,16 @@
 "use client";
 
-import type { JobsFilters } from "@/lib/client/jobs/use-jobs";
+import Link from "next/link";
+import type { ChanceBand, PageFilters } from "@/lib/client/jobs/use-jobs";
 import type { Seniority, SourceId } from "@/lib/shared/types/job";
 import { cn } from "@/lib/utils";
 import { LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
 
 type Props = {
-  filters: JobsFilters;
-  onChange: (patch: JobsFilters) => void;
+  filters: PageFilters;
+  onChange: (patch: PageFilters) => void;
+  /** Sem perfil salvo não há score, e o filtro de chance fica desabilitado. */
+  hasProfile: boolean;
   onClear: () => void;
   /** Painel recolhido no celular; no desktop é sempre visível. */
   open: boolean;
@@ -25,8 +28,16 @@ const LEGEND = "mb-2 text-[13px] font-semibold text-jf-ink-2";
 const OPTION = "flex min-h-8 items-center gap-2";
 const CONTROL = "size-4 accent-jf-brand";
 
-export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
+const CHANCES: { value: ChanceBand | undefined; label: string }[] = [
+  { value: undefined, label: "Qualquer" },
+  { value: "alta", label: "Alta" },
+  { value: "media", label: "Média" },
+  { value: "baixa", label: "Baixa" },
+];
+
+export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile }: Props) {
   const seniority = filters.seniority ?? [];
+  const chance = filters.chance?.[0];
 
   return (
     <aside
@@ -73,6 +84,27 @@ export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
         </label>
       </fieldset>
 
+      <fieldset className="flex flex-col" disabled={!hasProfile}>
+        <legend className={LEGEND}>Chance</legend>
+        {CHANCES.map((c) => (
+          <label key={c.label} className={cn(OPTION, !hasProfile && "text-jf-ink-3")}>
+            <input
+              type="radio"
+              name="chance"
+              className={CONTROL}
+              checked={chance === c.value}
+              onChange={() => onChange({ chance: c.value ? [c.value] : undefined })}
+            />
+            {c.label === "Qualquer" ? c.label : `Chance: ${c.label}`}
+          </label>
+        ))}
+        {!hasProfile && (
+          <Link href="/perfil" className="mt-1 inline-flex min-h-11 items-center text-sm text-jf-brand hover:text-jf-brand-dark">
+            Importe seu currículo
+          </Link>
+        )}
+      </fieldset>
+
       <fieldset className="flex flex-col">
         <legend className={LEGEND}>Senioridade</legend>
         {(Object.keys(SENIORITY_LABELS) as Seniority[]).map((level) => (
@@ -95,7 +127,7 @@ export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
         <select
           className={FIELD}
           value={filters.lang ?? ""}
-          onChange={(e) => onChange({ lang: (e.target.value || undefined) as JobsFilters["lang"] })}
+          onChange={(e) => onChange({ lang: (e.target.value || undefined) as PageFilters["lang"] })}
         >
           <option value="">Qualquer</option>
           {Object.entries(LANGUAGE_LABELS).map(([value, label]) => (

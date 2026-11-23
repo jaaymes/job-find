@@ -31,6 +31,8 @@ const urlParsers = {
   seniority: parseAsArrayOf(parseAsStringLiteral(["intern", "junior", "mid", "senior", "lead"] as const), ","),
   lang: parseAsStringLiteral(["pt", "en", "es"] as const),
   since: parseAsStringLiteral(["24h", "7d", "30d"] as const),
+  // Só do cliente: o score depende do perfil, que não sai do navegador. Nunca vai para `/api/jobs`.
+  chance: parseAsArrayOf(parseAsStringLiteral(["alta", "media", "baixa"] as const), ","),
   source: parseAsArrayOf(
     parseAsStringLiteral([
       "himalayas",
@@ -50,14 +52,17 @@ const urlParsers = {
 
 type FilterKey = keyof typeof urlParsers;
 export type JobsFilters = Partial<JobsQuery>;
+export type ChanceBand = "alta" | "media" | "baixa";
+/** Filtros da página: os da API mais o filtro de chance, aplicado só no cliente. */
+export type PageFilters = JobsFilters & { chance?: ChanceBand[] };
 
 /** Remove tudo da URL: cada chave recebe `undefined`. */
-export const CLEAR_FILTERS: JobsFilters = Object.fromEntries(
+export const CLEAR_FILTERS: PageFilters = Object.fromEntries(
   (Object.keys(urlParsers) as FilterKey[]).map((k) => [k, undefined]),
 );
 
 /** Filtros da URL (nuqs); `set` aceita um patch e `undefined` (ou lista vazia) remove a chave. */
-export function useJobsFilters(): [JobsFilters, (patch: JobsFilters) => void] {
+export function useJobsFilters(): [PageFilters, (patch: PageFilters) => void] {
   const [state, setState] = useQueryStates(urlParsers);
 
   const filters = useMemo(() => {
@@ -66,11 +71,11 @@ export function useJobsFilters(): [JobsFilters, (patch: JobsFilters) => void] {
       if (value === null || (Array.isArray(value) && value.length === 0)) continue;
       out[key] = value;
     }
-    return out as JobsFilters;
+    return out as PageFilters;
   }, [state]);
 
   const set = useCallback(
-    (patch: JobsFilters) => {
+    (patch: PageFilters) => {
       const next: Record<string, unknown> = {};
       for (const key of Object.keys(patch) as FilterKey[]) {
         if (!(key in urlParsers)) continue;

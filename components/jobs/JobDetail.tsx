@@ -4,7 +4,10 @@
 import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
+import { profileStore } from "@/lib/client/profile/store";
 import { toSafeHtml } from "@/lib/client/render-html";
+import { indexProfile, scoreJob, type Criterion } from "@/lib/client/score/score";
+import { useStore } from "@/lib/client/storage/store";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/types/job";
 import { ChanceBadge } from "./ChanceBadge";
@@ -167,7 +170,21 @@ function Description({ job }: { job: JobDetailData }) {
   );
 }
 
-function Sidebar() {
+const CRITERION_LABEL: Record<Criterion, string> = {
+  stack: "Tecnologias",
+  seniority: "Senioridade",
+  language: "Idioma",
+  location: "Local",
+  recency: "Recência",
+};
+
+/** O score depende do localStorage: só aparece depois da hidratação (antes, `useStore` devolve null). */
+function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
+  const profile = useStore(profileStore);
+  const chance = useMemo(
+    () => (profile ? scoreJob(indexProfile(profile), job, new Date(now)) : null),
+    [profile, job, now],
+  );
   return (
     <aside className="flex max-w-none flex-1 basis-[360px] flex-col gap-4 lg:max-w-[440px]">
       <section aria-labelledby="chance-t" className={`${CARD} flex flex-col gap-3.5 p-5 sm:p-6`}>
@@ -175,11 +192,33 @@ function Sidebar() {
           <h2 id="chance-t" className="text-lg font-semibold">
             Sua chance
           </h2>
-          <ChanceBadge band={null} />
+          <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
         </div>
+        {chance && (
+          <>
+            <p className="text-[13px] text-jf-ink-3">Por que essa nota, critério a critério:</p>
+            <ul aria-label="Detalhes da nota" className="flex flex-col gap-3">
+              {chance.breakdown.map((b) => (
+                <li key={b.criterion} className="flex flex-col gap-1" data-criterion={b.criterion}>
+                  <div className="flex items-baseline justify-between gap-3 text-sm">
+                    <span className="font-semibold">{CRITERION_LABEL[b.criterion]}</span>
+                    <span className="text-jf-ink-3">
+                      {b.available ? `${Math.round(b.value)}%` : "sem dados"} · peso {b.weight}
+                    </span>
+                  </div>
+                  <div aria-hidden="true" className="h-1.5 overflow-hidden rounded-full bg-jf-chip">
+                    <div className="h-full rounded-full bg-jf-brand" style={{ width: `${b.available ? Math.round(b.value) : 0}%` }} />
+                  </div>
+                  <p className="text-[13px] text-jf-ink-3">{b.reason}</p>
+                </li>
+              ))}
+            </ul>
+          </>
+        )}
         <p className="text-[13px] text-jf-ink-3">
-          Com o currículo importado, mostramos aqui uma estimativa de aderência entre o seu perfil e esta vaga. Não é a
-          probabilidade real de contratação.
+          {chance
+            ? "Estimativa de aderência entre o seu perfil e esta vaga, calculada no seu navegador. Não é a probabilidade real de contratação."
+            : "Com o currículo importado, mostramos aqui uma estimativa de aderência entre o seu perfil e esta vaga. Não é a probabilidade real de contratação."}
         </p>
       </section>
       <section aria-labelledby="ia-t" className={`${CARD} flex flex-col gap-3 p-5 sm:p-6`}>
@@ -253,7 +292,7 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
       </section>
       <div className="flex flex-wrap items-start gap-6">
         <Description job={job} />
-        <Sidebar />
+        <Sidebar job={job} now={now} />
       </div>
     </>
   );

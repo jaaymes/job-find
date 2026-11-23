@@ -20,6 +20,7 @@ import {
   formatSalary,
   placeLabel,
 } from "./format";
+import { HardLink } from "@/components/ui/hard-link";
 
 const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
@@ -284,12 +285,12 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
               <NewTabHint />
             </a>
           )}
-          <Link
+          <HardLink
             href={`/gerador/${job.id}`}
             className="flex min-h-12 items-center justify-center rounded-xl border border-jf-line-strong bg-jf-surface px-4 text-center font-semibold text-jf-ink no-underline hover:bg-jf-chip"
           >
             Gerar CV + carta
-          </Link>
+          </HardLink>
         </div>
       </section>
       <div className="flex flex-wrap items-start gap-6">

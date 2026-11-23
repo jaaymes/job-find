@@ -1,3 +1,5 @@
+"use client";
+
 import { BTN_OUTLINE, BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import type { CvLang } from "@/lib/client/cv/period";
 

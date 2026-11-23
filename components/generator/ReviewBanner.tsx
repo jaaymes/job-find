@@ -1,3 +1,5 @@
+"use client";
+
 /** Aviso de revisão (RN-07): `aria-live` educado, para o leitor de tela anunciar a mudança da contagem. */
 export function ReviewBanner({ count, removedExperiences }: { count: number; removedExperiences: number }) {
   const tone = count > 0 ? "border-[#E0B060] bg-jf-new-bg text-jf-new-fg" : "border-jf-line bg-jf-surface text-jf-ink-2";

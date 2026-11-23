@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { AiError } from "@/lib/client/ai/errors";
 import { completeOpenRouterAuth } from "@/lib/client/ai/pkce";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
+import { HardLink } from "@/components/ui/hard-link";
 
 function messageFor(e: unknown): string {
   if (e instanceof AiError) {
@@ -59,9 +59,9 @@ function Callback() {
       <div role="alert" className="flex flex-col gap-3">
         <h1 className="text-xl font-semibold">Falha ao conectar o OpenRouter</h1>
         <p>{error ?? "Código de autorização ausente. Conecte o OpenRouter de novo nas configurações."}</p>
-        <Link href="/configuracoes" className="underline">
+        <HardLink href="/configuracoes" className="underline">
           Voltar às configurações
-        </Link>
+        </HardLink>
       </div>
     );
   }

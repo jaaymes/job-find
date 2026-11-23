@@ -371,8 +371,12 @@ test("cancelar interrompe a geração sem erro e sem salvar nada", async ({ page
   });
   await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
   await page.goto("/gerador/1");
+  // "Gerando" aparece antes de o módulo de geração carregar: espera a requisição sair, senão o cancelamento
+  // chega antes dela e não há requisição para falhar (corrida do teste, não do app).
+  const sent = page.waitForRequest((r) => r.url() === CHAT_URL && r.method() === "POST");
   await page.getByRole("button", { name: GENERATE }).click();
   await expect(page.getByRole("status").filter({ hasText: "Gerando" })).toBeVisible();
+  await sent;
   // O cancelamento aborta a requisição no navegador: espera a falha dela antes de olhar o armazenamento.
   const aborted = page.waitForEvent("requestfailed", (r) => r.url() === CHAT_URL && r.method() === "POST");
   await page.getByRole("button", { name: "Cancelar" }).click();
@@ -428,7 +432,21 @@ test("'Incluir carta' gera a carta na aba própria, editável e baixável em PDF
   await expect(headline(page)).toBeVisible(FIRST);
   expect(mock.bodies[0]).toContain("Gere também a carta");
 
-  await page.getByRole("tab", { name: "Carta de apresentação" }).click();
+  // Abas no padrão WAI-ARIA: só a ativa no Tab, setas trocam a aba, aba e painel ligados por id.
+  const cvTab = page.getByRole("tab", { name: "Currículo" });
+  const letterTab = page.getByRole("tab", { name: "Carta de apresentação" });
+  await expect(cvTab).toHaveAttribute("tabindex", "0");
+  await expect(letterTab).toHaveAttribute("tabindex", "-1");
+  await expect(page.getByRole("tabpanel", { name: "Currículo" })).toBeVisible();
+  await cvTab.focus();
+  await page.keyboard.press("ArrowRight");
+  await expect(letterTab).toHaveAttribute("aria-selected", "true");
+  await expect(letterTab).toBeFocused();
+  await expect(page.getByRole("tabpanel", { name: "Carta de apresentação" })).toBeVisible();
+  await page.keyboard.press("ArrowLeft");
+  await expect(cvTab).toHaveAttribute("aria-selected", "true");
+
+  await letterTab.click();
   const letter = page.getByLabel("Texto da carta");
   await expect(letter).toHaveValue(/quero contribuir com o time/);
   await letter.fill("Prezada equipe, tenho experiência com React e quero contribuir com o time.");
@@ -548,4 +566,62 @@ test("provedor com aviso de privacidade pendente leva às Configurações", asyn
 test("o detalhe da vaga tem o link 'Gerar CV + carta'", async ({ page }) => {
   await page.goto("/vagas/1");
   await expect(page.getByRole("link", { name: "Gerar CV + carta" })).toHaveAttribute("href", "/gerador/1");
+});
+
+/** URL do documento carregado (muda só em navegação completa; a navegação no cliente mantém a do 1º documento). */
+const documentUrl = (page: Page) => page.evaluate(() => (performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming).name);
+
+test("da vaga ao gerador pelo botão: navegação completa, gera e baixa o PDF sem violação de CSP", async ({ page }) => {
+  mock.invent = false;
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  await page.goto("/vagas/1");
+  await page.getByRole("link", { name: "Gerar CV + carta" }).click();
+  await expect(page).toHaveURL(/\/gerador\/1$/);
+  // O documento foi buscado de novo: vale a CSP de nonce das rotas (local), não a pública da vaga.
+  await expect.poll(() => documentUrl(page)).toMatch(/\/gerador\/1$/);
+  await page.getByRole("button", { name: GENERATE }).click();
+  await expect(headline(page)).toBeVisible(FIRST);
+  await expect(page.locator("iframe[title='Pré-visualização do PDF']")).toHaveAttribute("src", /^blob:/, FIRST);
+  const { name, text } = await downloadPdf(page, "Baixar PDF", "CV-");
+  expect(name).toBe(cvFileName("Ana Exemplo", "Empresa 00", "Vaga 00 Desenvolvedor"));
+  expect(text).toContain("40%");
+  // `afterEach`: nenhuma violação de CSP nem erro de página.
+});
+
+test("de / para /perfil pelo cabeçalho: a página local roda WebAssembly (CSP de nonce)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Perfil" }).click();
+  await expect(page).toHaveURL(/\/perfil$/);
+  await expect(page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Perfil" })).toHaveAttribute("aria-current", "page");
+  // Módulo WebAssembly mínimo (cabeçalho "\0asm" v1). Com a CSP pública (sem 'wasm-unsafe-eval'), dá CompileError.
+  const ok = await page.evaluate(async () => {
+    try {
+      await WebAssembly.instantiate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]));
+      return "ok";
+    } catch (e) {
+      return e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+    }
+  });
+  expect(ok).toBe("ok");
+  expect(await documentUrl(page)).toMatch(/\/perfil$/);
+});
+
+test("'Regenerar' pede confirmação também quando só há aprovações (sem edições)", async ({ page }) => {
+  await generate(page);
+  await page.locator('[data-flagged="true"]').getByRole("button", { name: "Aprovar mesmo assim" }).click();
+  await expect(banner(page)).toHaveText(/Nenhum trecho/);
+  await expect.poll(async () => storedRec(page).then((r) => r?.approvedFlags.length)).toBe(1);
+  expect((await storedRec(page)).edits).toBeNull();
+  const calls = mock.bodies.length;
+
+  await page.getByRole("button", { name: "Regenerar" }).click();
+  await expect(page.getByText("Suas edições serão descartadas")).toBeVisible();
+  await page.getByRole("button", { name: "Manter edições" }).click();
+  expect(mock.bodies).toHaveLength(calls);
+  await expect(banner(page)).toHaveText(/Nenhum trecho/);
+
+  await page.getByRole("button", { name: "Regenerar" }).click();
+  await page.getByRole("button", { name: "Descartar e gerar" }).click();
+  await expect.poll(() => mock.bodies.length).toBeGreaterThan(calls);
+  await expect(banner(page)).toHaveText(/^1 trecho precisa da sua revisão/, FIRST);
 });

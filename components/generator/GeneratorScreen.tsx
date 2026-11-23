@@ -23,6 +23,7 @@ import { GeneratorToolbar } from "./GeneratorToolbar";
 import { PdfPreview } from "./PdfPreview";
 import { ReviewBanner } from "./ReviewBanner";
 import { type EditorTab, TailoredEditor } from "./TailoredEditor";
+import { HardLink } from "@/components/ui/hard-link";
 
 /** Teto da chamada: o critério de aceite é 60 s; a folga cobre modelos lentos antes de desistir. */
 const GENERATE_TIMEOUT_MS = 120_000;
@@ -210,18 +211,21 @@ function Generator({ job }: { job: JobDetail }) {
     [job, profile, settings, flush],
   );
 
-  /** Refazer a geração descarta as edições: pede confirmação antes, só quando há edições. */
+  // Trabalho do usuário que uma nova geração descarta: edições e aprovações ("Aprovar mesmo assim").
+  const hasUserWork = !!record?.edits || (record?.approvedFlags.length ?? 0) > 0;
+  const editsSnap = JSON.stringify([record?.edits ?? null, record?.approvedFlags ?? []]);
+
+  /** Refazer a geração descarta edições e aprovações: pede confirmação antes, só quando há alguma. */
   const request = (args: RunArgs) => {
     if (running) return;
-    if (record?.edits) setConfirm(args);
-    else void run(args, "null");
+    if (hasUserWork) setConfirm(args);
+    else void run(args, editsSnap);
   };
 
-  const editsSnap = JSON.stringify(record?.edits ?? null);
-  /** Tentar de novo: se há edições que a confirmação anterior não cobria, pergunta de novo. */
+  /** Tentar de novo: se há edições/aprovações que a confirmação anterior não cobria, pergunta de novo. */
   const retry = () => {
     if (!lastRun || running) return;
-    if (record?.edits && editsSnap !== lastSnap) setConfirm(lastRun);
+    if (hasUserWork && editsSnap !== lastSnap) setConfirm(lastRun);
     else void run(lastRun, editsSnap);
   };
 
@@ -292,9 +296,9 @@ function Generator({ job }: { job: JobDetail }) {
           <p className="text-[15px] text-jf-ink-2">
             Importe o seu currículo para gerar um CV e uma carta adaptados a esta vaga. Só usamos fatos do seu perfil.
           </p>
-          <Link href="/perfil" className={`${BTN_PRIMARY} no-underline`}>
+          <HardLink href="/perfil" className={`${BTN_PRIMARY} no-underline`}>
             Importar currículo
-          </Link>
+          </HardLink>
         </section>
       ) : (
         <>
@@ -349,9 +353,9 @@ function Generator({ job }: { job: JobDetail }) {
                   </button>
                 )}
                 {failure.settingsLink && (
-                  <Link href="/configuracoes" className={`${BTN_OUTLINE} no-underline`}>
+                  <HardLink href="/configuracoes" className={`${BTN_OUTLINE} no-underline`}>
                     Abrir Configurações
-                  </Link>
+                  </HardLink>
                 )}
               </div>
             </div>

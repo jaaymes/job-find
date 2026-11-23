@@ -1,3 +1,5 @@
+"use client";
+
 import { CARD } from "@/components/ui/styles";
 import type { Violation } from "@/lib/client/cv/validate";
 import { describeViolation, whereText } from "./violation-text";

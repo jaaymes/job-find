@@ -1,4 +1,6 @@
-import { type ReactNode, useState } from "react";
+"use client";
+
+import { type KeyboardEvent, type ReactNode, useId, useRef, useState } from "react";
 import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import type { Review } from "@/lib/client/cv/review";
 import type { Violation } from "@/lib/client/cv/validate";
@@ -77,19 +79,41 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
     bullets: docs.cv.experiences.map((e) => seq(e.bullets.length)),
   }));
 
+  // Abas no padrão WAI-ARIA (como `ModeTabs`): ids ligando aba e painel, só a aba ativa no Tab, setas/Home/End.
+  const baseId = useId();
+  const panelId = `${baseId}-panel`;
+  const tabId = (t: EditorTab) => `${baseId}-tab-${t}`;
+  const tabs: EditorTab[] = ["cv", ...(showLetterTab ? (["letter"] as const) : [])];
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const onTabKey = (e: KeyboardEvent, index: number) => {
+    const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (step === 0 && e.key !== "Home" && e.key !== "End") return;
+    const target = e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (index + step + tabs.length) % tabs.length;
+    e.preventDefault();
+    tabRefs.current[target]?.focus();
+    onTab(tabs[target]);
+  };
+
   return (
     <section aria-label="Editor do CV e da carta" className={`${CARD} flex flex-col gap-4 p-4 sm:p-5`}>
       <div role="tablist" aria-label="Documento" className="flex gap-1 border-b border-jf-line">
-        {(["cv", ...(showLetterTab ? (["letter"] as const) : [])] as EditorTab[]).map((t) => (
+        {tabs.map((t, i) => (
           <button
             key={t}
+            ref={(el) => {
+              tabRefs.current[i] = el;
+            }}
             type="button"
             role="tab"
+            id={tabId(t)}
             aria-selected={tab === t}
+            aria-controls={panelId}
+            tabIndex={tab === t ? 0 : -1}
             className={`min-h-11 rounded-t-lg px-4 text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-jf-brand ${
               tab === t ? "border-b-2 border-jf-brand text-jf-brand-dark" : "text-jf-ink-3 hover:text-jf-ink"
             }`}
             onClick={() => onTab(t)}
+            onKeyDown={(e) => onTabKey(e, i)}
           >
             {t === "cv" ? "Currículo" : "Carta de apresentação"}
           </button>
@@ -97,7 +121,7 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
       </div>
 
       {tab === "letter" && docs.coverLetter !== null ? (
-        <div role="tabpanel" className="flex flex-col gap-3">
+        <div role="tabpanel" id={panelId} aria-labelledby={tabId("letter")} className="flex flex-col gap-3">
           <Item
             state={{ key: review.letter.key ?? "", flagged: review.letter.flagged, violations: review.letter.violations }}
             onApprove={onApprove}
@@ -114,7 +138,7 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
           </Item>
         </div>
       ) : (
-        <div role="tabpanel" className="flex flex-col gap-5">
+        <div role="tabpanel" id={panelId} aria-labelledby={tabId("cv")} className="flex flex-col gap-5">
           <Item state={cv.flags.headline} onApprove={onApprove}>
             <label className={FIELD_LABEL}>
               Título profissional

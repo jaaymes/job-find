@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
 import { BTN_OUTLINE, BTN_PRIMARY, CARD } from "@/components/ui/styles";
@@ -13,6 +12,7 @@ import { analysisStore, type AnalysisRecord } from "@/lib/client/jobs/analysis-s
 import { profileStore } from "@/lib/client/profile/store";
 import { useStore } from "@/lib/client/storage/store";
 import type { JobDetail } from "@/lib/shared/types/job";
+import { HardLink } from "@/components/ui/hard-link";
 
 /** Teto da chamada: o critério de aceite é 30 s; a folga cobre modelos lentos antes de desistir. */
 const ANALYSIS_TIMEOUT_MS = 90_000;
@@ -181,9 +181,9 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
             </button>
           )}
           {failure.settingsLink && (
-            <Link href="/configuracoes" className={`${BTN_OUTLINE} self-start no-underline`}>
+            <HardLink href="/configuracoes" className={`${BTN_OUTLINE} self-start no-underline`}>
               Abrir Configurações
-            </Link>
+            </HardLink>
           )}
         </div>
       )}
@@ -193,9 +193,9 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
           <p className="text-[13px] text-jf-ink-3">
             Importe o seu currículo para ver pontos fortes, lacunas e palavras-chave que faltam para esta vaga.
           </p>
-          <Link href="/perfil" className={`${BTN_PRIMARY} w-fit no-underline`}>
+          <HardLink href="/perfil" className={`${BTN_PRIMARY} w-fit no-underline`}>
             Importar currículo
-          </Link>
+          </HardLink>
         </div>
       )}
 

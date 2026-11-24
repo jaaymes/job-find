@@ -1,5 +1,5 @@
 import "server-only";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
 import type { Seniority } from "@/lib/shared/types/job";
 import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";

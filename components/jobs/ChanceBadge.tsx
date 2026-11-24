@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 export type ChanceBand = "alta" | "media" | "baixa";
@@ -11,11 +12,13 @@ const BAND_STYLES: Record<ChanceBand, { label: string; className: string }> = {
 /** Chance de ser chamado. Sem perfil/currículo importado (`band: null`), só convida a importar. */
 export function ChanceBadge({ band, score }: { band: ChanceBand | null; score?: number }) {
   if (band === null) {
-    // Sem link: a tela de perfil ainda não existe.
     return (
-      <span className="rounded-full bg-jf-baixa-bg px-3 py-1.5 text-[13px] whitespace-nowrap font-medium text-jf-ink-3">
+      <Link
+        href="/perfil"
+        className="inline-flex min-h-11 items-center rounded-full bg-jf-baixa-bg px-3 text-[13px] font-medium whitespace-nowrap text-jf-ink-3 no-underline outline-none hover:text-jf-brand-dark hover:underline focus-visible:ring-2 focus-visible:ring-jf-brand"
+      >
         Importe seu currículo para ver
-      </span>
+      </Link>
     );
   }
   const { label, className } = BAND_STYLES[band];

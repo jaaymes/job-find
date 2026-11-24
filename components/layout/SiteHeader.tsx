@@ -4,13 +4,13 @@ import { cn } from "@/lib/utils";
 const NAV = [
   { id: "vagas", label: "Vagas", href: "/" },
   { id: "minhas-vagas", label: "Minhas vagas", href: null },
-  { id: "perfil", label: "Perfil", href: null },
-  { id: "configuracoes", label: "Configurações", href: null },
+  { id: "perfil", label: "Perfil", href: "/perfil" },
+  { id: "configuracoes", label: "Configurações", href: "/configuracoes" },
 ] as const;
 
 const ITEM = "rounded-lg px-3.5 py-2.5 text-[15px]";
 
-export function SiteHeader({ current }: { current: "vagas" }) {
+export function SiteHeader({ current }: { current?: "vagas" | "perfil" | "configuracoes" }) {
   return (
     <header className="border-b border-jf-line bg-jf-surface">
       <div className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3.5 sm:px-6">

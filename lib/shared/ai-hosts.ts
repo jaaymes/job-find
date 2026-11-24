@@ -1,6 +1,7 @@
 /**
  * Origens dos provedores de IA liberadas no `connect-src` da CSP (D-15/D-17).
- * Lista única: o `next.config.ts` e o registro de provedores (Tarefa 23) leem daqui.
+ * Lista literal e isomórfica lida pelo `next.config.ts` e pelo `proxy.ts`. O teste do registro
+ * (`tests/unit/client/ai/providers.test.ts`) garante que ela é igual aos `cspHosts` de `PROVIDERS`.
  * Só origens (esquema + host[+porta]). Liberar `https:` inteiro exige nova decisão.
  */
 export const AI_CSP_HOSTS: string[] = [

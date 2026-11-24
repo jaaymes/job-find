@@ -707,6 +707,7 @@ Não há feature flags: tudo entra ativo.
 | `data_collection: deny` combinado com `require_parameters` não deixa nenhum provedor | Média | Médio | Spike da Fase 0; fallback explícito com aviso |
 | A IA inventa fatos no CV | Média | Alto | Validador determinístico em três camadas (D-11) |
 | `experimental.sri` instável | Média | Médio | Fallback para nonce só nas rotas `(local)` |
+| Risco aceito: as rotas públicas mantêm `script-src 'unsafe-inline'` (D-15) e `/vagas/[id]` lê as chaves e o perfil do localStorage para a análise com IA | Baixa | Alto | O localStorage é por origem, então um XSS em qualquer rota pública alcançaria os dados de qualquer jeito. Mitigação: DOMPurify mais saída da IA renderizada só como texto. A solução completa seria nonce em todas as rotas, ao custo de tornar as páginas dinâmicas (viola RNF-11); aceito |
 | Mais chaves no localStorage, e só o OpenRouter limita gasto por app | Média | Alto | D-15 contra XSS; OpenRouter recomendado; a interface orienta a criar chave de projeto com limite de gasto |
 | Provedores mudam CORS, IDs de modelo ou formato de erro | Alta | Médio | Teste de contrato por provedor, modelos vindos do `listModels`, padrões atualizáveis por PR |
 | IA local bloqueada pelo navegador (LNA, Safari) | Média | Baixo | Marcada como experimental, com guia e mensagem de erro clara |

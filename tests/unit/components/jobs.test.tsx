@@ -8,6 +8,12 @@ describe("ChanceBadge", () => {
     expect(renderToStaticMarkup(<ChanceBadge band={null} />)).toContain("Importe seu currículo para ver");
   });
 
+  it("sem faixa o convite é um link para /perfil com alvo de toque de 44px", () => {
+    const html = renderToStaticMarkup(<ChanceBadge band={null} />);
+    expect(html).toMatch(/<a [^>]*href="\/perfil"/);
+    expect(html).toContain("min-h-11");
+  });
+
   it.each([
     ["alta", "bg-jf-alta text-white", "Alta · 86%"],
     ["media", "bg-jf-media-bg text-jf-media-fg", "Média · 86%"],

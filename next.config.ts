@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 import { AI_CSP_HOSTS } from "./lib/shared/ai-hosts";
-import { buildSecurityHeaders } from "./lib/shared/csp";
+import { buildCspHeader, buildSecurityHeaders } from "./lib/shared/csp";
+
+/** Primeiros segmentos das rotas do grupo `app/(local)`. */
+const LOCAL_PATHS = ["perfil", "configuracoes", "gerador", "minhas-vagas"];
 
 const nextConfig: NextConfig = {
   experimental: {
@@ -17,11 +20,17 @@ const nextConfig: NextConfig = {
   },
   async headers() {
     return [
+      // Headers de segurança em todas as rotas.
+      { source: "/(.*)", headers: buildSecurityHeaders() },
+      // CSP estática só fora das rotas (local): lá o proxy.ts manda a CSP com nonce
+      // (um único header CSP por resposta). Manter a lista em sincronia com o matcher do proxy.ts.
       {
-        source: "/(.*)",
-        headers: buildSecurityHeaders(AI_CSP_HOSTS, {
-          dev: process.env.NODE_ENV === "development",
-        }),
+        source: `/((?!(?:${LOCAL_PATHS.join("|")})(?:/|$)).*)`,
+        headers: [
+          buildCspHeader(AI_CSP_HOSTS, {
+            dev: process.env.NODE_ENV === "development",
+          }),
+        ],
       },
     ];
   },

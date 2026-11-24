@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import type { ScoreResult } from "@/lib/client/score/score";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobSummary } from "@/lib/shared/types/job";
 import { ChanceBadge } from "./ChanceBadge";
@@ -46,7 +47,8 @@ function Logo({ job }: { job: JobSummary }) {
   );
 }
 
-export function JobCard({ job, now }: { job: JobSummary; now: number }) {
+/** `chance` é null sem perfil (e no pré-render): o selo convida a importar o currículo. */
+export function JobCard({ job, now, chance = null }: { job: JobSummary; now: number; chance?: ScoreResult | null }) {
   const isNew = now - new Date(job.publishedAt).getTime() < NEW_WITHIN_MS;
   const stacks = job.stacks.slice(0, MAX_STACKS);
 
@@ -85,7 +87,7 @@ export function JobCard({ job, now }: { job: JobSummary; now: number }) {
         </div>
       </div>
       <div className="flex flex-1 basis-full justify-start sm:basis-[220px] sm:justify-end">
-        <ChanceBadge band={null} />
+        <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
       </div>
     </article>
   );

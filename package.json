@@ -34,6 +34,7 @@
     "@openrouter/ai-sdk-provider": "^3.1.0",
     "@react-pdf/renderer": "^4.9.0",
     "@tanstack/react-query": "^5.108.2",
+    "@vercel/analytics": "^2.0.1",
     "@vercel/functions": "^3.11.3",
     "ai": "^7.0.179",
     "class-variance-authority": "^0.7.1",

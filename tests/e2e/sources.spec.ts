@@ -129,5 +129,5 @@ test("Privacidade traz todas as seções e o placeholder de contato", async ({ p
   await expect(page.getByText("[EMAIL DE CONTATO]")).toBeVisible();
   await expect(page.getByText(/OpenRouter/)).toBeVisible();
   await expect(page.getByText(/DeepSeek/)).toBeVisible();
-  await expect(page.getByText(/não usa ferramenta de analytics nem cookies/)).toBeVisible();
+  await expect(page.getByText(/usa o Vercel Web Analytics para contar visitas de forma agregada/)).toBeVisible();
 });

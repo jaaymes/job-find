@@ -1,0 +1,392 @@
+[
+ {
+  "id": 6478175841,
+  "number": 12495,
+  "title": "[Remote] Product Engineer na JotPsych",
+  "html_url": "https://github.com/backend-br/vagas/issues/12495",
+  "state": "open",
+  "created_at": "2026-11-18T22:39:26Z",
+  "updated_at": "2026-11-18T22:39:37Z",
+  "body": "### About the company\n\nJotPsych makes software for behavioral health clinicians. Our scribe has drafted more than 3.1 million patient notes and cuts administrative time by about 90%. We're now expanding from the note into the revenue cycle: billing, audit, prior-auth. We're a small team, and we build through AI coding agents all day.\n\n### Company website\n\nhttps://jotpsych.com\n\n### Job description\n\nThe decisions about what you build get made in a meeting you aren't in. You've shipped features you could tell were wrong the day the ticket arrived. You'd like to be the one who talked to the customer first.\n\nYou'll take features from a customer conversation to production, UI to backend to database to prompt. That half of the job you already know.\n\nThe other half is deciding what to build. You'll sit in on calls with clinicians and billers, then run your own. You'll write down what you think we should build and why, and we'll argue with it.\n\nEarly on we'll be fairly prescriptive. The first projects come from us, with our reasoning. You have the technical half, and we're going to teach you the rest: taste, craft, and how to manage a product. As your read on our users holds up, more of the deciding moves to you. We want that to happen fast, though not in week one.\n\nWhat you'd own in the first 90 days:\n\n- Ship 3 to 5 user-facing features on the clinical and billing surfaces\n- Sit in on customer calls every week. By day 90, run your own\n- Do one stretch of forward-deployed work: stay with one practice's problem until it's fixed for them\n- Write the evals for everything you ship\n- Fix one piece of shared infrastructure the rest of us lean on\n- Disagree with us about one product decision, and bring what you heard from customers\n\n### Requirements\n\n**Required:**\n- Senior. You've shipped production software somewhere real, and you know how prod breaks and how to fix it.\n- Fluent spoken and written English. You'll talk with clinicians and billers in the US every week.\n\n**Nice to have:**\n- Low ego. You're senior as an engineer and new at product. When a product call of yours is wrong we'll say so, and you'd rather hear it.\n- Already talking to users. Nobody asked you to. Support tickets, sales calls, the people using your side project.\n- Insight. Given a problem, you lay out the options, work back from the goal, and say no to the attractive option that doesn't serve it. This is the thing we screen hardest for.\n- Sharp. You learn a new system in days, and you find the flaw in an argument, your own included.\n- Fast and exact. You cut a feature into pieces small enough to ship in days, and you check each piece before anyone else sees it.\n- AI-pilled. Claude Code, loops, a software factory, whatever is next. You mostly whisper to your computer.\n\n### Benefits\n\nFull-time and remote, on contract.\n\n### Salary range\n\nUSD 5,000 to USD 8,000 / month (Latin America)\n\n### Level\n\nSenior\n\n### Contract type\n\nContractor, PJ\n\n### Work model\n\nRemote\n\n### Location\n\nLatin America\n\n### How to apply\n\nApply at https://jotpsych.com/careers-engineer-remote?utm_source=engineer-remote-backendbr: fill out the short form, then call the number the page shows you. No resume.\n\n### Confirmations\n\n- [x] This issue contains a single job opening.\n- [x] The job is backend (or fullstack with a backend focus).\n- [x] This is not an AI training, data annotation or model evaluation gig.\n",
+  "labels": [
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "Remoto"
+   },
+   {
+    "name": "Contrato"
+   },
+   {
+    "name": "verificada"
+   }
+  ]
+ },
+ {
+  "id": 6285681181,
+  "number": 12494,
+  "title": "[Remoto] Desenvolvedor(a) Backend Pleno - White Label e Plataforma - Mimix AI",
+  "html_url": "https://github.com/backend-br/vagas/issues/12494",
+  "state": "open",
+  "created_at": "2026-11-09T12:03:33Z",
+  "updated_at": "2026-11-17T01:22:03Z",
+  "body": "### Sobre a empresa\n\nA Mimix AI desenvolve uma plataforma de software para gerenciar operações white label de clientes do setor de robótica. A plataforma organiza a publicação de tarefas, o acompanhamento de envios e os repasses aos participantes.\n\n### Site da empresa\n\nhttps://www.mimix-ai.xyz\n\n### Descrição da vaga\n\nBuscamos uma pessoa desenvolvedora backend pleno para manter os serviços e as integrações das operações white label da Mimix AI e implementar novas funcionalidades da plataforma. O trabalho envolve escrever código, testar mudanças e investigar falhas em produção.\n\n- Manter e evoluir o backend e as integrações das operações white label.\n- Acompanhar a operação dos clientes white label, investigar problemas e encaminhar ou implementar os ajustes necessários.\n- Colaborar no desenvolvimento, nos testes e na entrega de novas funcionalidades da plataforma Mimix.\n\n### Requisitos\n\n**Obrigatórios:** experiência com desenvolvimento e manutenção de aplicações backend, APIs e integrações. Capacidade de investigar falhas em produção e comunicar os próximos passos com clareza.\n\n**Desejáveis:** experiência com plataformas white label ou produtos que atendem a vários clientes.\n\n### Nível\n\nPleno\n\n### Regime de contratação\n\nPJ\n\n### Modelo de trabalho\n\nRemoto\n\n### Localização\n\nBrasil\n\n### Como se candidatar\n\nFale com Marcos pelo [WhatsApp: [telefone removido]](https://wa.me/[telefone removido]) ou escreva para [contato@exemplo.invalid](mailto:contato@exemplo.invalid). Inclua seu LinkedIn, GitHub ou currículo e conte em poucas linhas sobre uma funcionalidade que você ajudou a colocar em produção.\n\n### Confirmações\n\n- [x] Esta issue contém uma única vaga.\n- [x] A vaga é para backend (ou fullstack com foco em backend).\n- [x] Não é vaga de treinamento de IA, anotação de dados ou avaliação de modelos.",
+  "labels": [
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Pleno"
+   },
+   {
+    "name": "Remoto"
+   },
+   {
+    "name": "verificada"
+   }
+  ]
+ },
+ {
+  "id": 6264105358,
+  "number": 12493,
+  "title": "[Remoto] Desenvolvedor(a) Back-end Júnior - Python / AI Coding & Agentic AI - MKdigital",
+  "html_url": "https://github.com/backend-br/vagas/issues/12493",
+  "state": "open",
+  "created_at": "2026-11-07T20:58:13Z",
+  "updated_at": "2026-11-22T01:21:57Z",
+  "body": "**Atualização (13/11/2026):** a oportunidade agora se concentra exclusivamente no AI Bookkeeping Assistant.\n\n### Sobre a empresa\n\nA MKdigital é uma startup suíça de tecnologia e inteligência artificial, com foco em automação de processos empresariais.\n\nEsta publicação corresponde a **uma única oportunidade de desenvolvimento de software**, com foco em backend, APIs, dados e agentes inteligentes. A pessoa selecionada colaborará no produto AI Bookkeeping Assistant da MKdigital.\n\n### Site da empresa\n\nhttps://www.mkdigital.ch\n\n### Descrição da vaga\n\nBuscamos uma pessoa em início de carreira, preferencialmente recém-formada ou em fase final de formação em Engenharia, Ciência da Computação ou área relacionada. **Experiência profissional anterior não é obrigatória.** A atuação é prioritariamente em backend; haverá também integração com interfaces web conforme as necessidades dos produtos.\n\nO trabalho combina programação, compreensão de processos de negócio, especificação de soluções, orientação de coding agents, testes e validação. Não é necessário conhecer previamente contabilidade, mas **a disposição para aprender esse domínio é essencial**.\n\n#### 1. Projeto\n\n##### Projeto A — AI Bookkeeping Assistant (Suíça e Brasil)\n\nDesenvolvimento de uma plataforma de automação de processos contábeis utilizando inteligência artificial, LLMs e agentes inteligentes.\n\nAs principais atividades incluem:\n\n- Processamento e interpretação automática de documentos contábeis, incluindo notas fiscais, faturas, recibos e extratos bancários.\n- Integração de OCR, Document AI e modelos de linguagem.\n- Automação de lançamentos e classificação de transações contábeis.\n- Conciliação bancária e integração com sistemas financeiros.\n- Desenvolvimento de workflows inteligentes e agentes autônomos.\n- Integração com bancos de dados, APIs e serviços externos.\n- Testes, implantação e preparação da plataforma para utilização comercial.\n- Compreensão gradual dos processos contábeis e financeiros necessários à especificação e validação das funcionalidades.\n\n**Objetivo do projeto:** Contribuir para o desenvolvimento e lançamento comercial de uma solução operacional de automação contábil, inicialmente para o mercado suíço, com componentes específicos para o mercado brasileiro.\n\n#### 2. Tecnologias e ambiente de desenvolvimento\n\nO projeto envolve as seguintes tecnologias e práticas, entre outras:\n\n**AI Coding e agentes autônomos**\n- Claude Code, OpenAI Codex e outras ferramentas de programação assistida por IA.\n- Agentes autônomos de desenvolvimento de software (*Coding Agents*).\n- Agentic AI, LLMs, tool calling e orquestração de agentes.\n- Automação de tarefas de programação, testes, documentação e revisão de código.\n- Integração de agentes de programação em workflows de desenvolvimento.\n\n**Desenvolvimento paralelo e engenharia de software**\n- Git, GitHub, branches e Git worktrees.\n- Desenvolvimento paralelo utilizando múltiplos agentes de codificação.\n- Isolamento de ambientes e coordenação de alterações simultâneas.\n- Pull requests, code reviews e integração de código.\n- Testes automatizados, integração contínua (CI/CD) e documentação técnica.\n- Organização de projetos, atividades e entregas utilizando Azure DevOps.\n\n**Backend, frontend e dados**\n- Python e FastAPI.\n- REST APIs e integração entre sistemas.\n- JavaScript/TypeScript e React.\n- PostgreSQL, SQL e bancos de dados em grafos.\n- Processamento de documentos, OCR e pipelines de dados.\n\n**Infraestrutura e desenvolvimento**\n- Linux como ambiente de desenvolvimento e execução.\n- Docker e containers.\n- Servidores e infraestrutura em nuvem.\n- Ambientes automatizados de desenvolvimento, testes e implantação.\n- Conceitos de segurança, autenticação e gerenciamento de serviços.\n\nNão é necessário dominar todas essas tecnologias. Esperamos principalmente interesse em aprender, experimentar e aplicar novas ferramentas de maneira prática.\n\n#### 4. Desenvolvimento orientado ao domínio de aplicação\n\nUm aspecto importante dos projetos é a aproximação entre desenvolvimento de software e conhecimento dos processos que estão sendo automatizados.\n\n**No projeto de contabilidade**, será necessário compreender gradualmente conceitos como documentos contábeis, lançamentos, contas, conciliação bancária, impostos e fluxos financeiros.\n\nA expectativa não é encontrar alguém que já domine esse assunto, mas um profissional que tenha interesse em aprendê-lo e utilizá-lo para:\n\n- Compreender necessidades e requisitos funcionais.\n- Participar da definição de soluções e especificações técnicas.\n- Traduzir processos de negócio em modelos de dados, regras e workflows.\n- Orientar agentes de programação na implementação das funcionalidades.\n- Criar testes e critérios de aceitação baseados em situações reais.\n- Identificar inconsistências e validar os resultados produzidos pelo software e pelos agentes de IA.\n\n**Buscamos alguém interessado em evoluir da programação para a compreensão, especificação e construção de soluções completas, combinando tecnologia, IA e conhecimento de domínio.**\n\n#### 5. Modelo de contratação — Prestação de serviços e empreendedorismo\n\nA MKdigital busca estabelecer uma parceria comercial com um profissional ou uma **microempresa (ME/CNPJ) especializada em desenvolvimento de software**.\n\nA oportunidade é especialmente interessante para profissionais recém-formados que desejam iniciar sua trajetória empreendedora, constituindo sua própria empresa de tecnologia e oferecendo serviços a clientes no Brasil e no exterior.\n\n**Modalidade de contratação**\n\n- **Preferencialmente:** Prestação de serviços por meio de empresa própria (ME/CNPJ), com emissão de notas fiscais.\n- **Apoio ao início da atividade empreendedora:** Para profissionais que ainda estejam no processo de abertura de sua empresa, a MK Digital poderá aceitar, excepcionalmente, a contratação inicial como profissional autônomo (CPF), por até três meses, observadas as obrigações legais e tributárias aplicáveis.\n- Após esse período, a continuidade da parceria estará condicionada à formalização de uma empresa própria (ME/CNPJ) e à celebração de um novo contrato comercial.\n- Não há exigência de exclusividade. O prestador poderá atender outros clientes, respeitando os compromissos de confidencialidade, propriedade intelectual e eventuais conflitos de interesse.\n\n**Projetos e condições comerciais**\n\n- **Duração estimada dos projetos:** 12 meses, com escopo, marcos de entrega e resultados técnicos definidos.\n- **Valor de referência:** R$ 72,50 por hora de serviço.\n- **Dedicação estimada:** Até aproximadamente 36 horas semanais durante os períodos de atividade, sem horário fixo obrigatório.\n- **Volume anual estimado:** 1.656 horas, considerando pausas pessoais, feriados e períodos de indisponibilidade.\n- **Orçamento anual estimado:** R$ 120.060, equivalente a uma média aproximada de R$ 10.000 mensais.\n- O faturamento será realizado conforme os serviços efetivamente prestados e as condições comerciais acordadas. O volume de horas é uma estimativa de planejamento, não uma garantia de contratação mínima.\n- **Local de execução:** 100% remoto, de qualquer cidade do Brasil.\n\nOs valores são referentes à prestação de serviços. O profissional ou empresa contratada será responsável por suas próprias obrigações fiscais e previdenciárias, conforme a legislação aplicável.\n\n**Organização da colaboração**\n\n- Os serviços serão organizados por projetos, atividades técnicas, marcos de entrega e critérios de aceitação.\n- As atividades e entregas serão acompanhadas por meio do Azure DevOps.\n- Estão previstas revisões técnicas semanais e aproximadamente duas reuniões curtas de alinhamento por semana, conforme a necessidade dos projetos.\n- A comunicação diária poderá ocorrer de forma assíncrona por ferramentas online.\n- O prestador terá autonomia na organização dos horários e na execução técnica dos serviços.\n- Todos os custos necessários de ferramentas de IA, APIs e infraestrutura em nuvem serão cobertos pela MKdigital.\n- O prestador deverá possuir computador próprio e conexão estável com a internet.\n\n### Requisitos\n\n#### 3. Perfil desejado\n\n**Requisitos principais**\n\n- Formação superior concluída ou em fase final em Engenharia, Ciência da Computação, Engenharia de Software, Sistemas de Informação ou áreas correlatas.\n- Boa base em programação, algoritmos, estruturas de dados e lógica computacional.\n- Conhecimento de alguma linguagem de programação, preferencialmente Python.\n- Familiaridade com Git e conceitos fundamentais de engenharia de software.\n- Interesse em Linux, infraestrutura e desenvolvimento de aplicações.\n- Interesse em inteligência artificial aplicada ao desenvolvimento de software.\n- Capacidade de investigar problemas, pesquisar soluções e trabalhar com autonomia.\n- Interesse em compreender processos de negócio e transformar requisitos em soluções de software.\n- Disposição para aprender conceitos de contabilidade e finanças.\n- Boa organização, comunicação e comprometimento com as entregas.\n\n**Diferenciais — Nice to have**\n\n- Experiência prática com Claude Code, OpenAI Codex ou outras ferramentas de AI Coding.\n- Conhecimento ou experiência com agentes autônomos de programação e Agentic AI.\n- Projetos pessoais, acadêmicos ou open source utilizando inteligência artificial e LLMs.\n- Experiência com Git worktrees, desenvolvimento paralelo ou múltiplos agentes de codificação.\n- Conhecimento de Linux, Docker, CI/CD e infraestrutura em nuvem.\n- Experiência com Python, FastAPI, React, APIs ou bancos de dados.\n- Conhecimento de GraphDB, processamento de documentos ou visão computacional.\n- Conhecimentos básicos de contabilidade, sistemas ERP, processos financeiros ou automação empresarial.\n- Experiência em análise de requisitos, especificação funcional ou modelagem de processos.\n- Certificações ou cursos relevantes em IA, cloud computing ou desenvolvimento de software.\n- **Inglês técnico**, especialmente para leitura de documentação, ferramentas e comunicação escrita.\n- **Conhecimentos de alemão** serão considerados um diferencial adicional.\n\nCertificações, conhecimentos prévios dos domínios de aplicação e experiência profissional anterior não são obrigatórios. Projetos desenvolvidos, domínio dos fundamentos e capacidade de resolver problemas terão maior peso na seleção.\n\n### Tecnologias\n\nPython, FastAPI, Linux, Docker, Git, PostgreSQL, SQL, TypeScript, JavaScript, CI/CD, Testes automatizados\n\n### Benefícios\n\n- Ferramentas de IA, APIs e infraestrutura em nuvem necessárias aos projetos custeadas pela MKdigital.\n- Colaboração remota, com autonomia na organização dos horários e sem exclusividade.\n- Participação na construção de produtos reais desde as fases iniciais, com possibilidade de continuidade em novos projetos conforme resultados e necessidades.\n\n### Faixa salarial\n\n**Valor de referência da prestação de serviços: R$ 72,50 por hora.** Até aproximadamente 36 horas semanais e 1.656 horas anuais estimadas; orçamento anual estimado de R$ 120.060. Faturamento pelos serviços efetivamente prestados, sem garantia de volume mínimo. Duração estimada dos projetos: 12 meses.\n\n### Nível\n\nJúnior\n\n### Regime de contratação\n\nPJ, Contrato, Freelance\n\nPreferência por ME/CNPJ com emissão de notas fiscais. Para quem estiver constituindo a própria empresa, poderá ser aceita prestação inicial como autônomo/CPF por até três meses, observadas as obrigações aplicáveis; a continuidade exige ME/CNPJ.\n\n### Modelo de trabalho\n\nRemoto\n\n### Localização\n\nBrasil — qualquer cidade.\n\n### Como se candidatar\n\nEnvie para **[contato@exemplo.invalid](mailto:contato@exemplo.invalid)** com o assunto **“Candidatura — Desenvolvimento de Software / AI Coding”**:\n\n- Currículo ou perfil do LinkedIn.\n- GitHub, portfólio ou exemplos de projetos acadêmicos/pessoais, se disponíveis.\n- Breve apresentação e interesse em AI Coding e Agentic AI.\n- Eventual experiência com Claude Code, Codex, Linux ou outras tecnologias citadas.\n- Interesse em aprender o domínio de contabilidade.\n- Informação sobre ME/CNPJ existente ou interesse em constituir empresa própria.\n\nO processo será integralmente online, com análise de perfil, projetos e conversa técnica. Não é necessário ter empresa aberta no momento da candidatura.\n\n**Empresa:** MKdigital — https://www.mkdigital.ch\n\n### Confirmações\n\n- [x] Esta issue contém uma única vaga.\n- [x] A vaga é para backend (ou fullstack com foco em backend).\n- [x] Não é vaga de treinamento de IA, anotação de dados ou avaliação de modelos.\n\n",
+  "labels": [
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Júnior"
+   },
+   {
+    "name": "JavaScript"
+   },
+   {
+    "name": "Python"
+   },
+   {
+    "name": "Remoto"
+   },
+   {
+    "name": "Testes automatizados"
+   },
+   {
+    "name": "TypeScript"
+   },
+   {
+    "name": "PostgreSQL"
+   },
+   {
+    "name": "SQL"
+   },
+   {
+    "name": "Git"
+   },
+   {
+    "name": "Linux"
+   },
+   {
+    "name": "Docker"
+   },
+   {
+    "name": "CI/CD"
+   },
+   {
+    "name": "Contrato"
+   },
+   {
+    "name": "verificada"
+   },
+   {
+    "name": "FastAPI"
+   }
+  ]
+ },
+ {
+  "id": 6042040473,
+  "number": 12484,
+  "title": "[Híbrido] Sr Software Engineer - Stealth",
+  "html_url": "https://github.com/backend-br/vagas/issues/12484",
+  "state": "open",
+  "created_at": "2026-10-26T14:47:20Z",
+  "updated_at": "2026-11-20T18:14:58Z",
+  "body": "### Sobre a empresa\n\nOportunidade em uma startup ainda em stealth, com foco em backend e construção de produtos com IA. A posição tem bastante autonomia, proximidade com os fundadores e impacto direto nas decisões técnicas e de produto.\n\n### Site da empresa\n\nhttps://forms.gle/45hRpfEdqzKRGYAY6\n\n### Descrição da vaga\n\nPrincipais responsabilidades:\n\n• Participar das decisões de arquitetura, modelagem de dados e desenho de sistemas;\n• Desenvolver o core do produto;\n• Construir uma infraestrutura segura e escalável;\n• Contribuir para a estratégia de produto e priorização do roadmap;\n• Conversar com clientes para entender necessidades e validar soluções;\n• Apoiar a contratação e a mentoria de engenheiros.\n\n\n### Requisitos\n\nPerfil buscado:\n\n• Forte experiência em backend e conhecimentos de frontend;\n• Experiência em startups ou empresas de tecnologia;\n• Vivência prática construindo soluções com IA;\n• Visão de produto e negócio;\n• Autonomia para lidar com desafios abertos e prioridades em evolução.\n\nExperiência na construção de produtos do zero, o chamado 0 → 1, será um diferencial.\n\nStack: Go, Next.js e AWS. Experiência prévia nessas tecnologias não é obrigatória.\n\n📍 Modelo híbrido: terças e quintas-feiras no escritório, na Vila Madalena, em São Paulo.\n📄 Contratação PJ.\n\n### Benefícios\n\n🏥 Plano de saúde e férias anuais.\n\n### Faixa salarial\n\n_No response_\n\n### Nível\n\nSênior\n\n### Regime de contratação\n\nPJ\n\n### Modelo de trabalho\n\nHíbrido\n\n### Localização\n\nSão Paulo\n\n### Como se candidatar\n\nEnvie seu CV no formulário https://forms.gle/45hRpfEdqzKRGYAY6\n\n### Confirmações\n\n- [x] Esta issue contém uma única vaga.\n- [x] A vaga é para backend (ou fullstack com foco em backend).\n- [x] Não é vaga de treinamento de IA, anotação de dados ou avaliação de modelos.",
+  "labels": [
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "Go"
+   },
+   {
+    "name": "AWS"
+   },
+   {
+    "name": "Híbrido"
+   },
+   {
+    "name": "verificada"
+   }
+  ]
+ },
+ {
+  "id": 6004855171,
+  "number": 12481,
+  "title": "[Joinville/SC] Back-end ou Full Stack Developer (Node.js + React)",
+  "html_url": "https://github.com/backend-br/vagas/issues/12481",
+  "state": "open",
+  "created_at": "2026-10-23T20:20:43Z",
+  "updated_at": "2026-11-09T20:23:20Z",
+  "body": "### Sobre a empresa\n\nJoin our team of talented software engineers and be at the forefront of building innovative, AI-driven solutions. At LRA Ventures and Shipix, you'll have the opportunity to create groundbreaking products from scratch, tackling diverse challenges and making a significant impact across various industries. \n\nWe are dedicated to empowering businesses with intelligent tools that drive competitiveness, profitability, and sustainability. While our roots are in transforming the logistics sector, we are expanding our expertise to develop cutting-edge, AI-powered systems for a range of new projects. \n\nWe foster a collaborative environment where deep technological expertise meets creative problem-solving. As part of our international team, based in the Netherlands and Brazil, you will play a key role in building and launching new applications, and shaping the future of our technology.\n\n\n### Site da empresa\n\nhttps://lra-ventures.com/\n\n### Descrição da vaga\n\nAs a Full Stack Developer, you will be responsible for building new features on our platform, delivering complete end-to-end solutions. From concept to implementation, you will be involved in every stage of feature development.\nYou can have more experience as a backend or frontend developer, but you should be comfortable working across the full stack when necessary.\n\nResponsibilities:\n- Develop and implement new features for our platform using Node.js and React.\n- Work closely with the tech lead, other developers, and the Product Manager.\n- Participate in Agile team activities, including daily async check-ins, weekly planning and DDD meetings.\n- Ensure high code quality through code reviews and collaborative development practices.\n- Contribute to a steep learning curve by sharing knowledge and best practices with team members.\n\n\n### Requisitos\n\nRequirements:\n- 4+ years of experience in software development.\n- 2+ years of experience in backend development with Node.js and TypeScript.\n- 2+ years of experience in frontend development with React.\n- Experience in building SaaS products.\n- Experience working in software house or outsourcing \n- English speaker\n\nPreferred Experience:\n- Experience developing solutions for serverless and AWS lambda.\n- Experience working remotely and exceptional organizational skills.\n- Motivation and enthusiasm for tackling new project challenges from start to production.\n\n\n### Benefícios\n\n_No response_\n\n### Faixa salarial\n\n€ 1500 - € 3000 (Euros)\n\n### Nível\n\nSênior\n\n### Regime de contratação\n\nPJ\n\n### Modelo de trabalho\n\nHíbrido\n\n### Localização\n\nJoinville, SC\n\n### Como se candidatar\n\nAplicar formulário no link: https://docs.google.com/document/d/e/2PACX-1vQcue10b2pUbSbiyqiHSWUWEuaimZOQmd8tV1OwFtGCO0r4MpEHULZRqDirnZ2q3g/pub\n\n### Confirmações\n\n- [x] Esta issue contém uma única vaga.\n- [x] A vaga é para backend (ou fullstack com foco em backend).\n- [x] Não é vaga de treinamento de IA, anotação de dados ou avaliação de modelos.",
+  "labels": [
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "Node.js"
+   },
+   {
+    "name": "AWS"
+   },
+   {
+    "name": "TypeScript"
+   },
+   {
+    "name": "Híbrido"
+   },
+   {
+    "name": "DDD"
+   },
+   {
+    "name": "verificada"
+   }
+  ]
+ },
+ {
+  "id": 5945522052,
+  "number": 12475,
+  "title": "[Híbrido / São Paulo, Brasil] Engenheiro de Software Backend Sênior (Híbrido, São Paulo) na Coodesh",
+  "html_url": "https://github.com/backend-br/vagas/issues/12475",
+  "state": "open",
+  "created_at": "2026-10-20T16:31:08Z",
+  "updated_at": "2026-11-23T21:52:32Z",
+  "body": "## Descrição da vaga: \nEsta é uma vaga de um parceiro da plataforma Coodesh, ao candidatar-se você terá acesso as informações completas sobre a empresa e benefícios.\n\n\nFique atento ao redirecionamento que vai te levar para uma url [https://coodesh.com](https://coodesh.com/jobs/engenharia-de-software-backend-senior-hibrido-sao-paulo-231806636?utm_source=github&utm_medium=backend-br-vagas&modal=open) para realizar a candidatura. 👋\nEmpresas parceiras da Coodesh, de scale-ups a grandes companhias de tecnologia, estão buscando pessoas engenheiras de backend para construir sistemas que atendem milhões de usuários. Você vai trabalhar em times de produto com autonomia técnica, código revisado por pares e decisões guiadas por dados.\r\n\r\n \r\n\r\n### O que você vai fazer\r\n\r\n*   Projetar, desenvolver e manter serviços e APIs com foco em escalabilidade, confiabilidade e segurança.\r\n    \r\n*   Participar de decisões de arquitetura e de design de sistemas distribuídos.\r\n    \r\n*   Escrever testes automatizados e revisar código de outras pessoas do time.\r\n    \r\n*   Investigar e resolver problemas em produção, usando métricas, logs e rastreamento.\r\n    \r\n*   Colaborar com produto, design e outras engenharias para entregar valor de forma incremental.\r\n    \r\n\r\n \r\n\r\n### Como funciona pela Coodesh\r\n\r\n1.  Crie sua conta e complete seu perfil com LinkedIn ou currículo.\r\n    \r\n2.  Faça o Assessment da vaga\r\n    \r\n3.  Com o perfil validado por assessment, uma pessoa especialista Coodesh vai fazer uma verificação. A pessoa especialista apresenta a você aos processos de empresas parceiras que combinam com o seu perfil.\r\n    \r\n\r\n \r\n\r\n### Seu Assessment\r\n\r\n*   Até 30 minutos, em dois blocos:\r\n    \r\n    *   Julgar e Escolher\r\n        \r\n    *   Planejar e Fazer\r\n        \r\n\r\nA avaliação tem recursos de integridade/proctoring.\r\n\r\n*   Assessment com nota superior a 70% gera certificado com validade de 1 ano.\n## Coodesh Experts: \n Crie seu perfil, mostre o que você sabe fazer em uma avaliação de até 30 minutos e conte com um especialista da Coodesh para chegar às empresas que estão contratando.\r\n\r\n<p>&nbsp;</p>\r\n\r\n### O que é o Coodesh Selected\r\n\r\nÉ a rede de profissionais validados da Coodesh. Empresas no Brasil e na América Latina contam com a gente para encontrar pessoas com as habilidades certas. Em vez de mandar o mesmo currículo dezenas de vezes, você valida suas habilidades uma vez e passa a ser considerado para várias oportunidades.\r\n\r\n<p>&nbsp;</p><a href='https://coodesh.com/companies/coodesh-selected'>Veja mais no site</a>\n\n ## Habilidades: \n - CI/CD \n- APIs \n- gRPC \n- Estrutura de Dados \n- Kubernetes \n- Observabilidade\n## Local: \n São Paulo, Brasil\n## Requisitos: \n - Experiência sólida com pelo menos uma linguagem de backend: Java, Go, Python ou Node.js. \n- Boa base em estruturas de dados, algoritmos e complexidade. \n- Experiência com bancos de dados relacionais e não relacionais e com modelagem de dados. \n- Vivência com APIs REST ou gRPC, mensageria e sistemas distribuídos. \n- Prática com testes automatizados, CI/CD e boas práticas de código. \n- Inglês para leitura técnica e conversas com times de outros países. \n- Projetar, desenvolver e manter serviços e APIs com foco em escalabilidade, confiabilidade e segurança.\n## Diferenciais: \n - Experiência com nuvem pública (AWS, GCP ou Azure), containers e Kubernetes. \n- Vivência com observabilidade e com sistemas de alta disponibilidade. \n- Contribuições em projetos open source ou comunidades técnicas.\n\n## Como se candidatar:\nCandidatar-se exclusivamente através da plataforma Coodesh no link a seguir: [Engenheiro de Software Backend Sênior (Híbrido, São Paulo) na Coodesh Experts](https://coodesh.com/jobs/engenharia-de-software-backend-senior-hibrido-sao-paulo-231806636?utm_source=github&utm_medium=backend-br-vagas&modal=open)\n\n\nApós candidatar-se via plataforma Coodesh e validar o seu login, você poderá acompanhar e receber todas as interações do processo por lá. Utilize a opção **Pedir Feedback** entre uma etapa e outra na vaga que se candidatou. Isso fará com que a pessoa **Recruiter** responsável pelo processo na empresa receba a notificação.\n## Labels\n#### Alocação\nAlocado\n#### Categoria\nBack-End",
+  "labels": [
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "Python"
+   },
+   {
+    "name": "Node.js"
+   },
+   {
+    "name": "Java"
+   },
+   {
+    "name": "Go"
+   },
+   {
+    "name": "Especialista"
+   },
+   {
+    "name": "AWS"
+   },
+   {
+    "name": "Testes automatizados"
+   },
+   {
+    "name": "Kubernetes"
+   },
+   {
+    "name": "Híbrido"
+   },
+   {
+    "name": "CI/CD"
+   },
+   {
+    "name": "Azure"
+   },
+   {
+    "name": "GCP"
+   },
+   {
+    "name": "verificada"
+   },
+   {
+    "name": "formato-sugerido"
+   },
+   {
+    "name": "gRPC"
+   }
+  ]
+ },
+ {
+  "id": 5930899159,
+  "number": 12474,
+  "title": "[Remoto] Back-end Developer JR - PORT LOUIS",
+  "html_url": "https://github.com/backend-br/vagas/issues/12474",
+  "state": "open",
+  "created_at": "2026-10-19T20:18:45Z",
+  "updated_at": "2026-11-16T22:03:37Z",
+  "body": "## Nossa empresa\n\nNa Port Louis, valorizamos a contratação de colaboradores juniores e estagiários, visando seu crescimento em conjunto conosco e seu contínuo desenvolvimento profissional.\nOperamos com projetos ágeis, constituídos por squads de 5 a 9 membros, utilizando a metodologia Scrum. Realizamos sprints quinzenais, com rituais de planning, dailies, review e revisão de roadmap.\nA Port Louis possui soluções de RPA para tarefas de contabilidade e financeiras. O nosso stack é composto por um front em Vue.js, e o back em Node + Net Core, ambos rodando em AWS.\n\n- Tecnologia comprovada de ponta para automação de processos (modelo SaaS);\n- Produto inovador de auditorias jurídicas com portfolio robusto de clientes;\n- Excelência técnica: obsessão por qualidade, foco em longo prazo e comprometimento com resultados\n\nNossa missão: \n\nAlavancar a tecnologia para que as pessoas realizem trabalhos com alto valor cognitivo.\n\n## Descrição da vaga\n\nDesenvolvedor Back-End, com foco em Banco de Dados, para atuar na manutenção e otimização da nossa API e DBs.\n\n## Local\n\nRemoto\n\n## Requisitos\n\n- Obrigatórios:\n  - Conhecimento de Typescript\n  - Conhecimento de Node e das bibliotecas mais comuns\n  - Conhecimento de banco de dados MySQL\n  - Vontade e disposição para aprender e se desenvolver\n \n- Desejáveis:\n  - Conhecimento de banco de dados PostgreSQL e DynamoDB.\n  - Conhecimento de ferramentas AWS (Lambda, S3, etc.)\n\n## Benefícios\n\n- Vale Alimentação\n- Plano de Saúde\n- Seguro de Vida\n- Ajuda de custos\n\n## Contratação\n\nCLT\n\n## Como se candidatar\n\nPreencher o formulário correspondente na página: https://www.portlouis.inf.br/vagas/\n\n## Labels\n\n### Nível\n\n- Júnior\n\n### Regime\n\n- CLT\n\n### Alocação\n\n- Remoto",
+  "labels": [
+   {
+    "name": "CLT"
+   },
+   {
+    "name": "Júnior"
+   },
+   {
+    "name": "Remoto"
+   },
+   {
+    "name": "AWS"
+   },
+   {
+    "name": "MySQL"
+   },
+   {
+    "name": "TypeScript"
+   },
+   {
+    "name": "PostgreSQL"
+   },
+   {
+    "name": "formato-sugerido"
+   }
+  ]
+ },
+ {
+  "id": 5855605730,
+  "number": 12468,
+  "title": "[Buenos Aires, Argentina / Cidade do México, México] Cloud Engineer, Application Modernization, Gemini Enterprise and AI Agents, Google Professional Services ( Spanish, English) na Google",
+  "html_url": "https://github.com/backend-br/vagas/issues/12468",
+  "state": "open",
+  "created_at": "2026-10-14T21:02:00Z",
+  "updated_at": "2026-11-23T20:48:00Z",
+  "body": "## Descrição da vaga:\nEsta é uma vaga de um parceiro da plataforma Coodesh, ao candidatar-se você terá acesso as informações completas sobre a empresa e benefícios.\n\nFique atento ao redirecionamento que vai te levar para uma url [https://coodesh.com](https://coodesh.com/jobs/cloud-engineer-application-modernization-gemini-enterprise-and-ai-agents-google-professional-services-spanish-english-181723915?utm_source=github&utm_medium=backend-br-vagas&modal=open) para realizar a candidatura. 👋\n\nThe Google Cloud Consulting Professional Services team guides customers through the moments that matter most in their cloud journey to help businesses thrive. We help customers transform and evolve their business through the use of Google’s global network, web-scale data centers, and software infrastructure. As part of an innovative team in this rapidly growing business, you will help shape the future of businesses of all sizes and use technology to connect with customers, employees, and partners. As an Application Modernization Cloud...\n\n**Importante:** o currículo deve ser enviado em inglês. Idiomas exigidos: Ability to communicate in Spanish and English fluently to support client relationship management in this region.\n\n## Requisitos mínimos:\n- Bachelor's degree in Computer Science or equivalent practical experience.\n- Experience coding in one or more general purpose languages (e.g., Python, Java, Go, C or C++).\n- Experience in architecting and implementing APIs and integration technologies in distributed enterprise environment(s) using a combination of technologies/languages/standards like REST, SOAP, GraphQL, JSON, OpenAPI, JavaScript, Cassandra, Kubernetes, etc.\n- Experience with cloud hosting (e.g., Google Cloud Platform), architectural principles in security, distributed computing, and platform/developer/systems operations such as Linux Administration, Git, Terraform, Ansible, etc.\n- Ability to communicate in Spanish and English fluently to support client relationship management in this region.\n\n## Diferenciais:\n- Software development in one or more of the following languages: Golang, C/C++, Node.js, Java, Python, etc. including data structures, algorithms, and software design.\n\n## Responsabilidades:\n- Serve as a trusted technical advisor to customers on cloud architecture, Gemini Enterprise implementations, and AI Agent integrations.\n- Architect and execute end-to-end modernization and application assessment strategies powered by AI tools and generative workflows.\n\n## Google:\nA problem isn't truly solved until it's solved for all. Googlers build products that help create opportunities for everyone, whether down the street or across the globe. Bring your insight, imagination and a healthy disregard for the impossible. Bring everything that makes you unique. Together, we can build for everyone.\n\n## Local:\nBuenos Aires, Argentina; Mexico City, CDMX, Mexico\n\n## Como se candidatar:\nCandidatar-se exclusivamente através da plataforma Coodesh no link a seguir: [Cloud Engineer, Application Modernization, Gemini Enterprise and AI Agents, Google Professional Services ( Spanish, English) na Google](https://coodesh.com/jobs/cloud-engineer-application-modernization-gemini-enterprise-and-ai-agents-google-professional-services-spanish-english-181723915?utm_source=github&utm_medium=backend-br-vagas&modal=open)\n\nApós candidatar-se via plataforma Coodesh e validar o seu login, você poderá acompanhar e receber todas as interações do processo por lá. Utilize a opção **Pedir Feedback** entre uma etapa e outra na vaga que se candidatou. Isso fará com que a pessoa **Recruiter** responsável pelo processo na empresa receba a notificação.\n\n## Labels\n#### Alocação\nAlocado\n#### Categoria\nBack-End",
+  "labels": [
+   {
+    "name": "JavaScript"
+   },
+   {
+    "name": "Python"
+   },
+   {
+    "name": "Node.js"
+   },
+   {
+    "name": "Java"
+   },
+   {
+    "name": "Go"
+   },
+   {
+    "name": "Git"
+   },
+   {
+    "name": "Linux"
+   },
+   {
+    "name": "Kubernetes"
+   },
+   {
+    "name": "GCP"
+   },
+   {
+    "name": "C++"
+   },
+   {
+    "name": "verificada"
+   },
+   {
+    "name": "link-quebrado"
+   },
+   {
+    "name": "formato-sugerido"
+   },
+   {
+    "name": "GraphQL"
+   },
+   {
+    "name": "Terraform"
+   }
+  ]
+ },
+ {
+  "id": 5855424587,
+  "number": 12462,
+  "title": "[Cidade do México, México] Software Engineer, Compilers, Runtimes and Toolchains, Early Career na Google",
+  "html_url": "https://github.com/backend-br/vagas/issues/12462",
+  "state": "open",
+  "created_at": "2026-10-14T20:49:12Z",
+  "updated_at": "2026-11-09T20:23:24Z",
+  "body": "## Descrição da vaga: \nEsta é uma vaga de um parceiro da plataforma Coodesh, ao candidatar-se você terá acesso as informações completas sobre a empresa e benefícios.\n\n\nFique atento ao redirecionamento que vai te levar para uma url [https://coodesh.com](https://coodesh.com/jobs/software-engineer-compilers-runtimes-and-toolchains-early-career-181721912?utm_source=github&utm_medium=backend-br-vagas&modal=open) para realizar a candidatura. 👋\n<p>In most instances, this position requires in-person interviews as part of the hiring process.</p><p>Please submit your resume in English - we can only consider applications submitted in this language.</p><p></p><p>Only applications of candidates with Mexican citizenship will be evaluated for this role in compliance with the provisions of Article 7 of the Federal Labor Law.</p><p></p><h3>Minimum qualifications:</h3><ul>\n<li>Bachelor’s degree or equivalent practical experience.<br></li>\n<li>1 year of experience with data structures or algorithms.<br></li>\n<li>1 year of experience with software development using C++ and Python.</li>\n<li>Ability to communicate in English fluently to interact with local stakeholders in this customer-facing role.</li>\n<li>Experience in writing and debugging software code</li>\n<li>Experience with one or more programming languages</li>\n</ul><br><h3>Preferred qualifications:</h3><ul>\n<li>Experience with compilers or toolchains.</li>\n<li>Experience with low level programming, Android, iOS, macOS, or operating systems development.</li>\n<li>Knowledge of LLVM.</li>\n</ul><div><h2>About the job</h2><p>Google's software engineers develop the next-generation technologies that change how billions of users connect, explore, and interact with information and one another. Our products need to handle information at massive scale, and extend well beyond web search. We're looking for engineers who bring fresh ideas from all areas, including information retrieval, distributed computing, large-scale system design, networking and data storage, security, artificial intelligence, natural language processing, UI design and mobile; the list goes on and is growing every day. As a software engineer, you will work on a specific project critical to Google’s needs with opportunities to switch teams and projects as you and our fast-paced business grow and evolve. We need our engineers to be versatile, display leadership qualities and be enthusiastic to take on new problems across the full-stack as we continue to push technology forward.</p>\n<p>As a Software Engineer on the Compilers, Runtimes and Toolchains (CRT) team, you will work very closely with other senior SWEs on the team in developing features in the space of LLVM optimization and code generation that support (but not limited to) build scalability, toolchain velocity, peak performance and safety. The SWE will develop changes (to tools and processes) that help us deliver state-of-the-art C++ toolchain efficiently and always correct and efficient + make the necessary changes upstream in LLVM toolchain that aligns with Google's needs and interests.</p><p>The Core team builds the technical foundation behind Google’s flagship products. We are owners and advocates for the underlying design elements, developer platforms, product components, and infrastructure at Google. These are the essential building blocks for excellent, safe, and coherent experiences for our users and drive the pace of innovation for every developer. We look across Google’s products to build central solutions, break down technical barriers and strengthen existing systems. As the Core team, we have a mandate and a unique opportunity to impact important technical decisions across the company.</p></div><div><h2>Responsibilities</h2><ul>\n<li>Collaborate with teams to improve LLVM and related technologies to provide google developers with state-of-the-art toolchain and releases.</li>\n<li>Work with other senior SWEs and TLs on the team developing features and improvements to LLVM that support Google long term needs.</li>\n<li>Participate in team OKR planning and roadmap definition.<br>Identify problems that need to be solved through direct exchange with our customers.</li>\n<li>Bring your best self to the team and foster a collaborative culture.</li>\n</ul></div>Google is proud to be an equal opportunity workplace and is an affirmative action employer. We are committed to equal employment opportunity regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity or Veteran status. We also consider qualified applicants regardless of criminal histories, consistent with legal requirements. See also <a href=\"https://careers.google.com/eeo/\">Google's EEO Policy</a> and <a href=\"/jobs/dist/legal/OFCCP_EEO_Post.pdf\">EEO is the Law.</a> If you have a disability or special need that requires accommodation, please let us know by completing our <a href=\"https://goo.gl/forms/aBt6Pu71i1kzpLHe2\">Accommodations for Applicants form</a>.\n## Google: \n A problem isn't truly solved until it's solved for all. Googlers build products that help create opportunities for everyone, whether down the street or across the globe. Bring your insight, imagination and a healthy disregard for the impossible. Bring everything that makes you unique. Together, we can build for everyone. \n\n\n\n## Local: \n Mexico City, México\n\n\n\n## Como se candidatar:\nCandidatar-se exclusivamente através da plataforma Coodesh no link a seguir: [Software Engineer, Compilers, Runtimes and Toolchains, Early Career na Google](https://coodesh.com/jobs/software-engineer-compilers-runtimes-and-toolchains-early-career-181721912?utm_source=github&utm_medium=backend-br-vagas&modal=open)\n\n\nApós candidatar-se via plataforma Coodesh e validar o seu login, você poderá acompanhar e receber todas as interações do processo por lá. Utilize a opção **Pedir Feedback** entre uma etapa e outra na vaga que se candidatou. Isso fará com que a pessoa **Recruiter** responsável pelo processo na empresa receba a notificação.\n## Labels\n#### Alocação\nAlocado\n#### Categoria\nBack-End",
+  "labels": [
+   {
+    "name": "Python"
+   },
+   {
+    "name": "C++"
+   },
+   {
+    "name": "verificada"
+   },
+   {
+    "name": "formato-sugerido"
+   }
+  ]
+ },
+ {
+  "id": 5855383866,
+  "number": 12461,
+  "title": "[Cidade do México, México] Data Engineer, YouTube Marketing na Google",
+  "html_url": "https://github.com/backend-br/vagas/issues/12461",
+  "state": "open",
+  "created_at": "2026-10-14T20:46:23Z",
+  "updated_at": "2026-11-23T21:52:34Z",
+  "body": "## Descrição da vaga: \nEsta é uma vaga de um parceiro da plataforma Coodesh, ao candidatar-se você terá acesso as informações completas sobre a empresa e benefícios.\n\n\nFique atento ao redirecionamento que vai te levar para uma url [https://coodesh.com](https://coodesh.com/jobs/data-engineer-youtube-marketing-181721220?utm_source=github&utm_medium=backend-br-vagas&modal=open) para realizar a candidatura. 👋\nIn most instances, this position requires in-person interviews as part of the hiring process.<br><p>Please submit your resume in English - we can only consider applications submitted in this language.<br></p><p>Only applications of candidates with Mexican citizenship will be evaluated for this role in compliance with the provisions of Article 7 of the Federal Labor Law.</p><h3>Minimum qualifications:</h3><ul>\n<li>Bachelor's degree in Computer Science, Mathematics, a related field, or equivalent practical experience.</li>\n<li>3 years of experience with data processing software (e.g., Hadoop, Spark, Pig, Hive) and algorithms (e.g., MapReduce, Flume).</li>\n<li>Experience managing client-facing projects, troubleshooting technical issues, and working with Engineering and Sales Services teams.</li>\n<li>Experience with database administration techniques or data engineering, as well as writing software in Java, C++, Python, Go, or JavaScript.</li>\n<li>Experience integrating generative AI tools or LLM interfaces into workflows.</li>\n</ul><br><h3>Preferred qualifications:</h3><ul>\n<li>Experience in technical consulting.</li>\n<li>Experience working with Big Data, information retrieval, data mining, or machine learning.</li>\n<li>Experience in building multi-tier high availability applications with modern web technologies (e.g., NoSQL, MongoDB, SparkML, TensorFlow).</li>\n<li>Experience architecting, developing software, or internet scale production-grade Big Data solutions in virtualized environments.</li>\n<li>Expertise in designing data models, data warehouses, and handling large-scale distributed data processing.</li>\n</ul><div><h2>About the job</h2>As a Data Engineer for the Global YouTube Marketing team, you will play a vital role in building and maintaining the data infrastructure that fuels our marketing strategy. You will design, develop, and optimize scalable data pipelines, ensuring high data quality and accessibility for analytics and reporting. Your technical expertise will enable the broader marketing organization to leverage data-driven insights to measure and optimize the impact of marketing initiatives.Know the user. Know the magic. Connect the two. At its core, marketing at Google starts with technology and ends with the user, bringing both together in unconventional ways. Our job is to demonstrate how Google's products solve the world's problems--from the everyday to the epic, from the mundane to the monumental. And we approach marketing in a way that only Google can--changing the game, redefining the medium, making the user the priority, and ultimately, letting the technology speak for itself.</div><div><h2>Responsibilities</h2><ul>\n<li>Design, develop, and maintain scalable data pipelines and data models to collect, process, and store data from various marketing sources.</li>\n<li>Integrate new metrics into core data marts and establish robust data quality checks and monitoring to ensure data accuracy, integrity, and pipeline stability.</li>\n<li>Collaborate with cross-functional partners to translate business requirements into technical data solutions and infrastructure.</li>\n<li>Optimize data infrastructure and querying layers for performance, efficiency, and scalability to support evolving Global YouTube Marketing needs.</li>\n</ul></div>Google is proud to be an equal opportunity workplace and is an affirmative action employer. We are committed to equal employment opportunity regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity or Veteran status. We also consider qualified applicants regardless of criminal histories, consistent with legal requirements. See also <a href=\"https://careers.google.com/eeo/\">Google's EEO Policy</a> and <a href=\"/jobs/dist/legal/OFCCP_EEO_Post.pdf\">EEO is the Law.</a> If you have a disability or special need that requires accommodation, please let us know by completing our <a href=\"https://goo.gl/forms/aBt6Pu71i1kzpLHe2\">Accommodations for Applicants form</a>.\n## Google: \n A problem isn't truly solved until it's solved for all. Googlers build products that help create opportunities for everyone, whether down the street or across the globe. Bring your insight, imagination and a healthy disregard for the impossible. Bring everything that makes you unique. Together, we can build for everyone. \n\n\n\n## Local: \n Mexico City, México\n\n\n\n## Como se candidatar:\nCandidatar-se exclusivamente através da plataforma Coodesh no link a seguir: [Data Engineer, YouTube Marketing na Google](https://coodesh.com/jobs/data-engineer-youtube-marketing-181721220?utm_source=github&utm_medium=backend-br-vagas&modal=open)\n\n\nApós candidatar-se via plataforma Coodesh e validar o seu login, você poderá acompanhar e receber todas as interações do processo por lá. Utilize a opção **Pedir Feedback** entre uma etapa e outra na vaga que se candidatou. Isso fará com que a pessoa **Recruiter** responsável pelo processo na empresa receba a notificação.\n## Labels\n#### Alocação\nAlocado\n#### Categoria\nSuporte Técnico",
+  "labels": [
+   {
+    "name": "JavaScript"
+   },
+   {
+    "name": "Python"
+   },
+   {
+    "name": "Java"
+   },
+   {
+    "name": "Go"
+   },
+   {
+    "name": "MongoDB"
+   },
+   {
+    "name": "C++"
+   },
+   {
+    "name": "verificada"
+   },
+   {
+    "name": "formato-sugerido"
+   }
+  ]
+ }
+]

@@ -1,0 +1,138 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Elisa Sample",
+    "headline": "Senior Frontend Engineer (Vue)",
+    "location": "Lisboa, Portugal",
+    "seniority": "senior",
+    "englishLevel": "basic",
+    "summary": "Frontend engineer with 8 years of experience, mostly in Vue and Nuxt, with some React.",
+    "contact": {
+      "email": "elisa.sample@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Vue",
+        "years": 7,
+        "stackId": "vue"
+      },
+      {
+        "name": "Nuxt",
+        "years": 4,
+        "stackId": "nuxt"
+      },
+      {
+        "name": "TypeScript",
+        "years": 6,
+        "stackId": "typescript"
+      },
+      {
+        "name": "React",
+        "years": 1,
+        "stackId": "react"
+      },
+      {
+        "name": "Vite",
+        "years": 3,
+        "stackId": null
+      },
+      {
+        "name": "Cypress",
+        "years": 4,
+        "stackId": "cypress"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Studio Aurora Fictício",
+        "title": "Senior Frontend Engineer",
+        "startDate": "2019-04",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Led the rewrite of a customer portal in Vue 3 and Nuxt used by 60 thousand people"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Improved Lighthouse performance score from 55 to 92"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Built a shared component library adopted by 5 teams"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Loja Pequena Demo",
+        "title": "Frontend Developer",
+        "startDate": "2016-02",
+        "endDate": "2019-03",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Maintained a Vue storefront and fixed 80 reported bugs"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Wrote end-to-end tests with Cypress, covering the checkout flow"
+          },
+          {
+            "id": "exp_2.b3",
+            "text": "Built one internal admin tool in React"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Instituto Fictício de Lisboa",
+        "degree": "Licenciatura em Engenharia Informática",
+        "startYear": "2012",
+        "endYear": "2015"
+      }
+    ]
+  },
+  "job": {
+    "id": 9004,
+    "title": "Senior Frontend Engineer (React)",
+    "company": "Brightpath Software",
+    "companyLogoUrl": null,
+    "summary": "React-focused senior frontend role on a design system team.",
+    "country": "PT",
+    "city": null,
+    "origin": "international",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "senior",
+    "language": "en",
+    "stacks": [
+      "react",
+      "typescript",
+      "nextjs"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9004",
+    "applyUrl": "https://vagas.exemplo.test/9004/apply",
+    "descriptionHtml": "<h3>The role</h3><p>Brightpath is looking for a senior frontend engineer to grow our design system and web apps built in React and Next.js.</p><h3>What we need</h3><p>Deep frontend experience.</p><ul><li>Strong React and TypeScript</li><li>Experience with Next.js</li><li>Design system or component library work</li><li>Performance and accessibility mindset</li></ul><h3>Nice to have</h3><p>Cypress or Playwright, and experience mentoring.</p>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9004",
+        "dofollow": true
+      }
+    ]
+  }
+}

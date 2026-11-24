@@ -1,0 +1,399 @@
+{
+ "comments": "21/08/2026: Cursor pagination is now available and is the preferred way to page through the feed. Pass the nextCursor value from each response back as ?cursor=. It is faster than offset and will never return the same job twice. The offset parameter is deprecated and will be removed in a future release. 13/03/2026: The API has been updated to include the companySlug field in the response.",
+ "updatedAt": 1795446259,
+ "offset": 0,
+ "limit": 10,
+ "totalCount": 119684,
+ "nextCursor": "MjAyNi0xMS0yM1QxNDoyNzozMC4xNzY1MzRafDI0NzQ3OTk",
+ "jobs": [
+  {
+   "title": "Strategic Account Executive (Fully Remote DACH)",
+   "excerpt": "Description The Strategic Account Manager will drive sales across the DACH region and own a quota within the assigned geography.",
+   "companyName": "Cynet",
+   "companySlug": "cynet-com",
+   "companyLogo": "",
+   "employmentType": "Full Time",
+   "minSalary": 75000,
+   "maxSalary": 75000,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "EUR",
+   "locationRestrictions": [
+    "Austria",
+    "Germany",
+    "Switzerland"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Strategic-Account-Executive",
+    "Enterprise-Account-Executive",
+    "Account-Manager",
+    "Account-Executive",
+    "Territory-Sales-Manager"
+   ],
+   "parentCategories": [
+    "Sales"
+   ],
+   "description": "<h3>Description</h3><p class=\"editor-paragraph\">The Strategic Account Manager will drive sales across the DACH region and own a quota within the assigned geography. This role combines direct business development with channel-led growth, building strong relationships with prospective customers and with MSP, MSSP, and VAR partners. </p><p class=\"editor-paragraph\"><a href=\"https://himalayas.app/companies/cynet-com\">Cynet</a> is a leading XDR provider on a mission to deliver an all-in-one cybersecurity solution for mid-market and small organizations, as well as managed service providers. The Strategic Account Manager will be a critical contributor to strategic growth, market development, and pipeline creation, while identifying emerging trends across the regionץ</p><p class=\"editor-paragraph\"><b><strong class=\"editor-text-bold\">Compensation</strong></b></p><p class=\"editor-paragraph\">The anticipated base salary range for this position is €75,000 annually plus commissions. Actual compensation will depend on several factors, including location, level of seniority and skills.</p><h3>What will you do</h3><ul class=\"editor-list-ul\">\n<li class=\"editor-listitem\">Partner with Sales Leadership to build and execute a territory strategy that includes hunting for direct business and supporting the Account Executive in the region. </li>\n<li class=\"editor-listitem\">Use leading sales and prospecting tools to increase <a href=\"https://himalayas.app/companies/cynet-com\">Cynet</a>'s market penetration across DACH and other assigned territories if applicable. </li>\n<li class=\"editor-listitem\">Create direct demand for the <a href=\"https://himalayas.app/companies/cynet-com\">Cynet</a> platform through disciplined outbound prospecting and pipeline-generation activities. </li>\n<li class=\"editor-listitem\">Leverage channel relationships to identify, develop, and expand opportunities throughout the region. </li>\n<li class=\"editor-listitem\">Lead initial prospect and partner conversations to generate interest, qualify opportunities, and build pipeline. </li>\n<li class=\"editor-listitem\">Sell to IT and security leaders, as well as managing directors, CEOs, and owners of MSPs, MSSPs, and VAR partners. </li>\n<li class=\"editor-listitem\">Represent <a href=\"https://himalayas.app/companies/cynet-com\">Cynet</a> at industry events, partner engagements, and business meetings across the region. </li>\n<li class=\"editor-listitem\">Maintain accurate weekly forecasts and provide clear visibility into quarterly and full-year territory performance.</li>\n</ul><h3>Requirements</h3><ul class=\"editor-list-ul\">\n<li class=\"editor-listitem\">5+ years of successful sales experience with a proven history of performance. </li>\n<li class=\"editor-listitem\">Native or fluent German and English language skills. </li>\n<li class=\"editor-listitem\">A consistent track record of exceeding quota and closing business. </li>\n<li class=\"editor-listitem\">Experience selling cybersecurity solutions to end-user customers through channel partners. </li>\n<li class=\"editor-listitem\">Experience and proven success in recruiting, onboarding, enabling, and growing channel partners within the region. </li>\n<li class=\"editor-listitem\">Experience using Salesforce or a similar CRM platform. </li>\n<li class=\"editor-listitem\">Excellent written and verbal communication, listening, and strong presentation skills. </li>\n<li class=\"editor-listitem\">The ability to multitask, prioritize effectively, and manage time in a fast-moving environment. </li>\n<li class=\"editor-listitem\">Experience working in a startup or early-stage company. </li>\n<li class=\"editor-listitem\">An entrepreneurial, self-starting mindset with strong personal accountability. </li>\n<li class=\"editor-listitem\">A collaborative approach and the ability to leverage cross-functional resources effectively. </li>\n<li class=\"editor-listitem\">A coachable mindset and openness to feedback. </li>\n<li class=\"editor-listitem\">Familiarity with MEDDPICC or a comparable sales qualification methodology. </li>\n</ul><h3>About Us</h3><p><a href=\"https://himalayas.app/companies/cynet-com\">Cynet</a> is a leader in threat detection and response, designed to simplify security for organizations of all sizes. Our mission is to empower lean security teams and their partners with an AI-powered, unified platform that autonomously detects, protects, and responds to threats - backed by 24×7 security experts.</p><p>With a <strong>Partner First mindset</strong>, we focus on helping customers and partners stay protected, operate confidently, and achieve their goals. Our vision is to give every organization true cybersecurity peace of mind, providing fast, accurate protection without the noise or complexity.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795446259,
+   "expiryDate": 1800630258,
+   "applicationLink": "https://himalayas.app/companies/cynet-com/jobs/strategic-account-executive-fully-remote-dach?utm_source=api",
+   "guid": "https://himalayas.app/companies/cynet-com/jobs/strategic-account-executive-fully-remote-dach"
+  },
+  {
+   "title": "Online Adjunct Instructor for EDUC 829CR: Therapeutic Play Techniques for Child ",
+   "excerpt": "Position Title: Online Adjunct Instructor for EDUC 829CR: Therapeutic Play Techniques for Child Life Specialists Division: Graduate School of Education Course: EDUC 829CR: Therapeutic Play Techniques for Child Life Specialists (3 credits) Term: Spring 2027, Online Dates: January 19, 2027 – May 4, 2027 • 1/25, 2/8, 2/16 (Tuesday), 2/22, 3/8, 3/15 (optional), 4/5, 4/12 (optional), 5/3 • This course is scheduled to run Mondays 7:00 – 9:00 pm, online.",
+   "companyName": "Bank Street College of Education",
+   "companySlug": "bank-street-college-of-education",
+   "companyLogo": "https://cdn-images.himalayas.app/jsrc8l698m42f5aezrama13vsh4c",
+   "employmentType": "Part Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Adjunct-Instructor",
+    "Instructor",
+    "Online-Instructor",
+    "Graduate-Instructor"
+   ],
+   "parentCategories": [],
+   "description": "<p><strong>Position Title: </strong>Online Adjunct Instructor for EDUC 829CR: Therapeutic Play Techniques for Child Life Specialists</p><p><strong>Division: </strong>Graduate School of Education</p><p><strong>Course:</strong> EDUC 829CR: Therapeutic Play Techniques for Child Life Specialists (3 credits)</p><p><strong>Term: </strong>Spring 2027, Online </p><h3>Dates: January 19, 2027 – May 4, 2027</h3><ul>\n<li>1/25, 2/8, 2/16 (Tuesday), 2/22, 3/8, 3/15 (optional), 4/5, 4/12 (optional), 5/3</li>\n<li>This course is scheduled to run Mondays 7:00 – 9:00 pm, online. Day and time are subject to change</li>\n</ul><h3>Course Description:</h3><p>Students will explore the meanings and purposes of play and how play develops as a child develops. Various theories of play therapy will be introduced and the roles of child life specialist and play specialist will be delineated. Students will learn how child life specialists can create the optimal environment to encourage learning, development and healing through play in hospitals and other healthcare settings.  The course also covers directive and nondirective therapeutic play techniques for use in playrooms, clinical settings, and at the bedside, both with the individual child and with groups. This course is for Child Life students only.</p><h3>Responsibilities:</h3><ul>\n<li>Develop and deliver course content and materials aligned with the program curriculum.     </li>\n<li>Grade and evaluate student performance in a timely manner, providing constructive feedback.    </li>\n<li>Maintain open communication with students, including scheduled office hours or availability for consultation.     </li>\n<li>Submit final grades and required course documentation (e.g., attendance records) by institutional deadlines.  </li>\n<li>Collaborate with program faculty on course coordination and attend relevant program meetings, if necessary.</li>\n</ul><h3>Qualifications:  </h3><ul>\n<li>Master’s degree in child life required. Doctorate preferred.</li>\n<li>Must be a Certified Child Life Specialist (CCLS). </li>\n<li>5 or more years of experience as a child life practitioner. </li>\n<li>Experience teaching at the graduate level, preferred.</li>\n<li>Experience teaching online, preferred.</li>\n</ul><h3>Compensation:</h3><ul><li><strong>$1,270</strong></li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445872,
+   "expiryDate": 1800629871,
+   "applicationLink": "https://himalayas.app/companies/bank-street-college-of-education/jobs/online-adjunct-instructor-for-educ-829cr-therapeutic-play-techniques-for-child?utm_source=api",
+   "guid": "https://himalayas.app/companies/bank-street-college-of-education/jobs/online-adjunct-instructor-for-educ-829cr-therapeutic-play-techniques-for-child"
+  },
+  {
+   "title": "App Testers wanted in the Netherlands!",
+   "excerpt": "Tester Work provides access to exciting and rewarding project-based opportunities for freelancers.",
+   "companyName": "Tester Work",
+   "companySlug": "tester-work",
+   "companyLogo": "https://cdn-images.himalayas.app/cogadmr07addpt3swqdtc4ecdzp2",
+   "employmentType": "Contractor",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Entry-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Netherlands"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "QA-Tester",
+    "Software-Tester",
+    "Mobile-App-Tester",
+    "Usability-Tester"
+   ],
+   "parentCategories": [
+    "Developer"
+   ],
+   "description": "<p><strong><a href=\"https://himalayas.app/companies/tester-work\">Tester Work</a></strong> provides access to exciting and rewarding project-based opportunities for freelancers. Learn new skills and earn money by testing world-class apps and websites.</p><p>🌎 For this specific project, <strong>we are looking for QA testers and tech enthusiasts in the Netherlands!</strong></p><p>Having joined our community, you will then have regular access to a range of other projects, with unique requirements and workflows:</p><ul>\n<li><p><strong><em>Test Case Executions</em></strong><em>:</em> Perform a set of flows using specific instructions and compare the results observed with the expected/intended results provided.</p></li>\n<li><p><strong><em>Functional Exploratory Test Cases</em></strong><em>:</em> Explore the application or website’s functionality based on your experience and background in testing.</p></li>\n<li><p><strong><em>Usability Test Cycles</em></strong><em>: </em>Completing surveys or taking part in interviews to look into your preferences and opinions regarding different types of applications for our customers. Questionnaires investigate how you use specific apps, how much time you spend on them, and what you like and dislike about particular features and products.</p></li>\n</ul><p>Payments are transferred within a maximum of two weeks of project completion, via PayPal, bank transfers via Wise, or Upwork.<br><br>Don’t miss out on this exciting opportunity to develop new skills and earn good money on a schedule that suits you!﻿</p><h3>Requirements</h3><ul>\n<li><p>Being tech-savvy is a plus, but not a requirement</p></li>\n<li><h3>Native/Fluent in local language</h3></li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445861,
+   "expiryDate": 1800629861,
+   "applicationLink": "https://himalayas.app/companies/tester-work/jobs/app-testers-wanted-in-the-netherlands?utm_source=api",
+   "guid": "https://himalayas.app/companies/tester-work/jobs/app-testers-wanted-in-the-netherlands"
+  },
+  {
+   "title": "Principal Quality Engineer",
+   "excerpt": "Become a part of our caring community The Principal Quality Engineer carries out procedures to ensure that all information systems products and services meet organization standards and end-user requirements.",
+   "companyName": "Humana",
+   "companySlug": "humana",
+   "companyLogo": "https://cdn-images.himalayas.app/1g3s0vd2kg0b6yshyfzsrs0lta7u",
+   "employmentType": "Full Time",
+   "minSalary": 170800,
+   "maxSalary": 234800,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Quality-Engineer",
+    "Software-Quality-Engineer",
+    "Automation-Testing",
+    "SDET",
+    "QA-Engineer"
+   ],
+   "parentCategories": [
+    "Developer"
+   ],
+   "description": "<h3>\n<b>Become a part of our caring community</b><br>\n</h3>The Principal Quality Engineer carries out procedures to ensure that all information systems products and services meet organization standards and end-user requirements. The Principal Quality Engineer provides strategic advice and guidance to functional team(s). Highly skilled with broad, advanced technical experience.<p><a href=\"https://himalayas.app/companies/humana\">Humana</a> is committed to helping people achieve their best health by delivering innovative technology solutions that power exceptional member, provider, and associate experiences.</p><br><p>The <b>Principal, Quality Engineering</b> is a senior individual contributor and hands-on technical leader responsible for advancing modern, AI-focused quality engineering practices across <a href=\"https://himalayas.app/companies/humana\">Humana</a>’s software delivery ecosystem. This role defines, demonstrates, and scales <b>what good looks</b> like for enterprise quality engineering across the SDLC through technical expertise, reference patterns, automation frameworks, quality intelligence, and practical implementation guidance.</p><br><p>This role serves as a <b>deeply technical expert in AI-enabled quality engineering</b>, test automation, quality architecture, engineering excellence, and continuous quality practices. The Principal partners closely with the core EQE Platform team, Quality Engineering Segements, Product, Engineering, Architecture, Enterprise Engineering Enablement, Agile teams, DevOps, Cybersecurity, Risk, Compliance, Audit, and Data/AI teams to embed scalable, secure, measurable quality practices into delivery workflows, release processes, engineering platforms, and operational support models.</p><br><p>This is a <b>hands-on principal role</b>, not a people management role. The Principal will accelerate <a href=\"https://himalayas.app/companies/humana\">Humana</a>’s enterprise quality engineering transformation by building reusable solutions, creating technical standards and exemplars, coaching teams directly, and ensuring responsible use of AI across quality engineering processes. This role is also responsible for defining and operationalizing <b>what good looks like for EQE</b> across the SDLC, including test strategies and approaches, release management, incident tracking, production validation, and continuous improvement.</p><br><h3>Key Responsibilities</h3><p><b>Enterprise Quality Engineering Strategy, Standards, and Technical Leadership</b></p><ul>\n<li>Define, refine, and operationalize enterprise quality engineering standards, patterns, reference architectures, and technical guidance across software delivery teams.</li>\n<li>Define and continuously evolve <b>what good looks like</b> for Enterprise Quality Engineering across the full SDLC, including planning, development, testing, release, deployment, production validation, support, and continuous improvement.</li>\n<li>Establish practical, reusable best practices for embedding quality engineering into each SDLC phase, including requirements quality, test planning, test design, automation strategy, validation, release readiness, production verification, and supportability.</li>\n<li>Create and maintain reusable frameworks, starter kits, accelerators, example implementations, and practical guidance for quality planning, test automation, regression strategy, API and UI testing, service virtualization, code quality, deployment validation, performance and resilience testing, release readiness, observability-driven quality, production validation, and AI-assisted quality engineering.</li>\n<li>Define enterprise quality expectations, guardrails, and example patterns that help teams consistently apply EQE best practices within Agile, DevOps, and platform-based delivery models.</li>\n<li>Create technical guidance for quality-related <b>Definition of Done</b> expectations and quality checkpoints across delivery workflows to improve consistency, traceability, and readiness.</li>\n<li>Provide deep technical consultation to engineering teams on implementing modern quality engineering practices aligned with enterprise delivery models, DevOps controls, and platform standards.</li>\n<li>Partner with engineering enablement and platform teams to ensure quality practices are reflected in enterprise tooling, templates, reusable workflows, and CI/CD pipeline patterns.</li>\n</ul><br><h3>Hands-On AI-Focused Quality Engineering</h3><ul>\n<li>Lead the practical application of <b>AI-enabled quality engineering</b> capabilities across the SDLC through hands-on experimentation, prototyping, implementation, and refinement.</li>\n<li>Design and implement patterns for responsible use of AI in quality engineering, including test case generation, test data analysis, requirements analysis, defect clustering and triage, risk-based testing, code review support, automation acceleration, quality intelligence, and production issue analysis.</li>\n<li>Evaluate and pilot generative AI, machine learning, intelligent automation, and analytics solutions that improve test effectiveness, speed, coverage, defect prevention, and engineering productivity.</li>\n<li>Develop guardrails, technical recommendations, and implementation patterns for safe and responsible use of AI-enabled engineering tools in partnership with Data/AI, Cybersecurity, Risk, Compliance, and Legal stakeholders.</li>\n<li>Build proof of concepts, reference implementations, and engineering patterns that demonstrate measurable value from AI-enabled quality practices.</li>\n<li>Help teams integrate AI-assisted workflows into daily engineering practices while preserving human oversight, traceability, quality, and compliance expectations.</li>\n</ul><br><p><b>Test Automation, Quality Architecture, and Engineering Excellence</b></p><ul>\n<li>Define <b>what good looks like</b> for test strategies and test approaches across product, platform, integration, API, UI, data, performance, resilience, security-aligned, and operational validation scenarios.</li>\n<li>Establish enterprise guidance for selecting appropriate <b>test levels, test types, coverage models, and automation approaches</b> based on risk, architecture, criticality, and delivery context.</li>\n<li>Create patterns for modern test strategy development that incorporate risk-based testing, non-functional validation, test data management, and environment strategy.</li>\n<li>Standardize quality engineering approaches for unit, integration, system, acceptance, migration, infrastructure, data, and deployment validation testing to improve consistency and delivery confidence.</li>\n<li>Define measurable expectations for automation maintainability, reliability, execution efficiency, evidence quality, and test coverage effectiveness.</li>\n<li>Design scalable approaches for validating APIs, services, event-driven systems, data workflows, web applications, and platform integrations.</li>\n<li>Establish automation patterns that support shift-left and shift-right quality practices, including pre-merge validation, deployment validation, synthetic testing, and production verification.</li>\n<li>Promote engineering practices that strengthen quality outcomes, including clean code practices, atomic commits, meaningful pull requests, code quality controls, and automated quality gates.</li>\n</ul><br><h3>Governance, Risk, Compliance, and Quality Maturity</h3><ul>\n<li>Contribute deep technical expertise to enterprise Quality Engineering governance frameworks, standards adoption models, and maturity assessments.</li>\n<li>Define what good looks like for EQE controls and evidence across SDLC governance requirements, including traceability, standards adherence, test management, quality metrics, release readiness, and production validation support.</li>\n<li>Translate enterprise SDLC standards and governance expectations into actionable quality engineering practices that teams can implement consistently and with minimal friction.</li>\n<li>Help define maturity criteria for SDLC quality adoption, release quality discipline, incident learning integration, and test strategy effectiveness across teams.</li>\n<li>Define measurable quality criteria, engineering controls, and evidence expectations aligned with SDLC governance and regulatory requirements.</li>\n<li>Partner with Risk, Compliance, Cybersecurity, Audit, and AI governance stakeholders to ensure quality engineering practices align with enterprise policies, control expectations, and responsible AI principles.</li>\n<li>Identify quality, control, and process risks in software delivery workflows and recommend pragmatic improvements that reduce friction while strengthening compliance.</li>\n</ul><br><h3>Quality Intelligence, Metrics, and Insight</h3><ul>\n<li>Define and implement actionable quality metrics and telemetry that help teams improve engineering quality, delivery confidence, release readiness, and production outcomes.</li>\n<li>Define measurable indicators for what good looks like across SDLC quality adoption, release quality, incident quality signals, defect escape trends, and test strategy effectiveness.</li>\n<li>Establish dashboards and scorecards that help teams assess adherence to EQE best practices in areas such as test planning, release readiness, incident learning, automation effectiveness, and quality outcomes.</li>\n<li>Partner with platform, DevOps, engineering, and data teams to create dashboards and scorecards for automation coverage, defect trends, test reliability, release quality, deployment validation, code quality, pipeline health, DORA-aligned indicators, and AI-enabled quality outcomes.</li>\n<li>Use quality, release, and incident data to identify systemic issues, bottlenecks, and improvement opportunities across teams and platforms.</li>\n<li>Translate engineering and quality signals into recommendations that improve reliability, maintainability, speed, and production performance.</li>\n</ul><br><h3>Enablement, Coaching, and Enterprise Influence</h3><ul>\n<li>Provide expert-level coaching and hands-on guidance to engineering and quality teams adopting modern and AI-enabled quality engineering practices.</li>\n<li>Create technical playbooks, exemplars, implementation guides, workshops, and enablement content to improve enterprise quality capability.</li>\n<li>Lead or contribute to Communities of Practice, architecture reviews, innovation forums, and technical learning sessions focused on quality engineering, SDLC excellence, release quality, and AI fluency.</li>\n<li>Influence senior engineers, architects, and delivery teams across a matrixed environment through technical credibility, practical delivery experience, and clear demonstrations of value.</li>\n<li>Help teams reduce developer overhead by simplifying quality workflows, improving developer experience, and increasing automation effectiveness.</li>\n</ul><br><h3>Platform and Tooling Alignment</h3><ul>\n<li>Guide quality engineering implementation across enterprise platforms and tools used for source control, CI/CD, code quality, release orchestration, feature management, and test automation.</li>\n<li>Support adoption of pipeline-as-code, reusable workflows, and automation patterns aligned with enterprise platform standards.</li>\n<li>Advise teams on quality-related usage of tools such as Azure DevOps Services, GitHub Enterprise, SonarQube, and LaunchDarkly, and other approved engineering tools.</li>\n<li>Ensure quality engineering practices align with enterprise tool strategy and help reduce unnecessary tool sprawl, platform debt, and delivery friction.</li>\n<li>Partner with platform teams to support scalable onboarding, standardization, and developer self-service.</li>\n</ul><br><h3>Audit and Control Support</h3><ul>\n<li>Provide technical support for internal and external audits related to SDLC, quality engineering controls, automation, traceability, release evidence, and AI-enabled engineering practices.</li>\n<li>Help define repeatable evidence approaches for quality-related controls, including automated evidence collection where appropriate.</li>\n<li>Partner with Audit, Risk, Compliance, Cybersecurity, and platform teams to improve audit readiness and sustainable control adoption.</li>\n<li>Identify recurring evidence gaps, control weaknesses, quality risks, and AI-related considerations, then recommend practical remediation patterns.</li>\n</ul><br><h3>Required Qualifications</h3><ul>\n<li>10 or more years of experience in quality engineering, software engineering, SDET, test automation, DevOps, software delivery, or related technical disciplines.</li>\n<li>Deep technical hands-on expertise in quality engineering practices, including test automation, quality architecture, regression strategy, API testing, code quality, deployment validation, performance testing, defect prevention, release validation, incident-informed quality improvement, and production quality verification.</li>\n<li>Demonstrated experience designing, building, and improving scalable automation frameworks, test tooling, quality accelerators, or reusable engineering solutions.</li>\n<li>Demonstrated hands-on experience applying AI-enabled capabilities in software engineering or quality engineering, such as test generation, defect analysis, requirements analysis, quality intelligence, or engineering productivity improvement.</li>\n<li>Experience defining what good looks like for quality engineering practices across the SDLC, including test strategy, release management, incident tracking, and production quality feedback loops.</li>\n<li>Experience integrating quality practices into Agile delivery models, CI/CD pipelines, and DevOps workflows.</li>\n<li>Strong understanding of software engineering fundamentals, clean code practices, source control hygiene, pull request quality, and automation-first delivery practices.</li>\n<li>Experience defining or influencing technical standards, engineering best practices, or SDLC quality patterns across multiple teams.</li>\n<li>Experience working with cross-functional stakeholders including Engineering, Product, Architecture, Cybersecurity, Risk, Compliance, Audit, DevOps, and Data/AI teams.</li>\n<li>Ability to evaluate technical tradeoffs and translate complex quality engineering concepts into pragmatic implementation guidance.</li>\n</ul><h3>Preferred Qualifications</h3><ul>\n<li>Experience in healthcare, insurance, financial services, or another highly regulated environment.</li>\n<li>Experience serving in a principal, architect, staff, or senior lead-level technical role in quality engineering or software engineering.</li>\n<li>Experience with generative AI, machine learning, LLM-assisted engineering tools, or intelligent automation applied to testing and quality workflows.</li>\n<li>Familiarity with Azure DevOps Services, GitHub Enterprise, SonarQube, LaunchDarkly, pipeline-as-code patterns, reusable CI/CD workflows, feature flags, and code quality tooling.</li>\n<li>Experience improving quality through engineering metrics such as DORA, pipeline health, release quality, defect escape trends, incident patterns, test reliability, and AI productivity indicators.</li>\n<li>Experience implementing or advising on SDLC governance, evidence collection, audit support, control mapping, and responsible AI considerations.</li>\n<li>Experience creating reference architectures, proof of concepts, technical playbooks, Communities of Practice content, or engineering enablement materials.</li>\n<li>Experience using platform and workflow standards to reduce developer overhead and improve delivery consistency at enterprise scale.</li>\n</ul><h3>\n<br><b>Use your skills to make an impact </b><br>\n</h3>Work at Home Requirements: To ensure Home or Hybrid Home/Office employees’ ability to work effectively, the self-provided internet service of Home or Hybrid Home/Office employees must meet the following criteria: At minimum, a download speed of 25 Mbps and an upload speed of 10 Mbps is required; wireless, wired cable or DSL connection is suggested. In certain roles, the minimum recommended internet speed required by <a href=\"https://himalayas.app/companies/humana\">Humana</a> may not be sufficient for business needs. <a href=\"https://himalayas.app/companies/humana\">Humana</a> reserves the right to require associates to upgrade their internet service if necessary. Work from a dedicated space lacking ongoing interruptions to protect member PHI / HIPAA information.Travel: While this is a remote position, occasional travel to <a href=\"https://himalayas.app/companies/humana\">Humana</a>'s offices for training or meetings may be required.<h3>Scheduled Weekly Hours</h3>40<h3>Pay Range</h3>The compensation range below reflects a good faith estimate of starting base pay for full time (40 hours per week) employment at the time of posting. The pay range may be higher or lower based on geographic location and individual pay will vary based on demonstrated job related skills, knowledge, experience, education, certifications, etc.$170,800 - $234,800 per yearThis job is eligible for a bonus incentive plan. This incentive opportunity is based upon company and/or individual performance.<h3>Description of Benefits</h3><a href=\"https://himalayas.app/companies/humana\">Humana</a>, Inc. and its affiliated subsidiaries (collectively, “<a href=\"https://himalayas.app/companies/humana\">Humana</a>”) offers competitive benefits that support whole-person well-being. Associate benefits are designed to encourage personal wellness and smart healthcare decisions for you and your family while also knowing your life extends outside of work. Among our benefits, <a href=\"https://himalayas.app/companies/humana\">Humana</a> provides medical, dental and vision benefits, 401(k) retirement savings plan, time off (including paid time off, company and personal holidays, paid parental and caregiver leave), short-term and long-term disability, life insurance and many other opportunities.<h3>\n<br><b>About Us</b><br>\n</h3>About <a href=\"https://himalayas.app/companies/humana\">Humana</a>: <a href=\"https://himalayas.app/companies/humana\">Humana</a> Inc. (NYSE: HUM) is a leading U.S. healthcare company. Through our <a href=\"https://himalayas.app/companies/humana\">Humana</a> insurance services and our CenterWell healthcare services, we make it easier for the millions of people we serve to achieve their best health – delivering the care and service they need, when they need it. These efforts are leading to a better quality of life for people with Medicare and Medicaid, families, individuals, military service personnel, and communities at large. Learn more about what we offer at <a href=\"https://himalayas.app/companies/humana\">Humana</a>.com and at CenterWell.com.<h3>​</h3><h3>Equal Opportunity Employer</h3><p>It is the policy of <a href=\"https://himalayas.app/companies/humana\">Humana</a> not to discriminate against any employee or applicant for employment because of race, color, religion, sex, sexual orientation, gender identity, national origin, age, marital status, genetic information, disability or protected veteran status. It is also the policy of <a href=\"https://himalayas.app/companies/humana\">Humana</a> to take affirmative action, in compliance with Section 503 of the Rehabilitation Act and VEVRAA, to employ and to advance in employment individuals with disability or protected veteran status, and to base all employment decisions only on valid job requirements. This policy shall apply to all employment actions, including but not limited to recruitment, hiring, upgrading, promotion, transfer, demotion, layoff, recall, termination, rates of pay or other forms of compensation and selection for training, including apprenticeship, at all levels of employment.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445734,
+   "expiryDate": 1800629733,
+   "applicationLink": "https://himalayas.app/companies/humana/jobs/principal-quality-engineer?utm_source=api",
+   "guid": "https://himalayas.app/companies/humana/jobs/principal-quality-engineer"
+  },
+  {
+   "title": "Product Manager - Backend Systems",
+   "excerpt": "Overall Vision The Product Manager oversees the development and enhancement of Benzinga systems and features across our product lines including Benzinga APIs, Data Science, and other backend systems as needed.",
+   "companyName": "Benzinga",
+   "companySlug": "benzinga",
+   "companyLogo": "https://cdn-images.himalayas.app/27is3kl5pgu1pqo68r2x05cntxu9",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Product-Manager",
+    "Technical-Product-Manager",
+    "Backend-Product-Manager",
+    "Data-Product-Manager"
+   ],
+   "parentCategories": [
+    "Product"
+   ],
+   "description": "<div class=\"description\">\n<h3><strong>Overall Vision</strong></h3>\n<p>The Product Manager oversees the development and enhancement of <a href=\"https://himalayas.app/companies/benzinga\">Benzinga</a> systems and features across our product lines including <a href=\"https://himalayas.app/companies/benzinga\">Benzinga</a> APIs, Data Science, and other backend systems as needed. As a Product Manager, you will play a critical role in supporting our mission to provide accurate, timely, and comprehensive financial news and data to our clients worldwide.</p>\n<h3><strong>Responsibilities</strong></h3>\n<ul class=\"editor-list-ul\">\n<li class=\"editor-listitem\">Collaborate with cross-functional teams including engineering, content, licensing and data science to develop and execute on the product roadmap.</li>\n<li class=\"editor-listitem\">Define project specifications and requirements, ensuring that all features are delivered on time, on scope, and on budget.</li>\n<li class=\"editor-listitem\">Utilize existing project management tools to track and analyze user behavior, engagement metrics, and other key performance indicators (KPIs).</li>\n<li class=\"editor-listitem\">Review analytics data regularly to determine if product goals are being met and identify opportunities for improvement.</li>\n<li class=\"editor-listitem\">Work closely with engineering leadership to align near-term initiatives with long-term objectives, flagging intersections across competing or synergistic efforts.</li>\n<li class=\"editor-listitem\">Gather feedback from stakeholders and incorporate into product planning and decision-making.</li>\n<li class=\"editor-listitem\">Implement backend best practices for each planned project, identifying opportunities to rework older systems to align with modern best practice, considering anticipated data volume and cost performance.</li>\n<li class=\"editor-listitem\">Continuously iterate on the product based on user feedback, market trends, and business priorities.</li>\n</ul>\n<h3><strong>Qualifications</strong></h3>\n<ul class=\"editor-list-ul\">\n<li class=\"editor-listitem\">Bachelor's degree in Computer Science, Data Science, or a related field, or equivalent experience. A PMP or similar certification is a plus.</li>\n<li class=\"editor-listitem\">3+ years of experience in project management, ideally in software engineering or data analytics.</li>\n<li class=\"editor-listitem\">Experience running agile software engineering projects.</li>\n<li class=\"editor-listitem\">Proven ability to manage several projects at once with competing deadlines.</li>\n<li class=\"editor-listitem\">Experience with project management tools such as GitLab, Jira, or similar.</li>\n<li class=\"editor-listitem\">Familiarity with data concepts; basic SQL is a plus.</li>\n<li class=\"editor-listitem\">Strong communication skills, with the ability to work with both technical and non-technical stakeholders.</li>\n</ul>\n<h3><strong>Preferred Experience</strong></h3>\n<ul class=\"editor-list-ul\">\n<li class=\"editor-listitem\">Experience managing client onboarding or data delivery for B2B clients</li>\n<li class=\"editor-listitem\">Familiarity with AI/ML or data engineering project lifecycles</li>\n<li class=\"editor-listitem\">AWS, GCP, or other public cloud infrastructure experience</li>\n<li class=\"editor-listitem\">Experience working with data vendors or licensing agreements</li>\n<li class=\"editor-listitem\">Experience in the financial services or media industry</li>\n</ul>\n</div><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445697,
+   "expiryDate": 1800629696,
+   "applicationLink": "https://himalayas.app/companies/benzinga/jobs/product-manager-backend-systems?utm_source=api",
+   "guid": "https://himalayas.app/companies/benzinga/jobs/product-manager-backend-systems"
+  },
+  {
+   "title": "Conseiller senior en opérations TI – Transition et gestion des services",
+   "excerpt": "Client : Secteur manufacturier Lieu : Région de Montréal, possibilité de télétravail à 100 % Durée : 1 an, 35 heures par semaine Langue : Anglais requis; bilinguisme français-anglais un atout.",
+   "companyName": "Xideral",
+   "companySlug": "xideral",
+   "companyLogo": "",
+   "employmentType": "Contractor",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Canada"
+   ],
+   "timezoneRestrictions": [
+    -7,
+    -6,
+    -5,
+    -4,
+    -3.5
+   ],
+   "categories": [
+    "Senior-IT-Operations",
+    "IT-Service-Transition",
+    "IT-Service-Management-Consultant",
+    "IT-Operations-Manager",
+    "Service-Delivery-Manager"
+   ],
+   "parentCategories": [
+    "Operations"
+   ],
+   "description": "<p><strong>Client :</strong> Secteur manufacturier<br><strong>Lieu :</strong> Région de Montréal, possibilité de télétravail à 100 %<br><strong>Durée :</strong> 1 an, 35 heures par semaine<br><strong>Langue :</strong> Anglais requis; bilinguisme français-anglais un atout. CV en anglais.</p><h3>À propos du poste</h3><p>Nous recherchons un conseiller senior en opérations TI pour piloter le transfert aux opérations de nouveaux services et soutenir leur préparation, leur surveillance et leur rétablissement. Vous représenterez le centre des opérations auprès des équipes de projet, de soutien et des fournisseurs, de la conception jusqu'à la stabilisation après déploiement.</p><h3>Responsabilités</h3><ul>\n<li>Définir les modèles de soutien, les responsabilités, les escalades et les critères de préparation, puis coordonner l'acceptation opérationnelle.</li>\n<li>Définir les indicateurs, seuils d'alerte et tableaux de bord de surveillance avec les équipes et fournisseurs.</li>\n<li>Concevoir et valider des procédures opérationnelles comprenant diagnostic, rétablissement, contournements et communications.</li>\n<li>Soutenir la gestion des incidents majeurs, les analyses post-incident et le rétablissement des services.</li>\n<li>Coordonner l'analyse des causes fondamentales et la résolution des incidents récurrents.</li>\n<li>Évaluer les impacts opérationnels des changements, conseiller le comité de gestion des changements et assurer leur suivi.</li>\n<li>Documenter les services, matrices RACI et dépendances; former les équipes et améliorer les indicateurs opérationnels.</li>\n</ul><h3>Profil recherché</h3><ul>\n<li>Au moins 5 ans d'expérience en opérations TI, gestion des services TI, transition de services ou gestion des incidents majeurs dans des environnements multirégionaux et multifournisseurs.</li>\n<li>Solide maîtrise d'ITIL et expérience de création de processus, de documentation et de structures de gouvernance.</li>\n<li>Expérience dans une organisation pancanadienne ou internationale de 10 000 employés ou plus.</li>\n<li>Autonomie, capacité à gérer plusieurs priorités et fortes compétences analytiques et organisationnelles.</li>\n<li>Atouts : certification ITIL 4; SAP S/4 ou ECC, intégration et ServiceNow; infrastructure et infonuagique; environnement manufacturier, consultation ou gestion de fournisseurs de services.</li>\n</ul><p>En soumettant votre candidature, vous consentez à ce que <a href=\"https://himalayas.app/companies/xideral\">Xideral</a> recueille, utilise et conserve vos renseignements personnels uniquement à des fins de recrutement et de sélection pour ce poste ou pour des opportunités similaires en lien avec vos domaines d’expertise. Vos informations seront traitées de manière confidentielle et conformément à la Loi 25 sur la protection des renseignements personnels du Québec. Vous pouvez en tout temps demander l’accès, la rectification ou la suppression de vos données en nous contactant à l’adresse suivante : .</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445679,
+   "expiryDate": 1800629679,
+   "applicationLink": "https://himalayas.app/companies/xideral/jobs/conseiller-senior-en-operations-ti-transition-et-gestion-des-services?utm_source=api",
+   "guid": "https://himalayas.app/companies/xideral/jobs/conseiller-senior-en-operations-ti-transition-et-gestion-des-services"
+  },
+  {
+   "title": "National Program Director, Community Health Centers",
+   "excerpt": "Labcorp is a global leader in laboratory services, providing the insights and answers that help healthcare providers, patients, researchers, pharmaceutical companies and health systems make confident decisions and improve outcomes.",
+   "companyName": "Labcorp",
+   "companySlug": "labcorp",
+   "companyLogo": "https://cdn-images.himalayas.app/4a2knc74suqz3eok2941bfa7qvnf",
+   "employmentType": "Full Time",
+   "minSalary": 150000,
+   "maxSalary": 190000,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Director"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Program-Director",
+    "Healthcare-Program-Director",
+    "Director-of-Product",
+    "Community-Health-Director",
+    "Senior-Director-Of-Commercial-Strategy"
+   ],
+   "parentCategories": [
+    "Product"
+   ],
+   "description": "<br><p><a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a> is a global leader in laboratory services, providing the insights and answers that help healthcare providers, patients, researchers, pharmaceutical companies and health systems make confident decisions and improve outcomes. Through our unparalleled science, data, technology and laboratory network, we advance diagnostics, accelerate innovation and help address some of the world’s most important health challenges. As we shape the future of healthcare, we are leveraging advanced technologies, intelligent digital solutions and data-driven innovation across our operations to enhance how work gets done and deliver greater value to customers and patients. With our global scale and deep expertise, you’ll have the opportunity to do meaningful work, grow your career and make a real impact on people’s health around the world. Together, we’re improving health and improving lives.</p><br><p><a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a> is seeking a National Program Director, Community Health Centers to join our team.  </p><h3>Responsibilities:</h3><ul>\n<li>Own and execute <a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a>'s national strategy and value proposition for Community Health Centers, HCCNs, and Primary Care Associations.</li>\n<li>Build and manage strategic partnerships with national HCCNs to advance contractual relationships and drive collaborative growth initiatives.</li>\n<li>Serve on NACHC Strategic Alliance team, leading workflow for member Best Practices and Toolkit development.</li>\n<li>Standardize and scale CHC services and programs across all operating Divisions.</li>\n<li>Lead development and commercialization of products, programs, and solutions that improve UDS and VBC quality measures, operational performance, and patient outcomes.</li>\n<li>Define Community Health Center pricing strategies and build consistency in how we approach uninsured populations and flat-rate programs.</li>\n<li>Ensure CHC requirements are incorporated into specialty-testing and value-based care initiatives.</li>\n<li>Collaborate with Diagnostic Assistant, Insight Analytics, and data teams to enhance customer offerings and drive utilization.</li>\n<li>Partner with Divisional sales and leadership to support CHC growth and retention.</li>\n<li>Drive internal alignment on CHC strategy and lead cross-functional teams in launching and scaling new programs and solutions.</li>\n<li>Serve as a subject matter expert for customer presentations, leadership discussions, and sales strategy</li>\n<li>Develop a centralized capability for CHC RFP responses and enable Primary Care Association engagement, and value-based care contracting.</li>\n<li>Drive sales team communications, training, tools, and support resources.</li>\n<li>Lead targeting campaigns and sales enablement programs.</li>\n<li>Leverage laboratory data to support UDS quality measures, care gap initiatives, population health programs, and value-based care performance.</li>\n<li>Lead Salesforce account hierarchy and data governance for CHCs, improve targeting and reporting.</li>\n<li>Drive customer-facing communications in partnership with Marketing, including sales collateral, marketing campaigns, thought leadership, and CHC conference strategy and support.</li>\n<li>Monitor CHC segment performance through revenue, accession volume, and customer analytics.</li>\n<li>Present strategic updates, KPIs and market insights to senior leadership.</li>\n<li>Participate in business reviews with Divisional and national commercial leadership.</li>\n<li>Support commercial efforts to achieve annual CHC growth budget.</li>\n</ul><h3>Minimum Qualifications</h3><ul>\n<li>Bachelor’s degree</li>\n<li>8+ years’ experience in healthcare, laboratory services, public health, product management.</li>\n</ul><br><h3>Additional Job Standards:</h3><ul>\n<li>Experience working in lab services</li>\n<li>Product/Program Director experience in healthcare</li>\n<li>Laboratory, healthcare product sales or program management experience</li>\n<li>Experience with Community Health Centers (FQHCs) or large provider organizations</li>\n<li>Demonstrated ability to take a concept from inception to execution into the market</li>\n<li>Excellent communication skills with examples – marketing communications experience or advanced degree a plus</li>\n<li>Broad skill set with ability to think strategically (write a plan) and executive tactically (project management).  Quantitative and communication skills are also critical for success</li>\n<li>Experience working with Community Health Centers, large provider networks, public health organizations.</li>\n<li>Strong understanding of Community Health Centers, laboratory testing, population health, and value-based care models.</li>\n</ul><h3>About the Role</h3><p>The <b>National Program Director of Community Health Centers</b> is responsible for leading <a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a>’s commercial execution for Community Health Centers (CHCs), working with cross functional teams to drive product development, supporting divisional sales success, and building strategic partnerships with national Health Center Controlled Networks (HCCNs). This role has primary responsibility for CHC national strategy, value proposition development, performance tracking, product and program implementation, pricing models, data and analytics solutions, industry partnerships, and sales enablement.</p><p>The National Program Director of Community Health Centers serves as <a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a>’s primary internal and external advocate for Community Health Centers, mobilizing cross-functional teams across Sales, Managed Care, Marketing, IT, Legal, and Medical and Scientific Affairs to accelerate growth and strengthen <a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a>’s market position.</p><p>The National Director of Community Health Centers reports to the Vice President of Physician Systems within the National HHS Team.</p><p><b>Application window open through: </b>12/2/2026 </p><br><p><b>Pay Range:</b> $150,000 - $190,000</p><p>All job offers will be based on a candidate’s skills and prior relevant experience, applicable degrees/certifications, as well as internal equity and market data. </p><p><b>Benefits: </b>Employees regularly scheduled to work 20 or more hours per week are eligible for comprehensive benefits including: Medical, Dental, Vision, Life, STD/LTD, 401(k), Paid Time Off (PTO) or Flexible Time Off (FTO), Tuition Reimbursement and Employee Stock Purchase Plan.Employees regularly scheduled to work less than 20 hours, Casual, Intern, and Temporary employees are only eligible to participate in the 401(k) Plan.Employees who are regularly scheduled to work a 7 on/7 off schedule are eligible to receive all the foregoing benefits except PTO or FTO. For more detailed information, please click here. </p><br><p><b><a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a> is proud to be an Equal Opportunity Employer:</b></p><p><a href=\"https://himalayas.app/companies/labcorp\">Labcorp</a> strives for inclusion and belonging in the workforce and does not tolerate harassment or discrimination of any kind. We make employment decisions based on the needs of our business and the qualifications and merit of the individual. Qualified applicants will receive consideration for employment without regard to race, religion, color, national origin, sex (including pregnancy, childbirth, or related medical conditions), family or parental status, marital, civil union or domestic partnership status, sexual orientation, gender identity, gender expression, personal appearance, age, veteran status, disability, genetic information, or any other legally protected characteristic. Additionally, all qualified applicants with arrest or conviction records will be considered for employment in accordance with applicable law. </p><br><h3>We encourage all to apply</h3><p>If you are an individual with a disability who needs assistance using our online tools to search and apply for jobs, or needs an accommodation, please visit our accessibility site or contact us at . For more information about how we collect and store your personal data, please see our Privacy Statement.</p><br><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445585,
+   "expiryDate": 1800629585,
+   "applicationLink": "https://himalayas.app/companies/labcorp/jobs/national-program-director-community-health-centers-9883742886?utm_source=api",
+   "guid": "https://himalayas.app/companies/labcorp/jobs/national-program-director-community-health-centers-9883742886"
+  },
+  {
+   "title": "Software Engineer",
+   "excerpt": "¿Has trabajado desarrollando aplicaciones con Java y también te manejas en frontend?",
+   "companyName": "WE ARE NEXT",
+   "companySlug": "we-are-next",
+   "companyLogo": "https://cdn-images.himalayas.app/7pyw1o2x23wjo0149q5s2bsb4iei",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Spain"
+   ],
+   "timezoneRestrictions": [
+    0,
+    1
+   ],
+   "categories": [
+    "Software-Engineer",
+    "Backend-Engineer",
+    "Front-End-Developer",
+    "Full-Stack-Engineer"
+   ],
+   "parentCategories": [
+    "Developer"
+   ],
+   "description": "<p>¿Has trabajado desarrollando aplicaciones con Java y también te manejas en frontend? ¡Sigue leyendo!</p><img alt=\"\" title=\"\" width=\"286\" height=\"160.43902439024393\"><p>En <strong>Next Digital</strong>ayudamos a grandes empresas en su transformación tecnológica, construyendo soluciones con <strong>buenas prácticas</strong> y un enfoque real en la <strong>calidad, la escalabilidad y la eficiencia</strong>.</p><p>Formarás parte de un entorno donde la <strong>flexibilidad es de verdad</strong>, la <strong>autonomía</strong> está en el día a día y el <strong>aprendizaje continuo</strong> es clave, rodeado de personas que disfrutan lo que hacen.</p><hr><h3>🔎 Qué necesitamos que traigas</h3><ul>\n<li><p><strong>Al menos un año y medio de experiencia profesional desarrollando software</strong>, con participación en proyectos reales y aplicaciones en producción.</p></li>\n<li><p><strong>Experiencia profesional en backend con Java</strong> y trabajando con <strong>Spring Boot</strong>.</p></li>\n<li><p><strong>Conocimientos prácticos de frontend con Angular, React o Vue</strong>. Nos encaja cualquiera de estas tecnologías: necesitamos que hayas trabajado con alguna y puedas desarrollar o modificar funcionalidades, aunque tu experiencia esté más centrada en backend.</p></li>\n<li><p>Experiencia desarrollando e integrando <strong>APIs REST</strong>.</p></li>\n<li><p>Uso habitual de <strong>Git</strong> y buenas prácticas para escribir código claro, mantenible y con pruebas.</p></li>\n<li><p>Capacidad para sacar adelante tus tareas, colaborar con el equipo y seguir aprendiendo.</p></li>\n</ul><p><strong>Para esta vacante necesitamos experiencia profesional previa.</strong> Los proyectos académicos o personales pueden complementar tu perfil, pero necesitamos que también hayas trabajado en proyectos profesionales en producción. Por el momento, solo podremos avanzar con candidaturas que cumplan el mínimo indicado. ¡Gracias por tenerlo en cuenta antes de inscribirte!</p><h3>🔧 Qué harás en tu día a día</h3><p>Según tu experiencia, asumirás más o menos autonomía para:</p><ul>\n<li><p>Desarrollar y mantener <strong>servicios y APIs con Java y Spring Boot</strong>.</p></li>\n<li><p>Implementar o adaptar <strong>funcionalidades de frontend</strong>, conectándolas con el backend.</p></li>\n<li><p>Participar en decisiones de diseño y proponer mejoras en las aplicaciones.</p></li>\n<li><p>Escribir pruebas, revisar código y resolver incidencias.</p></li>\n<li><p>Colaborar en los despliegues y en el mantenimiento de las aplicaciones en producción.</p></li>\n</ul><p>También valoramos que hayas trabajado con <strong>Docker, CI/CD o entornos cloud como AWS, Azure o GCP</strong>. No necesitas dominar todas estas herramientas para encajar.</p><h3>🩵 Qué encontrarás en Next</h3><ul>\n<li><p><strong>100 % remoto y flexibilidad horaria</strong>, coordinándote con tu equipo y las necesidades del proyecto.</p></li>\n<li><h3>Jornada intensiva en julio y reducida en agosto.</h3></li>\n<li><p><strong>23 días laborables de vacaciones</strong>, una semana extra en Navidad y el 24 y 31 de diciembre libres. Puedes elegir los festivos de Madrid o los de tu lugar de residencia.</p></li>\n<li><p><strong>1.000 € al año para formación</strong>, certificaciones oficiales y clases de inglés.</p></li>\n<li><p><strong>Retribución flexible</strong>, ayuda al teletrabajo de <strong>20 €/mes</strong> y acceso a <strong>Wellhub o seguro médico</strong>.</p></li>\n<li><p>Un equipo cercano, actividades para compartir y acompañamiento en tu <strong>crecimiento técnico y profesional</strong>.</p></li>\n<li><p>Programas de recomendación: hasta <strong>3.000 € por recomendar personas</strong> y entre un <strong>2 % y un 4 % de la facturación</strong> de nuevos clientes que nos hayas recomendado.</p></li>\n</ul><hr><p><strong>¿Te encaja? ¡Inscríbete y hablamos!</strong>Nos gustaría conocer los proyectos en los que has trabajado, qué has construido y qué te apetece hacer ahora.</p><p><strong><em>IMPORTANTE:</em></strong><em>Por razones organizativas y legales, la persona seleccionada deberá</em><strong><em>residir actualmente en España</em></strong><em>y contar con</em><strong><em>autorización legal para trabajar en el país</em></strong><em>en el momento de la incorporación. Este requisito aplica con independencia de que la posición se desarrolle en modalidad remota.</em></p><p><em>El</em><strong><em>rango salarial</em></strong><em>incluye varios niveles, según la entrevista técnica y el nivel evaluado se especificará un rango más acotado.</em></p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445448,
+   "expiryDate": 1800629447,
+   "applicationLink": "https://himalayas.app/companies/we-are-next/jobs/software-engineer?utm_source=api",
+   "guid": "https://himalayas.app/companies/we-are-next/jobs/software-engineer"
+  },
+  {
+   "title": "Moving Services Sales Consultant",
+   "excerpt": "This a Philippine-based position; NOT a US based position and the pay rate is not in US currency.",
+   "companyName": "Enterprise Management Solutions, Inc.",
+   "companySlug": "enterprise-management-solutions-inc",
+   "companyLogo": "https://cdn-images.himalayas.app/heupza6diiole713wotrv8lwckm2",
+   "employmentType": "Contractor",
+   "minSalary": 410,
+   "maxSalary": 410,
+   "salaryPeriod": "hourly",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": "PHP",
+   "locationRestrictions": [
+    "Philippines"
+   ],
+   "timezoneRestrictions": [
+    8
+   ],
+   "categories": [
+    "Sales-Consultant",
+    "Inside-Sales-Representative",
+    "Account-Executive",
+    "Customer-Service"
+   ],
+   "parentCategories": [
+    "Sales",
+    "Customer Service"
+   ],
+   "description": "<p>This a Philippine-based position;</p><p>NOT a US based position and the pay rate is not in US currency.</p><h3>About Enterprise Management Solutions</h3><p>Enterprise Management Solutions LLC (EMS) is a U.S.-based business management and operations firm providing staffing, leadership, and sales infrastructure to partner companies in service industries such as logistics, construction, and transportation.</p><p>We are seeking a Moving Services Sales Consultant (Closer) to support one of our U.S.-based moving and relocation service clients.<br><br>This role focuses on converting warm leads into confirmed moving and storage service contracts.</p><h3>Position Overview</h3><p>The Moving Services Sales Consultant is responsible for managing inbound leads, providing accurate quotes, explaining service packages, and closing contracts for residential and commercial moves.<br><br>You’ll engage with customers by phone and email, assess their moving needs, explain the value of the services offered, and guide them through the booking process until their move is confirmed.</p><p>Your role is to turn leads into scheduled moves through excellent communication, attention to detail, and consistent follow-up.</p><h3>Location: Remote – Philippines</h3><p>Employer: Enterprise Management Solutions LLC (EMS)</p><p>Reports To: Chief Marketing &amp; Sales Officer</p><p>Work Schedule: Monday–Friday, 8:00 AM – 5:00 PM EST (Night Shift PH Time)</p><p>Employment Type: Full-Time, Remote – Independent Contractor</p><h3>Key Responsibilities</h3><ul>\n<li>Contact and follow up with inbound leads from marketing campaigns and referrals.</li>\n<li>Conduct needs assessments to determine the scope of moves (local, long-distance, or commercial).</li>\n<li>Present service options, pricing, and timelines based on client requirements.</li>\n<li>Negotiate and close contracts following company guidelines.</li>\n<li>Accurately enter details and updates into CRM and scheduling systems.</li>\n<li>Maintain a consistent follow-up pipeline to ensure lead conversion.</li>\n<li>Work closely with operations and dispatch teams to ensure smooth handoffs after booking.</li>\n<li>Meet or exceed monthly and quarterly closing targets for new move bookings.</li>\n</ul><h3>Qualifications</h3><ul>\n<li>Experience:<ul><li>2+ years in sales or customer acquisition (preferred industries: moving, logistics, transportation, or home services).</li></ul>\n</li>\n<li>Skills:<ul>\n<li>Excellent English communication (spoken and written).</li>\n<li>Consultative sales ability with a focus on understanding customer needs.</li>\n<li>Organized and efficient in managing multiple leads and follow-ups.</li>\n<li>Proficient with CRM and quoting/scheduling software.</li>\n<li>Goal-driven and comfortable working in a fast-paced environment.</li>\n</ul>\n</li>\n<li>Education: Bachelor’s or Associate degree preferred (Business, Marketing, or related field).</li>\n</ul><ul><li>Requirements:<ul>\n<li>Reliable laptop/PC, headset, and strong internet connection.</li>\n<li>Must be available Monday–Friday, 8:00 AM–5:00 PM EST.</li>\n<li>Willing to work U.S. holidays if required (no paid holiday benefit).</li>\n</ul>\n</li></ul><h3>Compensation &amp; Terms</h3><ul>\n<li>Base Pay: $7 USD/hour (≈ ₱410 PHP/hour) — approx. $1,120 USD/month (₱65,000 PHP) for 40 hours/week</li>\n<li>Commission: $40–$100 USD per closed moving contract, depending on distance and contract value</li>\n<li>Bonuses: Monthly and quarterly bonuses for exceeding booking and revenue goals</li>\n<li>Benefits: Independent contractor role — no paid holidays or leave; performance incentives apply</li>\n<li>Payment: Biweekly USD payout via EMS international payroll (Deel)</li>\n</ul><h3>Performance Metrics (KPIs)</h3><ul>\n<li>Number of confirmed move bookings per month</li>\n<li>Lead-to-close conversion rate (%)</li>\n<li>Average revenue per closed contract</li>\n<li>Accuracy of CRM entries and quoting details</li>\n<li>Client satisfaction and booking experience feedback</li>\n</ul><h3>Career Path</h3><p>This role offers growth opportunities within EMS as part of the expanding operations support team:</p><ul>\n<li>Senior Moving Services Sales Consultant / Team Lead</li>\n<li>Account Executive – Moving &amp; Logistics Division</li>\n<li>Client Development Manager</li>\n</ul><h3>Why Join EMS</h3><ul>\n<li>Work remotely with a professional U.S.-based management firm.</li>\n<li>Access warm leads—no cold calling required.</li>\n<li>Competitive USD pay plus commissions and performance bonuses.</li>\n<li>Regular weekday schedule aligned with U.S. business hours.</li>\n<li>Clear growth path in the relocation and logistics sector.</li>\n</ul><h3>How to Apply</h3><p>Submit your resume and a brief cover letter highlighting your experience in sales, customer service, or logistics to:<br><br> line: <em>Moving Services Sales Consultant – Philippines (Operations Division)</em></p>Salary: ₱410 PHP/hour<p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445335,
+   "expiryDate": 1800629333,
+   "applicationLink": "https://himalayas.app/companies/enterprise-management-solutions-inc/jobs/moving-services-sales-consultant?utm_source=api",
+   "guid": "https://himalayas.app/companies/enterprise-management-solutions-inc/jobs/moving-services-sales-consultant"
+  },
+  {
+   "title": "Revenue Integrity Analyst",
+   "excerpt": "Thank you for considering a career at Ensemble!  Ensemble is a leading provider of technology-enabled revenue cycle management solutions for health systems, including hospitals and affiliated physician groups.",
+   "companyName": "Ensemble Health Partners",
+   "companySlug": "ensemble-health-partners",
+   "companyLogo": "https://cdn-images.himalayas.app/z399qx0drckr09g1y8640k87nfxn",
+   "employmentType": "Full Time",
+   "minSalary": 49000,
+   "maxSalary": 68500,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Revenue-Integrity-Analyst",
+    "Revenue-Cycle-Analyst",
+    "Healthcare-Revenue-Cycle-Analyst",
+    "Medical-Billing-Analyst",
+    "Revenue-Assurance-Associate"
+   ],
+   "parentCategories": [],
+   "description": "<h3>Thank you for considering a career at Ensemble!</h3><p>Ensemble is a leading provider of technology-enabled revenue cycle management solutions for health systems, including hospitals and affiliated physician groups. They offer end-to-end revenue cycle solutions as well as a comprehensive suite of point solutions to clients across the country.</p><p>Ensemble keeps communities healthy by keeping hospitals healthy. We recognize that healthcare requires a human touch, and we believe that every touch should be meaningful. This is why our people are the most important part of who we are. By empowering them to challenge the status quo, we know they will be the difference!</p><h3>O.N.E Purpose:</h3><ul>\n<li><p><b>Customer Obsession:</b> Consistently provide exceptional experiences for our clients, patients, and colleagues by understanding their needs and exceeding their expectations.</p></li>\n<li><p><b>Embracing New Ideas:</b> Continuously innovate by embracing emerging technology and fostering a culture of creativity and experimentation.</p></li>\n<li><p><b>Striving for Excellence:</b> Execute at a high level by demonstrating our “Best in KLAS” Ensemble Difference Principles and consistently delivering outstanding results.</p></li>\n</ul><h3>The Opportunity: </h3><p>The Revenue Integrity Associate Analyst plays a critical role in safeguarding the financial health of both acute and non‑acute organizations by managing the charge master, regulatory code changes, work queues, charge capture, reconciliation, reporting, and analytical trending. Responsible for identifying root causes of charge inefficiencies, developing corrective action plans, and implementing process improvements to ensure accurate and consistent charge capture. Evaluates charging practices, maintains the Charge Description Master, and ensures compliance with evolving coding and billing regulations. Collaborates with multidisciplinary teams to enhance hospital net revenue, lead operational improvement initiatives, and provide analytical insights into billing errors, denials, and claim edits. Educates on best practices, conducts quality assurance, and leveraging data trends to identify opportunities for training and revenue enhancement. Partners with client leadership to strengthen charge capture methodologies, supports system conversions, and fosters strong client relationships through regular rounding and site visits. Drives efficiencies in the revenue cycle.</p><br><br><h3>Total Base Pay Range:</h3>$49,000.00-$68,500.00<br><br><h3>Join an award-winning company</h3><br><p>Five-time winner of “Best in KLAS” 2020-2022, 2024-2025</p><p>Black Book Research's Top Revenue Cycle Management Outsourcing Solution 2021-2024</p><p>22 Healthcare Financial Management Association (HFMA) MAP Awards for High Performance in Revenue Cycle 2019-2024</p><p>Leader in Everest Group's RCM Operations PEAK Matrix Assessment 2024</p><p>Clarivate Healthcare Business Insights (HBI) Revenue Cycle Awards for strong performance 2020, 2022-2023</p><h3>Energage Top Workplaces USA 2022-2024</h3><p>Fortune Media Best Workplaces in Healthcare 2024</p><p>Monster Top Workplace for Remote Work 2024</p><h3>Great Place to Work certified 2023-2024</h3><ul>\n<li>Innovation</li>\n<li>Work-Life Flexibility</li>\n<li>Leadership</li>\n<li>Purpose + Values</li>\n</ul><br><p>Bottom line, we believe in empowering people and giving them the tools and resources needed to thrive. A few of those include:</p><ul>\n<li>\n<b>Associate Benefits –  </b>We offer a comprehensive benefits package designed to support the physical, emotional, and financial health of you and your family, including healthcare, time off, retirement, and well-being programs. </li>\n<li>\n<b>Our Culture</b> – Ensemble is a place where associates can do their best work and be their best selves. We put people first, last and always. Our culture is rooted in collaboration, growth, and innovation.  </li>\n<li>\n<b>Growth – </b>We invest in your professional development. Each associate will earn a professional certification relevant to their field and can obtain tuition reimbursement. </li>\n<li>\n<b>Recognition – </b>We offer quarterly and annual incentive programs for all employees who go beyond and keep raising the bar for themselves and the company. </li>\n</ul><br><p>Ensemble is an equal employment opportunity employer. It is our policy not to discriminate against any applicant or employee based on race, color, sex, sexual orientation, gender, gender identity, religion, national origin, age, disability, military or veteran status, genetic information or any other basis protected by applicable federal, state, or local laws.  Ensemble also prohibits harassment of applicants or employees based on any of these protected categories.</p><br><p>Due to business, operational, payroll, and regulatory requirements, this position is limited to individuals who reside and are authorized to work within the United States. Applications generated from outside the United States will not be considered.  Individuals may reapply when located within the United States.</p><br><p>Ensemble provides reasonable accommodations to qualified individuals with disabilities in accordance with the Americans with Disabilities Act and applicable state and local law. If you require accommodation in the application process, please contact .</p><br><p>This posting addresses state specific requirements to provide pay transparency.  Compensation decisions consider many job-related factors, including but not limited to geographic location; knowledge; skills; relevant experience; education; licensure; internal equity; time in position.  A candidate entry rate of pay does not typically fall at the minimum or maximum of the role’s range.</p><br><p>Employment Disclaimers – Ensemble</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795445240,
+   "expiryDate": 1800629240,
+   "applicationLink": "https://himalayas.app/companies/ensemble-health-partners/jobs/revenue-integrity-analyst?utm_source=api",
+   "guid": "https://himalayas.app/companies/ensemble-health-partners/jobs/revenue-integrity-analyst"
+  }
+ ]
+}

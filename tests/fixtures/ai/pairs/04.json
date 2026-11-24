@@ -1,0 +1,137 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Diego Amostra",
+    "headline": "Engenheiro de Dados Pleno",
+    "location": "São Paulo, SP",
+    "seniority": "mid",
+    "englishLevel": "intermediate",
+    "summary": "Engenheiro de dados com 5 anos de experiência em pipelines em Python, SQL e Airflow.",
+    "contact": {
+      "email": "diego.amostra@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Python",
+        "years": 5,
+        "stackId": "python"
+      },
+      {
+        "name": "SQL",
+        "years": 6,
+        "stackId": "sql"
+      },
+      {
+        "name": "Airflow",
+        "years": 3,
+        "stackId": "airflow"
+      },
+      {
+        "name": "Spark",
+        "years": 2,
+        "stackId": "spark"
+      },
+      {
+        "name": "AWS",
+        "years": 3,
+        "stackId": "aws"
+      },
+      {
+        "name": "dbt",
+        "years": 2,
+        "stackId": "dbt"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Rede Varejo Ficcional",
+        "title": "Engenheiro de Dados",
+        "startDate": "2022-01",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Orquestrou 40 pipelines no Airflow, com 99% de execuções sem falha"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Migrou 6 TB de dados do data warehouse legado para o S3 e Athena"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Modelou 25 tabelas analíticas com dbt para o time de BI"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Consultoria Dado Claro",
+        "title": "Analista de Dados",
+        "startDate": "2019-08",
+        "endDate": "2021-12",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Automatizou relatórios semanais em Python, economizando 10 horas por semana"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Escreveu consultas SQL para 3 áreas de negócio"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Fictícia de São Paulo",
+        "degree": "Tecnologia em Análise de Sistemas",
+        "startYear": "2015",
+        "endYear": "2018"
+      }
+    ]
+  },
+  "job": {
+    "id": 9003,
+    "title": "Engenheiro(a) de Dados Pleno",
+    "company": "Quasar Analytics",
+    "companyLogoUrl": null,
+    "summary": "Construção de pipelines de dados em nuvem para clientes do setor financeiro.",
+    "country": "BR",
+    "city": "São Paulo",
+    "origin": "national",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "mid",
+    "language": "pt",
+    "stacks": [
+      "python",
+      "sql",
+      "airflow",
+      "spark",
+      "aws",
+      "dbt"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9003",
+    "applyUrl": "https://vagas.exemplo.test/9003/apply",
+    "descriptionHtml": "<h3>Sobre a Quasar</h3><p>A Quasar Analytics ajuda empresas do setor financeiro a transformar dados em decisões. Somos um time de 80 pessoas, distribuído em todo o Brasil, com cultura de documentação e revisão por pares.</p><h3>Seu dia a dia</h3><p>Você fará parte de um squad responsável por plataformas de dados de clientes.</p><ul><li>Projetar, construir e manter pipelines em Python, SQL e Airflow</li><li>Processar grandes volumes com Spark</li><li>Modelar dados analíticos com dbt</li><li>Monitorar qualidade, custo e desempenho dos pipelines</li><li>Documentar contratos de dados e decisões de arquitetura</li><li>Apoiar analistas e cientistas de dados com tabelas confiáveis</li></ul><h3>Requisitos</h3><p>Buscamos experiência prática com engenharia de dados.</p><ul><li>Experiência sólida com Python e SQL</li><li>Vivência com orquestradores como Airflow</li><li>Conhecimento de serviços de dados na AWS</li><li>Boas práticas de versionamento e testes</li><li>Comunicação clara com times de negócio</li></ul><h3>Diferenciais</h3><p>Não são obrigatórios.</p><ul><li>Spark em produção</li><li>dbt</li><li>Governança e catálogo de dados</li><li>Inglês para leitura de documentação</li></ul><h3>Projetos em andamento 1</h3><p>Projeto 1: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 2</h3><p>Projeto 2: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 3</h3><p>Projeto 3: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 4</h3><p>Projeto 4: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 5</h3><p>Projeto 5: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 6</h3><p>Projeto 6: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 7</h3><p>Projeto 7: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 8</h3><p>Projeto 8: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 9</h3><p>Projeto 9: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 10</h3><p>Projeto 10: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 11</h3><p>Projeto 11: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 12</h3><p>Projeto 12: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 13</h3><p>Projeto 13: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 14</h3><p>Projeto 14: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Projetos em andamento 15</h3><p>Projeto 15: plataforma de dados para um cliente de médio porte, com ingestão de fontes transacionais, camada analítica e painéis operacionais. O time define metas trimestrais, revisa custos de nuvem todo mês e mantém um catálogo atualizado de tabelas, donos e contratos. A equipe usa revisão de código, ambientes separados e testes automatizados de qualidade de dados antes de cada publicação. Entregas são acompanhadas por indicadores de atraso, falhas e custo por pipeline, discutidos em reuniões quinzenais com os clientes e a liderança técnica.</p><ul><li>Reuniões quinzenais de acompanhamento</li><li>Plantão de dados rotativo, com compensação de horas</li><li>Documentação viva no repositório</li></ul><h3>Benefícios</h3><p>Plano de saúde, auxílio educação, horário flexível e remoto total.</p>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9003",
+        "dofollow": true
+      }
+    ]
+  }
+}

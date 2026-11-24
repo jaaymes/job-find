@@ -1,0 +1,444 @@
+{
+ "comments": "21/08/2026: Cursor pagination is now available and is the preferred way to page through the feed. Pass the nextCursor value from each response back as ?cursor=. It is faster than offset and will never return the same job twice. The offset parameter is deprecated and will be removed in a future release. 13/03/2026: The API has been updated to include the companySlug field in the response.",
+ "updatedAt": 1795446259,
+ "offset": 10,
+ "limit": 10,
+ "totalCount": 119684,
+ "nextCursor": null,
+ "jobs": [
+  {
+   "title": "Claims Complex Casualty Adjuster",
+   "excerpt": "Claims Complex Casualty AdjusterJob Summary The Claims Complex Casualty Adjuster handles complex claims involving material damage, property, and/or liability lines of insurance written by the Interinsurance Exchange in compliance with all regulatory and statutory requirements.",
+   "companyName": "AAA",
+   "companySlug": "aaa",
+   "companyLogo": "https://cdn-images.himalayas.app/qcb41v33sdkcw30vfoy78q7xcpqx",
+   "employmentType": "Full Time",
+   "minSalary": 44.66,
+   "maxSalary": 59.47,
+   "salaryPeriod": "hourly",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Claims-Adjuster",
+    "Complex-Property-Claims-Adjuster",
+    "Property-Claims-Adjuster",
+    "Casualty-Claims-Adjuster",
+    "Auto-Claims-Adjuster"
+   ],
+   "parentCategories": [
+    "Finance"
+   ],
+   "description": "Claims Complex Casualty Adjuster<p><b>Job Summary</b><br>The Claims Complex Casualty Adjuster handles complex claims involving material damage, property, and/or liability lines of insurance written by the Interinsurance Exchange in compliance with all regulatory and statutory requirements. The primary functions include liability investigation, coverage evaluation, negotiation strategies and claims resolution of complex claims. Employs discretion and independent judgment to ensure compliance with state and federal law, and with established company, technical, and customer service best practices. Under limited supervision, works within specific limits of authority to resolve claims.<br><br><b>Job Duties</b></p><ul>\n<li>Conduct phone and/or field investigations to determine liability and damages. Identify and obtain statements from insureds, claimants and witnesses. May attend and participate in legal proceedings.</li>\n<li>Communicate and interact with a variety of individuals including insureds and claimants. Explain benefits, coverages, fault and claims process either verbally or in writing which complies with regulatory and statutory requirements. Recognize and appropriately address complex coverage and subrogation issues.</li>\n<li>Evaluate and determine claim values upon receipt and assessment of property, bodily injury and liability data.</li>\n<li>Negotiate within settlement authority with insureds and claimants to resolve their first and third-party claims.</li>\n<li>Control expenses for areas of responsibility.</li>\n<li>Handle administrative functions, update database production reports, document and update claim files via company systems, i.e. CACS, HUON, HOC, GUIDEWIRE, etc.</li>\n<li>Verify and interpret/resolve coverage by gathering necessary information to ensure policy applicability. Coordinate with internal and external departments as required.</li>\n<li>Mentor other adjusters, assisting them with increasing understanding of adjudicating complex claims.</li>\n<li>Respond quickly to customer needs and problems.</li>\n<li>Independently resolve claim exposures within level of authority.</li>\n</ul><h3>Qualifications</h3><ul>\n<li>Bachelors Equivalent combination of education and experience Preferred</li>\n<li>7-9 years Property, Auto, Casualty or relevant claims experience. Required </li>\n<li>10+ years Prior claims experience. Preferred </li>\n<li>Comprehensive knowledge of claims administration best practices and procedures. </li>\n<li>Advanced knowledge of insurance, fault assessment, negligence and subrogation principles. </li>\n<li>Comprehensive understanding of building and vehicle repair procedures and third-party liability issues. </li>\n<li>Advanced knowledge of Microsoft Office suite, general computer software and claims software. </li>\n<li>Advanced organization and planning recognition skills required. </li>\n<li>Advanced oral and written communication skills required. </li>\n<li>Advanced interpersonal skills required. </li>\n<li>Advanced leadership skills among peers required. </li>\n<li>Exhibit proficiency and understanding of medical terminology and causality. </li>\n<li>Valid Driver's License, acceptable Department of Motor Vehicles record and minimum liability insurance - Issued by State   Required </li>\n<li>Chartered Property Casualty Underwriter - Insurance Institute of America   Preferred </li>\n<li>Associate in Claims - Insurance Institute of America   Preferred </li>\n<li> An insurance/claims adjuster license may be required for claims administration in specific states.   Preferred </li>\n</ul><h3>Travel Requirements</h3><ul><li>Occasional travel to business meetings or conferences. </li></ul><p>The starting pay range for this position is:</p>$44.66 - $59.47<p>Additionally, for full time positions, you will be eligible to participate in our incentive program based upon the achievement of organization, team and personal performance.</p><h3>.</h3><p><b>Remarkable benefits:</b><br>•    Health coverage for medical, dental, vision</p><p>•    401(K) saving plans with company match AND Pension    </p><h3>•    Tuition assistance</h3><p>•    Floating holidays and PTO for community volunteer programs</p><h3>•    Paid parental leave</h3><h3>•    Wellness programs</h3><p>•    Employee discounts (membership, insurance,</p><p>            travel, entertainment, services and more!)</p>Auto Club Enterprises is the largest club within the national <a href=\"https://himalayas.app/companies/aaa\">AAA</a> federation.  We have nearly 17,000 employees in 24 states helping more than 18 million members.  The strength of our organization is our employees.  Bringing together and supporting different cultures, backgrounds, personalities, and strengths creates a team capable of delivering legendary, lifetime service to our members.  When we embrace our diversity – we win.  All of Us!  With our national brand recognition, long-standing reputation since 1900, and constantly growing membership, we are seeking career-minded, service-driven professionals to join our team.<p>“Through dedicated employees we proudly deliver legendary service and beneficial products that provide members peace of mind and value.”</p><h3>\n<a href=\"https://himalayas.app/companies/aaa\">AAA</a> is an Equal Opportunity Employer</h3><p>Our organization participates in E-Verify</p><p><b>The Automobile Club of Southern California will consider for employment all qualified applicants, including those with criminal histories, in a manner consistent with the requirements of applicable federal, state, and local laws, including the City of Los Angeles’ Fair Chance Initiative for Hiring Ordinance (FCIHO), the Unincorporated Los Angeles County (ULAC) regulation, and the California Fair Chance Act (CFCA). </b></p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444809,
+   "expiryDate": 1800628808,
+   "applicationLink": "https://himalayas.app/companies/aaa/jobs/claims-complex-casualty-adjuster?utm_source=api",
+   "guid": "https://himalayas.app/companies/aaa/jobs/claims-complex-casualty-adjuster"
+  },
+  {
+   "title": "Grid Protection Engineer",
+   "excerpt": "Ready to make a difference?  ICF is seeking a Senior Grid Protection Engineer to support the development of protective relay settings for high-voltage substation projects ranging from 12 kV through 500 kV.",
+   "companyName": "ICF",
+   "companySlug": "icf",
+   "companyLogo": "https://cdn-images.himalayas.app/jduduh5ao9nkg59dqaxj2d0yvx2g",
+   "employmentType": "Full Time",
+   "minSalary": 98614,
+   "maxSalary": 167644,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Grid-Protection-Engineering",
+    "Protection-Engineer",
+    "Power-Systems-Engineer",
+    "Electrical-Engineer",
+    "Relay-Settings-Engineer"
+   ],
+   "parentCategories": [
+    "Hardware Engineer"
+   ],
+   "description": "<h3>Ready to make a difference?</h3><br><p><a href=\"https://himalayas.app/companies/icf\">ICF</a> is seeking a <b>Senior Grid Protection Engineer</b> to support the development of protective relay settings for high-voltage substation projects ranging from 12 kV through 500 kV.</p><br><p>You will perform short-circuit and protection studies, develop relay settings and calculation packages, review protection and control designs, and provide technical support during implementation. You will work closely with engineers, designers, project managers, and utility clients to deliver reliable, accurate, and high-quality protection solutions.</p><p>We are a relentlessly client-focused team reimagining, redesigning, and re-engineering how electric utilities address industry challenges. We are looking for motivated and innovative professionals who want to strengthen grid reliability while continuing to grow their technical expertise.</p><br><h3>Why you will love working here:</h3><ul>\n<li>\n<b>Quality of life:</b> Flexible workplace arrangements and a strong focus on work-life balance</li>\n<li>\n<b>Investment in you:</b> Tuition reimbursement, professional development resources, 401(k) matching, and an Employee Stock Purchase Plan</li>\n<li>\n<b>Investment in the community:</b> Donation matching and volunteer opportunities</li>\n<li>And many more benefits. Ask your recruiter for additional details.</li>\n</ul><h3>What you will be doing:</h3><ul>\n<li>Perform short-circuit model reviews and identify data or modeling issues that may affect protection studies.</li>\n<li>Conduct short-circuit and protection coordination studies using software such as CAPE/Gridscale X Advanced Protection Assessment, ASPEN OneLiner, CYME, or similar power-system analysis tools.</li>\n<li>Develop and review calculation packages used to determine protective relay settings and coordination requirements.</li>\n<li>Configure settings files for microprocessor-based protective relays.</li>\n<li>Review protection and control design packages to confirm that relay settings, logic, schematics, and design intent are accurately aligned.</li>\n<li>Review relay logic and control schemes for proper implementation of protection philosophies.</li>\n<li>Support the development of NERC PRC compliance documentation, including calculations, reports, and supporting technical records.</li>\n<li>Coordinate with protection and control engineers, substation designers, project managers, and client representatives to resolve technical questions and support project delivery.</li>\n<li>Provide remote technical support to relay test engineers and field personnel during the installation, testing, and commissioning of relay settings.</li>\n<li>Perform quality-control checks on technical calculations, relay settings, and project documentation.</li>\n<li>Maintain organized and accurate project files in accordance with client and company standards.</li>\n<li>Continue developing knowledge of protective relaying, utility standards, industry practices, and emerging grid technologies.</li>\n<li>Manage assigned work independently while meeting project schedules, quality expectations, and client requirements.</li>\n<li>Perform technical and quality reviews of protection studies, relay settings, calculations, and documentation prepared by other engineers.</li>\n<li>Support the development of newer and less-experienced engineers through technical guidance, training, mentorship, and assistance with project execution and engineering workflows.</li>\n</ul><br><h3>What we need you to have (minimum qualifications):</h3><ul>\n<li>Bachelor’s degree in Electrical Engineering, Computer Engineering, or a closely related engineering discipline.</li>\n<li>5+ years of professional experience in protective relaying, relay settings development, power-system protection, substation protection and control, or a closely related area.</li>\n<li>Experience performing short-circuit studies, protection coordination studies, or relay-setting calculations.</li>\n<li>Experience using at least one power-system analysis or protection software platform, such as CAPE/Gridscale X, ASPEN OneLiner, CYME, ETAP, or similar software.</li>\n<li>Understanding of electric power systems, including substations, transmission or distribution systems, fault analysis, and protective relay applications.</li>\n<li>Ability to read and interpret protection and control drawings, including one-line diagrams, AC/DC schematics, and relay logic diagrams.</li>\n<li>Proficiency with Microsoft Office applications, particularly Excel and Word.</li>\n<li>Strong analytical, organizational, and technical documentation skills.</li>\n<li>Ability to communicate technical concepts clearly to engineering team members, clients, field personnel, and nontechnical stakeholders.</li>\n<li>Ability to manage multiple assignments, work independently in a remote environment, and meet project deadlines.</li>\n</ul><br><p><b>What we would like you to have (preferred qualifications):</b></p><ul>\n<li>Experience with developing settings for Schweitzer Engineering Laboratories (SEL) protective relays.</li>\n<li>Experience creating or reviewing relay logic, protection philosophies, coordination curves, and settings calculation reports.</li>\n<li>Experience supporting protection systems for high-voltage substations ranging from 12 kV through 500 kV.</li>\n<li>Knowledge of transmission and distribution protection applications, including line, transformer, bus, breaker-failure, capacitor-bank, or feeder protection.</li>\n<li>Familiarity with applicable NERC PRC standards, utility protection practices, and relevant IEEE standards.</li>\n<li>Experience supporting relay testing, commissioning, or field implementation activities.</li>\n<li>Experience using programming, scripting, spreadsheet automation, or other tools to improve engineering calculations and workflows.</li>\n<li>Engineer-in-Training certification or progress toward professional engineering licensure.</li>\n<li>Previous experience working for an electric utility, engineering consulting firm, relay manufacturer, or power-delivery organization.</li>\n<li>Experience leveraging AI, automation, or other emerging digital tools to improve engineering workflows, increase efficiency, and enhance the quality and consistency of technical deliverables.</li>\n</ul><h3>#GEA25</h3><p><b>Working at <a href=\"https://himalayas.app/companies/icf\">ICF</a></b></p><a href=\"https://himalayas.app/companies/icf\">ICF</a> is a global advisory and technology services provider, but we’re not your typical consultants. We combine unmatched expertise with cutting-edge technology to help clients solve their most complex challenges, navigate change, and shape the future.<br><p>We can only solve the world's toughest challenges by building a workplace that allows everyone to thrive. We are an equal opportunity employer. Together, our employees are empowered to share their expertise and collaborate with others to achieve personal and professional goals. For more information, please read our EEO policy.</p><br><p>We will consider for employment qualified applicants with arrest and conviction records.</p><br><h3>Work Authorization and Sponsorship</h3><p>All candidates must be authorized to work in the United States. This position is not eligible for new H-1B visa sponsorship by <a href=\"https://himalayas.app/companies/icf\">ICF</a>. Candidates who currently hold valid work authorization may be considered for a change of employer petition, subject to company policy and applicable immigration requirements.</p><h3>Reasonable Accommodations</h3><p>Reasonable Accommodations are available, including, but not limited to, for disabled veterans, individuals with disabilities, and individuals with sincerely held religious beliefs, in all phases of the application and employment process. To request an accommodation, please email  and we will be happy to assist. All information you provide will be kept confidential and will be used only to the extent required to provide needed reasonable accommodations.  </p><br><p>Read more about workplace discrimination rights or our benefit offerings which are included in the Transparency in (Benefits) Coverage Act.</p><br><h3>Bot and Third-Party Applications</h3><p>Please note that this application must be submitted directly by the applicant for consideration. Failure to do so may result in the application being excluded for consideration.  Applicants needing an accommodation for disability or religious purposes in connection with the application process should contact  for assistance.</p><h3>Candidate AI Usage Policy</h3><p>At <a href=\"https://himalayas.app/companies/icf\">ICF</a>, we are committed to ensuring a fair interview process for all candidates based on their own skills and knowledge. As part of this commitment, the use of artificial intelligence (AI) tools to generate or assist with responses during interviews (whether in-person or virtual) is not permitted. This policy is in place to maintain the integrity and authenticity of the interview process.  </p><br><p>However, we understand that some candidates may require accommodation that involves the use of AI. If such an accommodation is needed, candidates are instructed to contact us in advance at . We are dedicated to providing the necessary support to ensure that all candidates have an equal opportunity to succeed.  </p><br><h3>Pay Range</h3><p>There are multiple factors that are considered in determining final pay for a position, including, but not limited to, relevant work experience, skills, certifications and competencies that align to the specified role, geographic location, education and certifications as well as contract provisions regarding labor categories that are specific to the position. </p><br><p>The pay range for this position based on full-time employment is:</p>$98,614.00 - $167,644.00Nationwide Remote Office (US99)<p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444508,
+   "expiryDate": 1800628507,
+   "applicationLink": "https://himalayas.app/companies/icf/jobs/grid-protection-engineer?utm_source=api",
+   "guid": "https://himalayas.app/companies/icf/jobs/grid-protection-engineer"
+  },
+  {
+   "title": "Manager, Supply Chain Supplier Management",
+   "excerpt": "Company: US6469 Sysco Payroll, Division of Sysco Resources Services, LLCSales Territory: NoneZip Code: 77077Travel Percentage: 0Compensation Range: $88,500.",
+   "companyName": "Sysco",
+   "companySlug": "sysco",
+   "companyLogo": "https://cdn-images.himalayas.app/0f7zpgnwd8kq35ycyuo6b28qtwrz",
+   "employmentType": "Full Time",
+   "minSalary": 88500,
+   "maxSalary": 132700,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Supply-Chain-Manager",
+    "Supplier-Manager",
+    "Procurement-Manager",
+    "Supply-Chain-Analytics-Manager",
+    "Inventory-Planner"
+   ],
+   "parentCategories": [
+    "Operations",
+    "Logistics"
+   ],
+   "description": "<h3>Company:</h3>US6469 <a href=\"https://himalayas.app/companies/sysco\">Sysco</a> Payroll, Division of <a href=\"https://himalayas.app/companies/sysco\">Sysco</a> Resources Services, LLC<h3>Sales Territory:</h3>None<h3>Zip Code:</h3>77077<h3>Travel Percentage:</h3>0<h3>Compensation Range:</h3>$88,500.00 - $132,700.00<p>The compensation range provided is in compliance with state specific laws.  Factors that may be used to determine your actual rate of pay include your specific skills, years of experience and other factors.  </p>You may be eligible to participate in the Company's Incentive Plan.<h3>BENEFITS INFORMATION:</h3>For information on <a href=\"https://himalayas.app/companies/sysco\">Sysco</a>’s Benefits, please visit <p><b>Job Summary:</b></p><p>Responsible for developing and executing processes and strategies to enable Supply Planning by collaborating with our supplier partners to plan and control inventory needs, efficient ordering methods, and increase operational efficiencies to generate optimum service levels and achieve KPIs.  An example of this strategy in action is engagement with a joint business plan to review and assess the supplier’s ability to service our forecasted needs and work cross-collaboratively internally and externally to achieve the highest supplier fill rate, inventory leveling throughout the network, and customer experience. This role achieves its business value by directing suppliers where to ship supply, cross functionally with Commercial teams for inventory shortages and other supply chain issues and executes defines processes to increase inbound operational metrics.</p><p>Design and executes policy, develops scorecards to track key metrics and KPIs.  Maintains collaborative working relationships and strong Communication with Commercial, GSC Merchandising, Field Operations, Business Technology, Field Merchandising, SBS, Finance, business unit leadership teams, and Executive Leadership.</p><p>Detailed knowledge of wholesale distribution allows for innovative concepts and promoting new ideas. Provides vision and direction to various stakeholders across the organization. Recognized as an influential leader within and outside the organization.</p><p><b>Duties and Responsibilities:</b></p><ul>\n<li>Execute process and strategy to directly engage with the key supplier community. Collect supplier information and create processes that enhance coordination with Suppliers driving improvements in critical Supply Chain KPI’s.</li>\n<li>Design metrics and tracking mechanisms to calculate the effectiveness of the suppliers and create methods to improve supplier fill rate and customer experience such that site capacity, product shelf life, and aging/obsolete run rates aren’t negatively impacted.  Communicate actions to stakeholders. </li>\n<li>Systems and Data Management:  Oversee processes and reporting driving to clear actionable insights into supply planning within our supplier community.  Lead and sponsor systems development efforts to increase system utilization or automate processes</li>\n<li>Monitor, influence and develop controls to ensure suppliers are within compliance. Develop processes to proactively identify compliance or inventory leveling issues and then processes to remediate. Report bottom line benefit associated to key stakeholders.</li>\n<li>Transactional Automation – Aggressively identify processing, data collection and other related manual work for replacement by automation.  Replace transactional time with business value added functions.</li>\n<li>Responsible for driving issue and escalation resolution for assigned suppliers such as (but not limited to) RDC Redistribution fulfillment, supplier fulfillment, seasonal planning, excess inventory management, etc</li>\n</ul><p><b>Education Required:</b></p><ul><li>Bachelor’s Degree or six years’ experience in foodservice, wholesale or retail inventory management roles</li></ul><p><b>Education Preferred:</b></p><ul><li>Bachelor’s Degree in a quantitative discipline such as Finance, Supply Chain, or Procurement and Supply Contracts</li></ul><p><b>Experience Required</b></p><ul>\n<li>Five years of wholesale, foodservice distribution or retail distribution experience</li>\n<li>Must have a minimum of 4 years management experience with multiple direct reports</li>\n<li>Six years’ experience in lieu of Bachelor’s.</li>\n</ul><p><b>Technical Skills and Abilities:</b></p><ul>\n<li>Interacts internally and externally with executive level management, suppliers, supply chain and/or Commercial analysts, warehouse operations and corporate leaders requiring negotiation skills to achieve this role’s goals as well as others’</li>\n<li>Effective working in a heavily matrixed environment</li>\n<li>Requires in-depth knowledge of the function, business strategies, and the company’s goals as well as external factors that may impact Purchase Cost Variance Management</li>\n<li>Thorough assessment of intangible variables, identifies and evaluates core issues, providing strategy and direction for major functional areas</li>\n<li>Advanced analytical and communication skills</li>\n</ul><h3>Physical Demands:</h3><ul><li>Reasonable accommodations will be made to enable individuals with disabilities to perform the essential functions of this job.</li></ul><p><b>Travel Requirements:</b></p><ul><li>Travel up to 5 percent of the time</li></ul><h3>OVERVIEW:</h3><p><a href=\"https://himalayas.app/companies/sysco\">Sysco</a> is the global leader in foodservice distribution. With over 71,000 colleagues and a fleet of over 13,000 vehicles, <a href=\"https://himalayas.app/companies/sysco\">Sysco</a> operates approximately 333 distribution facilities worldwide and serves more than 700,000 customer locations.</p><p>We offer our colleagues the opportunity to grow personally and professionally, to contribute to the success of a dynamic organization, and to serve others in a manner that exceeds their expectations. We’re looking for talented, hard-working individuals to join our team. Come grow with us and let us show you why <a href=\"https://himalayas.app/companies/sysco\">Sysco</a> is at the heart of food and service.</p><h3>AFFIRMATIVE ACTION STATEMENT:</h3><p>Applicants must be currently authorized to work in the United States.</p><p>We are proud to be an Equal Opportunity and Affirmative Action employer, and consider qualified applicants without regard to race, color, creed, religion, ancestry, national origin, sex, sexual orientation, gender identity, age, disability, veteran status or any other protected factor under federal, state or local law.</p><p>This opportunity is available through <a href=\"https://himalayas.app/companies/sysco\">Sysco</a> Corporation, its subsidiaries and affiliates.</p><div><div><div><div><div><div><div><h3>Anticipated Close Date:</h3></div></div></div></div></div></div></div><div><div><div><div><div><div><div><p>The deadline may be extended in good faith based on business needs.  The posting will be updated when the deadline is extended.</p></div></div></div></div></div></div></div><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444427,
+   "expiryDate": 1800628427,
+   "applicationLink": "https://himalayas.app/companies/sysco/jobs/manager-supply-chain-supplier-management?utm_source=api",
+   "guid": "https://himalayas.app/companies/sysco/jobs/manager-supply-chain-supplier-management"
+  },
+  {
+   "title": "Clinical Innovation Delivery Principal",
+   "excerpt": "Become a part of our caring community The Clinical Innovation Delivery Principal leads execution of priority Clinical Innovation initiatives by coordinating cross-functional and regional teams, monitoring performance, and driving accountability for implementation.",
+   "companyName": "Humana",
+   "companySlug": "humana",
+   "companyLogo": "https://cdn-images.himalayas.app/1g3s0vd2kg0b6yshyfzsrs0lta7u",
+   "employmentType": "Full Time",
+   "minSalary": 138900,
+   "maxSalary": 191000,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Program-Manager",
+    "Healthcare-Program-Manager",
+    "Transformation-Program-Manager",
+    "Operations-Manager",
+    "Project-Manager"
+   ],
+   "parentCategories": [
+    "Product",
+    "Operations"
+   ],
+   "description": "<h3>\n<b>Become a part of our caring community</b><br>\n</h3>The Clinical Innovation Delivery Principal leads execution of priority Clinical Innovation initiatives by coordinating cross-functional and regional teams, monitoring performance, and driving accountability for implementation. Working independently in a highly matrixed environment, this role partners across Clinical, Pharmacy, Stars, Medicare Risk Adjustment, Operations, and Regional teams to advance initiative outcomes and resolve execution barriers.<p>Serving as a strategic integrator, the Principal translates enterprise priorities into coordinated delivery. Early responsibilities include establishing portfolio operating mechanisms, governance processes, delivery plans, leading performance metrics, and issue-resolution pathways; aligning stakeholders on priorities, ownership, dependencies, and tradeoffs; and advising senior leaders on decisions required to advance execution. As the function matures, the Principal will lead high-visibility enterprise initiatives from concept through implementation, adoption, and value realization. </p><p>Success in this role requires a leader who thrives in ambiguous and evolving environments, creates structure where no established playbook exists, and moves fluidly between enterprise strategy and operational detail. The successful candidate mobilizes diverse partners, balances time, energy, and resources across a changing portfolio of competing priorities, and uses sound judgment, structured problem solving, executive presence, and influence without direct authority to establish accountability, resolve barriers, and deliver measurable, sustainable results. The Principal builds and institutionalizes new capabilities within accountable business functions, then redirects focus to the enterprise’s next highest-value opportunity. </p><h3>Responsibilities</h3><h3>Drive Initiative Execution</h3><ul><li>Coordinate implementation of high-priority Clinical Innovation initiatives.</li></ul><ul><li>Develop and manage delivery plans, milestones, risks, and dependencies.</li></ul><ul><li>Identify barriers to execution and facilitate resolution with key stakeholders.</li></ul><h3>Partner with Regional and Enterprise Teams</h3><ul><li>Work with regional and functional leaders to support successful implementation of initiatives.</li></ul><ul><li>Align stakeholders on priorities, roles, and timelines.</li></ul><ul><li>Share leading practices and lessons learned across Regions.</li></ul><h3>Support Governance and Decision-Making</h3><ul><li>Prepare materials, insights, and recommendations for leadership discussions.</li></ul><ul><li>Facilitate cross-functional meetings to support decision-making and issue resolution.</li></ul><ul><li>Track commitments, actions, and outcomes through completion.</li></ul><h3>Monitor Performance and Outcomes</h3><ul><li>Maintain dashboards and reporting to track initiative performance and progress.</li></ul><ul><li>Analyze results and identify opportunities to improve implementation and adoption.</li></ul><ul><li>Communicate key risks, insights, and outcomes to leadership.</li></ul><h3>\n<br><b>Use your skills to make an impact </b><br>\n</h3><h3>Required Qualifications</h3><ul><li>Bachelor's degree</li></ul><ul><li>10 or more years of experience in healthcare operations, program delivery, performance improvement, business operations and/or consulting</li></ul><ul><li>5 or more years leading large-scale cross-functional initiatives</li></ul><ul><li>Demonstrated success leading complex programs and driving measurable business results.</li></ul><ul><li>Proven ability to independently influence senior leaders and executive stakeholders, align competing priorities, and drive decisions and outcomes in a highly matrixed organization without direct authority.</li></ul><ul><li>Strong analytical, operational, and problem-solving skills.</li></ul><ul><li>Excellent communication, facilitation, and relationship-building skills, with the ability to present effectively to senior leaders.</li></ul><h3>Preferred Qualifications</h3><ul><li>MBA, MHA, MPH, or other relevant advanced degree, or equivalent experience.</li></ul><ul><li>Experience working across Clinical, Stars, Medicare Risk Adjustment, Pharmacy, Market Operations, or related healthcare functions.</li></ul><ul><li>Experience independently leading enterprise implementation, performance improvement, or transformation initiatives from planning through adoption and measurable value realization.</li></ul><ul><li>Experience supporting executive governance forums and senior leadership teams.</li></ul><h3>Additional Information</h3><p>To ensure Home or Hybrid Home/Office employees’ ability to work effectively, the self-provided internet service of Home or Hybrid Home/Office employees must meet the following criteria:<br>At minimum, a download speed of 25 Mbps and an upload speed of 10 Mbps is required; wireless, wired cable or DSL connection is suggested.</p><p>Satellite, cellular and microwave connection can be used only if approved by leadership.<br>Employees who live and work from Home in the state of California, Illinois, Montana, or South Dakota will be provided a bi-weekly payment for their internet expense.</p><p><a href=\"https://himalayas.app/companies/humana\">Humana</a> will provide Home or Hybrid Home/Office employees with telephone equipment appropriate to meet the business requirements for their position/job.<br>Work from a dedicated space lacking ongoing interruptions to protect member PHI / HIPAA information.</p><p>As part of our hiring process for this opportunity, we will be using an interviewing technology called HireVue to enhance our hiring and decision-making ability. HireVue allows us to quickly connect and gain valuable information from you pertaining to your relevant skills and experience at a time that is best for you.</p><br><p><a href=\"https://himalayas.app/companies/humana\">Humana</a> values personal identity protection. Please be aware that applicants may be asked to provide their Social Security Number, if it is not already on file. When required, an email will be sent from  with instructions on how to add the information into your official application on <a href=\"https://himalayas.app/companies/humana\">Humana</a>’s secure website.</p>Work at Home Requirements: To ensure Home or Hybrid Home/Office employees’ ability to work effectively, the self-provided internet service of Home or Hybrid Home/Office employees must meet the following criteria: At minimum, a download speed of 25 Mbps and an upload speed of 10 Mbps is required; wireless, wired cable or DSL connection is suggested. In certain roles, the minimum recommended internet speed required by <a href=\"https://himalayas.app/companies/humana\">Humana</a> may not be sufficient for business needs. <a href=\"https://himalayas.app/companies/humana\">Humana</a> reserves the right to require associates to upgrade their internet service if necessary. Work from a dedicated space lacking ongoing interruptions to protect member PHI / HIPAA information.Travel: While this is a remote position, occasional travel to <a href=\"https://himalayas.app/companies/humana\">Humana</a>'s offices for training or meetings may be required.<h3>Scheduled Weekly Hours</h3>40<h3>Pay Range</h3>The compensation range below reflects a good faith estimate of starting base pay for full time (40 hours per week) employment at the time of posting. The pay range may be higher or lower based on geographic location and individual pay will vary based on demonstrated job related skills, knowledge, experience, education, certifications, etc.$138,900 - $191,000 per yearThis job is eligible for a bonus incentive plan. This incentive opportunity is based upon company and/or individual performance.<h3>Description of Benefits</h3><a href=\"https://himalayas.app/companies/humana\">Humana</a>, Inc. and its affiliated subsidiaries (collectively, “<a href=\"https://himalayas.app/companies/humana\">Humana</a>”) offers competitive benefits that support whole-person well-being. Associate benefits are designed to encourage personal wellness and smart healthcare decisions for you and your family while also knowing your life extends outside of work. Among our benefits, <a href=\"https://himalayas.app/companies/humana\">Humana</a> provides medical, dental and vision benefits, 401(k) retirement savings plan, time off (including paid time off, company and personal holidays, paid parental and caregiver leave), short-term and long-term disability, life insurance and many other opportunities.Application Deadline: 11-24-2026<h3>\n<br><b>About us</b><br>\n</h3>About <a href=\"https://himalayas.app/companies/humana\">Humana</a>: <a href=\"https://himalayas.app/companies/humana\">Humana</a> Inc. (NYSE: HUM) is a leading U.S. healthcare company. Through our <a href=\"https://himalayas.app/companies/humana\">Humana</a> insurance services and our CenterWell healthcare services, we make it easier for the millions of people we serve to achieve their best health – delivering the care and service they need, when they need it. These efforts are leading to a better quality of life for people with Medicare and Medicaid, families, individuals, military service personnel, and communities at large. Learn more about what we offer at <a href=\"https://himalayas.app/companies/humana\">Humana</a>.com and at CenterWell.com.<h3>​</h3><h3>Equal Opportunity Employer</h3><p>It is the policy of <a href=\"https://himalayas.app/companies/humana\">Humana</a> not to discriminate against any employee or applicant for employment because of race, color, religion, sex, sexual orientation, gender identity, national origin, age, marital status, genetic information, disability or protected veteran status. It is also the policy of <a href=\"https://himalayas.app/companies/humana\">Humana</a> to take affirmative action, in compliance with Section 503 of the Rehabilitation Act and VEVRAA, to employ and to advance in employment individuals with disability or protected veteran status, and to base all employment decisions only on valid job requirements. This policy shall apply to all employment actions, including but not limited to recruitment, hiring, upgrading, promotion, transfer, demotion, layoff, recall, termination, rates of pay or other forms of compensation and selection for training, including apprenticeship, at all levels of employment.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444083,
+   "expiryDate": 1800628083,
+   "applicationLink": "https://himalayas.app/companies/humana/jobs/clinical-innovation-delivery-principal?utm_source=api",
+   "guid": "https://himalayas.app/companies/humana/jobs/clinical-innovation-delivery-principal"
+  },
+  {
+   "title": "Direct Response Copywriter - Vollzeit (m/w/d)",
+   "excerpt": "Wir suchen neue Mitarbeiter (m/w/d) für unser Werbetexterteam, die uns bei der präzisen textlichen Konzeption von Werbeanzeigen, Webseiten und E-Mail-Kampagnen unterstützen.",
+   "companyName": "resonads GmbH",
+   "companySlug": "resonads-gmbh",
+   "companyLogo": "",
+   "employmentType": "Full Time",
+   "minSalary": 4000,
+   "maxSalary": 4000,
+   "salaryPeriod": "monthly",
+   "seniority": [
+    "Mid-level"
+   ],
+   "currency": "EUR",
+   "locationRestrictions": [
+    "Germany"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Direct-Response-Copywriting",
+    "Copywriting",
+    "Marketing",
+    "Email-Marketing",
+    "Content-Marketing",
+    "Social-Media-Marketing",
+    "Direct-Response-Copywriter",
+    "Performance-Marketing-Copywriter"
+   ],
+   "parentCategories": [
+    "Marketing"
+   ],
+   "description": "<img><p>Wir suchen neue Mitarbeiter (m/w/d) für unser Werbetexterteam, die uns bei der präzisen textlichen Konzeption von Werbeanzeigen, Webseiten und E-Mail-Kampagnen unterstützen. Als Direct Response Copywriter (m/w/d) bei resonads unterstützt du unseren Kunden dabei, gezielte und wirkungsvolle Marketing-Ansprachen zu entwickeln und ihre Marke klar und überzeugend in Schrift und Video auf Social Media zu präsentieren. Wir freuen uns darüber deine aussagekräftigen Arbeitsproben zu sehen, diese kannst du einfach in deiner Bewerbung hinzufügen.</p><h3>Aufgabenbereich:</h3><ul>\n<li><p>Du erstellst präzise, gut strukturierte und verkaufsstarke Werbetexte für Anzeigen, Webseiten und E-Mail-Kampagnen, die auf klaren Zielsetzungen basieren.</p></li>\n<li><p>Du entwickelst durchdachte E-Mail-Sequenzen, um unsere Kunden gezielt und wirkungsvoll anzusprechen.</p></li>\n<li><p>Du analysierst und verstehst die Zielgruppen unserer Kunden im Detail und entwickelst Botschaften, die genau auf ihre Bedürfnisse abgestimmt sind.</p></li>\n<li><p>Du planst und realisierst strategisch ausgearbeitete Marketing-Kampagnen, insbesondere im Beratungsmarkt, die auf messbaren Erfolgen basieren.</p></li>\n</ul><p>Das Team bei resonads arbeitet täglich mit Struktur und Zielstrebigkeit daran, gemeinsam zur führenden Marketingagentur in Deutschland zu werden. Bei uns hat jeder Mitarbeiter die Möglichkeit, seine Stärken gezielt einzusetzen, sich fachlich weiterzuentwickeln und kontinuierlich strukturiert zu arbeiten. Hochmoderne Arbeitsplätze, eine überdurchschnittliche Gehaltsstruktur sowie eine professionelle Arbeitsumgebung sind für uns selbstverständlich. </p><p>Wir suchen engagierte Mitarbeiter, die gemeinsam mit uns ein moderates Wachstum erzielen und Verantwortung übernehmen wollen. Wenn du Lust auf einen routinierten Job in der Marketingbranche hast, freuen wir uns auf deine Bewerbung!</p><p>Auf unserem YouTube-Kanal erhältst du in einem Interview einen Einblick in die Stelle des Copywriters → Klicke hier und schaue dir das Video auf YouTube an.</p><p>Wenn du weitere Informationen zu unserem Unternehmen und deiner Karriere bei <a href=\"https://himalayas.app/companies/resonads-gmbh\">resonads GmbH</a> haben möchtest, findest du diese auf www.karriere.resonads.com.</p><h3>Gehalt: 4.000 Euro pro Monat (brutto) </h3><p>Weiterentwicklungs- und Aufstiegsmöglichkeiten in den nächsten Jahren sind vorhanden.<br>Die Einarbeitungsphase dauert in der Regel 2–6 Monate.</p><h3>Wir bieten:</h3><ul><li><p><strong>Sicherer Arbeitsplatz:</strong> Jede Person, die wir einstellen, soll langfristig beruflich mit uns wachsen. Das Ziel jeder Einstellung ist eine unbefristete Übernahme. Wir betreuen ein breit gestreutes Portfolio an Kunden und besitzen dadurch eine hohe Planungssicherheit.</p></li></ul><ul><li><p><strong>Tolle Arbeitsatmosphäre:</strong> Bei resonads ziehen wir an einem Strang und arbeiten täglich daran, gemeinsam Bestleistungen zu erreichen. Der Umgang untereinander ist kollegial und professionell.</p></li></ul><ul><li><p><strong>Strukturiertes Arbeiten</strong>: Bei resonads legen wir großen Wert auf klare Prozesse, sodass du immer genau weißt, was zu tun ist. Zu Beginn wirst du intensiv eingearbeitet und profitierst von einem internen Schulungssystem, mit dem du dein berufliches Wissen kontinuierlich weiterentwickeln kannst.</p></li></ul><ul><li><p><strong>Gute Vergütung &amp; Karrierechancen: </strong>Wir vergüten deine Leistung fair, und du profitierst von unserem stetigen Wachstum sowie von vermögenswirksamen Leistungen. In den kommenden Jahren werden wir weiter wachsen und expandieren – dafür suchen wir zusätzliche Experten und/oder Führungskräfte.</p></li></ul><ul><li><p><strong>Weiterentwicklungsmöglichkeiten:</strong> Du erhältst Zugriff auf aktuelles Wissen im Bereich Online-Marketing – sowohl aus den USA als auch aus dem deutschsprachigen Raum. Du hast die Möglichkeit, dich kontinuierlich beruflich weiterzubilden und jederzeit auf die derzeit effektivsten Strategien im Copywriting zuzugreifen.</p></li></ul><h3>Requirements</h3><ul>\n<li><p>Vorkenntnisse im Copywriting oder im Marketing sind vorteilhaft, aber auch Quereinsteiger mit strukturiertem und analytischem Denken erhalten bei uns die Chance bei uns zu starten.</p></li>\n<li><p>Du schätzt strukturierte Abläufe und bist in der Lage, etablierten Prozessen zu folgen.</p></li>\n</ul><ul>\n<li><p>Flexible Arbeitszeiten und Remote-Option.</p></li>\n<li><p>Du verfügst über eine fehlerfreie schriftliche und sprachliche Ausdrucksform in deutscher Sprache und kannst komplexe Sachverhalte klar und verständlich vermitteln.</p></li>\n<li><p>Du bist in der Lage, komplexe Themen systematisch zu analysieren und in einfachen, nachvollziehbaren Worten darzustellen.</p></li>\n</ul><ul><li><p>Hervorragende Englischkenntnisse in Wort und Schrift</p></li></ul><ul>\n<li><p>Deine kommunikativen Fähigkeiten sind ausgeprägt, und du kannst in verschiedenen Kontexten klar und effizient kommunizieren.</p></li>\n<li><p>Du gehst souverän mit Leistungsdruck um und behältst auch in intensiven Phasen den Überblick.</p></li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444052,
+   "expiryDate": 1800628052,
+   "applicationLink": "https://himalayas.app/companies/resonads-gmbh/jobs/direct-response-copywriter-vollzeit-m-w-d-3709758426?utm_source=api",
+   "guid": "https://himalayas.app/companies/resonads-gmbh/jobs/direct-response-copywriter-vollzeit-m-w-d-3709758426"
+  },
+  {
+   "title": "M&A and CAPEX Valuations Manager",
+   "excerpt": "Date Posted: 2026-10-29Country: United States of AmericaLocation: Florida - RemoteWHY JOIN FCS At Florida Cancer Specialists & Research Institute, we believe our people are our strength and we invest in them.",
+   "companyName": "Florida Cancer Specialists & Research Institute",
+   "companySlug": "florida-cancer-specialists-research-institute",
+   "companyLogo": "https://cdn-images.himalayas.app/cqgympyi3l3dxvg55g0rez7zrfdz",
+   "employmentType": "Full Time",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "United States"
+   ],
+   "timezoneRestrictions": [
+    -10,
+    -9,
+    -8,
+    -7,
+    -6,
+    -5,
+    14
+   ],
+   "categories": [
+    "Valuations-Manager",
+    "Corporate-Development-Manager",
+    "Financial-Planning-And-Analysis-Manager",
+    "Capital-Projects-Manager"
+   ],
+   "parentCategories": [],
+   "description": "<h3>Date Posted:</h3>2026-10-29<h3>Country:</h3>United States of America<p><b>Location:</b></p>Florida - Remote<h3><b>WHY JOIN FCS </b></h3><p>At Florida Cancer Specialists &amp; Research Institute, we believe our people are our strength and we invest in them. In addition to having a positive impact on the people and communities we serve, associates benefit from significant professional opportunities, career advancement, training and competitive wages.</p><p><i>Offering competitive salaries and comprehensive benefits packages to include tuition reimbursement, 401-K match, pet and legal insurance.</i></p><h3><b>A LITTLE BIT ABOUT FCS </b></h3><p>Since 1984, Florida Cancer Specialists &amp; Research Institute &amp; Research Institute (FCS) has built a national reputation for excellence.  With over 250 physicians, 220 nurse practitioners and physician assistants and nearly 100 locations in our network.  Utilizing innovative clinical research, cutting-edge technologies, and advanced treatments, we are committed to providing world-class cancer care.  We are recognized by the American Society of Clinical Oncology (ASCO) with a national Clinical Trials Participation Award, FCS offers patients access to more clinical trials than any private oncology practice in Florida. Our patients have access to ground-breaking therapies, in a community setting, and may participate in national clinical research studies of drugs and treatment protocols. In the past five years, the majority of new cancer drugs approved for use in the U.S. were studied in clinical trials with FCS participation prior to approval.</p><p>Through our partnership with Sarah Cannon, we are one of the largest clinical research organizations in the United States. Often, FCS leads the nation in initiating research studies and offering ground-breaking new therapies to patients.</p><h3>Come join us today!</h3><h3>PRIMARY TASKS AND RESPONSIBILITIES:</h3><ul>\n<li>M&amp;A and CAPEX Financial Leadership<ul>\n<li>Serve as the finance subject matter expert for FCS’s M&amp;A efforts and CAPEX projects in partnership with business development, facilities and operations leadership.</li>\n<li>Own the analytical framework for measuring and interpreting financial performance of acquisitions &amp; CAPEX projects in progress and post go-live, tracking business case vs. actuals.</li>\n<li>Participate in integration planning to monitor expenses relative to approved business cases &amp; update models to provide timely visibility into changing expectations.</li>\n<li>Develop and refine transparent, repeatable reporting and models that explain performance and support performance evaluation vs. business cases.</li>\n</ul>\n</li>\n<li>Forecasting, Budgeting, and Planning Support<ul>\n<li>Lead forecasting, budgeting, and planning activities related to the M&amp;A pipeline, CAPEX projects, and enterprise capital budget allocation.</li>\n<li>Build models that support annual planning cycles, in-year forecasts, and scenario analysis.</li>\n<li>Partner with stakeholders to ensure assumptions are well-supported, documented, and aligned to business realities.</li>\n</ul>\n</li>\n<li>Executive Decision Support and Reporting<ul>\n<li>In collaboration with cross-functional teams, build business cases in support of M&amp;A and CAPEX projects in support of FCS’s growth</li>\n<li>Deliver concise, executive-ready reporting packages evaluating performance vs. business case expectations, explain results, and highlight risks and opportunities.</li>\n<li>Build “so what” insights that help leadership understand what is changing, why it matters, and what actions may improve outcomes.</li>\n<li>Tailor analyses for different leadership audiences.</li>\n</ul>\n</li>\n<li>Analytical and Strategic Support<ul>\n<li>Support the full range of analytical, reporting, and strategic needs in support of FCS’s growth.</li>\n<li>Contribute to ad hoc analyses, business cases, profitability reviews, strategic planning efforts, and leadership requests.</li>\n<li>Help prioritize opportunities to improve financial performance.</li>\n<li>Ensure outputs are auditable and easy for stakeholders to interpret.</li>\n</ul>\n</li>\n<li>Continuous Improvement and Cross-Functional Collaboration<ul>\n<li>Partner across finance, operations, and practice leadership to identify opportunities for process improvement and stronger performance management – in particular as it relates to post go-live &amp;A and CAPEX project postmortems.</li>\n<li>Recommend enhancements to underwriting, analytical and integration approaches to improve decision support and outcomes over time.</li>\n</ul>\n</li>\n</ul><br><h3>EDUCATION/CERTIFICATIONS &amp; LICENSES:</h3><ul>\n<li>Bachelor’s degree required; advanced degree (MBA, MS or similar) in finance, analytics or related field preferred.</li>\n<li>CFA a plus.</li>\n</ul><br><h3>EXPERIENCE: </h3><ul>\n<li>7+ years of progressive experience in M&amp;A, corporate development, PE, FP&amp;A, financial modeling, or analytics, with a demonstrated track record of leading complex transactions, integrations and CAPEX initiatives in a large, matrixed organization.</li>\n<li>Experience collaborating with C-suite executives &amp; across multiple functions to affect solutions.</li>\n<li>Excellent financial modeling &amp; problem-solving skills.</li>\n<li>Executive presence and experience with presentations to various leadership levels.</li>\n<li>Ability to provide strategic recommendations and influence stakeholders to make decisions.</li>\n</ul><br><h3>CORE COMPETENCIES, KNOWLEDGE/SKILLS/ABILITIES:</h3><ul>\n<li>Experience evaluating and modeling M&amp;A transactions and capital projects</li>\n<li>Deep expertise in advanced analytics, statistical modeling, and AI/ML applications for forecasting. Mastery of Excel, Sigma/Power BI/Tableau, and financial systems (e.g., Workday, SAP, Oracle, Hyperion).</li>\n<li>Financial systems experience with ability to reconcile information from multiple sources.</li>\n<li>Motivated self-starter that is well organized, dependable, efficient and results-oriented.</li>\n<li>Strong time management and organization skills with flexibility to work in a fast-paced and changing work environment.</li>\n</ul><br><h3>VALUES:</h3><ul>\n<li>\n<b>Patient First – </b>Keeping the patient at the center of everything we do</li>\n<li>\n<b>Accountability – </b>Taking responsibility for our actions</li>\n<li>\n<b>Commitment &amp; Care – </b>Upholding FCS vision through every action</li>\n<li>\n<b>Team – </b>Working together, one team, one mission</li>\n</ul><br><h3>Expectations for all Employees</h3><p>Every FCS employee is expected to regularly conduct themselves in a professional and respectful manner, to comply with all labor laws, workplace policy and workplace practices.  Employees are expected to bring issues of any forms of workplace harassment, discrimination or other potential improprieties to the attention of their management or the human resources department. </p><br><h3>#FCS-REV</h3><h3><b>SCREENINGS – Background and drug screens</b></h3><p>Safeguarding our patients and each other is an important part of how we deliver the best care possible to the communities we serve. All offers of employment at Florida Cancer Specialists &amp; Research Institute are contingent upon clear results of a thorough background screening. Additionally, as a condition of employment, FCS requires all new hires to receive various vaccinations, including the influenza vaccine, barring an approved exemption. In addition, FCS is a drug-free workplace, and all new hires will be subject to drug testing. Medical Marijuana cards are not recognized.</p><br><h3><b>EEOC</b></h3><p>Florida Cancer Specialists &amp; Research Institute (FCS) is committed to helping individuals with disabilities to participate in the workforce and ensure equal opportunity to compete for jobs. If you require an accommodation to submit a resume for positions at FCS, please email FCS Recruitment () for further assistance. Please note this email address is intended to request an accommodation as part of the application process. Any other correspondence will not receive a response.</p><br><p>FCS is an EEO/Affirmative Action Employer and does not discriminate on the basis of age, race, color, religion, gender, sexual orientation, gender identity, gender expression, national origin, protected veteran status, disability or any other legally protected status.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444052,
+   "expiryDate": 1800628052,
+   "applicationLink": "https://himalayas.app/companies/florida-cancer-specialists-research-institute/jobs/m-a-and-capex-valuations-manager?utm_source=api",
+   "guid": "https://himalayas.app/companies/florida-cancer-specialists-research-institute/jobs/m-a-and-capex-valuations-manager"
+  },
+  {
+   "title": "Performance-Marketing Manager - Vollzeit (m/w/d)",
+   "excerpt": "Wir suchen neue Mitarbeiter (m/w/d) für unser Performance-Marketing Team: Wenn du dich gerne strukturiert und datenbasiert in Projekte einarbeitest und Kampagnen auf Social Media wie Facebook, Instagram und YouTube gezielt optimieren möchtest, dann freuen wir uns auf dich!",
+   "companyName": "resonads GmbH",
+   "companySlug": "resonads-gmbh",
+   "companyLogo": "",
+   "employmentType": "Contractor",
+   "minSalary": 4000,
+   "maxSalary": 4000,
+   "salaryPeriod": "monthly",
+   "seniority": [
+    "Manager"
+   ],
+   "currency": "EUR",
+   "locationRestrictions": [
+    "Germany"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Performance-Marketing",
+    "Digital-Marketing",
+    "Online-Marketing",
+    "Social-Media-Marketing",
+    "PPC-Advertising",
+    "Performance-Marketing-Manager",
+    "Mid-Level-Performance-Marketing-Manager"
+   ],
+   "parentCategories": [
+    "Marketing",
+    "Growth"
+   ],
+   "description": "<img><p>Wir suchen neue Mitarbeiter (m/w/d) für unser <em>Performance-Marketing Team: </em>Wenn du dich gerne strukturiert und datenbasiert in Projekte einarbeitest und Kampagnen auf Social Media wie Facebook, Instagram und YouTube gezielt optimieren möchtest, dann freuen wir uns auf dich! In der Rolle des Online-Marketing-Managers (m/w/d) überwachst du die Performance unserer Kundenkampagnen auf Google und Meta, führst gezielte Optimierungen durch und sorgst so für messbare Erfolge. Wir freuen uns darüber deine aussagekräftigen Arbeitsproben zu sehen, diese kannst du einfach in deiner Bewerbung hinzufügen.</p><h3>Aufgabenbereich:</h3><ul>\n<li><p>Einrichtung und Durchführung von Pay-Per-Click Werbekampagnen auf Facebook, Instagram und YouTube</p></li>\n<li><p>Überwachung relevanter Marketing-Metriken und Kampagnenoptimierung</p></li>\n<li><p>Optimierung und Skalierung von Pay-Per-Click Werbekampagnen auf Facebook, Instagram und YouTube</p></li>\n<li><p>Datenbasierte Auswertung der Kampagnen-Performance und Reporting mit Tools wie Google Analytics, Lookerstudio und Supermetrics</p></li>\n</ul><p>Das Team bei resonads arbeitet täglich mit Struktur und Zielstrebigkeit daran, gemeinsam zur führenden Marketingagentur in Deutschland zu werden. Bei uns hat jeder Mitarbeiter die Möglichkeit, seine Stärken gezielt einzusetzen, sich fachlich weiterzuentwickeln und kontinuierlich strukturiert zu arbeiten. Hochmoderne Arbeitsplätze, eine überdurchschnittliche Gehaltsstruktur sowie eine professionelle Arbeitsumgebung sind für uns selbstverständlich. </p><p>Wir suchen engagierte Mitarbeiter, die gemeinsam mit uns ein moderates Wachstum erzielen und Verantwortung übernehmen wollen. Wenn du Lust auf einen routinierten Job in der Marketingbranche hast, freuen wir uns auf deine Bewerbung!</p><p>Auf unserem YouTube-Kanal erhältst du in einem Interview einen Einblick in den Beruf des Performance-Marketings bei resonads → Klicke hier und schaue dir das Video auf YouTube an.</p><p>Wenn du weitere Informationen zu unserem Unternehmen und deiner Karriere bei <a href=\"https://himalayas.app/companies/resonads-gmbh\">resonads GmbH</a> haben möchtest, findest du diese auf www.karriere.resonads.com.</p><h3>Gehalt: 4.000 Euro pro Monat (brutto) </h3><p>Weiterentwicklungs- und Aufstiegsmöglichkeiten in den nächsten Jahren sind vorhanden.<br>Die Einarbeitungsphase dauert in der Regel 2–6 Monate.</p><h3>Wir bieten:</h3><ul><li><p><strong>Sicherer Arbeitsplatz:</strong> Jede Person, die wir einstellen, soll langfristig beruflich mit uns wachsen. Das Ziel jeder Einstellung ist eine unbefristete Übernahme. Wir betreuen ein breit gestreutes Portfolio an Kunden und besitzen dadurch eine hohe Planungssicherheit.</p></li></ul><ul><li><p><strong>Tolle Arbeitsatmosphäre:</strong> Bei resonads ziehen wir an einem Strang und arbeiten täglich daran, gemeinsam Bestleistungen zu erreichen. Der Umgang untereinander ist kollegial und professionell.</p></li></ul><ul><li><p><strong>Strukturiertes Arbeiten</strong>: Bei resonads legen wir großen Wert auf klare Prozesse, sodass du immer genau weißt, was zu tun ist. Zu Beginn wirst du intensiv eingearbeitet und profitierst von einem internen Schulungssystem, mit dem du dein berufliches Wissen kontinuierlich weiterentwickeln kannst.</p></li></ul><ul><li><p><strong>Gute Vergütung &amp; Karrierechancen: </strong>Wir vergüten deine Leistung fair, und du profitierst von unserem stetigen Wachstum sowie von vermögenswirksamen Leistungen. In den kommenden Jahren werden wir weiter wachsen und expandieren – dafür suchen wir zusätzliche Experten und/oder Führungskräfte.</p></li></ul><ul><li><p><strong>Weiterentwicklungsmöglichkeiten:</strong> Du erhältst Zugriff auf aktuelles Wissen im Bereich Online-Marketing – sowohl aus den USA als auch aus dem deutschsprachigen Raum. Du hast die Möglichkeit, dich kontinuierlich beruflich weiterzubilden und jederzeit auf die derzeit effektivsten Strategien im Copywriting zuzugreifen.</p></li></ul><h3>Requirements</h3><ul>\n<li><p>Analytisches Denken und Freude am Umgang mit Zahlen</p></li>\n<li><p>Idealerweise hast du bereits erste Erfahrungen im Bereich Social Media Advertising, insbesondere auf Facebook und YouTube</p></li>\n<li><p>Grundkenntnisse in Marketing-Tools wie Google Analytics und Google Tag Manager</p></li>\n<li><p>Kommunikationsstärke und Umgang mit Leistungsdruck</p></li>\n<li><p>Organisierter Arbeitsstil und Fähigkeit, vorgegebene Prozesse zu folgen</p></li>\n<li><p>Gute schriftliche Ausdrucksweise in Deutsch &amp; Englisch</p></li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444052,
+   "expiryDate": 1800628052,
+   "applicationLink": "https://himalayas.app/companies/resonads-gmbh/jobs/performance-marketing-manager-vollzeit-m-w-d-9206765515?utm_source=api",
+   "guid": "https://himalayas.app/companies/resonads-gmbh/jobs/performance-marketing-manager-vollzeit-m-w-d-9206765515"
+  },
+  {
+   "title": "Head of Technical Content",
+   "excerpt": "About Us Tameson is a global e-commerce store helping small and medium businesses source industrial components online.",
+   "companyName": "Tameson",
+   "companySlug": "tameson",
+   "companyLogo": "https://cdn-images.himalayas.app/5xwbv7n3ku25g4kw7j7f4r61o2oi",
+   "employmentType": "Contractor",
+   "minSalary": null,
+   "maxSalary": null,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Director"
+   ],
+   "currency": null,
+   "locationRestrictions": [
+    "Algeria",
+    "Brazil",
+    "Bulgaria",
+    "Chile",
+    "Colombia",
+    "Croatia",
+    "Czechia",
+    "Hungary",
+    "Mexico",
+    "Peru",
+    "Poland",
+    "Portugal",
+    "Romania",
+    "Serbia",
+    "Slovakia",
+    "South Africa",
+    "Spain"
+   ],
+   "timezoneRestrictions": [
+    -8,
+    -7,
+    -6,
+    -5,
+    -4,
+    -3,
+    -2,
+    -1,
+    0,
+    1,
+    2
+   ],
+   "categories": [
+    "Technical-Content-Marketing",
+    "Content-Strategy",
+    "Head-of-Content",
+    "Technical-Writer",
+    "SEO-Specialist",
+    "Technical-Content-Lead",
+    "Content-Technical-Lead"
+   ],
+   "parentCategories": [
+    "Content Creator",
+    "Marketing"
+   ],
+   "description": "<h4><strong>About Us</strong></h4><p><a href=\"https://himalayas.app/companies/tameson\">Tameson</a> is a global e-commerce store helping small and medium businesses source industrial components online. We are looking for a Head of Technical Content to take end-to-end ownership of our technical presence.</p><h4><strong>About the Role</strong></h4><p>This is not a standard copywriting role or strategist role. We want someone with an engineering mind and a marketing insight, someone who figures things out, builds things, and ships them without waiting to be told. Someone who understands who our customers are: engineers and procurement teams at small and medium businesses sourcing industrial components, and what they need to make a confident purchase decision. If you are excited about building AI-driven content pipelines, that matters more than a long track record.</p><p>You will own technical content from strategy to publication, including its technical accuracy. Your output shapes how engineers find <a href=\"https://himalayas.app/companies/tameson\">Tameson</a>, how the site ranks, and whether visitors convert into buyers. You work closely with our Product and Operations teams to extract technical knowledge and turn it into content competitors cannot replicate.</p><h4><strong>A Flavor of What You’d Work On</strong></h4><ul>\n<li><p>Audit our solenoid valve categories, identify what is missing or underperforming, and decide whether the fix is a selection guide, a page restructure, JSON-LD, or additional supporting content. Build it and analyze performance.</p></li>\n<li><p>Take our internal valve performance test data and turn it into a content series: articles, comparison tables, video scripts, email campaigns, social posts. Build assets from proprietary data that competitors cannot replicate.</p></li>\n<li><p>Work with industry partners to reach their communities through forums, sponsored placements, or native articles on their platforms.</p></li>\n<li><p>Analyze pages that get traffic but do not convert. Investigate whether it is a traffic quality, content quality, or conversion issue, implement a fix, and track the result against sales.</p></li>\n<li><p>Get up to speed on a product you know little about, write a buyer guide, fact-check it against manufacturer datasheets, and publish it without a technical reviewer.</p></li>\n</ul><h4><strong>Key Outcomes &amp; Responsibilities</strong></h4><ul>\n<li><p><strong>End-to-End Ownership:</strong> You will identify gaps in our content, style, and approach. You own the solution from idea to publication. You do not wait for a task list. You analyze the site, find the opportunities, and execute the improvements that drive the biggest impact.</p></li>\n<li><p><strong>Strategic Content Architecture:</strong> You decide the format that converts. Sometimes an article is best, but often the customer needs a flow calculator, a comparison table, an upgraded category page, a tooltip, diagram, video, or a selection wizard. You will build the right content for the job to build our brand and convert users.</p></li>\n<li><p><strong>Technical Authority &amp; Accuracy:</strong> You are responsible for the technical accuracy of all public-facing content. You must have high engineering knowledge to validate data, correct errors, and ensure our advice is sound. You are the filter that prevents AI hallucinations or inaccuracies from reaching the customer.</p></li>\n<li><p><strong>Build the Content Moat:</strong> You will create unique value that competitors and AI models cannot replicate. Go beyond text to produce proprietary assets like physical product benchmarks, expert interviews, and deep-dive technical diagrams or videos.</p></li>\n<li><p><strong>Optimize for the Audience:</strong> You will structure information to ensure our content ranks high for search engines, serves as a primary citation source for AI models, and provides clear, helpful guidance for humans (engineers, non-engineers, buyers, etc.).</p></li>\n<li><p><strong>Agile Adaptation:</strong> You will stay ahead of marketing trends and follow the data. If a content format stops working, you pivot. You track traffic and conversion metrics to continuously refine your strategy.</p></li>\n</ul><h3>Requirements</h3><h4><strong>What We Are Looking For</strong></h4><ul>\n<li><p><strong>High Engineering Knowledge:</strong> You have a background in engineering, deep experience in technical industries, and can explain the physics of our products easily.</p></li>\n<li><p><strong>Builds With AI:</strong> You have designed and built content workflows using AI: research pipelines, structured drafting processes, automated publishing steps. You chose the tools, connected them, and own the quality of what comes out.</p></li>\n<li><p><strong>Outcome Owner:</strong> You are driven by results (traffic, conversion, revenue) rather than output (article or word count). You manage the roadmap and deliver end-to-end results.</p></li>\n<li><p><strong>Collaborative Investigator:</strong> You do not work in a silo. You actively partner with our Product and Operations teams to extract their internal expertise. You work with them and translate their knowledge into public-facing content that sets us apart from competitors.</p></li>\n<li><p><strong>Versatile Creator:</strong> You are comfortable switching formats and could work on writing a white paper, designing calculator logic, auditing category pages, and building dashboards to analyze results all in 1 week.</p></li>\n</ul><h4><strong>Why Choose <a href=\"https://himalayas.app/companies/tameson\">Tameson</a>?</strong></h4><ul>\n<li><p><strong>Direct Business Impact:</strong> Your work directly correlates to sales. Publish the right guide and you can watch organic traffic and conversions move. There is a direct line between what you produce and company revenue.</p></li>\n<li><p><strong>Innovation:</strong> We are an aggressive, modern company. We want you to experiment with new formats, tools, and strategies.</p></li>\n<li><p><strong>Company culture:</strong> We value collaboration, professional growth, and fun. We regularly have company activities (online and offline) to stay connected and inspired.</p></li>\n<li><p><strong>Growth:</strong> We are scaling rapidly. As we expand, your professional opportunities grow.</p></li>\n</ul><h4><strong>Role Work Conditions</strong></h4><ul>\n<li><p><strong>Employment type:</strong> Full time position (remote).</p></li>\n<li><p><strong>Working hours:</strong> Flexible work hours, with availability required Monday through Friday and a minimum overlap of 12:00–17:00 GMT+1.</p></li>\n<li><p><strong>Contract type:</strong> You will join as an independent contractor. To simplify hiring outside our registered countries, we engage global talent through freelance contracts.</p></li>\n</ul><h4><strong>Ready to define the future of industrial e-commerce?</strong></h4><p>If you have the technical mind to understand our products and the strategic mind to market them, apply today.</p><h3>Highlights</h3><p><a href=\"https://himalayas.app/companies/tameson\">Tameson</a> seeks a remote Head of Technical Content to build authority, create expert content, and optimize for AI. Independent contractor role.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444051,
+   "expiryDate": 1800628051,
+   "applicationLink": "https://himalayas.app/companies/tameson/jobs/head-of-technical-content-5338348631?utm_source=api",
+   "guid": "https://himalayas.app/companies/tameson/jobs/head-of-technical-content-5338348631"
+  },
+  {
+   "title": "Paid Social Manager - Vollzeit (m/w/d)",
+   "excerpt": "Wir suchen neue Mitarbeiter (m/w/d) für unser Performance-Marketing Team: Wenn du dich gerne strukturiert und datenbasiert in Projekte einarbeitest und Kampagnen auf Social Media wie Facebook, Instagram und YouTube gezielt optimieren möchtest, dann freuen wir uns auf dich!",
+   "companyName": "resonads GmbH",
+   "companySlug": "resonads-gmbh",
+   "companyLogo": "",
+   "employmentType": "Full Time",
+   "minSalary": 4000,
+   "maxSalary": 4000,
+   "salaryPeriod": "monthly",
+   "seniority": [
+    "Manager"
+   ],
+   "currency": "EUR",
+   "locationRestrictions": [
+    "Germany"
+   ],
+   "timezoneRestrictions": [
+    1
+   ],
+   "categories": [
+    "Paid-Social-Manager",
+    "Social-Media",
+    "Performance-Marketing",
+    "Digital-Marketing",
+    "PPC-Advertising",
+    "Senior-Paid-Social-Media-Manager",
+    "Paid-Social-Ads-Manager"
+   ],
+   "parentCategories": [
+    "Marketing"
+   ],
+   "description": "<img><p>Wir suchen neue Mitarbeiter (m/w/d) für unser <em>Performance-Marketing Team: </em>Wenn du dich gerne strukturiert und datenbasiert in Projekte einarbeitest und Kampagnen auf Social Media wie Facebook, Instagram und YouTube gezielt optimieren möchtest, dann freuen wir uns auf dich! In der Rolle des Online-Marketing-Managers (m/w/d) überwachst du die Performance unserer Kundenkampagnen auf Google und Meta, führst gezielte Optimierungen durch und sorgst so für messbare Erfolge. Wir freuen uns darüber deine aussagekräftigen Arbeitsproben zu sehen, diese kannst du einfach in deiner Bewerbung hinzufügen.</p><h3>Aufgabenbereich:</h3><ul>\n<li><p>Einrichtung und Durchführung von Pay-Per-Click Werbekampagnen auf Facebook, Instagram und YouTube</p></li>\n<li><p>Überwachung relevanter Marketing-Metriken und Kampagnenoptimierung</p></li>\n<li><p>Optimierung und Skalierung von Pay-Per-Click Werbekampagnen auf Facebook, Instagram und YouTube</p></li>\n<li><p>Datenbasierte Auswertung der Kampagnen-Performance und Reporting mit Tools wie Google Analytics, Lookerstudio und Supermetrics</p></li>\n</ul><p>Das Team bei resonads arbeitet täglich mit Struktur und Zielstrebigkeit daran, gemeinsam zur führenden Marketingagentur in Deutschland zu werden. Bei uns hat jeder Mitarbeiter die Möglichkeit, seine Stärken gezielt einzusetzen, sich fachlich weiterzuentwickeln und kontinuierlich strukturiert zu arbeiten. Hochmoderne Arbeitsplätze, eine überdurchschnittliche Gehaltsstruktur sowie eine professionelle Arbeitsumgebung sind für uns selbstverständlich. </p><p>Wir suchen engagierte Mitarbeiter, die gemeinsam mit uns ein moderates Wachstum erzielen und Verantwortung übernehmen wollen. Wenn du Lust auf einen routinierten Job in der Marketingbranche hast, freuen wir uns auf deine Bewerbung!</p><p>Auf unserem YouTube-Kanal erhältst du in einem Interview einen Einblick in den Beruf des Performance-Marketings bei resonads → Klicke hier und schaue dir das Video auf YouTube an.</p><p>Wenn du weitere Informationen zu unserem Unternehmen und deiner Karriere bei <a href=\"https://himalayas.app/companies/resonads-gmbh\">resonads GmbH</a> haben möchtest, findest du diese auf www.karriere.resonads.com.</p><h3>Gehalt: 4.000 Euro pro Monat (brutto) </h3><p>Weiterentwicklungs- und Aufstiegsmöglichkeiten in den nächsten Jahren sind vorhanden.<br>Die Einarbeitungsphase dauert in der Regel 2–6 Monate.</p><h3>Wir bieten:</h3><ul><li><p><strong>Sicherer Arbeitsplatz:</strong> Jede Person, die wir einstellen, soll langfristig beruflich mit uns wachsen. Das Ziel jeder Einstellung ist eine unbefristete Übernahme. Wir betreuen ein breit gestreutes Portfolio an Kunden und besitzen dadurch eine hohe Planungssicherheit.</p></li></ul><ul><li><p><strong>Tolle Arbeitsatmosphäre:</strong> Bei resonads ziehen wir an einem Strang und arbeiten täglich daran, gemeinsam Bestleistungen zu erreichen. Der Umgang untereinander ist kollegial und professionell.</p></li></ul><ul><li><p><strong>Strukturiertes Arbeiten</strong>: Bei resonads legen wir großen Wert auf klare Prozesse, sodass du immer genau weißt, was zu tun ist. Zu Beginn wirst du intensiv eingearbeitet und profitierst von einem internen Schulungssystem, mit dem du dein berufliches Wissen kontinuierlich weiterentwickeln kannst.</p></li></ul><ul><li><p><strong>Gute Vergütung &amp; Karrierechancen: </strong>Wir vergüten deine Leistung fair, und du profitierst von unserem stetigen Wachstum sowie von vermögenswirksamen Leistungen. In den kommenden Jahren werden wir weiter wachsen und expandieren – dafür suchen wir zusätzliche Experten und/oder Führungskräfte.</p></li></ul><ul><li><p><strong>Weiterentwicklungsmöglichkeiten:</strong> Du erhältst Zugriff auf aktuelles Wissen im Bereich Online-Marketing – sowohl aus den USA als auch aus dem deutschsprachigen Raum. Du hast die Möglichkeit, dich kontinuierlich beruflich weiterzubilden und jederzeit auf die derzeit effektivsten Strategien im Copywriting zuzugreifen.</p></li></ul><h3>Requirements</h3><ul>\n<li><p>Analytisches Denken und Freude am Umgang mit Zahlen</p></li>\n<li><p>Idealerweise hast du bereits erste Erfahrungen im Bereich Social Media Advertising, insbesondere auf Facebook und YouTube</p></li>\n<li><p>Grundkenntnisse in Marketing-Tools wie Google Analytics und Google Tag Manager</p></li>\n<li><p>Kommunikationsstärke und Umgang mit Leistungsdruck</p></li>\n<li><p>Organisierter Arbeitsstil und Fähigkeit, vorgegebene Prozesse zu folgen</p></li>\n<li><p>Gute schriftliche Ausdrucksweise in Deutsch &amp; Englisch</p></li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444050,
+   "expiryDate": 1800628050,
+   "applicationLink": "https://himalayas.app/companies/resonads-gmbh/jobs/paid-social-manager-vollzeit-m-w-d-4510612353?utm_source=api",
+   "guid": "https://himalayas.app/companies/resonads-gmbh/jobs/paid-social-manager-vollzeit-m-w-d-4510612353"
+  },
+  {
+   "title": "Emerse Senior Sales Coach",
+   "excerpt": "Full-time contract position (Remote US-Based) $150,000 - $250,000 per annum (variable and uncapped) Job Summary Emerse, a dynamic Sales Consulting business, is searching for the next Sales Super Coach.",
+   "companyName": "EMERSE SALES US INC",
+   "companySlug": "emerse-sales-us-inc",
+   "companyLogo": "https://cdn-images.himalayas.app/v6vale1acnhs6v9rohjwsq5n7r3h",
+   "employmentType": "Contractor",
+   "minSalary": 150000,
+   "maxSalary": 250000,
+   "salaryPeriod": "annual",
+   "seniority": [
+    "Senior"
+   ],
+   "currency": "USD",
+   "locationRestrictions": [
+    "Canada"
+   ],
+   "timezoneRestrictions": [
+    -7,
+    -6,
+    -5,
+    -4,
+    -3.5
+   ],
+   "categories": [
+    "Sales-Coach",
+    "Sales-Consultant",
+    "Sales-Enablement-Consultant",
+    "Senior-Sales-Trainer",
+    "Sales-Coaching-Representative",
+    "Sales-Coaching",
+    "Sales-Leadership-Coach",
+    "Sales-Mentor",
+    "Sales-Trainer"
+   ],
+   "parentCategories": [
+    "Sales"
+   ],
+   "description": "<p class=\"MsoNormal\"><em>Full-time contract position (Remote US-Based) </em></p><p class=\"MsoNormal\"><em>$150,000 - $250,000 per annum (variable and uncapped)</em></p><h3>Job Summary</h3><p>Emerse, a dynamic Sales Consulting business, is searching for the next Sales Super Coach. We’re looking for a dynamic and experienced sales leader or coach to join us as a Certified Sales Coach.</p><p>We are seeking a seasoned professional with proven sales experience and results, looking to transition into a coaching/consulting role, or an existing coach interested in helping business owners across the US, UK, and Europe smash their sales targets. On average, our coaches earn approximately $150,000 - $250,000 (variable and uncapped).</p><p>This role is a primarily remote role from anywhere in the US (with primarily eastern time work hours). Your purpose: embed lasting sales performance by applying proven strategies, building accountability, and delivering exceptional coaching experiences.</p><p>This is not your typical consultancy gig; it’s a chance to make a measurable difference every day.</p><h3>What You’ll Be Doing</h3><ul>\n<li><p>Deliver high-impact coaching engagements using Emerse IP and methodology</p></li>\n<li><p>Facilitate team bootcamps, strategy workshops, and performance reviews</p></li>\n<li><p>Build and roll out client-specific sales playbooks</p></li>\n<li><p>Support sales hiring and onboarding with clear standards and structure</p></li>\n<li><p>Track performance and drive growth through diagnostics and KPIs</p></li>\n<li><p>Collaborate with the Emerse team to develop new services and tools</p></li>\n</ul><h3>Requirements</h3><h3>What You Bring – (Mandatory)</h3><ul>\n<li><p class=\"MsoNormal\">10+ years in B2B sales and leadership roles.</p></li>\n<li><h3>Proven coaching or mentoring expertise.</h3></li>\n<li><p class=\"MsoNormal\">A passion for elevating sales talent and client success.</p></li>\n<li><p class=\"MsoNormal\">Experience in sales, hiring, and team development.</p></li>\n<li><p class=\"MsoNormal\">Confidence working independently in a flexible, remote setup.</p></li>\n</ul><p>If you're currently self-employed or building a portfolio career, this could be the ideal next step with a values-led business.</p><h3>How It Works</h3><p>You will complete a 90-day certification and onboarding programme, equipping you with Emerse tools, training, and client frameworks. You’ll work on an outcome-based model—measured by results, not hours. You’ll earn a share of gross profit for each client engagement, plus sales commission for bringing in new business.</p><h3>What You’ll Get</h3><ul>\n<li><h3>Uncapped earnings potential.</h3></li>\n<li><h3>Remote, flexible working.</h3></li>\n<li><p class=\"MsoNormal\">Travel expenses for in-person sessions covered.</p></li>\n</ul><p><strong>Our Mission - Bringing Excellence to the Profession of Sales</strong></p><p>At Emerse, we believe sales should be a respected, well-practised profession, not just a job. Based in London and Miami, we partner with ambitious B2B companies to drive revenue growth through rigorous evaluation, strategic playbook design, world-class coaching, and exceptional sales hiring.</p><h3>Our Core Values</h3><p>We are guided by five principles that shape everything we do:</p><ul>\n<li><h3>Do the right thing</h3></li>\n<li><h3>Think ahead</h3></li>\n<li><h3>Communicate with clarity</h3></li>\n<li><h3>Make an impact</h3></li>\n<li><h3>Lead with high standard</h3></li>\n</ul><p>You can apply here for the role - </p><p>To find out more about Emerse Sales, visit our website at </p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+   "pubDate": 1795444050,
+   "expiryDate": 1800628050,
+   "applicationLink": "https://himalayas.app/companies/emerse-sales-us-inc/jobs/emerse-senior-sales-coach?utm_source=api",
+   "guid": "https://himalayas.app/companies/emerse-sales-us-inc/jobs/emerse-senior-sales-coach"
+  }
+ ]
+}

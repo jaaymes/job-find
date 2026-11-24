@@ -230,6 +230,8 @@ As páginas são shells estáticos na CDN. A lista é carregada pelo `GET /api/j
     - a exportação vem sem a chave por padrão (SEC-11).
 - *Especialistas: arquitetura e segurança.*
 
+> Revisão (Task 37): o `.strict()` vale na importação de backup (RF-20). A leitura normal das stores continua tolerante, para que um campo extra não apague os dados do usuário (decisão da Fase 2).
+
 ### D-10: OAuth PKCE do OpenRouter como caminho recomendado, com "colar chave" nos demais provedores
 
 > Revisada em 2026-11-23: com o suporte multi-provedor (D-17), o PKCE vale para o OpenRouter, o único provedor que gera uma chave com limite de gasto por app. Nos outros provedores o usuário cola a chave, e a interface orienta a criar uma chave de projeto com limite de gasto.
@@ -606,7 +608,7 @@ Não há feature flags: tudo entra ativo.
 | Integração | Vitest + Postgres 17 em Docker (service container no CI) | Migração 0001, upsert idempotente, janela de 30 dias, expiração (RF-07), `GET /api/jobs` com cada filtro, cursor e contadores (RF-08/09/10), `statement_timeout` |
 | Contrato | Vitest em workflow agendado diário (fora do build) | Payload real de cada fonte validado pelo Zod; slugs dos boards curados que retornam 404 ou vazio |
 | E2E | Playwright 1.65 contra `next build && next start`, com OpenRouter mockado via `page.route` | US-01/02 (ordem e filtros na URL), US-03 (PKCE mockado, colar chave, testar, remover), US-04 (fixtures PDF, DOCX e PDF escaneado), US-05 (faixas), US-06 (gerar, editar, baixar e conferir o texto do PDF com `unpdf`), US-07/08 (estados, exportação e importação), ausência de violações de CSP, headers |
-| Avaliação de IA | Script manual | 10 pares currículo/vaga a cada mudança de prompt: nenhum fato inventado, JSON válido, tempos da RNF-02 |
+| Avaliação de IA | Script manual | 11 pares currículo/vaga (10 + 1 da revisão final da Fase 3) a cada mudança de prompt: nenhum fato inventado, JSON válido, tempos da RNF-02 |
 | Manual | — | Leitores de tela nas telas principais (RNF-08), largura de 360 px (RNF-09), nota A no securityheaders.com |
 
 **CI (GitHub Actions):** `pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build && pnpm test:e2e`, mais `pnpm audit`.
@@ -667,7 +669,7 @@ Não há feature flags: tudo entra ativo.
   - template ATS no @react-pdf com fontes;
   - pré-visualização;
   - seletor de idioma;
-  - avaliação com os 10 pares.
+  - avaliação com os 11 pares (o 11º, com perfil abaixo da senioridade da vaga, entrou na revisão final).
 - **Pronto quando:** a US-06 passar e a avaliação não encontrar nenhum fato inventado.
 - **Depende de:** Fase 2.
 
@@ -707,6 +709,7 @@ Não há feature flags: tudo entra ativo.
 | `data_collection: deny` combinado com `require_parameters` não deixa nenhum provedor | Média | Médio | Spike da Fase 0; fallback explícito com aviso |
 | A IA inventa fatos no CV | Média | Alto | Validador determinístico em três camadas (D-11) |
 | `experimental.sri` instável | Média | Médio | Fallback para nonce só nas rotas `(local)` |
+| Risco aceito: as rotas públicas mantêm `script-src 'unsafe-inline'` (D-15) e `/vagas/[id]` lê as chaves e o perfil do localStorage para a análise com IA | Baixa | Alto | O localStorage é por origem, então um XSS em qualquer rota pública alcançaria os dados de qualquer jeito. Mitigação: DOMPurify mais saída da IA renderizada só como texto. A solução completa seria nonce em todas as rotas, ao custo de tornar as páginas dinâmicas (viola RNF-11); aceito |
 | Mais chaves no localStorage, e só o OpenRouter limita gasto por app | Média | Alto | D-15 contra XSS; OpenRouter recomendado; a interface orienta a criar chave de projeto com limite de gasto |
 | Provedores mudam CORS, IDs de modelo ou formato de erro | Alta | Médio | Teste de contrato por provedor, modelos vindos do `listModels`, padrões atualizáveis por PR |
 | IA local bloqueada pelo navegador (LNA, Safari) | Média | Baixo | Marcada como experimental, com guia e mensagem de erro clara |

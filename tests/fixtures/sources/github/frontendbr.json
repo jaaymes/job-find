@@ -1,0 +1,156 @@
+[
+ {
+  "id": 6533091901,
+  "number": 8576,
+  "title": "[Remoto] React Native Developer (Dev Co-founder, Sênior) na Still",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8576",
+  "state": "open",
+  "created_at": "2026-11-21T19:00:11Z",
+  "updated_at": "2026-11-23T03:51:18Z",
+  "body": "## Nossa empresa\n\nJá liderei growth de vários apps no top 100 dos EUA, em nichos diferentes. Agora estou levando essa distribuição para o meu próprio produto, o **Still**, um app diário de fé (stillwithgod.app), e procuro meu **dev co-founder**. Tenho **US$ 100 mil+ prontos para mídia paga até o fim do ano**.\n\n## Descrição da vaga\n\nTudo está pronto menos o código: ~90 telas desenhadas com critérios de aceite, backend no Supabase, assinaturas no RevenueCat, conteúdo e beta testers.\n\n- Entregar o app inteiro em um **piloto pago de 7 dias (US$ 1.000)**\n- Depois, ser dono de growth e releases no iOS e Android: Mixpanel, RevenueCat, testes de paywall e onboarding, releases semanais\n- Procuro um dev indie que já lançou os próprios apps e sabe que a parte difícil é conseguir usuários\n\nO que mais valorizo é **velocidade**. Se você não usa IA para entregar muito rápido, essa vaga não é para você.\n\n## Local\n\nRemoto (América Latina de preferência), com 4+ horas de sobreposição com o horário de Nova York\n\n## Requisitos\n\n**Obrigatórios:**\n- Apps em React Native/Expo publicados na App Store por você (com links)\n- Assinaturas in-app (RevenueCat de preferência)\n- Supabase ou Postgres\n- Analytics de produto e testes A/B (Mixpanel, Amplitude ou similar)\n- Inglês escrito para updates diários\n\n**Desejáveis:**\n- Swift: WidgetKit ou Screen Time APIs da Apple\n- Player de áudio com destaque palavra por palavra\n\n**Diferenciais:**\n- Já ter lançado vários apps próprios\n\n## Benefícios\n\n- Trabalho assíncrono, sem reuniões desnecessárias\n- Produto 100% desenhado: você nunca espera por design ou decisões\n- Distribuição de verdade por trás do seu trabalho (US$ 100 mil+ em mídia)\n\n## Contratação\n\nPJ / contractor: **US$ 3.000–5.000/mês**, com o plano de ganhar **equity** conforme você provar seu valor. Antes, piloto pago de 7 dias (US$ 1.000), pago mesmo se não seguirmos juntos.\n\n## Como se candidatar\n\nCandidate-se aqui: https://wellfound.com/jobs/5130269\n\nResponda: (1) links de apps seus na App Store, (2) uma mudança que você fez num app por causa do comportamento dos usuários e o número antes e depois, (3) a coisa mais rápida que você entregou usando IA.\n\n## Labels\n\n- 🏠 Remoto\n- 👴 Sênior\n- 💼 PJ\n",
+  "labels": [
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Remoto"
+   }
+  ]
+ },
+ {
+  "id": 6501861357,
+  "number": 8575,
+  "title": "[Remoto] Desenvolvedor(a) Full Stack na Rotha IA",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8575",
+  "state": "open",
+  "created_at": "2026-11-20T00:19:45Z",
+  "updated_at": "2026-11-23T17:29:56Z",
+  "body": "## Nossa empresa\n\nA Rotha IA cria sistemas de gestão sob medida (CRMs e ERPs) para empresas de diferentes setores.\n\nSite da empresa: https://rothaia.com.br\n\n## Descrição da vaga\n\nProcuramos alguém que queira crescer junto com a gente: assumir a parte técnica, trocar feedback de forma direta e, com o tempo, coordenar o time. Se você prefere só executar tarefas, talvez esta não seja a vaga ideal para você.\n\nA pessoa vai cuidar da parte técnica junto com o fundador, num processo estruturado de criação e verificação, criar produtos e, com o crescimento, liderar o time de desenvolvimento.\n\n- Desenvolver e evoluir sistemas de ponta a ponta, do banco à publicação em produção.\n- Responder pela segurança: autenticação, controle de acesso (RLS) e LGPD.\n- Construir integrações de nota fiscal, pagamentos, Pix e WhatsApp.\n- Revisar código, inclusive o gerado por IA, e definir padrões.\n- Falar com clientes (apenas se necessário) e propor soluções e produtos.\n\n## Local\n\nRemoto (100%), Brasil. Reunião diária online às 10h30 (horário de Brasília).\n\n## Requisitos\n\n**Stack:** React, TypeScript, Next.js, Supabase, PostgreSQL (SQL, índices, funções, RLS e migrations), Cloudflare, GitHub e ferramentas de IA como Claude Code.\n\n**Obrigatórios:**\n- 3 anos ou mais de desenvolvimento web, com sistema em produção usado por clientes.\n- PostgreSQL além do básico e integrações com APIs REST e webhooks.\n- Segurança de aplicações e LGPD.\n- Ensino superior completo ou em andamento na área.\n\n**Integrações:** você não precisa ter feito todas, mas precisa já ter integrado algum destes serviços em produção, de preferência bancos ou gateways como o Asaas, e entender como os outros funcionam:\n- Nota fiscal: NF-e, NFC-e e NFS-e por API, com certificado digital A1.\n- Bancos: APIs como Inter, Itaú, Sicredi e Sicoob, com certificado digital (mTLS), OAuth, boleto, Pix e conciliação.\n- Pagamentos: gateways como Asaas, com webhook e sem cobrança duplicada.\n- WhatsApp: API oficial da Meta (WhatsApp Business Platform), Evolution API ou Z-API.\n\n## Benefícios\n\n- 100% remoto.\n- Crescimento para coordenação do time de desenvolvimento.\n\n## Contratação\n\nPJ, R$ 5.000 por mês, integral. 90 dias de experiência com metas claras.\n\n## Como se candidatar\n\nPelo formulário (uns 5 minutos): https://forms.gle/xvkYYcUBjjWzQtjx7\n\nNa candidatura, conte em poucas linhas uma integração que você fez: qual serviço, o que precisava resolver e como resolveu.\n\nAs candidaturas são recebidas só pelo formulário, por favor não envie pelo WhatsApp nem pelos comentários desta issue. Entraremos em contato com as pessoas selecionadas.\n\n## Tempo médio de feedbacks\n\nEntramos em contato com as pessoas selecionadas pelo e-mail ou WhatsApp informado no formulário. Dúvidas: contato@exemplo.invalid\n\n## Labels\n\n### Nível\n\n- Pleno\n\n### Regime\n\n- PJ\n\n### Alocação\n\n- Remoto\n",
+  "labels": [
+   {
+    "name": "Pleno"
+   },
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Remoto"
+   }
+  ]
+ },
+ {
+  "id": 6478175462,
+  "number": 8574,
+  "title": "[Remoto] Product Engineer na JotPsych",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8574",
+  "state": "open",
+  "created_at": "2026-11-18T22:39:24Z",
+  "updated_at": "2026-11-18T22:39:53Z",
+  "body": "## Nossa empresa\n\nJotPsych makes software for behavioral health clinicians. Our scribe has drafted more than 3.1 million patient notes and cuts administrative time by about 90%. We're now expanding from the note into the revenue cycle: billing, audit, prior-auth. We're a small team, and we build through AI coding agents all day.\n\nhttps://jotpsych.com\n\n## Descrição da vaga\n\nThe decisions about what you build get made in a meeting you aren't in. You've shipped features you could tell were wrong the day the ticket arrived. You'd like to be the one who talked to the customer first.\n\nYou'll take features from a customer conversation to production, UI to backend to database to prompt. That half of the job you already know.\n\nThe other half is deciding what to build. You'll sit in on calls with clinicians and billers, then run your own. You'll write down what you think we should build and why, and we'll argue with it.\n\nEarly on we'll be fairly prescriptive. The first projects come from us, with our reasoning. You have the technical half, and we're going to teach you the rest: taste, craft, and how to manage a product. As your read on our users holds up, more of the deciding moves to you. We want that to happen fast, though not in week one.\n\nWhat you'd own in the first 90 days:\n\n- Ship 3 to 5 user-facing features on the clinical and billing surfaces\n- Sit in on customer calls every week. By day 90, run your own\n- Do one stretch of forward-deployed work: stay with one practice's problem until it's fixed for them\n- Write the evals for everything you ship\n- Fix one piece of shared infrastructure the rest of us lean on\n- Disagree with us about one product decision, and bring what you heard from customers\n\nThe full description: https://jotpsych.com/careers-engineer-remote?utm_source=engineer-remote-frontendbr\n\n## Local\n\nRemoto. We hire mostly in Latin America, close to our time zone. Candidates elsewhere, including India, qualify if they work at least 4 hours a day between 9 a.m. and 6 p.m. US Eastern Time.\n\n## Requisitos\n\n**Obrigatórios:**\n- Senior. You've shipped production software somewhere real, and you know how prod breaks and how to fix it.\n- Fluent spoken and written English. You'll talk with clinicians and billers in the US every week.\n\n**Desejáveis:**\n- Low ego. You're senior as an engineer and new at product. When a product call of yours is wrong we'll say so, and you'd rather hear it.\n- Already talking to users. Nobody asked you to. Support tickets, sales calls, the people using your side project.\n- Insight. Given a problem, you lay out the options, work back from the goal, and say no to the attractive option that doesn't serve it. This is the thing we screen hardest for.\n- Sharp. You learn a new system in days, and you find the flaw in an argument, your own included.\n- Fast and exact. You cut a feature into pieces small enough to ship in days, and you check each piece before anyone else sees it.\n\n**Diferenciais:**\n- AI-pilled. Claude Code, loops, a software factory, whatever is next. You mostly whisper to your computer.\n\n## Benefícios\n\n- $5,000 to $8,000 USD a month in Latin America, paid monthly\n\n## Contratação\n\nPJ. Full-time and remote, on contract.\n\n## Como se candidatar\n\nApply at https://jotpsych.com/careers-engineer-remote?utm_source=engineer-remote-frontendbr: fill out the short form, then call the number the page shows you. No resume.\n\n## Tempo médio de feedbacks\n\nA person reviews every application. Questions: comment on this issue.\n\n## Labels\n\n#### Alocação\n- Remoto\n\n#### Regime\n- PJ\n\n#### Nível\n- Sênior\n",
+  "labels": [
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Remoto"
+   }
+  ]
+ },
+ {
+  "id": 6451643990,
+  "number": 8573,
+  "title": "[Remoto] Tech Lead na MilkBox",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8573",
+  "state": "open",
+  "created_at": "2026-11-17T18:43:29Z",
+  "updated_at": "2026-11-17T18:43:55Z",
+  "body": "## Nossa empresa\n\nA MilkBox oferece infraestrutura de cold email para empresas B2B no mundo todo. Somos um time pequeno e brasileiro, com operação internacional e trabalho 100% remoto.\n\n## Descrição da vaga\n\nBuscamos um(a) Tech Lead para assumir a direção técnica dos nossos dois principais produtos, trabalhando direto com o fundador e com os devs. A vaga é generalista e envolve front-end, back-end, dados e infraestrutura.\n\n- Transformar as ideias da liderança em planos técnicos (escopo, prioridades, riscos, custos e fases)\n- Revisar a arquitetura, propor melhorias e escolher infraestrutura, stack e ferramentas\n- Rastrear bugs até a causa raiz e ser responsável pela performance\n- Ser a referência técnica do time, estruturando tarefas no Linear e acompanhando as entregas\n\n## Local\n\nRemoto (Brasil), com horário flexível\n\n## Requisitos\n\n**Obrigatórios:**\n- Perfil generalista: front-end, back-end, dados e infraestrutura\n- Experiência em decisões de arquitetura e infraestrutura\n- Liderança técnica prévia de um time de devs\n- Capacidade de quebrar o trabalho em tarefas claras\n- Boa comunicação com pessoas não técnicas\n- Autonomia e entregas no prazo\n- Inglês avançado/fluente\n\n**Desejáveis:**\n- Bom senso de UI e de experiência do cliente\n- Experiência em SaaS com times enxutos\n- Dados e analytics em alto volume\n- Evoluir sistemas em produção sem interromper as entregas\n\n**Diferenciais:**\n- Já ter atuado como Tech Lead transformando o que estava complexo em processos simples\n- Conhecimento de infraestrutura de email (DNS, domínios, caixas de email, provedores), cold email e entregabilidade\n\n## Benefícios\n\n- 100% remoto\n- Horário flexível\n- Part-time: 20 horas semanais\n\n## Contratação\n\nPJ\n\n## Como se candidatar\n\n**Acesse a página da vaga e preencha o formulário: https://milkbox.io/careers/tech-lead**\nDúvidas: contato@exemplo.invalid\n\nProcesso: Candidatura → Entrevista inicial → Entrevista com o fundador → Avaliação prática\n\n## Tempo médio de feedbacks - 7 dias\n\nCostumamos enviar feedbacks em até XX dias após cada etapa.\nE-mail para contato em caso de não haver resposta: contato@exemplo.invalid\n\n## Labels\n\n#### Alocação\n- Remoto\n\n#### Regime\n- PJ\n\n#### Nível\n- Sênior\n- Especialista",
+  "labels": [
+   {
+    "name": "Sênior"
+   },
+   {
+    "name": "PJ"
+   },
+   {
+    "name": "Remoto"
+   },
+   {
+    "name": "Especialista"
+   }
+  ]
+ },
+ {
+  "id": 5927878395,
+  "number": 8571,
+  "title": "[Remoto] It Jobs (Strider/ Micro 1)",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8571",
+  "state": "open",
+  "created_at": "2026-10-19T16:48:53Z",
+  "updated_at": "2026-10-19T16:49:26Z",
+  "body": "🌎 13 VAGAS INTERNACIONAIS | 100% REMOTAS | PAGAMENTO EM DÓLAR 🇺🇸\n🚀 Oportunidades para profissionais do Brasil, México, Argentina, Uruguai, Paraguai, Peru, Chile, Colômbia e Costa Rica!\n💰 Salários de US$ 2.000 a US$ 10.500 por mês\n🌍 Trabalho remoto\n🇺🇸 Inglês avançado (C1+)\n💼 Vagas de tecnologia, dados, IA, marketing e área financeira.\nConfira as oportunidades e candidate-se diretamente pelos links:\n💻 TECNOLOGIA, ENGENHARIA E IA\n1️⃣ Full-stack Engineer & Systems Architect\nTypeScript, CI/CD, Python | 8+ anos\n💰 US$ 4.500–7.500/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=ZnVsbC1zdGFjay1lbmdpbmVlci1hbmQtc3lzdGVtcy1hcmNoaXRlY3QtZDBkMTk2NWY/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n2️⃣ Solutions Engineer\nPostman, API Integrations, WhatsApp Cloud API | 5+ anos\n💰 US$ 4.500–7.500/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=c29sdXRpb25zLWVuZ2luZWVyLWQxNDA5YzY0P3JlZmVycmFsPWNsYXVkaWFhbnR1bmVz\n3️⃣ Lead Database & Data Platform Engineer\nMySQL, SQL Server, AWS | 7+ anos\n💰 US$ 5.000–8.000/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=bGVhZC1kYXRhYmFzZS1kYXRhLXBsYXRmb3JtLWVuZ2luZWVyLWQ0YWZlMzc0P3JlZmVycmFsPWNsYXVkaWFhbnR1bmVz\n4️⃣ Senior Product Engineer\nNode.js, AI Agents, Python | 7+ anos\n💰 US$ 5.000–7.500/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=c2VuaW9yLXByb2R1Y3QtZW5naW5lZXItNWUyMjE4M2I/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n5️⃣ AI Data Researcher\nPython, LLM, RAG | 4+ anos\n💰 US$ 3.000–5.000/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=YWktZGF0YS1yZXNlYXJjaGVyLTNjMGE3ZDgxP3JlZmVycmFsPWNsYXVkaWFhbnR1bmVz\n6️⃣ Senior Full-stack Engineer\nKafka, React.js, Nest.js | 6+ anos\n💰 US$ 5.500–8.500/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=c2VuaW9yLWZ1bGwtc3RhY2stZW5naW5lZXItOTk3YTViMDM/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n7️⃣ Integrations Back-end Engineer\nNode.js, REST APIs, AI | 6+ anos\n💰 US$ 4.500–6.500/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=aW50ZWdyYXRpb25zLWJhY2stZW5kLWVuZ2luZWVyLTJkNzYyYzdlP3JlZmVycmFsPWNsYXVkaWFhbnR1bmVz\n8️⃣ Data Architect\nSQL, NoSQL, arquitetura de dados | 8+ anos\n💰 US$ 5.500–10.500/mês\n📅 Contrato de 6 meses\n🔗 https://app.onstrider.com/r/claudiaantunes?job=ZGF0YS1hcmNoaXRlY3QtNmI1NGYyNTY/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n9️⃣ QA Automation Engineer\nPlaywright, API Testing, TypeScript | 3+ anos\n💰 US$ 3.500–5.000/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=cWEtYXV0b21hdGlvbi1lbmdpbmVlci1kNDBmOWQ1Nj9yZWZlcnJhbD1jbGF1ZGlhYW50dW5lcw==\n🔟 Back-end Engineer\n.NET, C#, SQL | 5+ anos\n💰 US$ 4.000–6.000/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=YmFjay1lbmQtZW5naW5lZXItOWJiMjU5YTc/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n1️⃣1️⃣ Full-stack Engineer\nNode.js, React.js, UX Design | 4+ anos\n💰 US$ 4.000–8.000/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=ZnVsbC1zdGFjay1lbmdpbmVlci03MWY1OGY5Mj9yZWZlcnJhbD1jbGF1ZGlhYW50dW5lcw==\n1️⃣2️⃣ Full-stack & AI Engineer\nAPI Integrations, LLM, RAG | 5+ anos\n💰 US$ 5.500–7.500/mês\n📅 Projeto de 1 mês | 25h/semana\n🔗 https://app.onstrider.com/r/claudiaantunes?job=ZnVsbC1zdGFjay1haS1lbmdpbmVlci1iMjdhYjE0YT9yZWZlcnJhbD1jbGF1ZGlhYW50dW5lcw==\n📊 MARKETING E FINANCEIRO\n1️⃣3️⃣ Growth Marketer\nHubSpot, Gong, Salesforce | 4–6 anos\n💰 US$ 2.000–3.500/mês\n🔗 https://app.onstrider.com/r/claudiaantunes?job=Z3Jvd3RoLW1hbmFnZXItY2ZmYmFkZmQ/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n📌 Accounts Payable Specialist\nExcel, Microsoft Copilot, Business Central | 4+ anos\n💰 US$ 2.000–2.500/mês | Contrato de 6 meses\n🔗 https://app.onstrider.com/r/claudiaantunes?job=YWNjb3VudHMtcGF5YWJsZS1zcGVjaWFsaXN0LWViNDdjNzM1P3JlZmVycmFsPWNsYXVkaWFhbnR1bmVz\n📣 Conhece alguém que combina com alguma dessas vagas? Compartilhe esta publicação!\nOutras oportunidades internacionais disponíveis 👇🏼\nhttps://refer.micro1.ai/referral/jobs?referralCode=4bab295f-cd81-448b-8077-e039a64f9a2c&utm_source=referral&utm_medium=share&utm_campaign=job_referral\n\n👉 Confira os requisitos e candidate-se pelo link da oportunidade desejada.\n#VagasInternacionais #VagasRemotas #RemoteJobs #TechJobs #Tecnologia #SoftwareEngineering #DataEngineering #ArtificialIntelligence #Python #FullStack #QA #MarketingDigital #TrabalhoRemoto",
+  "labels": [
+   {
+    "name": "Remoto"
+   }
+  ]
+ },
+ {
+  "id": 5855094620,
+  "number": 8568,
+  "title": "[Belo Horizonte, Brasil] Senior Software Engineer, Full Stack, Kids and Families na Google",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8568",
+  "state": "open",
+  "created_at": "2026-10-14T20:26:00Z",
+  "updated_at": "2026-10-14T20:26:29Z",
+  "body": "## Descrição da vaga: \nEsta é uma vaga de um parceiro da plataforma Coodesh, ao candidatar-se você terá acesso as informações completas sobre a empresa e benefícios.\n\n\nFique atento ao redirecionamento que vai te levar para uma url [https://coodesh.com](https://coodesh.com/jobs/senior-software-engineer-full-stack-kids-and-families-181722815?utm_source=github&utm_medium=frontendbr-vagas&modal=open) para realizar a candidatura. 👋\nIn most instances, this position requires in-person interviews as part of the hiring process.<div><br></div><div>Please submit your resume in English - we can only consider applications submitted in this language.</div><h3>Minimum qualifications:</h3><ul>\n<li>Bachelor’s degree or equivalent practical experience.<br></li>\n<li>5 years of experience with software development in one or more programming languages.</li>\n<li>3 years of experience testing, maintaining, or launching software products.</li>\n<li>1 year of experience with software design and architecture.</li>\n</ul><br><h3>Preferred qualifications:</h3><ul>\n<li>Master's degree or PhD in Computer Science or a related technical field.<br></li>\n<li>5 years of experience with data structures and algorithms.</li>\n<li>3 years of experience with full stack development, across back-end such as Java, Python, Golang, or C++ codebases, and front-end experience including JavaScript or TypeScript, HTML, CSS or equivalent.</li>\n<li>1 year of experience in a technical leadership role.<br></li>\n<li>Experience developing accessible technologies.<br></li>\n</ul><div><h2>About the job</h2><p>Google's software engineers develop the next-generation technologies that change how billions of users connect, explore, and interact with information and one another. Our products need to handle information at massive scale, and extend well beyond web search. We're looking for engineers who bring fresh ideas from all areas, including information retrieval, distributed computing, large-scale system design, networking and data storage, security, artificial intelligence, natural language processing, UI design and mobile; the list goes on and is growing every day. As a software engineer, you will work on a specific project critical to Google’s needs with opportunities to switch teams and projects as you and our fast-paced business grow and evolve. We need our engineers to be versatile, display leadership qualities and be enthusiastic to take on new problems across the full-stack as we continue to push technology forward.</p>\n<p>The Kids and Families Compliance team's mission is to build robust infrastructure and essential primitives that enable this organization and other Google services to effectively implement compliance and regulatory requirements for minors. Additionally, we directly implement compliance solutions as needed. Our team operates with agility across the software stack, responding swiftly to evolving regulations while simultaneously constructing foundational infrastructure.</p><p>The Core team builds the technical foundation behind Google’s flagship products. We are owners and advocates for the underlying design elements, developer platforms, product components, and infrastructure at Google. These are the essential building blocks for excellent, safe, and coherent experiences for our users and drive the pace of innovation for every developer. We look across Google’s products to build central solutions, break down technical barriers and strengthen existing systems. As the Core team, we have a mandate and a unique opportunity to impact important technical decisions across the company.</p></div><div><h2>Responsibilities</h2><ul>\n<li>Write and test product or system development code.<br></li>\n<li>Participate in, or lead design reviews with peers and stakeholders to decide amongst available technologies.<br></li>\n<li>Review code developed by other developers and provide feedback to ensure best practices (e.g., style guidelines, checking code in, accuracy, testability, and efficiency).<br></li>\n<li>Contribute to existing documentation or educational content and adapt content based on product/program updates and user feedback.<br></li>\n<li>Triage product or system issues and debug/track/resolve by analyzing the sources of issues and the impact on hardware, network, or service operations and quality.<br></li>\n</ul></div>Google is proud to be an equal opportunity workplace and is an affirmative action employer. We are committed to equal employment opportunity regardless of race, color, ancestry, religion, sex, national origin, sexual orientation, age, citizenship, marital status, disability, gender identity or Veteran status. We also consider qualified applicants regardless of criminal histories, consistent with legal requirements. See also <a href=\"https://careers.google.com/eeo/\">Google's EEO Policy</a> and <a href=\"/jobs/dist/legal/OFCCP_EEO_Post.pdf\">EEO is the Law.</a> If you have a disability or special need that requires accommodation, please let us know by completing our <a href=\"https://goo.gl/forms/aBt6Pu71i1kzpLHe2\">Accommodations for Applicants form</a>.\n## Google: \n A problem isn't truly solved until it's solved for all. Googlers build products that help create opportunities for everyone, whether down the street or across the globe. Bring your insight, imagination and a healthy disregard for the impossible. Bring everything that makes you unique. Together, we can build for everyone. \n\n\n\n## Local: \n Belo Horizonte, Brasil\n\n\n\n## Como se candidatar:\nCandidatar-se exclusivamente através da plataforma Coodesh no link a seguir: [Senior Software Engineer, Full Stack, Kids and Families na Google](https://coodesh.com/jobs/senior-software-engineer-full-stack-kids-and-families-181722815?utm_source=github&utm_medium=frontendbr-vagas&modal=open)\n\n\nApós candidatar-se via plataforma Coodesh e validar o seu login, você poderá acompanhar e receber todas as interações do processo por lá. Utilize a opção **Pedir Feedback** entre uma etapa e outra na vaga que se candidatou. Isso fará com que a pessoa **Recruiter** responsável pelo processo na empresa receba a notificação.\n## Labels\n#### Alocação\nAlocado\n#### Categoria\nFull-Stack",
+  "labels": [
+   {
+    "name": "Alocado"
+   }
+  ]
+ },
+ {
+  "id": 5746322825,
+  "number": 8566,
+  "title": "[Remoto] Full-stack Engineer React.js • UX Design • Node.js(Strider)",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8566",
+  "state": "open",
+  "created_at": "2026-10-07T14:03:28Z",
+  "updated_at": "2026-10-07T14:03:28Z",
+  "body": "VAGA INTERNACIONAL | REMOTA | PAGAMENTO EM USD\n\n🚀 Full-stack Engineer\nReact.js • UX Design • Node.js\n\nSe você é profissional Full-stack e busca uma oportunidade internacional, essa pode ser uma excelente opção para o seu próximo passo!\n\n💰 USD 4.000 a 8.000/mês\n🌍 Remota | LATAM\n⏱️ Long-term | 40h/semana\n🇺🇸 Inglês: C1+\n💼 Experiência: 4+ anos\n\n🔎 Stack principal:\n• React.js\n• Node.js\n• UX Design\n• Desenvolvimento Full-stack\n\n👉 Aplique 👇🏼\nhttps://app.onstrider.com/r/claudiaantunes?job=ZnVsbC1zdGFjay1lbmdpbmVlci03MWY1OGY5Mj9yZWZlcnJhbD1jbGF1ZGlhYW50dW5lcw==\n\n",
+  "labels": []
+ },
+ {
+  "id": 5491527729,
+  "number": 8563,
+  "title": "[Remoto] Back-end Engineer. Net (USD)",
+  "html_url": "https://github.com/frontendbr/vagas/issues/8563",
+  "state": "open",
+  "created_at": "2026-09-17T18:59:30Z",
+  "updated_at": "2026-11-09T13:44:42Z",
+  "body": "\n\n🚨🌎 VAGA INTERNACIONAL | REMOTA | PAGAMENTO EM USD\n💻 BACK-END ENGINEER | C# .NET\nSe você é desenvolvedor Back-end e tem experiência com C#, .NET e SQL, esta pode ser uma excelente oportunidade para atuar no mercado internacional. 🚀\n🔹 5+ anos de experiência\n\n🔹 Inglês C1+\n\n🔹 Long-term | 40h/semana\n\n💰 USD 4.000–6.000/mês\n\n🔗 Candidatura no link abaixo 👇🏻 \n\nhttps://app.onstrider.com/r/claudiaantunes?job=YmFjay1lbmQtZW5naW5lZXItOWJiMjU5YTc/cmVmZXJyYWw9Y2xhdWRpYWFudHVuZXM=\n👉 Tem esse perfil? Confira os requisitos e candidate-se!\nConhece um profissional de C#/.NET que está buscando uma oportunidade internacional? Compartilhe. 🌎\nMe siga para mais oportunidades internacionais.\n#VagasInternacionais #VagasRemotas #BackEndDeveloper #BackendEngineer #CSharp #DotNet #SQL #NETDeveloper #TechJobs #RemoteJobs #VagasTI #SoftwareDeveloper #TechRecruiter\n",
+  "labels": []
+ },
+ {
+  "id": 1330322834,
+  "number": 7263,
+  "title": "ATENÇÃO: Leia nossas regras",
+  "html_url": "https://github.com/frontendbr/vagas/issues/7263",
+  "state": "open",
+  "created_at": "2022-08-05T19:33:32Z",
+  "updated_at": "2024-12-31T15:30:38Z",
+  "body": "Com o objetivo de manter a qualidade das vagas postadas e respeitar todas as pessoas e empresas, **NÃO ACEITAMOS**:\r\n\r\n1. Vagas sem o nome da empresa.\r\n2. Vagas de terceiros que não informem o nome da empresa na qual o(a) candidato(a) irá trabalhar.\r\n3. Vagas com informações faltantes e/ou fora do [modelo da issue](./.github/ISSUE_TEMPLATE/adicionar-nova-vaga.md).\r\n\r\n❗️ **Caso algum desses itens seja infringido, a moderação poderá alertar na issue, DELETAR a issue ou até mesmo banir o usuário da organização sem aviso prévio.**\r\n\r\n_OBS.: Sabemos que é dificil controlar todas essas regras, portanto pedimos que nos ajudem e que tenham bom senso 😉_",
+  "labels": [
+   {
+    "name": "⚠️ Avisos"
+   }
+  ]
+ }
+]

@@ -1,0 +1,135 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Fabio Modelo",
+    "headline": "Engenheiro de Software Sênior (Java)",
+    "location": "Belo Horizonte, MG",
+    "seniority": "senior",
+    "englishLevel": "none",
+    "summary": "Engenheiro de software com 11 anos de experiência em sistemas Java e Spring para o setor financeiro.",
+    "contact": {
+      "email": "fabio.modelo@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Java",
+        "years": 11,
+        "stackId": "java"
+      },
+      {
+        "name": "Spring",
+        "years": 8,
+        "stackId": "spring"
+      },
+      {
+        "name": "PostgreSQL",
+        "years": 9,
+        "stackId": "postgresql"
+      },
+      {
+        "name": "RabbitMQ",
+        "years": 5,
+        "stackId": "rabbitmq"
+      },
+      {
+        "name": "Docker",
+        "years": 5,
+        "stackId": "docker"
+      },
+      {
+        "name": "Kubernetes",
+        "years": 3,
+        "stackId": "kubernetes"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Banco Horizonte Fictício",
+        "title": "Engenheiro de Software Sênior",
+        "startDate": "2018-07",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Liderou a criação do serviço de antifraude em Java e Spring, que analisa 2 milhões de transações por dia"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Reduziu o tempo de resposta do serviço de 800 ms para 120 ms"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Conduziu a migração de 14 serviços para Kubernetes"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Seguradora Vale Demo",
+        "title": "Desenvolvedor Java",
+        "startDate": "2013-03",
+        "endDate": "2018-06",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Desenvolveu o sistema de cálculo de apólices com Spring e PostgreSQL"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Integrou 3 parceiros por filas RabbitMQ"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Fictícia de Minas",
+        "degree": "Bacharelado em Ciência da Computação",
+        "startYear": "2009",
+        "endYear": "2013"
+      }
+    ]
+  },
+  "job": {
+    "id": 9005,
+    "title": "Engenheiro(a) de Software Sênior - Java",
+    "company": "Cobalto Seguros",
+    "companyLogoUrl": null,
+    "summary": "Evolução de plataforma de seguros em Java e Spring.",
+    "country": "BR",
+    "city": "Belo Horizonte",
+    "origin": "national",
+    "acceptsBrazil": true,
+    "workMode": "hybrid",
+    "seniority": "senior",
+    "language": "pt",
+    "stacks": [
+      "java",
+      "spring",
+      "postgresql",
+      "kubernetes"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9005",
+    "applyUrl": "https://vagas.exemplo.test/9005/apply",
+    "descriptionHtml": "<h3>Sobre a vaga</h3><p>Você atuará na plataforma central de apólices e sinistros da Cobalto Seguros.</p><h3>Responsabilidades</h3><p>Atuação técnica de ponta a ponta.</p><ul><li>Desenhar e evoluir serviços em Java e Spring</li><li>Cuidar de desempenho e resiliência</li><li>Participar de revisões de arquitetura</li><li>Apoiar profissionais menos experientes</li></ul><h3>Requisitos</h3><p>Experiência consistente.</p><ul><li>Mais de 7 anos com Java</li><li>Spring e bancos relacionais</li><li>Containers e Kubernetes</li></ul>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9005",
+        "dofollow": true
+      }
+    ]
+  }
+}

@@ -49,6 +49,12 @@ describe("importProfile", () => {
     expect(args.task).toBe("extract");
   });
 
+  it("repassa onPartial ao generateStructured", async () => {
+    const spy = vi.fn();
+    await importProfile(CV, defaultAiSettings(), undefined, spy);
+    expect(generate.mock.calls[0][0].onPartial).toBe(spy);
+  });
+
   it("preenche o contato localmente e ignora o contato devolvido pelo modelo", async () => {
     const p = await importProfile(CV, defaultAiSettings());
     expect(p.contact.email).toBe("ana.exemplo@exemplo.test");

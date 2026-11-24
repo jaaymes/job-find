@@ -38,13 +38,20 @@ export function SiteHeader({ current }: { current?: "vagas" | "minhas-vagas" | "
     <header className="border-b border-jf-line bg-jf-surface">
       <div className="mx-auto flex w-full max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3.5 sm:px-6">
         <Link href="/" className="flex items-center gap-2.5 text-jf-ink no-underline">
-          <span
-            aria-hidden="true"
-            className="flex size-8 items-center justify-center rounded-lg bg-jf-ink font-display text-[15px] font-bold text-jf-surface"
-          >
-            JF
+          {/* Símbolo da marca (lupa cujo cabo forma o J); mesmo desenho de public/brand/jobfind-mark.svg. */}
+          <svg aria-hidden="true" viewBox="7 3 43 59" className="h-8 w-auto" fill="none" strokeWidth={6}>
+            <circle cx="28" cy="24" r="16" className="stroke-jf-ink" />
+            <path
+              d="M39.5 35.5L45 41V48a9 9 0 0 1-18 0"
+              className="stroke-jf-ink"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+            <circle cx="28" cy="24" r="5" className="fill-jf-brand" />
+          </svg>
+          <span className="font-display text-[19px] font-bold">
+            Job <span className="text-jf-brand">Find</span>
           </span>
-          <span className="font-display text-[19px] font-bold">Job Find</span>
         </Link>
         <nav
           aria-label="Principal"

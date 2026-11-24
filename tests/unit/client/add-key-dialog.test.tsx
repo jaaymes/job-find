@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AddKeyDialog } from "@/components/settings/AddKeyDialog";
 import { AiError } from "@/lib/client/ai/errors";
@@ -96,6 +97,62 @@ describe("AddKeyDialog", () => {
     expect(screen.getByRole("alert").textContent).toBe("Cole a chave de API.");
     expect(testConnection).not.toHaveBeenCalled();
     expect(onSave).not.toHaveBeenCalled();
+  });
+
+  it.each(["no_credit", "budget"] as const)("%s salva a chave e avisa que a conta está sem crédito", async (code) => {
+    testConnection.mockRejectedValue(new AiError(code));
+    const { onSave } = setup();
+    paste(KEY);
+    submit();
+    await waitFor(() => expect(onSave).toHaveBeenCalledWith({ key: KEY }));
+    expect(toast).toHaveBeenCalledWith("Chave salva, mas a conta está sem crédito. Recarregue no site do provedor.");
+    expect(JSON.stringify(toast.mock.calls)).not.toContain(KEY);
+  });
+
+  it("dois envios rápidos testam a chave uma única vez", async () => {
+    let resolve: () => void = () => {};
+    testConnection.mockReturnValue(new Promise<void>((r) => (resolve = r)));
+    const { onSave } = setup();
+    paste(KEY);
+    // Dois envios no mesmo act (antes de o React re-renderizar): o `disabled` e o estado ainda não mudaram.
+    const form = screen.getByRole("button", { name: "Testar e salvar" }).closest("form")!;
+    act(() => {
+      fireEvent.submit(form);
+      fireEvent.submit(form);
+    });
+    expect(testConnection).toHaveBeenCalledTimes(1);
+    const button = screen.getByRole("button", { name: "Testando…" }) as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(button.getAttribute("aria-busy")).toBe("true");
+    resolve();
+    await waitFor(() => expect(onSave).toHaveBeenCalledOnce());
+  });
+
+  it("fechar o diálogo durante o teste não salva nem gera erro", async () => {
+    let resolve: () => void = () => {};
+    testConnection.mockReturnValue(new Promise<void>((r) => (resolve = r)));
+    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+    const onSave = vi.fn();
+    const onClose = vi.fn();
+    const { rerender } = render(<AddKeyDialog provider={PROVIDERS.openai} onSave={onSave} onClose={onClose} />);
+    paste(KEY);
+    submit();
+    rerender(<AddKeyDialog provider={null} onSave={onSave} onClose={onClose} />);
+    await waitFor(() => expect(screen.queryByLabelText("Chave de API")).toBeNull());
+    resolve();
+    await new Promise((r) => setTimeout(r, 0));
+    expect(onSave).not.toHaveBeenCalled();
+    expect(toast).not.toHaveBeenCalled();
+    expect(consoleError).not.toHaveBeenCalled();
+    consoleError.mockRestore();
+  });
+
+  it("o link de criar chave tem nome acessível e aponta para keyDocsUrl", () => {
+    setup("anthropic");
+    const link = screen.getByRole("link", { name: "Criar a chave no site do provedor (abre em nova aba)" });
+    expect(link.getAttribute("href")).toBe(PROVIDERS.anthropic.keyDocsUrl);
+    expect(link.className).toContain("underline");
+    expect(link.getAttribute("rel")).toContain("noopener");
   });
 
   it("IA local salva o endereço sem testar", () => {

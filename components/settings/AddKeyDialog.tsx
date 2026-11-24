@@ -58,6 +58,8 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
   const hintId = useId();
   const keyRef = useRef<HTMLInputElement>(null);
   const alive = useRef(true);
+  // Trava síncrona: dois cliques no mesmo tick veem o mesmo estado, mas o ref já mudou.
+  const busy = useRef(false);
   const [key, setKey] = useState("");
   const [baseURL, setBaseURL] = useState(provider.baseURL);
   const [reveal, setReveal] = useState(false);
@@ -75,7 +77,7 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
 
   async function submit(e: FormEvent) {
     e.preventDefault();
-    if (testing) return;
+    if (busy.current) return;
     const problem = validate(provider, key, baseURL);
     if (problem) {
       setError(problem);
@@ -87,8 +89,10 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
     }
     const apiKey = key.trim();
     setError(null);
+    busy.current = true;
     setTesting(true);
     const outcome = await tryKey(provider, apiKey);
+    busy.current = false;
     // Diálogo fechado durante o teste: descarta o resultado.
     if (!alive.current) return;
     setTesting(false);
@@ -200,7 +204,12 @@ export function AddKeyDialog({ provider, onSave, onClose }: Props) {
                   </ol>
                 )}
                 <p className="mt-2">
-                  <a href={provider.keyDocsUrl} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={provider.keyDocsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-jf-brand underline underline-offset-3 hover:text-jf-brand-dark focus-visible:rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-jf-brand"
+                  >
                     {provider.editableBaseURL ? "Como configurar (abre em nova aba)" : "Criar a chave no site do provedor (abre em nova aba)"}
                   </a>
                 </p>

@@ -111,7 +111,7 @@ async function main() {
     if (def.privacyNote && !values["accept-privacy"]) {
       fail(`Aviso de privacidade de ${def.label}: ${def.privacyNote}\nPara continuar, rode de novo com --accept-privacy.`);
     }
-    if (def.auth !== "none") {
+    if (def.auth.kind !== "none") {
       try {
         apiKey = values["key-file"]
           ? await readKeyFile(values["key-file"], { repoRoot: process.cwd() })

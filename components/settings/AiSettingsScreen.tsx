@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FREE_MODELS_NOTE, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
-import { startOpenRouterAuth } from "@/lib/client/ai/pkce";
+import { startOAuth, type OAuthIntent } from "@/lib/client/ai/oauth";
 import { isConnected } from "@/lib/client/ai/model";
 import { aiSettingsStore, type AiSettings } from "@/lib/client/ai/settings";
 import { useStore } from "@/lib/client/storage/store";
@@ -19,10 +19,11 @@ const SAVE_ERROR = "Não foi possível salvar neste navegador.";
 const SECTION = "flex flex-col gap-3 rounded-2xl border border-jf-line bg-jf-surface p-6";
 
 /**
- * O aviso de privacidade antecede a chave (`then: "key"`), o login do OpenRouter (`then: "pkce"`, aviso dos modelos
+ * O aviso de privacidade antecede a chave (`then: "key"`), o login do OpenRouter (`then: "oauth"`, aviso dos modelos
  * gratuitos, que são o padrão) ou revisa um provedor já conectado (`then: "accept"`).
  */
-type Privacy = { id: ProviderId; then: "key" | "accept" | "pkce" };
+type Privacy = { id: ProviderId; then: "key" | "accept" | "oauth" };
+type OAuthError = { id: ProviderId; text: string };
 type KeyTarget = { id: ProviderId; privacyAccepted: boolean };
 
 export function AiSettingsScreen() {
@@ -30,7 +31,7 @@ export function AiSettingsScreen() {
   const [privacy, setPrivacy] = useState<Privacy | null>(null);
   const [keyTarget, setKeyTarget] = useState<KeyTarget | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [pkceError, setPkceError] = useState<string | null>(null);
+  const [oauthError, setOAuthError] = useState<OAuthError | null>(null);
 
   if (!settings) {
     return <div aria-busy="true" aria-label="Carregando configurações" className="h-96 animate-pulse rounded-2xl bg-jf-chip" />;
@@ -80,8 +81,8 @@ export function AiSettingsScreen() {
     if (!privacy) return;
     const { id, then } = privacy;
     setPrivacy(null);
-    if (then === "pkce") {
-      void startPkce();
+    if (then === "oauth") {
+      void beginOAuth(id, { freeConsent: true });
       return;
     }
     if (then === "key") {
@@ -96,17 +97,21 @@ export function AiSettingsScreen() {
     });
   }
 
-  function connectPkce() {
-    setPkceError(null);
-    setPrivacy({ id: "openrouter", then: "pkce" });
+  /** OpenRouter abre antes o aviso dos modelos gratuitos; os demais vão direto para o login do provedor. */
+  function connectOAuth(id: ProviderId) {
+    setOAuthError(null);
+    if (id === "openrouter") setPrivacy({ id, then: "oauth" });
+    else void beginOAuth(id);
   }
 
-  async function startPkce() {
+  async function beginOAuth(id: ProviderId, intent?: OAuthIntent) {
     try {
-      const callback = `${window.location.origin}/configuracoes/callback`;
-      window.location.assign(await startOpenRouterAuth(callback, { freeConsent: true }));
+      window.location.assign(await startOAuth(id, window.location.origin, intent));
     } catch {
-      setPkceError("Não foi possível iniciar a conexão. Verifique se o navegador permite guardar dados da sessão.");
+      setOAuthError({
+        id,
+        text: "Não foi possível iniciar a conexão. Verifique se o navegador permite guardar dados da sessão.",
+      });
     }
   }
 
@@ -117,10 +122,10 @@ export function AiSettingsScreen() {
       entry={settings.providers[id]}
       connected={isConnected(settings, id)}
       onAdd={() => startAdd(id)}
-      onConnectPkce={connectPkce}
+      onConnectOAuth={() => connectOAuth(id)}
       onRemove={() => remove(id)}
       onReviewPrivacy={() => setPrivacy({ id, then: "accept" })}
-      pkceError={id === "openrouter" ? pkceError : null}
+      oauthError={oauthError?.id === id ? oauthError.text : null}
     />
   );
 

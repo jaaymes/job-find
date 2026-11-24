@@ -15,6 +15,9 @@ export function SiteFooter() {
         <Link href="/privacidade" className={LINK}>
           Privacidade
         </Link>
+        <Link href="/apoie" className={LINK}>
+          Apoie o projeto
+        </Link>
         <a
           href="https://github.com/jaaymes/job-find"
           className={LINK}

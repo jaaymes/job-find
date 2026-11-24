@@ -47,13 +47,13 @@ type Props = {
   entry: Entry | undefined;
   connected: boolean;
   onAdd: () => void;
-  onConnectPkce: () => void;
+  onConnectOAuth: () => void;
   onRemove: () => void;
   onReviewPrivacy: () => void;
-  pkceError?: string | null;
+  oauthError?: string | null;
 };
 
-export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRemove, onReviewPrivacy, pkceError }: Props) {
+export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onRemove, onReviewPrivacy, oauthError }: Props) {
   const titleId = useId();
   const [test, setTest] = useState<Test>({ state: "idle" });
   const [showGuide, setShowGuide] = useState(false);
@@ -84,8 +84,8 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
     ? DESCRIPTIONS[def.id]
     : isLocal
       ? `Servidor em ${entry?.baseURL ?? def.baseURL}.`
-      : entry?.source === "pkce"
-        ? `Conectado pelo login do OpenRouter em ${date}. Chave terminada em ${last4}.`
+      : entry?.source === "oauth"
+        ? `Conectado pelo login do ${def.label} em ${date}. Chave terminada em ${last4}.`
         : `Chave colada em ${date}. Chave terminada em ${last4}.`;
 
   return (
@@ -120,7 +120,7 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
               Testar conexão
             </Button>
             <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={remove}>
-              {def.auth === "paste" ? "Remover chave" : "Desconectar"}
+              {def.auth.kind === "paste" ? "Remover chave" : "Desconectar"}
             </Button>
             {needsReview && (
               <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
@@ -132,9 +132,13 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
           <>
             <Button
               className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-brand-dark"
-              onClick={def.auth === "pkce" ? onConnectPkce : onAdd}
+              onClick={def.auth.kind === "oauth" ? onConnectOAuth : onAdd}
             >
-              {def.auth === "pkce" ? "Conectar" : isLocal ? "Configurar" : "Adicionar chave"}
+              {def.auth.kind === "oauth"
+                ? `Conectar com ${def.label}`
+                : def.auth.kind === "none"
+                  ? "Configurar"
+                  : "Adicionar chave"}
             </Button>
             {!isLocal && (
               <a
@@ -169,9 +173,9 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
           {test.state === "loading" ? "Testando…" : test.state === "ok" ? "Conectado" : test.text}
         </p>
       )}
-      {pkceError && (
+      {oauthError && (
         <p role="alert" className="text-[13px] text-jf-danger-fg">
-          {pkceError}
+          {oauthError}
         </p>
       )}
       {isLocal && showGuide && <LocalAiGuide />}

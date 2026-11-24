@@ -4,8 +4,9 @@ import { expect, test, type Page, type Route } from "@playwright/test";
 const STORE_KEY = "jobfind:v1:ai";
 const OPENAI_KEY = "sk-test-openai-abcd1234";
 
+/** `source: "pkce"` é legado (antes do OAuth genérico); o app lê como "oauth". */
 type Stored = {
-  providers: Record<string, { key?: string; baseURL?: string; addedAt: string; source: "pkce" | "paste"; privacyAccepted?: boolean; freeConsent?: boolean }>;
+  providers: Record<string, { key?: string; baseURL?: string; addedAt: string; source: "oauth" | "paste" | "pkce"; privacyAccepted?: boolean; freeConsent?: boolean }>;
   tasks: Record<"extract" | "analyze" | "cv", { provider: string; model: string } | null>;
 };
 
@@ -76,7 +77,7 @@ async function seed(page: Page, data: Partial<Stored> & { providers: Stored["pro
 
 const added = "2026-11-20T00:00:00.000Z";
 const openaiProvider = { key: OPENAI_KEY, addedAt: added, source: "paste" as const };
-const openrouterProvider = { key: "sk-or-v1-seed4321", addedAt: added, source: "pkce" as const };
+const openrouterProvider = { key: "sk-or-v1-seed4321", addedAt: added, source: "oauth" as const };
 
 const stored = (page: Page): Promise<Stored | null> =>
   page.evaluate((k) => {
@@ -85,6 +86,32 @@ const stored = (page: Page): Promise<Stored | null> =>
   }, STORE_KEY);
 
 const card = (page: Page, name: string) => page.getByRole("article", { name, exact: true });
+
+const pendingOAuth = (page: Page): Promise<string | null> =>
+  page.evaluate(() => window.sessionStorage.getItem("jobfind:oauth:pending"));
+
+/** Abre o login do OpenRouter (aceitando o aviso dos gratuitos) e devolve o `state` que vai na `callback_url`. */
+async function startOpenRouterLogin(page: Page): Promise<string> {
+  await page.route("https://openrouter.ai/auth*", (route) =>
+    route.fulfill({ contentType: "text/html", body: "<!doctype html><title>OpenRouter</title><p>login simulado</p>" }),
+  );
+  await page.goto("/configuracoes");
+  const authRequest = page.waitForRequest((r) => r.url().startsWith("https://openrouter.ai/auth"));
+  await card(page, "OpenRouter").getByRole("button", { name: "Conectar com OpenRouter" }).click();
+  // Antes do login, o aviso dos modelos gratuitos (padrão do OpenRouter).
+  const notice = page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
+  await expect(notice).toContainText("limite de uso por dia");
+  await notice.getByRole("button", { name: "Entendi e aceito" }).click();
+  const url = new URL((await authRequest).url());
+  expect(url.origin + url.pathname).toBe("https://openrouter.ai/auth");
+  expect(url.searchParams.get("code_challenge_method")).toBe("S256");
+  expect(url.searchParams.get("code_challenge")).toBeTruthy();
+  const callback = new URL(url.searchParams.get("callback_url")!);
+  expect(callback.pathname).toBe("/configuracoes/callback");
+  const state = callback.searchParams.get("state");
+  expect(state).toBeTruthy();
+  return state!;
+}
 
 test.beforeEach(async ({ page }) => {
   openaiStatus = 200;
@@ -128,30 +155,72 @@ test.describe("Configurações de IA", () => {
   });
 
   test("OpenRouter: Conectar vai para openrouter.ai/auth e o retorno do callback deixa o provedor conectado", async ({ page }) => {
-    await page.route("https://openrouter.ai/auth*", (route) =>
-      route.fulfill({ contentType: "text/html", body: "<!doctype html><title>OpenRouter</title><p>login simulado</p>" }),
-    );
-    await page.goto("/configuracoes");
-    const authRequest = page.waitForRequest((r) => r.url().startsWith("https://openrouter.ai/auth"));
-    await card(page, "OpenRouter").getByRole("button", { name: "Conectar" }).click();
-    // Antes do login, o aviso dos modelos gratuitos (padrão do OpenRouter).
-    const notice = page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
-    await expect(notice).toContainText("limite de uso por dia");
-    await notice.getByRole("button", { name: "Entendi e aceito" }).click();
-    const url = new URL((await authRequest).url());
-    expect(url.origin + url.pathname).toBe("https://openrouter.ai/auth");
-    expect(url.searchParams.get("callback_url")).toMatch(/\/configuracoes\/callback$/);
-    expect(url.searchParams.get("code_challenge_method")).toBe("S256");
-    expect(url.searchParams.get("code_challenge")).toBeTruthy();
+    const state = await startOpenRouterLogin(page);
 
-    // Retorno do provedor na mesma aba (o verifier está no sessionStorage).
-    await page.goto("/configuracoes/callback?code=x");
+    // Retorno do provedor na mesma aba (o pending está no sessionStorage); o state volta na query.
+    await page.goto(`/configuracoes/callback?code=x&state=${encodeURIComponent(state)}`);
     await page.waitForURL("**/configuracoes");
     const openrouter = card(page, "OpenRouter");
     await expect(openrouter.getByText("Conectado", { exact: true })).toBeVisible();
     await expect(openrouter.getByText("9999")).toBeVisible();
-    expect((await stored(page))?.providers.openrouter?.source).toBe("pkce");
+    await expect(openrouter.getByText(/Conectado pelo login do OpenRouter em/)).toBeVisible();
+    expect((await stored(page))?.providers.openrouter?.source).toBe("oauth");
     expect((await stored(page))?.providers.openrouter?.freeConsent).toBe(true);
+  });
+
+  test("OpenRouter: callback com state diferente mostra o erro e não salva nada", async ({ page }) => {
+    let exchanged = false;
+    await page.route("https://openrouter.ai/api/v1/auth/keys", (route) => {
+      exchanged = true;
+      return fulfillJson(route, 200, { key: "sk-or-v1-nao-devia" });
+    });
+    await startOpenRouterLogin(page);
+    // O título usa o provedor do pending: ler o sessionStorage na renderização divergiria do HTML do servidor.
+    // Em produção o React reporta a divergência como erro de página (#418), não no console.
+    const hydration: string[] = [];
+    page.on("pageerror", (e) => {
+      if (/hydrat|#418|#423|#425/i.test(e.message)) hydration.push(e.message);
+    });
+    await page.goto("/configuracoes/callback?code=x&state=errado");
+    // O Next tem o próprio route announcer com role=alert; o da página fica no <main>.
+    const alert = page.getByRole("main").getByRole("alert");
+    await expect(alert).toContainText("Falha ao conectar");
+    await expect(alert).toContainText("O retorno do login não confere com esta sessão. Conecte de novo nas configurações.");
+    // code e state saem da URL.
+    expect(new URL(page.url()).search).toBe("");
+    expect(exchanged).toBe(false);
+    expect((await stored(page))?.providers.openrouter).toBeUndefined();
+    await expect.poll(() => pendingOAuth(page)).toBeNull();
+    await expect(page.getByRole("heading", { name: "Falha ao conectar o OpenRouter" })).toBeVisible();
+    expect(hydration).toEqual([]);
+  });
+
+  test("OpenRouter: retorno com a query concatenada (?state=…?code=…) ainda conecta", async ({ page }) => {
+    const state = await startOpenRouterLogin(page);
+    await page.goto(`/configuracoes/callback?state=${encodeURIComponent(state)}?code=x`);
+    await page.waitForURL("**/configuracoes");
+    await expect(card(page, "OpenRouter").getByText("9999")).toBeVisible();
+    expect((await stored(page))?.providers.openrouter?.source).toBe("oauth");
+  });
+
+  test("OpenRouter: voltar sem code (login cancelado) mostra o aviso e descarta o login pendente", async ({ page }) => {
+    // Aqui a página está em openrouter.ai (outra origem), então o pending só é lido de volta no callback.
+    await startOpenRouterLogin(page);
+    await page.goto("/configuracoes/callback?error=access_denied");
+    const alert = page.getByRole("main").getByRole("alert");
+    await expect(alert).toContainText("Login cancelado ou não concluído. Conecte de novo nas configurações.");
+    // O texto já vem no HTML do servidor; o pending é apagado no efeito, depois da hidratação.
+    await expect.poll(() => pendingOAuth(page)).toBeNull();
+    expect((await stored(page))?.providers.openrouter).toBeUndefined();
+  });
+
+  test("OpenRouter: callback com code sem sessão pendente pede para abrir o fluxo de novo", async ({ page }) => {
+    await page.goto("/configuracoes/callback?code=x&state=qualquer");
+    // O Next tem o próprio route announcer com role=alert; o da página fica no <main>.
+    const alert = page.getByRole("main").getByRole("alert");
+    await expect(alert).toContainText("Falha ao conectar o provedor");
+    await expect(alert).toContainText(/abra o fluxo de novo na mesma aba/i);
+    expect((await stored(page))?.providers.openrouter).toBeUndefined();
   });
 
   test("OpenRouter: cancelar o aviso dos gratuitos não abre o login", async ({ page }) => {
@@ -161,7 +230,7 @@ test.describe("Configurações de IA", () => {
       return route.fulfill({ contentType: "text/html", body: "<!doctype html><p>login</p>" });
     });
     await page.goto("/configuracoes");
-    await card(page, "OpenRouter").getByRole("button", { name: "Conectar" }).click();
+    await card(page, "OpenRouter").getByRole("button", { name: "Conectar com OpenRouter" }).click();
     const notice = page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
     await notice.getByRole("button", { name: "Cancelar" }).click();
     await expect(notice).toBeHidden();
@@ -169,9 +238,11 @@ test.describe("Configurações de IA", () => {
   });
 
   test("OpenRouter conectado sem o aviso dos gratuitos oferece revisá-lo e grava o aceite", async ({ page }) => {
-    await seed(page, { providers: { openrouter: openrouterProvider } });
+    // Registro legado (`source: "pkce"`): continua lido como login do OpenRouter.
+    await seed(page, { providers: { openrouter: { ...openrouterProvider, source: "pkce" } } });
     await page.goto("/configuracoes");
     const openrouter = card(page, "OpenRouter");
+    await expect(openrouter.getByText(/Conectado pelo login do OpenRouter em/)).toBeVisible();
     await openrouter.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" }).click();
     await page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ }).getByRole("button", { name: "Entendi e aceito" }).click();
     await expect.poll(async () => (await stored(page))?.providers.openrouter?.freeConsent).toBe(true);
@@ -279,7 +350,8 @@ test.describe("Configurações de IA", () => {
     await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
     expect(await page.evaluate(() => (window as unknown as { __v: string[] }).__v)).toEqual([]);
     await page.goto("/configuracoes/callback");
-    await expect(page.getByText("Falha ao conectar o OpenRouter")).toBeVisible();
+    // Sem login pendente, o callback não sabe o provedor: título genérico.
+    await expect(page.getByText("Falha ao conectar o provedor")).toBeVisible();
     expect(await page.evaluate(() => (window as unknown as { __v: string[] }).__v)).toEqual([]);
     expect(problems).toEqual([]);
   });

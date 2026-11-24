@@ -35,7 +35,7 @@ describe("resolveTaskModel", () => {
   it("sem configuração da tarefa, cai no primeiro provedor conectado com o modelo padrão", async () => {
     const s: AiSettings = {
       ...defaultAiSettings(),
-      providers: { openrouter: { key: "sk-or", addedAt: at, source: "pkce", freeConsent: true } },
+      providers: { openrouter: { key: "sk-or", addedAt: at, source: "oauth", freeConsent: true } },
     };
     const r = await resolveTaskModel(s, "analyze");
     expect(r.provider.id).toBe("openrouter");
@@ -77,7 +77,7 @@ describe("resolveTaskModel", () => {
   it("modelo gratuito escolhido sem o aviso dos gratuitos aceito lança blocked_by_privacy (free_models)", async () => {
     const s: AiSettings = {
       ...defaultAiSettings(),
-      providers: { openrouter: { key: "k", addedAt: at, source: "pkce" } },
+      providers: { openrouter: { key: "k", addedAt: at, source: "oauth" } },
       tasks: { extract: null, analyze: { provider: "openrouter", model: "acme/x:free" }, cv: null },
     };
     await expect(resolveTaskModel(s, "analyze")).rejects.toMatchObject({
@@ -89,7 +89,7 @@ describe("resolveTaskModel", () => {
   it("modelo pago do OpenRouter não exige o aviso dos gratuitos", async () => {
     const s: AiSettings = {
       ...defaultAiSettings(),
-      providers: { openrouter: { key: "k", addedAt: at, source: "pkce" } },
+      providers: { openrouter: { key: "k", addedAt: at, source: "oauth" } },
       tasks: { extract: null, analyze: { provider: "openrouter", model: "deepseek/deepseek-v4.1-flash" }, cv: null },
     };
     expect((await resolveTaskModel(s, "analyze")).modelId).toBe("deepseek/deepseek-v4.1-flash");
@@ -99,12 +99,12 @@ describe("resolveTaskModel", () => {
     const s: AiSettings = {
       ...defaultAiSettings(),
       providers: {
-        openrouter: { key: "k", addedAt: at, source: "pkce" },
+        openrouter: { key: "k", addedAt: at, source: "oauth" },
         openai: { key: "k", addedAt: at, source: "paste" },
       },
     };
     expect((await resolveTaskModel(s, "analyze")).provider.id).toBe("openai");
-    s.providers.openrouter = { key: "k", addedAt: at, source: "pkce", freeConsent: true };
+    s.providers.openrouter = { key: "k", addedAt: at, source: "oauth", freeConsent: true };
     expect((await resolveTaskModel(s, "analyze")).modelId).toBe("openrouter/free");
   });
 });
@@ -143,13 +143,13 @@ describe("hasUsableProvider", () => {
   });
 
   it("OpenRouter no padrão gratuito só conta com o aviso dos gratuitos aceito", () => {
-    const s: AiSettings = { ...defaultAiSettings(), providers: { openrouter: { key: "k", addedAt: at, source: "pkce" } } };
+    const s: AiSettings = { ...defaultAiSettings(), providers: { openrouter: { key: "k", addedAt: at, source: "oauth" } } };
     expect(hasUsableProvider(s, "analyze")).toBe(false);
     const paid = { ...s, tasks: { extract: null, analyze: { provider: "openrouter" as const, model: "x/pago" }, cv: null } };
     expect(hasUsableProvider(paid, "analyze")).toBe(true);
     const ok: AiSettings = {
       ...s,
-      providers: { openrouter: { key: "k", addedAt: at, source: "pkce", freeConsent: true } },
+      providers: { openrouter: { key: "k", addedAt: at, source: "oauth", freeConsent: true } },
     };
     expect(hasUsableProvider(ok, "analyze")).toBe(true);
   });

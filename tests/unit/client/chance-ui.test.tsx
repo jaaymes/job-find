@@ -88,7 +88,7 @@ describe("FiltersPanel: chance", () => {
     onClear: () => {},
     open: true,
     id: "f",
-    savedSearch: { active: false, canSave: false, onSave: () => {}, onClear: () => {} },
+    savedSearch: { active: false, canSave: false, error: null, onSave: () => {}, onClear: () => {} },
   };
 
   it("sem perfil o filtro fica desabilitado e sugere importar o currículo", () => {

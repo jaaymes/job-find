@@ -94,9 +94,31 @@ describe("useRecordVisit", () => {
     hide("visible");
   });
 
-  it("depois de desmontar, não grava mais", () => {
+  it("grava ao desmontar (navegação interna), adiado para depois do StrictMode", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-23T10:00:00.000Z"));
     const { unmount } = renderHook(() => useRecordVisit());
     unmount();
+    expect(localStorage.getItem(KEY)).toBeNull();
+    vi.runAllTimers();
+    expect(lastVisitStore.get()).toBe("2026-11-23T10:00:00.000Z");
+  });
+
+  it("montar de novo logo após desmontar (StrictMode) cancela a gravação", () => {
+    vi.useFakeTimers();
+    const first = renderHook(() => useRecordVisit());
+    first.unmount();
+    renderHook(() => useRecordVisit());
+    vi.runAllTimers();
+    expect(localStorage.getItem(KEY)).toBeNull();
+  });
+
+  it("depois de desmontar, o pagehide já não grava", () => {
+    vi.useFakeTimers();
+    const { unmount } = renderHook(() => useRecordVisit());
+    unmount();
+    vi.runAllTimers();
+    localStorage.clear();
     window.dispatchEvent(new Event("pagehide"));
     expect(localStorage.getItem(KEY)).toBeNull();
   });

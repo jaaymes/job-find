@@ -10,6 +10,7 @@ import {
   clearSavedSearch,
   saveSearch,
   useApplySavedSearch,
+  toSavedFilters,
   useSavedFilters,
 } from "@/lib/client/jobs/saved-search";
 import { useJobsWithChance } from "@/lib/client/jobs/use-jobs-with-chance";
@@ -23,6 +24,7 @@ import { formatAge, formatCollectedAt, isStale } from "./format";
 const FILTERS_ID = "jobs-filters";
 const SIDEBAR_KEYS = ["origin", "acceptsBrazil", "chance", "seniority", "lang", "source", "showHidden"] as const;
 const UNDO_MS = 8000;
+const SAVE_ERROR = "Não foi possível salvar a busca padrão: o navegador não permitiu gravar os dados.";
 
 function JobCardSkeleton() {
   return (
@@ -64,14 +66,14 @@ function Heading({ lastCollectedAt, now }: { lastCollectedAt: string | null; now
 export function JobsPage() {
   const [filters, setFilters] = useJobsFilters();
   const { chance, showHidden, ...apiFilters } = filters;
-  const query = useJobsWithChance(apiFilters, chance ?? null);
+  const searchReady = useApplySavedSearch(filters, setFilters);
+  const query = useJobsWithChance(apiFilters, chance ?? null, searchReady);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const panelId = useId();
   // Relógio do cliente = instante em que os dados chegaram (o pré-render não conhece a hora).
   const now = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null;
 
   const states = useJobStates();
-  useApplySavedSearch(setFilters);
   const savedSearch = useSavedFilters();
   const previousVisit = usePreviousVisit();
   useRecordVisit();
@@ -87,6 +89,7 @@ export function JobsPage() {
     syncSnapshots(query.items.map((x) => x.job));
   }, [query.items]);
 
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [undo, setUndo] = useState<JobSummary | null>(null);
   useEffect(() => {
     if (!undo) return;
@@ -142,10 +145,17 @@ export function JobsPage() {
           open={filtersOpen}
           hasProfile={query.hasProfile}
           savedSearch={{
-            active: savedSearch !== null,
+            active: savedSearch !== null && toSavedFilters(savedSearch) !== null,
             canSave: canSaveSearch,
-            onSave: () => void saveSearch(filters),
-            onClear: () => void clearSavedSearch(),
+            error: saveError,
+            onSave: () => {
+              const r = saveSearch(filters);
+              setSaveError(r.ok ? null : SAVE_ERROR);
+            },
+            onClear: () => {
+              const r = clearSavedSearch();
+              setSaveError(r.ok ? null : SAVE_ERROR);
+            },
           }}
         />
 

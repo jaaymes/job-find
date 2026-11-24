@@ -36,12 +36,20 @@ export function isNewSince(publishedAt: string, previousVisit: number | null): b
   return previousVisit !== null && new Date(publishedAt).getTime() > previousVisit;
 }
 
+let pendingUnmountWrite: ReturnType<typeof setTimeout> | null = null;
+
 /**
- * Grava a hora atual como última visita ao sair da página (`pagehide`) e quando a aba fica oculta. Não grava ao
- * montar: o valor lido por `usePreviousVisit` continua sendo o da visita anterior.
+ * Grava a hora atual como última visita ao sair da página (`pagehide`), quando a aba fica oculta e quando a home
+ * desmonta (navegação interna: fechar a aba na página da vaga também conta como sair da home). Não grava ao
+ * montar: o valor lido por `usePreviousVisit` continua sendo o da visita anterior. A gravação da desmontagem é
+ * adiada e cancelada se a home montar de novo (o StrictMode de desenvolvimento monta, desmonta e monta).
  */
 export function useRecordVisit(): void {
   useEffect(() => {
+    if (pendingUnmountWrite !== null) {
+      clearTimeout(pendingUnmountWrite);
+      pendingUnmountWrite = null;
+    }
     const record = () => void lastVisitStore.set(new Date().toISOString());
     const onVisibility = () => {
       if (document.visibilityState === "hidden") record();
@@ -51,6 +59,10 @@ export function useRecordVisit(): void {
     return () => {
       window.removeEventListener("pagehide", record);
       document.removeEventListener("visibilitychange", onVisibility);
+      pendingUnmountWrite = setTimeout(() => {
+        pendingUnmountWrite = null;
+        record();
+      }, 0);
     };
   }, []);
 }

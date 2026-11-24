@@ -1,7 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 import { eq } from "drizzle-orm";
 import { jobs } from "@/lib/server/db/schema";
-import { listJobs } from "@/lib/server/jobs/query";
+import { getJob, listJobs } from "@/lib/server/jobs/query";
+import { attributionFor } from "@/lib/server/sources/registry";
 import { parseJobsQuery } from "@/lib/shared/schemas/jobs-query";
 import { MINUTE, seedDatabase, type E2eDb } from "./seed";
 
@@ -34,6 +35,13 @@ test.beforeEach(async ({ page }) => {
     if (/content security policy|refused to (load|apply|execute|connect)/i.test(msg.text())) problems.push(msg.text());
   });
   page.on("pageerror", (err) => problems.push(err.message));
+  await page.route("**/api/jobs/*", async (route) => {
+    const raw = new URL(route.request().url()).pathname.split("/").pop() ?? "";
+    const job = /^\d+$/.test(raw) ? await getJob(db, Number(raw), attributionFor) : null;
+    return job
+      ? route.fulfill({ json: job })
+      : route.fulfill({ status: 404, json: { error: { code: "not_found", message: "Vaga não encontrada" } } });
+  });
   await page.route("**/api/jobs*", async (route) => {
     const parsed = parseJobsQuery(new URL(route.request().url()).searchParams);
     if (!parsed.ok) return route.fulfill({ status: 400, json: { error: parsed.error } });
@@ -158,6 +166,40 @@ test.describe("selo Nova", () => {
     // Na visita seguinte, as mesmas vagas já não são novas.
     await open(page, "/");
     await expect(page.getByText("Nova", { exact: true })).toHaveCount(0);
+  });
+
+  test("sair da home por navegação interna também atualiza a visita", async ({ page, context }) => {
+    const previous = new Date(Date.now() - 100 * MINUTE).toISOString();
+    await seedLastVisit(page, previous);
+    await open(page);
+    await expect(page.getByText("Nova", { exact: true })).toHaveCount(3);
+    expect(await stored(page, VISIT_KEY)).toBe(previous);
+
+    // Link interno para a vaga: a home desmonta e a aba pode ser fechada dali (sem pagehide na home).
+    await card(page, 3).getByRole("link").first().click();
+    await expect(page).toHaveURL(/\/vagas\/\d+/);
+    await expect.poll(async () => new Date((await stored(page, VISIT_KEY)) as string).getTime()).toBeGreaterThan(
+      new Date(previous).getTime(),
+    );
+    await page.close();
+
+    // Nova vaga publicada depois dessa visita: só ela ganha o selo; as 00 a 02 já foram vistas.
+    const title = "Vaga 05 Desenvolvedor";
+    await db.update(jobs).set({ publishedAt: new Date(Date.now() + 5_000) }).where(eq(jobs.title, title));
+    try {
+      const next = await context.newPage();
+      await next.route("**/api/jobs*", async (route) => {
+        const parsed = parseJobsQuery(new URL(route.request().url()).searchParams);
+        if (!parsed.ok) return route.fulfill({ status: 400, json: { error: parsed.error } });
+        const result = await listJobs(db, parsed.value, !parsed.value.cursor);
+        return route.fulfill({ json: { ...result, lastCollectedAt: new Date().toISOString() } });
+      });
+      await open(next);
+      await expect(next.getByText("Nova", { exact: true })).toHaveCount(1);
+      await expect(card(next, 5).getByText("Nova", { exact: true })).toBeVisible();
+    } finally {
+      await db.update(jobs).set({ publishedAt: new Date(Date.now() - 6 * 30 * MINUTE) }).where(eq(jobs.title, title));
+    }
   });
 
   test("primeira visita não mostra selo nenhum", async ({ page }) => {

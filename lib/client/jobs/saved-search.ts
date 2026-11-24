@@ -1,6 +1,6 @@
 import "client-only";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createStore, useStore, type SetResult, type Store } from "@/lib/client/storage/store";
 import { jobsQuerySchema } from "@/lib/shared/schemas/jobs-query";
@@ -47,12 +47,13 @@ export function toSavedFilters(filters: PageFilters): SavedFilters | null {
   return Object.keys(out).length > 0 ? (out as SavedFilters) : null;
 }
 
-export const saveSearch = (filters: PageFilters): SetResult => {
-  const saved = toSavedFilters(filters);
-  return saved ? savedFiltersStore.set(saved) : { ok: false, reason: "unavailable" };
-};
-
 export const clearSavedSearch = (): SetResult => savedFiltersStore.set(null);
+
+/** Grava a busca padrão; um conjunto de filtros vazio limpa a que existia. */
+export function saveSearch(filters: PageFilters): SetResult {
+  const saved = toSavedFilters(filters);
+  return saved ? savedFiltersStore.set(saved) : clearSavedSearch();
+}
 
 /** A URL traz algum parâmetro de filtro? (Parâmetros alheios, como `utm_source`, não contam.) */
 export function hasFilterParams(params: Pick<URLSearchParams, "has">): boolean {
@@ -67,18 +68,20 @@ export function readSavedSearch(): SavedFilters | null {
 
 /**
  * Ao abrir a home sem nenhum filtro na URL, aplica a busca padrão trocando a URL (replace): a URL continua sendo a
- * fonte da verdade e pode ser compartilhada. Só uma vez por montagem: limpar os filtros depois não os traz de volta.
+ * fonte da verdade e pode ser compartilhada. Só na montagem: limpar os filtros depois não os traz de volta.
+ * Devolve `ready`: falso até a decisão estar tomada (e a URL já refletir a busca aplicada), para a consulta de
+ * vagas não sair antes sem filtros.
  */
-export function useApplySavedSearch(setFilters: (patch: PageFilters) => void): void {
+export function useApplySavedSearch(filters: PageFilters, setFilters: (patch: PageFilters) => void): boolean {
   const params = useSearchParams();
-  const done = useRef(false);
+  // A home nunca é pré-renderizada (useSearchParams a deixa para o cliente), então ler a store aqui não diverge.
+  const [pending] = useState(() => (hasFilterParams(params) ? null : readSavedSearch()));
+  const [ready, setReady] = useState(pending === null);
+  if (!ready && Object.keys(filters).length > 0) setReady(true);
   useEffect(() => {
-    if (done.current) return;
-    done.current = true;
-    if (hasFilterParams(params)) return;
-    const saved = readSavedSearch();
-    if (saved) setFilters(saved);
-    // Só na montagem: `params` e `setFilters` mudam a cada navegação de filtro.
+    if (pending) setFilters(pending);
+    // Só na montagem: `setFilters` muda a cada navegação de filtro.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  return ready;
 }

@@ -54,9 +54,10 @@ describe("savedFiltersStore", () => {
     expect(readSavedSearch()).toBeNull();
   });
 
-  it("saveSearch sem filtros não grava nada", () => {
-    expect(saveSearch({ showHidden: true }).ok).toBe(false);
-    expect(localStorage.getItem(KEY)).toBeNull();
+  it("saveSearch sem filtros limpa a busca que existia", () => {
+    saveSearch({ lang: "pt" });
+    expect(saveSearch({ showHidden: true })).toEqual({ ok: true });
+    expect(savedFiltersStore.get()).toBeNull();
   });
 
   it("objeto inválido é descartado (valor fora do schema, tipo errado, versão futura, JSON quebrado)", () => {

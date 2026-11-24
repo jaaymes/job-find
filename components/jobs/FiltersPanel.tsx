@@ -16,7 +16,7 @@ type Props = {
   open: boolean;
   id: string;
   /** Busca padrão (RF-22): salva os filtros atuais e os aplica ao abrir a home sem filtros. */
-  savedSearch: { active: boolean; canSave: boolean; onSave: () => void; onClear: () => void };
+  savedSearch: { active: boolean; canSave: boolean; error: string | null; onSave: () => void; onClear: () => void };
 };
 
 const ORIGINS = [
@@ -189,6 +189,11 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile,
             </>
           )}
         </div>
+        {savedSearch.error && (
+          <p role="alert" className="text-[13px] text-jf-danger-fg">
+            {savedSearch.error}
+          </p>
+        )}
       </div>
     </aside>
   );

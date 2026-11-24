@@ -1,12 +1,22 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { isAbortError } from "@/lib/client/ai/errors";
 import type { AiSettings } from "@/lib/client/ai/settings";
 import { extractText } from "@/lib/client/extract";
+import {
+  formatFound,
+  nextProgress,
+  summarizePartial,
+  type FoundSummary,
+  type ImportPhase,
+  type ProgressInput,
+} from "@/lib/client/profile/import-progress";
 import type { Profile } from "@/lib/shared/schemas/profile";
 import { toFailure, SCANNED_MESSAGE, type Failure } from "./messages";
 import { BTN_OUTLINE, BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
+import { ImportProgressDialog } from "./ImportProgressDialog";
 
 export type ImportMeta = { source: string; pages: number | null };
 
@@ -23,6 +33,9 @@ type Props = {
 type Status = "idle" | "reading" | "analyzing";
 type Job = { kind: "file"; file: File } | { kind: "text"; text: string };
 
+const TICK_MS = 200;
+const NOTHING_FOUND: FoundSummary = { experiences: 0, skills: 0, education: 0, headline: null };
+
 export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfile, lastImport }: Props) {
   const fileId = useId();
   const textId = useId();
@@ -35,10 +48,32 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
   const [failure, setFailure] = useState<Failure | null>(null);
   const [lastJob, setLastJob] = useState<Job | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [progress, setProgressState] = useState<ProgressInput | null>(null);
+  // Cópia em ref para o relógio: um único intervalo por importação, sem recriá-lo a cada parcial (a cada ~50 ms).
+  const progressRef = useRef<ProgressInput | null>(null);
+  const [percent, setPercent] = useState(0);
+  const [found, setFound] = useState<FoundSummary>(NOTHING_FOUND);
 
   const focusPaste = useRef(false);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+  // Relógio do progresso: as etapas por tempo (leitura, espera da IA) avançam mesmo sem eventos.
+  const running = status !== "idle";
+  useEffect(() => {
+    if (!running) return;
+    const id = setInterval(() => {
+      const cur = progressRef.current;
+      if (cur) setPercent((p) => nextProgress(p, cur, Date.now()));
+    }, TICK_MS);
+    return () => clearInterval(id);
+  }, [running]);
+
+  /** Troca o estado do progresso e já atualiza a porcentagem (o relógio só cobre as etapas por tempo). */
+  function setProgress(next: ProgressInput | null) {
+    progressRef.current = next;
+    setProgressState(next);
+    if (next) setPercent((p) => nextProgress(p, next, Date.now()));
+  }
   // Depois de um PDF escaneado o campo de colar abre e recebe o foco (já montado neste ponto).
   useEffect(() => {
     if (pasteOpen && failure && focusPaste.current) {
@@ -53,15 +88,22 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
     abortRef.current = ctrl;
     setLastJob(job);
     setFailure(null);
+    setPercent(0);
+    setFound(NOTHING_FOUND);
+    const enter = (phase: ImportPhase, cvLength = 0) => {
+      setProgress({ phase, phaseStartedAt: Date.now(), cvLength, receivedChars: 0 });
+    };
     try {
       let cvText: string;
       let meta: ImportMeta;
       if (job.kind === "file") {
         setStatus("reading");
+        enter("reading");
         const r = await extractText(job.file);
         if (ctrl.signal.aborted) return;
         if (r.scanned) {
           setStatus("idle");
+          setProgress(null);
           focusPaste.current = true;
           setPasteOpen(true);
           setFailure({ text: SCANNED_MESSAGE, retryable: false });
@@ -74,15 +116,33 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
         meta = { source: "Texto colado", pages: null };
       }
       setStatus("analyzing");
+      enter("waiting", cvText.length);
       const { importProfile } = await import("@/lib/client/profile/import");
-      const profile = await importProfile(cvText, settings, ctrl.signal);
+      const profile = await importProfile(cvText, settings, ctrl.signal, (p) => {
+        if (ctrl.signal.aborted) return;
+        const receivedChars = JSON.stringify(p).length;
+        const cur = progressRef.current;
+        if (cur) {
+          setProgress(
+            cur.phase === "streaming"
+              ? { ...cur, receivedChars }
+              : { ...cur, phase: "streaming", phaseStartedAt: Date.now(), receivedChars },
+          );
+        }
+        setFound(summarizePartial(p));
+      });
       if (ctrl.signal.aborted) return;
-      setStatus("idle");
+      // Fecha o modal antes do onImported: a confirmação de substituição do perfil não pode empilhar com ele.
+      flushSync(() => {
+        setStatus("idle");
+        setProgress(null);
+      });
       onImported(profile, meta);
     } catch (e) {
       // Execução cancelada ou já substituída por outra: não mexe no estado da nova (o Cancelar já zerou o status).
       if (ctrl.signal.aborted || abortRef.current !== ctrl) return;
       setStatus("idle");
+      setProgress(null);
       if (isAbortError(e)) return;
       setFailure(toFailure(e));
     } finally {
@@ -92,6 +152,13 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
 
   const busy = status !== "idle";
   const disabled = busy || !canUseAi;
+
+  function cancel() {
+    abortRef.current?.abort();
+    abortRef.current = null;
+    setStatus("idle");
+    setProgress(null);
+  }
 
   function pick(file: File | undefined) {
     if (file && !disabled) void run({ kind: "file", file });
@@ -171,20 +238,6 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
           </div>
         )}
 
-        {busy && (
-          <div className="flex flex-wrap items-center justify-between gap-2" role="status">
-            <p className="text-sm text-jf-ink-2">
-              {status === "reading" ? "Lendo o arquivo..." : "Estruturando o currículo com IA..."}
-            </p>
-            <button type="button" className={BTN_OUTLINE} onClick={() => {
-                abortRef.current?.abort();
-                abortRef.current = null;
-                setStatus("idle");
-              }}>
-              Cancelar
-            </button>
-          </div>
-        )}
         {failure && (
           <div role="alert" className="flex flex-col items-start gap-2 rounded-lg border border-jf-danger-fg/30 bg-jf-danger-bg px-4 py-3 text-sm text-jf-danger-fg">
             <p>{failure.text}</p>
@@ -201,6 +254,14 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
           </button>
         )}
       </div>
+
+      <ImportProgressDialog
+        open={busy}
+        phase={progress?.phase ?? "reading"}
+        percent={percent}
+        found={formatFound(found)}
+        onCancel={cancel}
+      />
 
       {lastImport && (
         <div className={`${CARD} flex flex-col gap-1.5 px-5 py-[18px] sm:px-[22px]`}>

@@ -179,6 +179,9 @@ test("PDF escaneado mostra a mensagem e abre o campo de colar texto", async ({ p
   const box = page.getByLabel("Texto do currículo", { exact: true });
   await expect(box).toBeVisible();
   await expect(box).toBeFocused();
+  // O modal de progresso termina de sair depois (animação) e não pode devolver o foco ao input de arquivo.
+  await page.waitForTimeout(500);
+  await expect(box).toBeFocused();
   expect(mock.bodies).toHaveLength(0);
 
   await box.fill("Beatriz Teste\nDesenvolvedora\nSkills: TypeScript");
@@ -210,6 +213,10 @@ test("importar com perfil existente pede confirmação de substituição", async
   await page.getByLabel("Arquivo do currículo (PDF ou DOCX)").setInputFiles(fixture("cv.docx"));
   const dialog = page.getByRole("dialog", { name: "Substituir o perfil atual?" });
   await expect(dialog).toBeVisible();
+  // O modal de progresso some antes e não tira o foco da confirmação ao terminar de sair.
+  await expect(page.getByRole("dialog", { name: "Importando seu currículo" })).toBeHidden();
+  await page.waitForTimeout(500);
+  expect(await dialog.evaluate((d) => d.contains(document.activeElement))).toBe(true);
   await dialog.getByRole("button", { name: "Manter o perfil atual" }).click();
   await expect(dialog).toBeHidden();
   await expect(page.getByLabel("Nome", { exact: true })).toHaveValue("Ana Exemplo");

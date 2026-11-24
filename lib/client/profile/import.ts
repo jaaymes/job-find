@@ -20,7 +20,13 @@ export function renumber(experiences: Profile["experiences"]): Profile["experien
  * Estrutura o texto de um currículo com IA (D-11). E-mail e telefone são redigidos antes do envio e
  * preenchidos localmente depois; `stackId` e os ids vêm do cliente, não do modelo.
  */
-export async function importProfile(text: string, settings: AiSettings, signal?: AbortSignal): Promise<Profile> {
+export async function importProfile(
+  text: string,
+  settings: AiSettings,
+  signal?: AbortSignal,
+  /** JSON parcial da resposta, para o progresso do modal (não confiável: só leitura com guardas). */
+  onPartial?: (p: unknown) => void,
+): Promise<Profile> {
   const { data } = await generateStructured({
     task: "extract",
     settings,
@@ -30,6 +36,7 @@ export async function importProfile(text: string, settings: AiSettings, signal?:
     maxOutputTokens: PROFILE_EXTRACT_V1.maxOutputTokens,
     temperature: PROFILE_EXTRACT_V1.temperature,
     signal,
+    onPartial,
   });
   return {
     ...data,

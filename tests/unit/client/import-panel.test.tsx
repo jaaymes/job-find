@@ -2,6 +2,7 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ImportPanel } from "@/components/profile/ImportPanel";
 import { defaultAiSettings } from "@/lib/client/ai/settings";
+import { AiError } from "@/lib/client/ai/errors";
 import type { Profile } from "@/lib/shared/schemas/profile";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
 
@@ -80,5 +81,121 @@ describe("ImportPanel: Cancelar", () => {
     expect(onImported).not.toHaveBeenCalled();
     expect(fileInput().disabled).toBe(false);
     expect(screen.queryByText("Estruturando o currículo com IA...")).toBeNull();
+  });
+});
+
+const dialog = () => screen.queryByRole("dialog", { name: "Importando seu currículo" });
+const percent = () => Number(screen.getByRole("progressbar").getAttribute("aria-valuenow"));
+const okText = { kind: "pdf", text: "texto do cv", pages: 1, scanned: false };
+
+describe("ImportPanel: modal de progresso", () => {
+  it("abre o modal com a etapa de leitura", async () => {
+    mocks.extractText.mockReturnValue(new Promise(() => {}));
+    setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    expect(await screen.findByRole("dialog", { name: "Importando seu currículo" })).toBeTruthy();
+    expect(screen.getByText("Lendo o arquivo...")).toBeTruthy();
+  });
+
+  it("mostra o que a IA encontrou e a porcentagem sobe", async () => {
+    mocks.extractText.mockResolvedValue(okText);
+    mocks.importProfile.mockImplementation((_t: string, _s: unknown, _sig: unknown, onPartial: (p: unknown) => void) => {
+      onPartial({ experiences: [{}, {}, {}], skills: Array(14).fill({}), education: [{}] });
+      return new Promise(() => {});
+    });
+    setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    expect(await screen.findByText("Encontrado até agora: 3 experiências · 14 competências · 1 formação")).toBeTruthy();
+    await vi.waitFor(() => expect(percent()).toBeGreaterThanOrEqual(30));
+  });
+
+  it("a barra avança durante um stream contínuo (parciais a cada 50 ms)", async () => {
+    mocks.extractText.mockResolvedValue(okText);
+    let streaming = true;
+    mocks.importProfile.mockImplementation(async (_t: string, _s: unknown, _sig: unknown, onPartial: (p: unknown) => void) => {
+      for (let i = 1; streaming && i <= 40; i++) {
+        onPartial({ experiences: Array(i).fill({ company: "x".repeat(20) }) });
+        await new Promise((r) => setTimeout(r, 50));
+      }
+      return new Promise(() => {});
+    });
+    setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    await screen.findByText(/Encontrado até agora/);
+    await vi.waitFor(() => expect(percent()).toBeGreaterThanOrEqual(40), { timeout: 1500 });
+    streaming = false;
+  });
+
+  it("Esc cancela e fecha, e o resultado tardio não importa", async () => {
+    mocks.extractText.mockResolvedValue(okText);
+    const imp = deferred<Profile>();
+    mocks.importProfile.mockReturnValue(imp.promise);
+    const onImported = setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    const d = await screen.findByRole("dialog", { name: "Importando seu currículo" });
+    await screen.findByText("Estruturando o currículo com IA...");
+    fireEvent.keyDown(d, { key: "Escape" });
+    await vi.waitFor(() => expect(dialog()).toBeNull());
+    expect(fileInput().disabled).toBe(false);
+    await act(async () => {
+      imp.resolve(emptyProfile());
+      await imp.promise;
+    });
+    expect(onImported).not.toHaveBeenCalled();
+  });
+
+  it("sucesso fecha o modal antes do onImported", async () => {
+    mocks.extractText.mockResolvedValue(okText);
+    mocks.importProfile.mockResolvedValue(emptyProfile());
+    let openAtImport: boolean | null = null;
+    render(
+      <ImportPanel
+        settings={defaultAiSettings()}
+        canUseAi
+        onImported={() => {
+          openAtImport = screen.queryByRole("progressbar") !== null;
+        }}
+        onManual={() => {}}
+        hasProfile={false}
+        lastImport={null}
+      />,
+    );
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    await vi.waitFor(() => expect(openAtImport).not.toBeNull());
+    expect(openAtImport).toBe(false);
+  });
+
+  it("erro fecha o modal e mostra o alerta no card", async () => {
+    mocks.extractText.mockResolvedValue(okText);
+    mocks.importProfile.mockRejectedValue(new AiError("unavailable", { retryable: true }));
+    setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("Tentar de novo");
+    await vi.waitFor(() => expect(dialog()).toBeNull());
+  });
+
+  it("Tentar de novo recomeça do zero", async () => {
+    mocks.extractText.mockResolvedValueOnce(okText).mockReturnValueOnce(new Promise(() => {}));
+    mocks.importProfile.mockImplementation(async (_t: string, _s: unknown, _sig: unknown, onPartial: (p: unknown) => void) => {
+      onPartial({ experiences: Array(50).fill({ bullets: ["x".repeat(400)] }) });
+      await new Promise((r) => setTimeout(r, 300));
+      throw new AiError("unavailable", { retryable: true });
+    });
+    setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    await vi.waitFor(() => expect(percent()).toBeGreaterThan(30));
+    fireEvent.click(await screen.findByRole("button", { name: "Tentar de novo" }));
+    await screen.findByRole("dialog", { name: "Importando seu currículo" });
+    expect(percent()).toBeLessThan(15);
+  });
+
+  it("PDF escaneado fecha o modal e abre o campo de colar", async () => {
+    mocks.extractText.mockResolvedValue({ kind: "pdf", text: "", pages: 1, scanned: true });
+    setup();
+    fireEvent.change(fileInput(), { target: { files: [file] } });
+    const box = await screen.findByLabelText("Texto do currículo");
+    await vi.waitFor(() => expect(document.activeElement).toBe(box));
+    expect(dialog()).toBeNull();
   });
 });

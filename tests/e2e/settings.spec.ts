@@ -133,7 +133,7 @@ test.describe("Configurações de IA", () => {
     await input.fill(OPENAI_KEY);
     await dialog.getByRole("button", { name: "Mostrar chave" }).click();
     await expect(input).toHaveAttribute("type", "text");
-    await dialog.getByRole("button", { name: "Salvar" }).click();
+    await dialog.getByRole("button", { name: "Testar e salvar" }).click();
     await expect(dialog).toBeHidden();
 
     // A chave completa nunca aparece na tela; só os 4 últimos caracteres.
@@ -295,11 +295,37 @@ test.describe("Configurações de IA", () => {
 
     const dialog = page.getByRole("dialog", { name: /Adicionar chave/ });
     await dialog.getByLabel("Chave de API").fill("AIza-teste-0000");
-    await dialog.getByRole("button", { name: "Salvar" }).click();
+    await dialog.getByRole("button", { name: "Testar e salvar" }).click();
     await expect(dialog).toBeHidden();
     const data = await stored(page);
     expect(data?.providers.google?.privacyAccepted).toBe(true);
     expect(data?.providers.google?.key).toBe("AIza-teste-0000");
+    // O teste da chave falhou por rede (host não mockado): a chave fica salva com o aviso.
+    await expect(page.getByText("Chave salva, mas não deu para testar agora.")).toBeVisible();
+  });
+
+  test("colar uma chave da Anthropic no card da OpenAI avisa sem bloquear o botão", async ({ page }) => {
+    await page.goto("/configuracoes");
+    await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
+    const dialog = page.getByRole("dialog", { name: /Adicionar chave/ });
+    await dialog.getByLabel("Chave de API").fill("sk-ant-x");
+    await expect(dialog.getByText("Parece uma chave do(a) Anthropic (Claude)")).toBeVisible();
+    await expect(dialog.getByRole("button", { name: "Testar e salvar" })).toBeEnabled();
+  });
+
+  test("chave recusada pelo provedor (401) mantém o diálogo aberto e não salva", async ({ page }) => {
+    openaiStatus = 401;
+    await page.goto("/configuracoes");
+    await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
+    const dialog = page.getByRole("dialog", { name: /Adicionar chave/ });
+    const input = dialog.getByLabel("Chave de API");
+    await input.fill(OPENAI_KEY);
+    await dialog.getByRole("button", { name: "Testar e salvar" }).click();
+    await expect(dialog.getByRole("alert")).toHaveText("O provedor recusou essa chave.");
+    await expect(input).toBeFocused();
+    await expect(dialog).toBeVisible();
+    expect((await stored(page))?.providers.openai).toBeUndefined();
+    await expect(page.getByText(OPENAI_KEY)).toHaveCount(0);
   });
 
   test("cancelar o aviso de privacidade deixa o Gemini desconectado", async ({ page }) => {

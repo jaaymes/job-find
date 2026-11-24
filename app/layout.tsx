@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { VercelAnalytics } from "@/components/layout/VercelAnalytics";
 import { THEME_SCRIPT } from "@/lib/shared/theme-script";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -37,6 +38,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
+        <VercelAnalytics />
       </body>
     </html>
   );

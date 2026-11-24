@@ -72,8 +72,10 @@ export default function PrivacidadePage() {
 
         <Section title="Analytics">
           <p>
-            Hoje o Job Find não usa ferramenta de analytics nem cookies. Se um dia adicionarmos uma medição agregada, sem
-            cookies e sem dados pessoais (por exemplo, o Vercel Web Analytics), esta página será atualizada antes.
+            O Job Find usa o Vercel Web Analytics para contar visitas de forma agregada (quantas pessoas abriram cada
+            página, de que país e com que tipo de navegador). Ele não usa cookies e não identifica você entre sites.
+            Antes do envio, o endereço da página é cortado no caminho: filtros e termos de busca não entram nessa
+            medição. Seu currículo, perfil e chaves de API nunca fazem parte dessa medição.
           </p>
         </Section>
 

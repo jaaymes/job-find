@@ -37,6 +37,11 @@ export type OAuthFlow = {
   authorizeUrl(p: { redirectUri: string; challenge: string; state: string; origin: string }): string;
   exchange(p: { code: string; verifier: string; redirectUri: string; origin: string }): Promise<OAuthTokens>;
   refresh?(p: { refreshToken: string; origin: string }): Promise<OAuthTokens>;
+  /**
+   * O provedor pode não devolver o `state` no retorno (não documenta). Se vier, ainda tem que bater; se faltar, o PKCE
+   * com verifier por sessão já impede login-CSRF (RFC 9700 §2.1.1).
+   */
+  stateOptional?: boolean;
 };
 
 export type AuthDef =

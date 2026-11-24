@@ -8,9 +8,12 @@ const KEYS_URL = "https://openrouter.ai/api/v1/auth/keys";
 
 /**
  * Login PKCE do OpenRouter. O OpenRouter não documenta `state`, então ele vai como query dentro da `callback_url`
- * (`…/configuracoes/callback?state=…`) e volta junto com o `code`. A chave emitida tem limite de US$ 5 e vale 1 ano.
+ * (`…/configuracoes/callback?state=…`). Como não há garantia de que a query volte, o `state` é opcional no retorno
+ * (`stateOptional`): se vier, tem que bater. A chave emitida tem limite de US$ 5 e vale 1 ano.
  */
 export const openRouterFlow: OAuthFlow = {
+  stateOptional: true,
+
   authorizeUrl({ redirectUri, challenge, state }) {
     const callback = new URL(redirectUri);
     callback.searchParams.set("state", state);

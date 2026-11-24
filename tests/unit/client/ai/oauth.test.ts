@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
-import { callbackUrl, completeOAuth, PENDING_KEY, readPending, startOAuth } from "@/lib/client/ai/oauth";
+import { callbackUrl, cancelOAuth, completeOAuth, parseCallbackParams, PENDING_KEY, readPending, startOAuth } from "@/lib/client/ai/oauth";
+import { PROVIDERS } from "@/lib/client/ai/providers";
 
 const ORIGIN = "https://app.test";
 
@@ -83,14 +84,47 @@ describe("OAuth genérico", () => {
     expect(sessionStorage.getItem(PENDING_KEY)).toBeNull();
   });
 
-  it("completeOAuth sem state (null) também é state_mismatch", async () => {
+  it("completeOAuth sem state no retorno segue quando o flow declara stateOptional (OpenRouter)", async () => {
+    expect(PROVIDERS.openrouter.auth.kind === "oauth" && PROVIDERS.openrouter.auth.flow.stateOptional).toBe(true);
     await startOAuth("openrouter", ORIGIN);
-    const fetchMock = vi.fn();
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ key: "sk-or-x" }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
-    await expect(completeOAuth({ code: "c", state: null, origin: ORIGIN })).rejects.toMatchObject({
-      meta: { reason: "state_mismatch" },
-    });
-    expect(fetchMock).not.toHaveBeenCalled();
+    await expect(completeOAuth({ code: "c", state: null, origin: ORIGIN })).resolves.toMatchObject({ tokens: { key: "sk-or-x" } });
+    expect(fetchMock).toHaveBeenCalledOnce();
+    expect(sessionStorage.getItem(PENDING_KEY)).toBeNull();
+  });
+
+  it("completeOAuth com state vazio conta como ausente", async () => {
+    await startOAuth("openrouter", ORIGIN);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ key: "sk-or-x" }), { status: 200 })));
+    await expect(completeOAuth({ code: "c", state: "", origin: ORIGIN })).resolves.toMatchObject({ provider: "openrouter" });
+  });
+
+  it("completeOAuth sem state no retorno é state_mismatch quando o flow não declara stateOptional", async () => {
+    const auth = PROVIDERS.openrouter.auth;
+    if (auth.kind !== "oauth") throw new Error("OpenRouter deveria ser oauth");
+    const original = auth.flow;
+    const strict = { ...original, stateOptional: false };
+    (auth as { flow: typeof original }).flow = strict;
+    try {
+      await startOAuth("openrouter", ORIGIN);
+      const fetchMock = vi.fn();
+      vi.stubGlobal("fetch", fetchMock);
+      await expect(completeOAuth({ code: "c", state: null, origin: ORIGIN })).rejects.toMatchObject({
+        meta: { reason: "state_mismatch" },
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(sessionStorage.getItem(PENDING_KEY)).toBeNull();
+    } finally {
+      (auth as { flow: typeof original }).flow = original;
+    }
+  });
+
+  it("cancelOAuth apaga o pending", async () => {
+    await startOAuth("openrouter", ORIGIN);
+    cancelOAuth();
+    expect(sessionStorage.getItem(PENDING_KEY)).toBeNull();
+    expect(readPending()).toBeNull();
   });
 
   it("completeOAuth sem pending lança missing_verifier", async () => {
@@ -122,5 +156,21 @@ describe("OAuth genérico", () => {
     vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("Failed to fetch"); }));
     await expect(completeOAuth({ code: "c", state, origin: ORIGIN })).rejects.toMatchObject({ meta: { reason: "network" } });
     expect(sessionStorage.getItem(PENDING_KEY)).toBeNull();
+  });
+});
+
+describe("parseCallbackParams", () => {
+  it("lê code, state e error do formato normal", () => {
+    expect(parseCallbackParams(new URLSearchParams("?state=abc&code=x"))).toEqual({ code: "x", state: "abc", error: null });
+    expect(parseCallbackParams(new URLSearchParams("?error=access_denied"))).toEqual({ code: null, state: null, error: "access_denied" });
+  });
+
+  it("tolera a concatenação ingênua '?state=abc?code=x'", () => {
+    expect(parseCallbackParams(new URLSearchParams("?state=abc?code=x"))).toEqual({ code: "x", state: "abc", error: null });
+    expect(parseCallbackParams(new URLSearchParams("?state=abc?code=x&foo=1"))).toMatchObject({ code: "x", state: "abc" });
+  });
+
+  it("state ou code vazios viram null", () => {
+    expect(parseCallbackParams(new URLSearchParams("?code=&state="))).toEqual({ code: null, state: null, error: null });
   });
 });

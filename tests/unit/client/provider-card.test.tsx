@@ -8,7 +8,7 @@ afterEach(cleanup);
 
 type Entry = AiSettings["providers"]["openrouter"];
 
-function setup(id: "openrouter" | "openai", entry?: Entry, extra: { oauthError?: string | null } = {}) {
+function setup(id: "openrouter" | "openai" | "local", entry?: Entry, extra: { oauthError?: string | null } = {}) {
   const handlers = { onAdd: vi.fn(), onConnectOAuth: vi.fn(), onRemove: vi.fn(), onReviewPrivacy: vi.fn() };
   render(<ProviderCard def={PROVIDERS[id]} entry={entry} connected={entry !== undefined} {...handlers} {...extra} />);
   return handlers;
@@ -37,6 +37,12 @@ describe("ProviderCard", () => {
   it("conectado por chave colada mostra 'Chave colada em'", () => {
     setup("openai", { key: "sk-abcd1234", addedAt: "2026-11-20T12:00:00.000Z", source: "paste" });
     expect(screen.getByText(/Chave colada em .+\. Chave terminada em 1234\./)).toBeTruthy();
+  });
+
+  it("auth 'none' (IA local) mostra 'Configurar' e chama onAdd", () => {
+    const h = setup("local");
+    fireEvent.click(screen.getByRole("button", { name: "Configurar" }));
+    expect(h.onAdd).toHaveBeenCalledOnce();
   });
 
   it("oauthError aparece como alerta", () => {

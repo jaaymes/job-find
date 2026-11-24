@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { AiError } from "@/lib/client/ai/errors";
-import { completeOAuth, readPending } from "@/lib/client/ai/oauth";
+import { cancelOAuth, completeOAuth, parseCallbackParams, readPending } from "@/lib/client/ai/oauth";
 import { PROVIDERS, type ProviderId } from "@/lib/client/ai/providers";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { HardLink } from "@/components/ui/hard-link";
@@ -28,10 +28,10 @@ function Callback() {
   const router = useRouter();
   const params = useSearchParams();
   // Fixa code e state na primeira renderização: replaceState os remove da URL e o useSearchParams passaria a vê-los vazios.
-  const [code] = useState(() => params.get("code"));
-  const [state] = useState(() => params.get("state"));
-  // Só para o título; o pending é consumido (e validado) por completeOAuth.
-  const [provider] = useState<ProviderId | null>(() => readPending()?.provider ?? null);
+  const [{ code, state }] = useState(() => parseCallbackParams(params));
+  // Só para o título. Lido no efeito (o sessionStorage não existe no servidor; ler na renderização divergiria na
+  // hidratação); o pending é consumido (e validado) por completeOAuth.
+  const [provider, setProvider] = useState<ProviderId | null>(null);
   const label = provider ? PROVIDERS[provider].label : null;
   const started = useRef(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +41,14 @@ function Callback() {
     started.current = true;
     // Tira code e state da URL antes de qualquer outra coisa.
     window.history.replaceState(null, "", window.location.pathname);
-    if (!code) return;
+    const pending = readPending()?.provider ?? null;
+    const pendingLabel = pending ? PROVIDERS[pending].label : null;
+    setProvider(pending);
+    if (!code) {
+      // Voltou sem code (cancelou no provedor, `?error=access_denied`…): descarta o login pendente.
+      cancelOAuth();
+      return;
+    }
     void (async () => {
       try {
         const { provider: id, tokens, intent } = await completeOAuth({ code, state, origin: window.location.origin });
@@ -68,19 +75,16 @@ function Callback() {
         }
         router.replace("/configuracoes");
       } catch (e) {
-        setError(messageFor(e, label));
+        setError(messageFor(e, pendingLabel));
       }
     })();
-  }, [code, state, label, router]);
+  }, [code, state, router]);
 
   if (error || !code) {
     return (
       <div role="alert" className="flex flex-col gap-3">
         <h1 className="text-xl font-semibold">{label ? `Falha ao conectar o ${label}` : "Falha ao conectar o provedor"}</h1>
-        <p>
-          {error ??
-            `Código de autorização ausente. Conecte ${label ? `o ${label}` : "o provedor"} de novo nas configurações.`}
-        </p>
+        <p>{error ?? "Login cancelado ou não concluído. Conecte de novo nas configurações."}</p>
         <HardLink href="/configuracoes" className="underline">
           Voltar às configurações
         </HardLink>

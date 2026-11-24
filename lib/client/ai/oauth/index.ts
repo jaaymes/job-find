@@ -59,6 +59,21 @@ function parsePending(raw: string | null): Pending | null {
   };
 }
 
+/**
+ * Lê `code`, `state` e `error` do retorno. Tolera a concatenação ingênua da `callback_url` que já tem query
+ * (`?state=abc?code=x`, em que o `?` extra fica dentro do valor). Valores vazios viram `null`.
+ */
+export function parseCallbackParams(params: URLSearchParams): { code: string | null; state: string | null; error: string | null } {
+  const flat = new URLSearchParams();
+  for (const [k, v] of params) {
+    const [head, ...rest] = v.split("?");
+    flat.append(k, head);
+    for (const extra of rest) for (const [k2, v2] of new URLSearchParams(extra)) flat.append(k2, v2);
+  }
+  const get = (k: string) => flat.get(k) || null;
+  return { code: get("code"), state: get("state"), error: get("error") };
+}
+
 function getPendingRaw(): string | null {
   try {
     return sessionStorage.getItem(PENDING_KEY);
@@ -93,6 +108,11 @@ export async function startOAuth(id: ProviderId, origin: string, intent: OAuthIn
   return flow.authorizeUrl({ redirectUri: callbackUrl(origin), challenge: base64url(new Uint8Array(digest)), state, origin });
 }
 
+/** Descarta o login em andamento (ex.: o usuário cancelou no provedor e voltou sem `code`). */
+export function cancelOAuth(): void {
+  clearPending();
+}
+
 /** Provedor e intenção do login em andamento, sem consumir o pending (para o título do callback). */
 export function readPending(): { provider: ProviderId; intent: OAuthIntent } | null {
   const p = parsePending(getPendingRaw());
@@ -100,7 +120,8 @@ export function readPending(): { provider: ProviderId; intent: OAuthIntent } | n
 }
 
 /**
- * Confere o `state` e troca o `code` pelos tokens. O pending é removido em qualquer desfecho; code, verifier,
+ * Confere o `state` e troca o `code` pelos tokens. `state` presente tem que bater; ausente só é aceito se o flow
+ * declara `stateOptional`. O pending é removido em qualquer desfecho; code, verifier,
  * state e chave nunca vão a erro ou log.
  */
 export async function completeOAuth(p: {
@@ -111,10 +132,10 @@ export async function completeOAuth(p: {
   const pending = parsePending(getPendingRaw());
   clearPending();
   if (!pending) throw new AiError("unavailable", { meta: { reason: "missing_verifier" } });
-  if (p.state === null || !safeEqual(p.state, pending.state)) {
-    throw new AiError("unavailable", { meta: { reason: "state_mismatch" } });
-  }
-  const tokens = await flowOf(pending.provider).exchange({
+  const flow = flowOf(pending.provider);
+  const ok = p.state ? safeEqual(p.state, pending.state) : flow.stateOptional === true;
+  if (!ok) throw new AiError("unavailable", { meta: { reason: "state_mismatch" } });
+  const tokens = await flow.exchange({
     code: p.code,
     verifier: pending.verifier,
     redirectUri: callbackUrl(p.origin),

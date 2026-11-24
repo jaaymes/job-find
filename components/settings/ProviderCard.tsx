@@ -134,7 +134,11 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
               className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-brand-dark"
               onClick={def.auth.kind === "oauth" ? onConnectOAuth : onAdd}
             >
-              {def.auth.kind === "oauth" ? `Conectar com ${def.label}` : isLocal ? "Configurar" : "Adicionar chave"}
+              {def.auth.kind === "oauth"
+                ? `Conectar com ${def.label}`
+                : def.auth.kind === "none"
+                  ? "Configurar"
+                  : "Adicionar chave"}
             </Button>
             {!isLocal && (
               <a

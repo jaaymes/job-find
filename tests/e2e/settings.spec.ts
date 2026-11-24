@@ -87,6 +87,9 @@ const stored = (page: Page): Promise<Stored | null> =>
 
 const card = (page: Page, name: string) => page.getByRole("article", { name, exact: true });
 
+const pendingOAuth = (page: Page): Promise<string | null> =>
+  page.evaluate(() => window.sessionStorage.getItem("jobfind:oauth:pending"));
+
 /** Abre o login do OpenRouter (aceitando o aviso dos gratuitos) e devolve o `state` que vai na `callback_url`. */
 async function startOpenRouterLogin(page: Page): Promise<string> {
   await page.route("https://openrouter.ai/auth*", (route) =>
@@ -172,6 +175,12 @@ test.describe("Configurações de IA", () => {
       return fulfillJson(route, 200, { key: "sk-or-v1-nao-devia" });
     });
     await startOpenRouterLogin(page);
+    // O título usa o provedor do pending: ler o sessionStorage na renderização divergiria do HTML do servidor.
+    // Em produção o React reporta a divergência como erro de página (#418), não no console.
+    const hydration: string[] = [];
+    page.on("pageerror", (e) => {
+      if (/hydrat|#418|#423|#425/i.test(e.message)) hydration.push(e.message);
+    });
     await page.goto("/configuracoes/callback?code=x&state=errado");
     // O Next tem o próprio route announcer com role=alert; o da página fica no <main>.
     const alert = page.getByRole("main").getByRole("alert");
@@ -180,6 +189,28 @@ test.describe("Configurações de IA", () => {
     // code e state saem da URL.
     expect(new URL(page.url()).search).toBe("");
     expect(exchanged).toBe(false);
+    expect((await stored(page))?.providers.openrouter).toBeUndefined();
+    await expect.poll(() => pendingOAuth(page)).toBeNull();
+    await expect(page.getByRole("heading", { name: "Falha ao conectar o OpenRouter" })).toBeVisible();
+    expect(hydration).toEqual([]);
+  });
+
+  test("OpenRouter: retorno com a query concatenada (?state=…?code=…) ainda conecta", async ({ page }) => {
+    const state = await startOpenRouterLogin(page);
+    await page.goto(`/configuracoes/callback?state=${encodeURIComponent(state)}?code=x`);
+    await page.waitForURL("**/configuracoes");
+    await expect(card(page, "OpenRouter").getByText("9999")).toBeVisible();
+    expect((await stored(page))?.providers.openrouter?.source).toBe("oauth");
+  });
+
+  test("OpenRouter: voltar sem code (login cancelado) mostra o aviso e descarta o login pendente", async ({ page }) => {
+    // Aqui a página está em openrouter.ai (outra origem), então o pending só é lido de volta no callback.
+    await startOpenRouterLogin(page);
+    await page.goto("/configuracoes/callback?error=access_denied");
+    const alert = page.getByRole("main").getByRole("alert");
+    await expect(alert).toContainText("Login cancelado ou não concluído. Conecte de novo nas configurações.");
+    // O texto já vem no HTML do servidor; o pending é apagado no efeito, depois da hidratação.
+    await expect.poll(() => pendingOAuth(page)).toBeNull();
     expect((await stored(page))?.providers.openrouter).toBeUndefined();
   });
 

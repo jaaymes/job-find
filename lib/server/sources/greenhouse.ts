@@ -3,9 +3,11 @@ import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import { parseLocation } from "@/lib/server/sources/location";
+import { decodeEntities } from "@/lib/server/sources/text";
 import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
 
 export { parseLocation, type ParsedLocation } from "@/lib/server/sources/location";
+export { decodeEntities };
 
 /** Host fixo da API (D-07): o fetch seguro só aceita URLs base definidas no código. */
 export const GREENHOUSE_HOST = "boards-api.greenhouse.io";
@@ -18,7 +20,7 @@ export const GREENHOUSE_BOARDS = [
 
 const boardSchema = z.object({ jobs: z.array(z.unknown()) });
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   /** Slug do board, acrescentado pelo conector ao devolver cada vaga. */
   board: z.string().min(1),
   id: z.number(),
@@ -31,17 +33,6 @@ const jobSchema = z.object({
   location: z.object({ name: z.string().nullish() }).nullish(),
   departments: z.array(z.object({ name: z.string().nullish() })).nullish(),
 });
-
-const ENTITIES: Record<string, string> = { lt: "<", gt: ">", amp: "&", quot: '"', apos: "'", nbsp: " " };
-
-/** O `content` do Greenhouse vem como HTML escapado; uma única passada evita decodificar duas vezes. */
-export function decodeEntities(input: string): string {
-  return input.replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z]+));/gi, (match, dec?: string, hex?: string, name?: string) => {
-    if (name) return ENTITIES[name.toLowerCase()] ?? match;
-    const code = dec ? Number.parseInt(dec, 10) : Number.parseInt(hex ?? "", 16);
-    return Number.isInteger(code) && code > 0 && code <= 0x10ffff ? String.fromCodePoint(code) : match;
-  });
-}
 
 // --- coleta -----------------------------------------------------------------------------------
 

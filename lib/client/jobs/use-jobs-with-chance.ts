@@ -20,11 +20,14 @@ export type ScoredJob = { job: JobSummary; chance: ScoreResult | null };
  * (aplicado aqui, no cliente). Sem perfil não há score e o filtro é ignorado. A ordem é sempre
  * a da API (da mais nova para a mais antiga), nunca a do score.
  */
-export function useJobsWithChance(filters: JobsFilters, bands: Band[] | null) {
+export function useJobsWithChance(filters: JobsFilters, bands: Band[] | null, enabled = true) {
   const profile = useStore(profileStore);
   // Sem perfil não há score: o filtro é ignorado e a busca usa o limite padrão.
   const chanceMode = bands !== null && bands.length > 0 && profile !== null;
-  const query = useInfiniteQuery(jobsInfiniteOptions(chanceMode ? { ...filters, limit: CHANCE_PAGE_LIMIT } : filters));
+  const query = useInfiniteQuery({
+    ...jobsInfiniteOptions(chanceMode ? { ...filters, limit: CHANCE_PAGE_LIMIT } : filters),
+    enabled,
+  });
   const { data, dataUpdatedAt, hasNextPage, isFetching, isPlaceholderData, fetchNextPage } = query;
 
   const index = useMemo(() => (profile ? indexProfile(profile) : null), [profile]);

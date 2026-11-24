@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:media="http://search.yahoo.com/mrss">
+  <channel>
+    <title>We Work Remotely: Remote jobs in design, programming, marketing and more</title>
+    <link>https://weworkremotely.com/categories/remote-programming-jobs.rss</link>
+    <description>We Work Remotely: Remote jobs in design, programming, marketing and more</description>
+    <language>en-US</language>
+    <ttl>60</ttl>
+    <item>
+      <title>Toptal: Cryptography Specialist for AI lab</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; 
+&lt;/p&gt;
+
+&lt;p&gt;Overview&lt;/p&gt;&lt;p&gt;A fast-growing AI evaluation company is building expert-level benchmarks that test how well AI agents handle real professional work in the terminal. We are hiring cryptography experts to turn real, paid tasks from their own work into end-to-end challenges for AI agents, each with a working solution and a check that proves the result is correct.&lt;/p&gt;&lt;p&gt;***THIS IS A TASK BASED COMPENSATION MODEL. PLEASE CHECK THE APPLICATION QUESTIONS FOR MORE DETAILS.***&lt;/p&gt;&lt;p&gt;Responsibilities&lt;/p&gt;&lt;p&gt;• Design expert-level Terminal-Bench cryptography tasks by turning real, paid work from your own experience into challenges that an AI agent must solve end to end.&lt;/p&gt;&lt;p&gt;• Define the task environment, including files, systems, ciphertexts and data, so the challenge is realistic, self-contained and reproducible in a Linux command-line setup.&lt;/p&gt;&lt;p&gt;• Write a working reference solution in Python or SageMath that proves the task is solvable, for example by recovering a key or decrypting a secret.&lt;/p&gt;&lt;p&gt;• Build automated checks and tests that objectively verify the final result is correct, and explain how a mistake or a partial answer would be detected.&lt;/p&gt;&lt;p&gt;• Calibrate task difficulty so a typical expert needs about 60-75 minutes to solve it, keeping it hard for AI agents while still fair and unambiguous.&lt;/p&gt;&lt;p&gt;• Package each task with Docker and Git where applicable, document instructions clearly, and revise based on reviewer feedback until it meets the required quality bar.&lt;/p&gt;&lt;p&gt;Skills/Experience&lt;/p&gt;&lt;p&gt;• 3+ years of hands-on cryptanalysis or applied cryptography; GRC, audit-only, policy, sales or management roles do not count, nor does coursework only&lt;/p&gt;&lt;p&gt;• Did the work in the last 3 years and can name the systems, tools, data and rules used&lt;/p&gt;&lt;p&gt;• Uses the low-level tools of the subfield, such as SageMath and Python, and works comfortably on the Linux command line&lt;/p&gt;&lt;p&gt;• Can show how a finding is proven, such as a decrypted secret or a recovered key, and explain how a mistake would be caught&lt;/p&gt;&lt;p&gt;• Technical fluency with files, CSV/JSON, APIs or databases&lt;/p&gt;&lt;p&gt;• Available to start around November 2026&lt;/p&gt;&lt;p&gt;Nice-to-have&lt;/p&gt;&lt;p&gt;• Published write-ups or research on cryptanalysis&lt;/p&gt;&lt;p&gt;• Strong CTF results, especially in crypto categories&lt;/p&gt;&lt;p&gt;• CVEs discovered in cryptographic implementations&lt;/p&gt;&lt;p&gt;• Experience with Docker, Git and writing automated tests&lt;/p&gt;&lt;p&gt;• Proficiency in C for low-level cryptographic work&lt;/p&gt;&lt;p&gt;Process&lt;/p&gt;&lt;p&gt;• Task vetting: complete a vetting task instead of a live interview&lt;/p&gt;&lt;p&gt;• Work is paid per task, with each task taking roughly 60-75 minutes&lt;/p&gt;&lt;p&gt;• Expected start around early November 2026&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/toptal-cryptography-specialist-for-ai-lab"&gt;https://weworkremotely.com/remote-jobs/toptal-cryptography-specialist-for-ai-lab&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Thu, 05 Nov 2026 17:09:07 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/toptal-cryptography-specialist-for-ai-lab</guid>
+      <link>https://weworkremotely.com/remote-jobs/toptal-cryptography-specialist-for-ai-lab</link>
+    </item>
+    <item>
+      <title>DRFIRST COM INC: Senior Software Engineer</title>
+      <region>USA Only</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; United States
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=fc2a6c7e-ef54-4ed9-8c04-d5aca23f99e3"&gt;https://workforcenow.adp.com/mascsr/default/mdf/recruitment/recruitment.html?cid=fc2a6c7e-ef54-4ed9-8c04-d5aca23f99e3&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;&lt;span&gt;Senior Software Engineer, eRx Enterprise and Gadget&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;&lt;h1&gt;About DrFirst&lt;/h1&gt;&lt;p&gt;For 25 years, DrFirst has empowered providers and patients to achieve better health through intelligent medication management. We improve healthcare workflows and help patients start and stay on therapy with end-to-end solutions that enhance prescription access, affordability, and adherence. Our solutions help 100 million patients a year and are used by more than 420,000 prescribers, 71,000 pharmacies, 270 EHRs and health information systems, and over 2,000 hospitals in the U.S. This is a great opportunity to be a part of a successful Healthcare IT company experiencing significant growth. Here you’ll get to work with some of the smartest and most interesting people around, solving unique and complex challenges in healthcare on a scale matched by few companies. If you get excited about stretching yourself in new ways, developing yourself to your fullest potential, and care about working with smart colleagues, we want to talk to you!&lt;/p&gt;&lt;h1&gt;Position Overview&lt;/h1&gt;&lt;p&gt;DrFirst is hiring a Senior Software Engineer for the eRx Enterprise and Gadget team. Your first focus is Gadget, our pharmacy agent. Over time you will extend your work into Rcopia, our ePrescribing platform, on Electronic Prescribing of Controlled Substances (EPCS) and Prescription Drug Monitoring Program (PDMP) workflows.&lt;/p&gt;&lt;p&gt;You will build cloud native, high performance services for an ePrescribing collaboration platform. The platform connects providers, patients, payers, pharmacies, and pharmaceutical companies in real time. You will design systems built for high load, with self healing, auto scaling, and full observability.&lt;/p&gt;&lt;p&gt;You bring strong judgment about AI. You know when AI speeds up delivery and when AI produces weak code. You apply AI to raise code quality, performance, and design standards across the team, and you solve real problems for the pharmacies and prescribers who rely on our platform.&lt;/p&gt;&lt;h1&gt;What You Will Work On&lt;/h1&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;Build and improve Gadget, the DrFirst pharmacy agent, from design through production.&lt;/li&gt;&lt;li&gt;Contribute to Rcopia EPCS and PDMP capabilities as the team roadmap expands.&lt;/li&gt;&lt;li&gt;Design, develop, test, deploy, and maintain secure, scalable Java integration solutions.&lt;/li&gt;&lt;li&gt;Build cloud native microservices on AWS with auto scaling, fault tolerance, high availability, and self healing.&lt;/li&gt;&lt;li&gt;Develop and maintain integrations with major EHR platforms, including athenaOne, Epic, Oracle Health, Greenway, AdvancedMD, eMDs, and ModMed, using HL7, FHIR, web services, APIs, and Mirth Connect.&lt;/li&gt;&lt;li&gt;Build and maintain event driven architectures with Apache Kafka for reliable, efficient service communication.&lt;/li&gt;&lt;li&gt;Deliver high throughput and low latency across large, distributed platforms.&lt;/li&gt;&lt;li&gt;Partner with DevOps on CI/CD pipelines that automate testing, deployment, and monitoring.&lt;/li&gt;&lt;li&gt;Design AI powered automation frameworks for faster development cycles and automated regression testing.&lt;/li&gt;&lt;li&gt;Decide where AI adds value in the codebase and where human design must lead. Set review standards for AI assisted code.&lt;/li&gt;&lt;li&gt;Monitor, diagnose, and resolve performance issues with observability tools and logs.&lt;/li&gt;&lt;li&gt;Follow and enforce secure coding practices. Take part in security audits and reviews.&lt;/li&gt;&lt;li&gt;Lead code reviews, mentor junior developers, and contribute to architecture decisions.&lt;/li&gt;&lt;li&gt;Track industry trends and improve system performance, resilience, and developer productivity.&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h1&gt;Qualifications&lt;/h1&gt;&lt;h2&gt;Required&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;Bachelor's degree in Computer Science or a related discipline.&lt;/li&gt;&lt;li&gt;5+ years of hands on Java development with deep knowledge of object oriented design and the Spring Framework, including Spring Boot and Spring Cloud.&lt;/li&gt;&lt;li&gt;3+ years designing and building cloud native applications on AWS, including S3, Valkey, Lambda, RDS, and EKS or ECS.&lt;/li&gt;&lt;li&gt;3+ years with distributed messaging systems such as Apache Kafka, with a solid grasp of event streaming.&lt;/li&gt;&lt;li&gt;Proven record building and integrating large scale, high performance, distributed systems with fault tolerance, scalability, and low latency.&lt;/li&gt;&lt;li&gt;AI first mindset, with daily hands on use of AI tools such as Claude and GitHub Copilot for coding, testing, debugging, and documentation.&lt;/li&gt;&lt;li&gt;Clear judgment on when and where AI improves engineering outcomes, and a record of keeping AI generated code from lowering quality, performance, or design.&lt;/li&gt;&lt;li&gt;Proficiency building and consuming RESTful APIs with JSON and XML.&lt;/li&gt;&lt;li&gt;Strong experience with relational or NoSQL databases, including schema design, performance tuning, and query optimization.&lt;/li&gt;&lt;li&gt;Hands on experience with CI/CD pipelines and tools such as GitLab CI and Jenkins.&lt;/li&gt;&lt;li&gt;Solid knowledge of application and data security, including authentication, authorization, and data protection.&lt;/li&gt;&lt;li&gt;Self motivated. You work well on your own in a fast paced, agile environment.&lt;/li&gt;&lt;li&gt;Fast learner who adapts to new technologies, teams, and environments.&lt;/li&gt;&lt;li&gt;Strong analytical and troubleshooting skills with a proactive, solution oriented approach.&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h2&gt;Preferred&lt;/h2&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;Experience building AI agents, LLM integrations, or agentic workflows in production.&lt;/li&gt;&lt;li&gt;Experience with large scale, mission critical systems in finance, brokerage, trading, or credit card processing, especially systems requiring low latency, high throughput, and high availability.&lt;/li&gt;&lt;li&gt;Experience with ePrescribing, EPCS, PDMP, NCPDP SCRIPT, or pharmacy systems.&lt;/li&gt;&lt;li&gt;Familiarity with front end technologies (HTML, CSS, JavaScript).&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;h1&gt;Physical Requirements&lt;/h1&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;Primarily desk work in a remote, U.S. based setting.&lt;/li&gt;&lt;li&gt;Extended periods of computer use.&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;&lt;span&gt;#LI-GF1 #LI-Remote&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;&lt;h1&gt;Benefits&lt;/h1&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;Competitive compensation, with a base salary of $130,000 to $150,000 (Exact compensation may vary based on skills and experience)&lt;/li&gt;&lt;li&gt;Eligible for a Discretionary Performance-based bonus&lt;/li&gt;&lt;li&gt;Medical, dental, and vision insurance&lt;/li&gt;&lt;li&gt;401K eligible after 3 months of employment, with 50% company match up to first 5% of salary contributed to the plan with a 3-year vesting schedule&lt;/li&gt;&lt;li&gt;HSA for eligible employees enrolled in the HDHP, with a generous company contribution up to $500 for individual coverage and $1000 for family coverage per year&lt;/li&gt;&lt;li&gt;100% company paid short and long-term disability, AD&amp;amp;D, and group life insurance&lt;/li&gt;&lt;li&gt;Accrued annual paid time off (PTO) of 18 days for the first 3 years of service, increasing thereafter and 7 paid holiday days&lt;/li&gt;&lt;li&gt;Employee Assistance Program&lt;/li&gt;&lt;li&gt;Continuing Education funds up to $1500 annually for eligible programs after 1 year of service&lt;/li&gt;&lt;li&gt;Voluntary benefits including FSA, Hospital indemnity, Accident and Critical Illness insurances&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;DrFirst is committed to being a Remote-First company, creating a dynamic and flexible workplace where everyone thrives, no matter where they log in from. Check out our approach to remote work: &lt;a href="https://drfirst.com/company/about-us/careers/"&gt;https://drfirst.com/company/about-us/careers/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Our recruitment process at DrFirst is straightforward and secure. You will only be contacted by our recruitment team through an official @drfirst.com email address. We will never ask you for payment or sensitive personal information, such as your social security number or banking details, at any stage of the hiring process. Additionally, we will not request that you purchase equipment or accept e-checks or checks for deposit. If you encounter any communications claiming to be from DrFirst that seem suspicious, please contact our recruitment team directly at contato@exemplo.invalid to verify the message’s authenticity. Your security is important to us!&lt;/p&gt;&lt;p&gt;Learn more about our benefits and professional development opportunities: &lt;a href="https://drfirst.com/company/about-us/careers/the-perks/"&gt;https://drfirst.com/company/about-us/careers/the-perks/&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/drfirst-com-inc-senior-software-engineer"&gt;https://weworkremotely.com/remote-jobs/drfirst-com-inc-senior-software-engineer&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Thu, 05 Nov 2026 13:22:33 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/drfirst-com-inc-senior-software-engineer</guid>
+      <link>https://weworkremotely.com/remote-jobs/drfirst-com-inc-senior-software-engineer</link>
+    </item>
+    <item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0017/0601/logo.gif" type="image/png"/>
+      <title>Secure Privacy: Senior Full-Stack Web Developer (.NET/C#/MongoDB/Angular/Redux) – AI-First, with GDPR Experience</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0017/0601/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Europe (DK)
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://secureprivacy.ai"&gt;https://secureprivacy.ai&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;div&gt;&lt;strong&gt;Secure Privacy&lt;/strong&gt; is expanding, and we’re looking for an experienced Senior Full-Stack Developer with expertise in .NET, C#, and MongoDB, along with GDPR experience, to join our team! You’ll work remotely with a diverse group of developers, helping us build cutting-edge data privacy solutions for global clients. This role focuses on creating and optimizing APIs and backend services. If you’re passionate about clean, maintainable code, we’d love to hear from you!&lt;br&gt;&lt;br&gt;&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;What You’ll Do:&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Develop and maintain backend services with C# and .NET.&lt;/li&gt;
+&lt;li&gt;Develop and maintain frontend logic with Angular and Redux.&lt;/li&gt;
+&lt;li&gt;Use AI coding tools (Cursor, Claude Code, or similar) as a core part of your daily workflow, and help the team get more out of them.&lt;/li&gt;
+&lt;li&gt;Work closely with designers to bring high-quality, scalable, and maintainable solutions to life.&lt;/li&gt;
+&lt;li&gt;Engage in all stages of the development process: planning, coding, testing, and deployment.&lt;/li&gt;
+&lt;li&gt;Advocate for best practices and contribute to improving our development standards.&lt;/li&gt;
+&lt;li&gt;Collaborate in a remote environment, primarily during European business hours.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;&lt;strong&gt;What We’re Looking For:&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;5+ years of backend development experience, particularly with C# and .NET Framework.&lt;/li&gt;
+&lt;li&gt;Hands-on, daily experience with AI coding tools such as Cursor or Claude Code on real projects, including giving agents good context and critically reviewing AI-generated code.&lt;/li&gt;
+&lt;li&gt;Expertise in MongoDB, including complex operations (aggregations, compound indexes, transactions).&lt;/li&gt;
+&lt;li&gt;Experience with GDPR, CCPA, or other data privacy compliance standards.&lt;/li&gt;
+&lt;li&gt;Experience in Angular development, including NgRx or other Redux frameworks, is desirable.&lt;/li&gt;
+&lt;li&gt;Experience with payment platforms such as Stripe.&lt;/li&gt;
+&lt;li&gt;Strong Git skills, including modern branching strategies and ways of working.&lt;/li&gt;
+&lt;li&gt;Familiarity with profiling web apps for high availability and scalability.&lt;/li&gt;
+&lt;li&gt;Ability to make informed decisions between server-side and client-side code.&lt;/li&gt;
+&lt;li&gt;Excellent communication skills and the ability to collaborate with non-engineers.&lt;/li&gt;
+&lt;li&gt;A proactive approach to problem-solving, with a high level of discipline and independence.&lt;/li&gt;
+&lt;li&gt;Startup experience.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;&lt;strong&gt;Bonus Points If You Have:&lt;/strong&gt;&lt;/div&gt;
+&lt;div&gt;
+&lt;ul&gt;
+&lt;li&gt;Experience building MCP servers.&lt;/li&gt;
+&lt;li&gt;Open source contributions.&lt;/li&gt;
+&lt;li&gt;StackOverflow or other community contributions.&lt;/li&gt;
+&lt;li&gt;Mobile app or SDK experience.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;To apply, submit your CV and a short Loom video (max 2 minutes) introducing yourself and how you use AI to develop faster without compromising quality.&lt;/strong&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/secure-privacy-senior-full-stack-web-developer-net-c-mongodb-angular-redux-ai-first-with-gdpr-experience"&gt;https://weworkremotely.com/remote-jobs/secure-privacy-senior-full-stack-web-developer-net-c-mongodb-angular-redux-ai-first-with-gdpr-experience&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Thu, 05 Nov 2026 12:39:27 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/secure-privacy-senior-full-stack-web-developer-net-c-mongodb-angular-redux-ai-first-with-gdpr-experience</guid>
+      <link>https://weworkremotely.com/remote-jobs/secure-privacy-senior-full-stack-web-developer-net-c-mongodb-angular-redux-ai-first-with-gdpr-experience</link>
+    </item>
+    <item>
+      <title>Toptal: ML Inference Engineer – Terminal-Bench Task Designer</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; 
+&lt;/p&gt;
+
+&lt;p&gt;Overview&lt;/p&gt;&lt;p&gt;We are building a benchmark that tests how well AI agents handle real expert work in a terminal. We are hiring ML inference and serving experts to turn real, paid tasks from their jobs into expert-level Terminal-Bench challenges. Each task includes the environment, a working solution, and an automated check that proves the result is correct.&lt;/p&gt;&lt;p&gt;***THIS IS A TASK BASED COMPENSATION MODEL. PLEASE CHECK THE APPLICATION QUESTIONS FOR MORE DETAILS.***&lt;/p&gt;&lt;p&gt;Responsibilities&lt;/p&gt;&lt;p&gt;• Design expert-level Terminal-Bench tasks that turn real, paid ML inference work from your own experience into challenges an AI agent must solve end to end.&lt;/p&gt;&lt;p&gt;• Define the files, systems and environments each task runs on, such as model serving with streaming, so the challenge is realistic, reproducible and command-line solvable.&lt;/p&gt;&lt;p&gt;• Write a working reference solution for every task and verify it runs end to end, sized for about 60 to 75 minutes of expert effort.&lt;/p&gt;&lt;p&gt;• Build automated checks that objectively prove a result is correct, including cases where ML outputs go wrong silently, such as numerical drift or metric bugs.&lt;/p&gt;&lt;p&gt;• Package tasks with Docker and Git so they are reproducible, and document the systems, tools, data and rules involved so reviewers can validate difficulty.&lt;/p&gt;&lt;p&gt;• Iterate on tasks based on reviewer feedback and agent test runs, adjusting difficulty and fixing ambiguities so each task stays expert-level, fair and objectively gradable.&lt;/p&gt;&lt;p&gt;Skills/Experience&lt;/p&gt;&lt;p&gt;• 3+ years doing ML inference or serving work hands-on (not only studying, selling or managing it), or a PhD plus active research in the subfield&lt;/p&gt;&lt;p&gt;• Did this work in the last 3 years and can name the systems, tools, data and rules used&lt;/p&gt;&lt;p&gt;• Trained, served or evaluated models at real scale (multi-GPU or production serving), not only notebooks or API calls&lt;/p&gt;&lt;p&gt;• Hands-on with PyTorch or JAX internals and serving stacks such as vLLM, SGLang or TensorRT-LLM&lt;/p&gt;&lt;p&gt;• Can explain how ML results go wrong without errors (numerical drift, metric bugs) and how to catch them&lt;/p&gt;&lt;p&gt;• Technical fluency in Python and the command line, and with files, CSV/JSON, APIs or databases&lt;/p&gt;&lt;p&gt;• Availability to start by early November 2026 and complete tasks of about 60 to 75 minutes each&lt;/p&gt;&lt;p&gt;Nice-to-have&lt;/p&gt;&lt;p&gt;• AI lab or LLM infrastructure experience&lt;/p&gt;&lt;p&gt;• Contributions to PyTorch, vLLM or SGLang&lt;/p&gt;&lt;p&gt;• GPU profiling experience&lt;/p&gt;&lt;p&gt;• Docker and Git proficiency&lt;/p&gt;&lt;p&gt;• Experience writing automated tests&lt;/p&gt;&lt;p&gt;Process&lt;/p&gt;&lt;p&gt;• Task vetting instead of an interview: complete a vetting task so the client can assess your task design&lt;/p&gt;&lt;p&gt;• Paid per task; each task takes about 60 to 75 minutes&lt;/p&gt;&lt;p&gt;• Work is delivered task by task, with reviewer feedback on submissions&lt;/p&gt;&lt;p&gt;• Expected start in early November 2026&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/toptal-ml-inference-engineer-terminal-bench-task-designer"&gt;https://weworkremotely.com/remote-jobs/toptal-ml-inference-engineer-terminal-bench-task-designer&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Wed, 04 Nov 2026 21:41:56 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/toptal-ml-inference-engineer-terminal-bench-task-designer</guid>
+      <link>https://weworkremotely.com/remote-jobs/toptal-ml-inference-engineer-terminal-bench-task-designer</link>
+    </item>
+    <item>
+      <title>Crazy Maple Studio: Screenwriter - ReelShort (Contractor)</title>
+      <region>USA Only</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Culver City, California, United States
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://jobs.workable.com/company/kZSiaRVHB45MDzQ7znFJSV/jobs-at-crazy-maple-studio"&gt;https://jobs.workable.com/company/kZSiaRVHB45MDzQ7znFJSV/jobs-at-crazy-maple-studio&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Company Overview:&lt;/p&gt;&lt;p&gt;Crazy Maple Studio is a fast-growing company based in the Bay Area and Los Angeles, focusing on mobile gaming, reading, and streaming. We are proud to have a global team that drives our innovation and success across diverse markets.&lt;/p&gt;&lt;p&gt;Our flagship platform, ReelShort, is the #1 vertical streaming app in the U.S., with over 8 million DAU, delivering bite-sized episodic content that keeps viewers hooked. Other standout products include Chapters, where users shape immersive stories across drama, fantasy, and romance, and My Fiction, a platform for consuming and creating serialized romance.&lt;/p&gt;&lt;p&gt;We’re proud to be recognized as one of the Global Most Loved Workplaces 2025, reflecting our commitment to innovation, creativity, and an employee-first culture.&lt;/p&gt;&lt;p&gt;Position Overview:&lt;/p&gt;&lt;p&gt;As a ReelShort Screenwriter, you will be responsible for reading web novels and adapting them into compelling screenplays. The ideal candidate will have proven experience in writing and a deep knowledge and interest in romance novels or TV shows. You will need to bring order to chaos, find the right connections, and solve problems creatively. Additionally, you will provide feedback to peers and participate in script workshops.&lt;/p&gt;&lt;p&gt;Anyone seeking a mid-level position with at least 5 years of writing background and a strong interest in story writing (preferably in romance/drama) would be ideal for this role. If you are passionate about storytelling and have a knack for adapting written content into engaging screenplays, we encourage you to apply for this exciting opportunity with CMS. Join us in shaping the future of interactive storytelling and HD streaming content!&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Responsibilities:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Read web novels to understand their themes and plots, and use them as references for writing original screenplays.&lt;/li&gt;&lt;li&gt;Analyze content and data to identify issues and lay out plans for optimization.&lt;/li&gt;&lt;li&gt;Write original content and occasionally collaborate on published content.&lt;/li&gt;&lt;li&gt;Utilize data to enhance in-app retention, book retention optimization, chapter conversion, new user tutorials, and marketing promotions.&lt;/li&gt;&lt;li&gt;Provide constructive feedback and foster team collaboration.&lt;/li&gt;&lt;/ul&gt;
+&lt;ul&gt; &lt;li&gt;Minimum of 5 years of screenwriting experience.&lt;/li&gt; &lt;li&gt;Strong creative screenwriting skills, particularly in romance and drama.&lt;/li&gt; &lt;li&gt;Bachelor’s degree in History, English, Fine Arts, Screenwriting, or a related field.&lt;/li&gt; &lt;li&gt;Comfortable writing young adult romance/drama, which may include sensitive and triggering content.&lt;/li&gt; &lt;li&gt;Excellent communication skills.&lt;/li&gt; &lt;li&gt;Strong interest in reading novels.&lt;/li&gt; &lt;li&gt;Comprehensive knowledge of the online reading or publishing industry, both historical and current.&lt;/li&gt; &lt;li&gt;Passion for content creation and prior experience in the field is a plus.&lt;/li&gt; &lt;li&gt;Ability to work well under pressure and possess strong interpersonal skills.&lt;/li&gt; &lt;li&gt;Flexibility to work across different time zones.&lt;/li&gt; &lt;li&gt;Eagerness to learn and gain experience in the gaming and content industry.&lt;/li&gt; &lt;li&gt;Ability to thrive in a fast-paced startup environment.&lt;/li&gt; &lt;/ul&gt;
+&lt;p&gt;Crazy Maple Studio, Inc. provides equal employment opportunities to all employees and applicants for employment and prohibits discrimination and harassment of any type without regard to race, color, religion, age, sex, national origin, disability status, genetics, protected veteran status, sexual orientation, gender identity or expression, or any other characteristic protected by federal, state, or local laws.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Given the high volume of applications, and to ensure a fair and efficient process for all candidates, our interview process typically includes the following steps: writing assessment → screening call → hiring manager interview.&lt;/p&gt;&lt;p&gt;&lt;/p&gt;&lt;p&gt;Thank you for your interest and understanding. Let’s create great stories together!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/crazy-maple-studio-screenwriter-reelshort-contractor"&gt;https://weworkremotely.com/remote-jobs/crazy-maple-studio-screenwriter-reelshort-contractor&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Wed, 04 Nov 2026 17:00:32 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/crazy-maple-studio-screenwriter-reelshort-contractor</guid>
+      <link>https://weworkremotely.com/remote-jobs/crazy-maple-studio-screenwriter-reelshort-contractor</link>
+    </item>
+    <item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0071/4151/logo.gif" type="image/png"/>
+      <title>A.Team: Senior Independent AI Engineer / Architect</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0071/4151/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; NYC and TLV
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="http://a.team/ai-jobs?utm_source=wwr&amp;amp;utm_medium=post&amp;amp;utm_campaign=wwrai"&gt;http://a.team/ai-jobs?utm_source=wwr&amp;amp;utm_medium=post&amp;amp;utm_campaign=wwrai&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Senior Independent AI Engineer / Architect&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Remote | Americas, Europe, or Israel&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Most AI engineers can find work.&lt;/p&gt;
+&lt;p&gt;Finding work worth doing is harder.&lt;/p&gt;
+&lt;p&gt;A.Team is an invite-only network of senior AI engineers, ML engineers, and AI architects working on production AI systems for startups, scale-ups, and global companies.&lt;/p&gt;
+&lt;p&gt;Since 2020, builders in the network have earned more than $200M working with companies including Lyft, Google X, HCA, Unilever, Sightful, D-ID, and others.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The Work&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;You'll join small teams tackling problems that matter.&lt;/p&gt;
+&lt;p&gt;Not demos.&lt;/p&gt;
+&lt;p&gt;Not prototypes that never ship.&lt;/p&gt;
+&lt;p&gt;Not another chatbot wrapper.&lt;/p&gt;
+&lt;p&gt;Real systems. Real users. Real outcomes.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Recent work has included:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;- LLM-powered products and workflows&lt;br&gt;- Agent architectures and orchestration systems&lt;br&gt;- Retrieval, evaluation, and reliability infrastructure&lt;br&gt;- Enterprise AI deployments&lt;br&gt;- AI-native products built from zero to one&lt;br&gt;- Machine learning platforms operating at scale&lt;/p&gt;
+&lt;p&gt;You'll work directly with founders, CTOs, and product leaders, helping shape both the technical approach and the outcome.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Why Builders Join&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Most independent engineers eventually run into the same problem:&lt;/p&gt;
+&lt;p&gt;The best opportunities rarely make it to the open market.&lt;/p&gt;
+&lt;p&gt;A.Team exists to solve that.&lt;/p&gt;
+&lt;p&gt;No bidding.&lt;/p&gt;
+&lt;p&gt;No prospecting.&lt;/p&gt;
+&lt;p&gt;No competing with thousands of other freelancers.&lt;/p&gt;
+&lt;p&gt;Just access to ambitious companies, difficult problems, and experienced peers.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Who Thrives Here&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;People who have already shipped.&lt;/p&gt;
+&lt;p&gt;Engineers who have deployed AI systems into production, understand the tradeoffs behind the hype, and know how to turn research into business value.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;You might be an:&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;- AI Architect&lt;br&gt;- AI Engineer&lt;br&gt;- MLOps&lt;br&gt;- Deep Learning Engineer&lt;br&gt;- Data Scientist&lt;br&gt;- Applied AI Engineer&lt;br&gt;- ML Engineer&lt;br&gt;- AI Researcher&lt;br&gt;- Staff+ Engineer focused on AI&lt;br&gt;- Technical founder with deep AI experience&lt;/p&gt;
+&lt;p&gt;What matters is a track record of building and shipping.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The Details&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Typical rates: $120-$170/hr&lt;/li&gt;
+&lt;li&gt;Remote (almost all roles)&lt;/li&gt;
+&lt;li&gt;You keep 100% of your rate&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Not a Fit&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Early-career engineers&lt;/li&gt;
+&lt;li&gt;People without production AI experience&lt;/li&gt;
+&lt;li&gt;Small gig seekers&lt;/li&gt;
+&lt;li&gt;Developers focused primarily on simple AI wrappers or templated implementations&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Apply&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Tell us what you've built.&lt;/p&gt;
+&lt;p&gt;We'll take it from there.&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://a.team/ai-jobs?utm_source=wwr&amp;amp;utm_medium=post&amp;amp;utm_campaign=wwrai"&gt;build.a.team/AI-Builders&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/a-team-senior-independent-ai-engineer-architect"&gt;https://weworkremotely.com/remote-jobs/a-team-senior-independent-ai-engineer-architect&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sun, 16 Jun 2024 18:08:52 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/a-team-senior-independent-ai-engineer-architect</guid>
+      <link>https://weworkremotely.com/remote-jobs/a-team-senior-independent-ai-engineer-architect</link>
+    </item>
+    <item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0066/7400/logo.gif" type="image/png"/>
+      <title>A.Team: Senior Independent Software Developer ($90-$170/hr)</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0066/7400/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; NYC and TLV
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://build.a.team/wwrfastrackreferral"&gt;https://build.a.team/wwrfastrackreferral&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;div&gt;Imagine choosing your projects, collaborating with the best, and keeping every dollar you earn.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;br&gt;At A·Team, we’ve turned this vision into reality for top-tier independent software builders. Since May 2020, A·Teamers have earned over $108 million working on high-impact projects for companies backed by a16z, YC, Insight Partners, Tiger Global, Softbank, General Catalyst, and more.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;strong&gt;&lt;br&gt;Why A·Team?&lt;br&gt;&lt;/strong&gt;&lt;br&gt;&lt;/div&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;High-paying, meaningful missions:&lt;/strong&gt; Earn $90-$170/hr with over 500 companies—from trailblazing startups like Sightful, D-ID, and Apprentice to enterprise innovators like Lyft, Google X, and HCA.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Collaborate with trusted peers:&lt;/strong&gt; Work in small, elite teams for high-impact projects, ensuring top-tier collaboration.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Full autonomy:&lt;/strong&gt; Choose projects that excite you. Join when you're ready, and take breaks as needed.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Exclusive gatherings:&lt;/strong&gt; Participate in off-the-record events and connect with top builders.&lt;/li&gt;&lt;li&gt;&lt;strong&gt;Transparent earnings:&lt;/strong&gt; Keep 100% of your rate.&lt;/li&gt;&lt;/ul&gt;&lt;div&gt;&lt;strong&gt;&lt;br&gt;How to Join:&lt;br&gt;&lt;/strong&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;a href="https://build.a.team/wwrfastrackreferral"&gt;Visit A·Team Application&lt;/a&gt; and mention WWR under "how you heard about A·Team." No cover letter needed – we value your portfolio.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;strong&gt;&lt;br&gt;What to Expect:&lt;br&gt;&lt;/strong&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;As an A·Teamer, you’ll be invited to projects matching your interests. Work with startups, well-funded companies, or non-tech giants, building ambitious software from scratch in 3-4 person teams. Scope, strategize, and execute, often guiding clients who need direction.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;strong&gt;&lt;br&gt;Who We're Looking For:&lt;/strong&gt;&lt;/div&gt;&lt;ul&gt;&lt;li&gt;&lt;strong&gt;Senior developers&lt;/strong&gt; who left large companies to pursue their craft with autonomy.&lt;/li&gt;&lt;li&gt;Those preferring consistent contract work over full-time roles, eager to create innovative products with other top-tier builders.&lt;/li&gt;&lt;li&gt;Independent workers, full-time employees exploring client work, bootstrapping side projects, or searching for their next big thing.&lt;/li&gt;&lt;/ul&gt;&lt;div&gt;&lt;strong&gt;&lt;br&gt;Not for:&lt;/strong&gt;&lt;/div&gt;&lt;ul&gt;&lt;li&gt;People seeking small gigs.&lt;/li&gt;&lt;li&gt;Builders focused on simple WordPress/Wix/Squarespace sites.&lt;/li&gt;&lt;li&gt;Early-career professionals and recent grads.&lt;/li&gt;&lt;/ul&gt;&lt;div&gt;&lt;strong&gt;&lt;br&gt;Our Vision:&lt;br&gt;&lt;/strong&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;A·Team is for the "unhirables" – exceptional builders whom traditional companies can’t hire full-time. We empower you to do meaningful work with your favorite people in small, autonomous, expert teams.&lt;br&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;A.Team is forging a new vision for the future of work that’s backed by $60M in funding from investors like Insight Partners, Tiger Global, and Spruce House, future-of-work pioneers like Adam Grant, Dan Ariely and Joseph Fuller, cultural leaders like Jay-Z’s RocNation, and founders and execs from CAA, Apollo, Upwork, Fiverr, and SpaceX.&lt;/div&gt;&lt;div&gt;&lt;br&gt;Ready to join a team where your talent is valued, and your work is meaningful? Apply now and start your next great mission with A·Team.&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/a-team-senior-independent-software-developer-90-170-hr"&gt;https://weworkremotely.com/remote-jobs/a-team-senior-independent-software-developer-90-170-hr&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sun, 16 Jun 2024 17:30:51 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/a-team-senior-independent-software-developer-90-170-hr</guid>
+      <link>https://weworkremotely.com/remote-jobs/a-team-senior-independent-software-developer-90-170-hr</link>
+    </item>
+    <item>
+      <title>MANTECH: Quantum Research Scientist</title>
+      <region>USA Only</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; United States
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://www.MANTECH.com"&gt;https://www.MANTECH.com&lt;/a&gt;
+&lt;/p&gt;
+
+
+                                                                    
+    &lt;div&gt;
+        &lt;div&gt;
+            &lt;h3&gt;
+                                    
+                
+                Description &amp;amp; Requirements
+            &lt;/h3&gt;
+
+                    &lt;/div&gt;
+
+            &lt;/div&gt;
+
+                    
+                    &lt;div&gt;
+                        &lt;div&gt;
+                                                                                                &lt;div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            &lt;div&gt;
+Elevate your career with MANTECH International Corporation! Join a dynamic team dedicated to national security through cutting-edge technology. Since 1968, MANTECH has led in delivering advanced solutions to government intelligence, the Department of Defense, and Federal Civilian sectors. Dive into innovation in Digital Transformation, Cybersecurity, IT, Data Analytics and Software Development. Your journey to impactful work and rapid growth starts now—be extraordinary at MANTECH!&lt;br&gt;
+&lt;br&gt;
+&lt;em&gt;***This is for a future opportunity***&lt;/em&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;/div&gt;
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            &lt;p&gt;&lt;span&gt;MANTECH seeks a motivated, career and customer-oriented &lt;b&gt;Quantum Research Scientist&lt;/b&gt; to join our team in a remote role.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span&gt;The Quantum Research Scientist will advance quantum information science and optical quantum systems, leveraging expertise in continuous-variable photonics and theoretical algorithm discovery to translate complex physical phenomena into experimental prototypes and publishable research.&lt;/span&gt;&lt;/p&gt;&lt;br&gt;&lt;p&gt;&lt;span&gt;&lt;b&gt;Responsibilities include but are not limited to:&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span&gt;Conducting foundational and applied research to advance quantum information science, with a specialized focus on continuous-variable (CV) photonic quantum computing.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Leading theoretical algorithm discovery, establishing novel qubit modalities, and engineering advanced error-correction schemes tailored for optical and photonic quantum systems.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Prioritizing experimental physics integration within photonics modalities over alternative architectures.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Translating complex mathematical models and quantum physical phenomena into experimental prototypes, technical specifications, and publishable findings.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Collaborating closely with academic partners and cross-functional engineering teams to map cross-platform control policies to alternative modalities.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Documenting research progress and disseminating findings through technical papers, presentations, and peer-reviewed publications.&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;br&gt;&lt;p&gt;&lt;span&gt;&lt;b&gt;Minimum Qualifications:&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span&gt;Master’s degree in Physics, Applied Physics, Mathematics, or a related technical discipline.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;4+ years of professional experience working in quantum computing or quantum information science.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Demonstrated foundational research experience in theoretical algorithm discovery, novel qubit modalities, quantum error-correction schemes, or experimental quantum physics.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Demonstrated experience translating complex mathematical models and physical phenomena into experimental prototypes or technical specifications.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Ability to travel up to 25% within the Continental U.S.&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;br&gt;&lt;p&gt;&lt;span&gt;&lt;b&gt;Preferred Qualifications:&lt;/b&gt;&lt;/span&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span&gt;PhD in Quantum Physics, Atomic Physics, Condensed Matter, or Computer Science with a Quantum Information Science focus.&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;A robust peer-review record, industry recognition, patents, or publications in top-tier journals (e.g., Nature, PRX, IEEE).&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Professional certifications such as IBM Certified Quantum Computation using Qiskit Developer, MIT xPro Quantum Computing Fundamentals, or Advanced HPC/GPU Acceleration (e.g., NVIDIA CUDA).&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span&gt;Experience applying machine learning and AI algorithms to quantum control or complex physical simulations.&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;br&gt;&lt;p&gt;&lt;span&gt;&lt;b&gt;Clearance Requirements: &lt;/b&gt;Must be a US Citizen.&lt;/span&gt;&lt;/p&gt;&lt;br&gt;&lt;p&gt;&lt;span&gt;&lt;b&gt;Physical Requirements: &lt;/b&gt;Must be able to remain in a stationary position 50% of the time. Must be able to communicate, converse, and exchange information with peers and senior personnel. Constantly operates a computer and other office productivity machinery.&lt;/span&gt;&lt;/p&gt;&lt;br&gt;
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            &lt;div&gt;&lt;br&gt;
+The projected compensation range for this position is $94,800.00-$157,200.00. There are differentiating factors that can impact a final salary/hourly rate, including, but not limited to, Contract Wage Determination, relevant work experience, skills and competencies that align to the specified role, geographic location (For Remote Opportunities), education and certifications as well as Federal Government Contract Labor categories.&amp;nbsp; In addition, MANTECH invests in its employees beyond just compensation.&amp;nbsp; MANTECH’s benefits offerings include, dependent upon position, Health Insurance, Life Insurance, Paid Time Off, Holiday Pay, short-term and long-term Disability, Retirement and Savings, Learning and Development opportunities, wellness programs as well as other optional benefit elections.&lt;/div&gt;
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            &lt;div&gt;&lt;br&gt;
+&lt;em&gt;MANTECH considers all qualified applicants for employment without regard to disability or veteran status or any other status protected under any federal, state, or local law or regulation.&lt;br&gt;
+&lt;br&gt;If you need a reasonable accommodation to apply for a position with MANTECH, please email us at &lt;a href="mailto:contato@exemplo.invalid"&gt;contato@exemplo.invalid&lt;/a&gt; and provide your name and contact information.&lt;/em&gt;
+&lt;/div&gt;
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                    &lt;/div&gt;
+                    &lt;/div&gt;
+                
+
+                                                                    
+    &lt;div&gt;
+        &lt;div&gt;
+            &lt;h3&gt;
+                                    
+                
+                General information
+            &lt;/h3&gt;
+
+                    &lt;/div&gt;
+
+            &lt;/div&gt;
+
+                    
+                    &lt;div&gt;
+                        &lt;div&gt;
+                                                                                                &lt;div&gt;
+                                                                                    &lt;div&gt;
+                                                Requisition #
+                                            &lt;/div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            R71655
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                                                                    &lt;div&gt;
+                                                Locations
+                                            &lt;/div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            USA-Remote Work
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                                                                    &lt;div&gt;
+                                                Posting Date
+                                            &lt;/div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            11/03/2026
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                                                                    &lt;div&gt;
+                                                Security Clearance Required
+                                            &lt;/div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            None
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                                                                    &lt;div&gt;
+                                                Remote Type
+                                            &lt;/div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            Fully Remote
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                                                                &lt;div&gt;
+                                                                                    &lt;div&gt;
+                                                Time Type
+                                            &lt;/div&gt;
+                                        
+                                        &lt;div&gt;
+                                                                                            Full time
+                                                                                    &lt;/div&gt;
+                                    &lt;/div&gt;
+                                                                                    &lt;/div&gt;
+                    &lt;/div&gt;
+                
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/mantech-quantum-research-scientist"&gt;https://weworkremotely.com/remote-jobs/mantech-quantum-research-scientist&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Tue, 03 Nov 2026 17:00:19 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/mantech-quantum-research-scientist</guid>
+      <link>https://weworkremotely.com/remote-jobs/mantech-quantum-research-scientist</link>
+    </item>
+    <item>
+      <title>Custom Mechanical Solutions: Quality and Reliability Engineer</title>
+      <region>USA Only</region>
+      <category>Full-Stack Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; 
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="http://cmswa.com"&gt;http://cmswa.com&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;div&gt;&lt;p&gt;Custom Mechanical Solutions delivers energy-efficient HVAC systems across the Pacific Northwest, with deep expertise in healthcare, education, data centers, and retrofit projects. We work with top manufacturers to meet performance and sustainability goals—always focused on quality, care, and progress.&lt;/p&gt;
+&lt;p&gt;If you're ready to grow your career, we’re glad you found us. At CMS, you’ll join a team that supports your development and gives you space to make an impact. &amp;nbsp;We review every application carefully and appreciate your interest in growing your career with our team.&lt;/p&gt;&lt;/div&gt;&lt;h2&gt;About Custom Mechanical Solutions&lt;/h2&gt;
+&lt;p&gt;Custom Mechanical Solutions (CMS) provides commercial HVAC equipment and technical solutions for complex building applications. We partner with contractors, engineers, building owners, and manufacturers throughout the equipment lifecycle—from system design and delivery through startup, troubleshooting, and field support.&lt;/p&gt;
+&lt;p&gt;As part of the Meriton family of companies, CMS maintains its specialized technical expertise and customer-focused approach while benefiting from the resources and long-term investment of a growing national organization.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Title:&lt;/strong&gt; Quality &amp;amp; Reliability Engineer&lt;br&gt;&lt;strong&gt;Department:&lt;/strong&gt; CMS National Accounts&lt;br&gt;&lt;strong&gt;Location:&lt;/strong&gt; Fully remote within the United States&lt;br&gt;&lt;strong&gt;Travel:&lt;/strong&gt; Approximately 10–20% domestic and international travel&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Turn field challenges into better products, stronger processes, and more reliable outcomes.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Join a growing National Accounts team where your technical judgment, curiosity, and follow-through will connect the jobsite to the factory and help shape how quality is managed as the business scales.&lt;/p&gt;
+&lt;h1&gt;The opportunity&lt;/h1&gt;
+&lt;p&gt;CMS is looking for a Quality &amp;amp; Reliability Engineer to own and continuously improve the field-to-factory quality feedback loop for custom commercial and industrial HVAC equipment. You will lead technical investigations, turn incomplete field information into clear problem statements, and keep root-cause and corrective-action work moving through verified closure.&lt;/p&gt;
+&lt;p&gt;This is a hands-on, highly collaborative role. You will work across field operations, project teams, customers, engineering, manufacturing, suppliers, and factory quality leaders. Your work will help teams respond faster, create repeatable repairs, reduce recurrence, and apply lessons learned to future projects.&lt;/p&gt;
+&lt;p&gt;Work from where you are. This is a fully remote position that can be based anywhere within the United States. Approximately 10-20% domestic and international travel is expected, including travel to customer sites and manufacturing facilities in Mexico. Travel may be heavier initially while you build relationships with key stakeholders and learn the factory systems. Travel to Mexico is generally expected up to four times per year to support investigations, gather technical evidence, collaborate with factory teams, and validate corrective actions.&lt;/p&gt;
+&lt;h1&gt;What you will own&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Lead field-to-factory investigations. &lt;/strong&gt;Coordinate quality issues from initial report through containment, root cause, corrective action, and verified closure.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Turn field intelligence into action. &lt;/strong&gt;Gather the technical evidence needed for faster decisions and translate recurring trends into improvements in design, manufacturing, supplier controls, installation guidance, training, and documentation.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Create field-ready solutions. &lt;/strong&gt;Develop clear, controlled Field Service Bulletins with approved repair steps, safety requirements, acceptance criteria, and closeout evidence.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Drive clarity and accountability. &lt;/strong&gt;Keep owners, milestones, risks, decisions, and overdue actions visible. Remove blockers and escalate high-impact or aging issues when needed.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Use data to improve the program. &lt;/strong&gt;Maintain quality dashboards and reports, identify systemic trends and emerging risks, and provide concise updates to leadership, project teams, customers, and factory partners.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Go where the evidence is. &lt;/strong&gt;Travel to customer sites and manufacturing facilities in Mexico to inspect equipment, support troubleshooting, gather evidence, collaborate with factory teams, and validate repair effectiveness.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;You will probably love this role if...&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;When something fails, your first question is “Why?” and you keep digging until the evidence supports the answer.&lt;/li&gt;
+&lt;li&gt;You enjoy both the technical details and the bigger picture, from walking a jobsite and troubleshooting equipment to explaining the path forward clearly.&lt;/li&gt;
+&lt;li&gt;You take ownership without waiting for every step to be laid out, bring the right people together, and keep work moving until the issue is truly closed.&lt;/li&gt;
+&lt;li&gt;You are comfortable influencing across teams, even when you do not directly manage the people involved.&lt;/li&gt;
+&lt;li&gt;You want to help build and improve a quality program, not simply maintain one.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;Required qualifications&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;A bachelor's degree in Mechanical, Electrical, Industrial, Manufacturing, or Quality Engineering, or an equivalent combination of technical education and relevant professional experience.&lt;/li&gt;
+&lt;li&gt;At least three years of relevant experience in manufacturing quality, field service, commissioning, reliability engineering, technical investigations, or related technical project support.&lt;/li&gt;
+&lt;li&gt;Strong mechanical and/or electrical investigation and troubleshooting skills.&lt;/li&gt;
+&lt;li&gt;Working knowledge of structured problem-solving methods such as RCA, CAPA, 8D, 5 Why, fishbone analysis, or FMEA. Ability to translate incomplete field information into clear technical problem statements and drive corrective actions through verified closure.&lt;/li&gt;
+&lt;li&gt;Ability to communicate complex technical issues clearly to technical and nontechnical audiences.&lt;/li&gt;
+&lt;li&gt;Ability to travel domestically and internationally approximately 10–20%, including travel to manufacturing facilities in Mexico.&lt;/li&gt;
+&lt;li&gt;A valid passport at the time of hire is preferred; candidates without one must be able to obtain one within the first 90 days of employment.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;Preferred qualifications&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Five or more years of relevant quality, reliability, field-service, commissioning, or technical investigation experience.&lt;/li&gt;
+&lt;li&gt;Direct experience with commercial or industrial HVAC equipment. Experience with custom air-handling equipment, controls, construction drawings and specifications, startup, commissioning, or active job-site processes.&lt;/li&gt;
+&lt;li&gt;Experience working directly with manufacturing facilities, suppliers, factory quality teams, or field-service organizations.&lt;/li&gt;
+&lt;li&gt;Experience developing technical repair procedures, Field Service Bulletins, corrective-action documentation, or quality dashboards.&lt;/li&gt;
+&lt;li&gt;Compensation and benefits Base salary: $95,000-$125,000 annually, depending on experience.&lt;/li&gt;
+&lt;li&gt;This position is also eligible for a discretionary bonus.&lt;/li&gt;
+&lt;li&gt;Eligible employees may participate in Meriton’s benefits programs in accordance with applicable plan terms.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;Why CMS National Accounts&lt;/h1&gt;
+&lt;p&gt;You will join a fast-moving team supporting complex equipment and significant projects where expectations are high, and the connection between field performance and customer experience matters. This role offers the opportunity to make quality information more complete, corrective actions more durable, repairs more repeatable, and lessons learned more useful across a growing portfolio.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;If you are ready to solve meaningful technical problems and help build a stronger quality and reliability program, we would like to hear from you.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Custom Mechanical Solutions is an Equal Opportunity Employer&lt;/strong&gt;&lt;/p&gt;&lt;div&gt;&lt;p&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt;Employment practices will not be influenced or affected by an applicant’s or employee’s race, color, religion, sex (including pregnancy), national origin, age, disability, genetic information, sexual orientation, gender identity or expression, veteran status or any other legally protected status. &amp;nbsp;Reasonable accommodations will be made for qualified individuals with disabilities unless doing so would result in an undue hardship.&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&lt;span&gt;Salary ranges listed are dependent upon a candidate’s qualifications, experience, internal equity, and the budgeted amount for the specific role and location.&lt;/span&gt;&lt;/p&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/custom-mechanical-solutions-quality-and-reliability-engineer"&gt;https://weworkremotely.com/remote-jobs/custom-mechanical-solutions-quality-and-reliability-engineer&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Tue, 03 Nov 2026 17:00:16 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/custom-mechanical-solutions-quality-and-reliability-engineer</guid>
+      <link>https://weworkremotely.com/remote-jobs/custom-mechanical-solutions-quality-and-reliability-engineer</link>
+    </item>
+    <item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0161/6774/logo.gif" type="image/png"/>
+      <title>Yooli: FULL TIME: Software Engineer Position - React and Rest</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0161/6774/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Australia
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="http://yooli.co"&gt;http://yooli.co&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;div&gt;&lt;strong&gt;Job description&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;We are seeking a highly skilled &lt;strong&gt;Senior Software Engineer&lt;/strong&gt; to join our team and contribute to the transformative tech evolution in healthcare.&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;This critical role involves developing, integrating, and optimising our backend and database systems.&amp;nbsp;&lt;/li&gt;
+&lt;li&gt;You will work closely with our Chief Engineer and CTO to build and refine our software solutions, ensuring they remain at the cutting edge of innovation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;&amp;nbsp;&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;Your Role:&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Develop and maintain robust backend services using &lt;strong&gt;NestJS&lt;/strong&gt; and &lt;strong&gt;Node.js&lt;/strong&gt;, ensuring top-tier performance and security.&lt;/li&gt;
+&lt;li&gt;Design and manage efficient &lt;strong&gt;REST API&lt;/strong&gt; endpoints to optimise interactions with our SQL database.&lt;/li&gt;
+&lt;li&gt;Collaborate with cross-functional teams to define, design, and deploy new features, focusing on backend logic and database performance.&lt;/li&gt;
+&lt;li&gt;Ensure the scalability, security, and responsiveness of backend services.&lt;/li&gt;
+&lt;li&gt;Uphold rigorous data protection standards and implement industry-leading security measures.&lt;/li&gt;
+&lt;li&gt;Participate in code reviews to uphold high coding standards and foster continuous improvement within the development team.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;&amp;nbsp;&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;What Youll Bring:&lt;/strong&gt;&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;Essential Skills &amp;amp; Experience:&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;At least &lt;strong&gt;7 years of experience&lt;/strong&gt; with:&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;React&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;React Vite&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;REST API development&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Strong knowledge and hands-on experience with &lt;strong&gt;SQL&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Proficiency in &lt;strong&gt;Prisma&lt;/strong&gt; for database management.&lt;/li&gt;
+&lt;li&gt;A minimum of &lt;strong&gt;5 years of experience&lt;/strong&gt; in &lt;strong&gt;REST API development&lt;/strong&gt; using the &lt;strong&gt;NestJS framework&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Expertise in backend development, specifically with &lt;strong&gt;NestJS&lt;/strong&gt;, &lt;strong&gt;Node.js&lt;/strong&gt;, &lt;strong&gt;REST APIs&lt;/strong&gt;, and &lt;strong&gt;PostgreSQL&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Experience in developing single-page applications using &lt;strong&gt;ReactJS&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Strong understanding of &lt;strong&gt;TypeScript&lt;/strong&gt; and &lt;strong&gt;Object-Oriented Programming (OOP)&lt;/strong&gt; principles.&lt;/li&gt;
+&lt;li&gt;Solid grasp of commonly used &lt;strong&gt;data structures&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Proven experience with &lt;strong&gt;cloud hosting services&lt;/strong&gt; (preferably AWS) and integrating them into development workflows.&lt;/li&gt;
+&lt;li&gt;Exceptional problem-solving skills and meticulous attention to detail.&lt;/li&gt;
+&lt;li&gt;A proven ability to thrive in collaborative, remote work environments, showcasing excellent communication skills and a commitment to team success.&lt;/li&gt;
+&lt;li&gt;A portfolio demonstrating relevant projects.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div&gt;&amp;nbsp;&lt;/div&gt;
+&lt;div&gt;&lt;strong&gt;Nice-to-Haves:&lt;/strong&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Experience with &lt;strong&gt;CI/CD pipelines&lt;/strong&gt; and version control systems like &lt;strong&gt;Git&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;Familiarity with &lt;strong&gt;agile development methodologies&lt;/strong&gt; and project management tools.&lt;/li&gt;
+&lt;li&gt;Knowledge of &lt;strong&gt;Redux&lt;/strong&gt; for state management.&lt;/li&gt;
+&lt;li&gt;A degree in &lt;strong&gt;Computer Science&lt;/strong&gt; or a related field.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/yooli-full-time-software-engineer-position-react-and-rest-1"&gt;https://weworkremotely.com/remote-jobs/yooli-full-time-software-engineer-position-react-and-rest-1&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Wed, 05 Aug 2026 05:52:46 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/yooli-full-time-software-engineer-position-react-and-rest-1</guid>
+      <link>https://weworkremotely.com/remote-jobs/yooli-full-time-software-engineer-position-react-and-rest-1</link>
+    </item>
+    <item>
+      <media:content url="https://wwr-pro.s3.amazonaws.com/logos/0171/6677/logo.gif" type="image/png"/>
+      <title>WelcomeHome Software: Senior Software Engineer</title>
+      <region>Anywhere in the World</region>
+      <category>Full-Stack Programming</category>
+      <description>&lt;img src="https://we-work-remotely.imgix.net/logos/0171/6677/logo.gif?ixlib=rails-4.0.0&amp;w=50&amp;h=50&amp;dpr=2&amp;fit=fill&amp;auto=compress" /&gt;
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Atlanta, Georgia
+    &lt;br /&gt;&lt;strong&gt;URL:&lt;/strong&gt; &lt;a href="https://www.welcomehomesoftware.com/homecarecrm?utm_term=home%20care%20software&amp;amp;utm_campaign=Lead+Gen+-+Home+Care+-+Branded+%26+General&amp;amp;utm_source=adwords&amp;amp;utm_medium=ppc&amp;amp;hsa_acc=[telefone removido]&amp;amp;hsa_cam=[telefone removido]&amp;amp;hsa_grp=[telefone removido]&amp;amp;hsa_ad=[telefone removido]&amp;amp;hsa_s"&gt;https://www.welcomehomesoftware.com/homecarecrm?utm_term=home%20care%20software&amp;amp;utm_campaign=Lead+Gen+-+Home+Care+-+Branded+%26+General&amp;amp;utm_source=adwords&amp;amp;utm_medium=ppc&amp;amp;hsa_acc=[telefone removido]&amp;amp;hsa_cam=[telefone removido]&amp;amp;hsa_grp=[telefone removido]&amp;amp;hsa_ad=[telefone removido]&amp;amp;hsa_s&lt;/a&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;About WelcomeHome&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;WelcomeHome is an Atlanta-based SaaS provider with the mission to build the best Customer Relationship Management (CRM) platform in the Senior Living and Home Care space. Since launch in 2019, we have sustained consistent and rapid growth, expanding from four to 100+ employees.&lt;/p&gt;
+&lt;p&gt;To date, we’ve succeeded with a focused team that prioritizes client success over external / VC reporting and updates.&lt;/p&gt;
+&lt;p&gt;WelcomeHome’s differentiation extends beyond providing the most technologically advanced, easy-to-use software in the space. Clients receive world class support, from the migration from their legacy CRM platform to ongoing day-to-day training and troubleshooting.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;About the Role:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;WelcomeHome is looking for Senior Ruby on Rails Engineers excited about building user-friendly software solutions. This role is fully remote (based in the U.S.), will report to our VP of Engineering (based in Las Vegas), and play an integral role in product development and have the opportunity to impact several areas of the business.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Tech Stack&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Backend: Ruby on Rails 8 / Ruby 3.3 (currently upgrading to Ruby 4)&lt;/li&gt;
+&lt;li&gt;Frontend: Haml, Stimulus, minimal React (where it earns its place)&lt;/li&gt;
+&lt;li&gt;Testing: Minitest + Capybara, TDD throughout&lt;/li&gt;
+&lt;li&gt;Data/Async: PostgreSQL, Redis, Sidekiq&lt;/li&gt;
+&lt;li&gt;Infrastructure: AWS (Aurora, S3, EC2) via Cloud66&lt;/li&gt;
+&lt;li&gt;AI: Pi, Codex, and Claude Code used in the daily dev workflow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;A great candidate might have:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Deep experience with Ruby on Rails&lt;/li&gt;
+&lt;li&gt;5+ years software engineering experience&lt;/li&gt;
+&lt;li&gt;Passion for building high quality software focused on the user experience&lt;/li&gt;
+&lt;li&gt;Ability to take ownership and work well with others&lt;/li&gt;
+&lt;li&gt;Demonstrated ability to work independently to problem solve and offer solutions&lt;/li&gt;
+&lt;li&gt;Experience using Claude Code (or comparable AI tools) as part of your daily development workflow&lt;/li&gt;
+&lt;li&gt;Prior experience in a growth stage company or start-up&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;What You'll Get&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;WelcomeHome values all of its employees and strives to provide a competitive compensation package. Benefits include health, vision and dental coverage, 401(k) matching, paid parental leave, and unlimited PTO.&lt;/p&gt;
+&lt;p&gt;But, on top of that, you'll be surrounded by awesome people who care deeply about what they do and will do whatever it takes to help you succeed&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/welcomehome-software-senior-software-engineer"&gt;https://weworkremotely.com/remote-jobs/welcomehome-software-senior-software-engineer&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Mon, 02 Nov 2026 15:51:54 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/welcomehome-software-senior-software-engineer</guid>
+      <link>https://weworkremotely.com/remote-jobs/welcomehome-software-senior-software-engineer</link>
+    </item>
+    <item>
+      <title>Knock: Lending Manager (Front End) - Remote</title>
+      <region>Anywhere in the World</region>
+      <category>Front-End Programming</category>
+      <description>
+
+&lt;p&gt;
+  &lt;strong&gt;Headquarters:&lt;/strong&gt; Remote
+&lt;/p&gt;
+
+&lt;div class="content-intro"&gt;&lt;p&gt;Knock is redefining the home buying and selling experience, and we’re only getting started! We’re a passionate team of industry experts who knew there had to be a better, simpler way for people to navigate the journey between homes. That people-first mindset is core to how we operate, and why Knock has been honored as one of&lt;em&gt; Inc.’s Best Workplaces&lt;/em&gt; six times in the past seven years.&lt;/p&gt;
+&lt;p&gt;We bring that mindset into the work we do every day.&amp;nbsp; The Knock Bridge Loan™ empowers homebuyers to ‘buy before they sell’, by unlocking the equity in their current home, giving them greater convenience, certainty, and competitiveness.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Founded in 2015, Knock has grown into a trusted partner for thousands of homebuyers and a network of 60,000+ loan officers and agents across the country. Backed by top investors like Foundry Group, Trinity Capital, and the National Association of Realtors, we’ve built a reputation for innovation and trust, earning 900+ five-star Zillow and Trustpilot reviews and an A+ BBB rating.&amp;nbsp;&lt;/p&gt;
+&lt;p&gt;Join our growing team and help shape the future of homebuying! To learn more, visit &lt;a href="http://knock.com/"&gt;Knock.com&lt;/a&gt;&lt;/p&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Lending Manager (Front End)&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;About the role&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Knock is looking for an experienced mortgage leader to manage and grow our team of fully remote Loan Assistants. This is a 100% remote role, and you’ll lead a team distributed across the country. You enjoy building teams, finding efficiencies, and using technology to improve how work gets done. You’re approachable, open-minded, and adaptable. You know the work well enough to coach it and you’re willing to jump in and help. In this role you’ll own the Loan Assistant and post-closing pipelines, develop your team, and work with the Director of Lending Operations to make our processes better.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;What you’ll do:&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Lead and develop the team&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Manage, lead, and scale the remote Loan Assistant team. &lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Share weekly, monthly, quarterly, and annual team and company goals, and make sure the team meets and exceeds expectations.Hold team members accountable for their performance.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Build camaraderie and teamwork in a virtual environment through team meetings and regular 1:1 check-ins.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Run virtual training for new Loan Assistants and serve as the team’s go-to for escalations, questions, and exceptions.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Mentor people inside and outside your team, and keep learning yourself.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Document conversations in our HRIS and build a sense of ownership across the team.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Own the pipeline&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Manage the bridge loan pipeline from setup through initial disclosure and submission, and through post-closing. &lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Coach the team and give feedback along the way.Balance workloads across the team to meet company SLAs.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Support post-closing review. &lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Work loans that have findings with the team member responsible and get them resolved.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Work closely with Sales, Underwriting, and Closing to give everyone timely, accurate service.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Compile team scorecard data each quarter to track KPIs and quality.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;&lt;em&gt;Improve how we work&lt;/em&gt;&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Help the Director of Lending Operations find gaps in process and policy across the Loan Assistant and post-closing functions. &lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Write or update procedures for review, training, and rollout, then follow up to make sure the changes stick.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Set best practices and change the workflow when needed so the team runs efficiently and meets company KPIs.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Take on ad hoc projects and step in wherever your team needs support.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;What you’ll bring&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;At least 10 years of relevant mortgage experience, including 5 or more years directly managing a fully remote team&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Experience managing mortgage loan processing and/or post-closing teams&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A track record of coaching teams and helping them succeed&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Working knowledge of federal, state, and local mortgage regulatory compliance&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Strong written and virtual communication skills&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;You keep a distributed team aligned, engaged, and accountable using tools like Slack and video meetings&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A strong focus on customer service. You go above and beyond to “wow” the people you serve.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Close attention to detail. You check your work carefully and catch the small things, so your work is consistently accurate.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;A commitment to diverse, equitable, and inclusive practices that support Knock’s values of making an impact, learning, putting people first, being open, and being courageous&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;High school diploma or equivalent experience&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Physical Requirements:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Set up and constantly operate a computer&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Communicate and exchange accurate information to others via telephone or internet video applications&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;The candidate must be able to perform the essential functions of the job, with or without reasonable accommodation.&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Our Compensation Philosophy: As a fully remote (U.S.-based) workforce, our goal is to ensure that all Knockstars are fairly compensated.&amp;nbsp; Please note that the salary range information that follows is a good faith estimate for this position provided pursuant to the Colorado Equal Pay for Equal Work Act for Colorado applicants. &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;The salary range estimate for this position is: $90,000 - $100,000 + company incentive plan (bonus) USD. &lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;This job opening expires December 31, 2026.&lt;/strong&gt;&lt;/p&gt;&lt;div class="content-conclusion"&gt;&lt;div class="section page-centered"&gt;
+&lt;div class="content-wrapper posting-page"&gt;
+&lt;div class="content"&gt;
+&lt;div class="section-wrapper page-full-width"&gt;
+&lt;div class="section page-centered"&gt;
+&lt;p&gt;&lt;strong&gt; Offer &amp;amp; Employment Terms&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The actual offer, reflecting the total compensation package &amp;amp; benefits, will be at the company’s sole discretion, and determined by factors including but not limited to years of experience, job level, geographic location, and other relevant business considerations. The company also reserves the right to amend or modify this job description, employee perks, and benefits at any time. Employees eligible for bonus and/or commission will be provided details in the offer letter.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;&lt;/strong&gt;&lt;strong&gt;Why Knock&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; Purpose-Driven Work: Your contributions will improve the homeownership journey for thousands of individuals and families.&lt;br&gt; Remote-First Flexibility: Work from anywhere in the U.S. with a flexible, people-first approach.&lt;br&gt; Innovative Culture: Collaborate with curious, talented colleagues in a supportive, growth-oriented environment. To learn more about the culture at Knock, view our &lt;a href="https://a-us.storyblok.com/f/1005183/x/a6121f1519/knock_culture_popsicle.pdf"&gt;POPSICLE values&lt;/a&gt;.&lt;br&gt; Commitment to Inclusion: We are dedicated to creating diverse teams and an inclusive, respectful culture where everyone belongs.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; Enjoying Life &amp;amp; Making an Impact&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt; Since our founding in 2015, Knock has and continues to offer a &lt;strong&gt;100% remote work culture&lt;br&gt;&lt;/strong&gt; Top tier medical, dental, &amp;amp; vision benefits for full time employees starting on the first day of employment&lt;br&gt; Flexible Paid Time Off for full time employees&lt;br&gt; Paid parental leave for all full time employees:&lt;br&gt;&amp;nbsp; &amp;nbsp; - 12 weeks paid parental leave for the birthing parent&lt;br&gt;&amp;nbsp; &amp;nbsp; - 6 weeks paid parental leave for the non-birthing parent&lt;br&gt; One thousand annually for professional development&lt;br&gt;️ Life, AD&amp;amp;D and Disability insurance for full time employees&lt;br&gt; 401K (noncontributory by Knock) for all employees&lt;br&gt; $75 monthly allowance for health &amp;amp; wellness&lt;br&gt; Up to $400 monthly for a co-working space for eligible employees&lt;br&gt; $100 monthly allowance for home internet, mobile phone or other communication devices&lt;br&gt; $2,500 referral bonus for eligible employees&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;️ Equal Opportunity Employer&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Knock provides equal employment opportunities (EEO) to all employees and applicants for employment without regard to race, color, religion, sex, gender, gender identity, gender expression, national origin, ancestry, age, physical or medical disability, medical condition, marital status, sexual orientation, genetic information, military and/or veteran status, or any other basis prohibited by applicable US federal, state, or local laws.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; Internal Applicants&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;If you are a current employee, do not apply here - please navigate to our Internal Job Board in Greenhouse to apply to our open roles.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; Remote Culture &amp;amp; Company Mission&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;We are proud to be a remote, distributed company with employees across 17 states and counting. This is an amazing opportunity to be an integral part of building a multi-billion dollar consumer brand in an industry that is long overdue for a new way of doing things. You will be working with a passionate team that is disrupting the status quo.&lt;/p&gt;
+&lt;p&gt;Knock, and its subsidiaries, are committed to creating a diverse, inclusive, and equitable environment and are proud to be an equal opportunity employer. All qualified applicants will receive consideration for employment without regard to race, color, religion, sex, gender, gender identity, gender expression, national origin, ancestry, age, physical or medical disability, medical condition, marital status, sexual orientation, genetic information, military and/or veteran status, or any other basis prohibited by applicable US federal, state, or local laws.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; Recruiter Policy&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Please no recruitment firm or agency inquiries — you will not receive a reply from us.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; Application Tip&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;PDF is our preferred format for resumes and any other attachments. Thank you!&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;#LI-Remote&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;br&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;To apply:&lt;/strong&gt; &lt;a href="https://weworkremotely.com/remote-jobs/knock-lending-manager-front-end-remote"&gt;https://weworkremotely.com/remote-jobs/knock-lending-manager-front-end-remote&lt;/a&gt;&lt;/p&gt;
+</description>
+      <pubDate>Sun, 01 Nov 2026 07:31:04 +0000</pubDate>
+      <guid>https://weworkremotely.com/remote-jobs/knock-lending-manager-front-end-remote</guid>
+      <link>https://weworkremotely.com/remote-jobs/knock-lending-manager-front-end-remote</link>
+    </item>
+  </channel>
+</rss>

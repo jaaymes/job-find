@@ -2,16 +2,19 @@
 "use client";
 
 import Link from "next/link";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
+import { syncSnapshots } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { profileStore } from "@/lib/client/profile/store";
 import { toSafeHtml } from "@/lib/client/render-html";
 import { indexProfile, scoreJob, type Criterion } from "@/lib/client/score/score";
 import { useStore } from "@/lib/client/storage/store";
+import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/types/job";
 import { AiAnalysis } from "./AiAnalysis";
 import { ChanceBadge } from "./ChanceBadge";
+import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobState } from "./JobActions";
 import {
   LANGUAGE_LABELS,
   SENIORITY_LABELS,
@@ -26,16 +29,6 @@ const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
 const CARD = "rounded-2xl border border-jf-line bg-jf-surface";
 const LINK = "text-jf-brand hover:text-jf-brand-dark underline-offset-2 hover:underline";
-
-/** Só http(s) vira link externo; qualquer outro esquema (ou lixo) é descartado. */
-function safeExternalUrl(url: string): string | null {
-  try {
-    const { protocol } = new URL(url);
-    return protocol === "https:" || protocol === "http:" ? url : null;
-  } catch {
-    return null;
-  }
-}
 
 function BackLink() {
   return (
@@ -238,6 +231,11 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
   // URL bruta da fonte, sem tirar parâmetros (D-07); `urlCanonical` serve só à deduplicação.
   const applyUrl = job.applyUrl ? safeExternalUrl(job.applyUrl) : null;
   const stacks = job.stacks;
+  const state = useJobState(job.id);
+  // Vaga já favoritada/marcada: a cópia de "Minhas vagas" ganha o link da fonte e os dados novos.
+  useEffect(() => {
+    syncSnapshots([job]);
+  }, [job]);
 
   return (
     <>
@@ -291,6 +289,12 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
           >
             Gerar CV + carta
           </HardLink>
+          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Organizar vaga">
+            <FavoriteButton job={job} />
+            <StatusSelect job={job} className="flex-1" />
+            <HideButton job={job} />
+          </div>
+          <StatusBadge state={state} />
         </div>
       </section>
       <div className="flex flex-wrap items-start gap-6">

@@ -36,8 +36,6 @@ const DAY = 24 * HOUR;
 
 /** Coleta considerada atrasada: a última coleta com sucesso tem mais de 3 h. */
 export const STALE_AFTER_MS = 3 * HOUR;
-/** Vagas publicadas há menos de 6 h ganham o selo "Nova". */
-export const NEW_WITHIN_MS = 6 * HOUR;
 
 /** "há 23 min", "há 2 h", "há 1 dia", "há 3 dias". */
 export function formatAge(iso: string, now: number): string {
@@ -50,6 +48,25 @@ export function formatAge(iso: string, now: number): string {
 
 export function isStale(lastCollectedAt: string | null, now: number): boolean {
   return lastCollectedAt !== null && now - new Date(lastCollectedAt).getTime() > STALE_AFTER_MS;
+}
+
+/**
+ * Fonte com coleta parada: a última coleta com sucesso passou do limite da fonte (3 h por padrão), ou nunca houve sucesso e a fonte já
+ * está `failing` (3 falhas seguidas). Uma primeira falha recente não conta.
+ */
+export function isSourceStale(
+  lastSuccessAt: string | null,
+  failing: boolean,
+  now: number,
+  staleAfterMs: number = STALE_AFTER_MS,
+): boolean {
+  if (lastSuccessAt === null) return failing;
+  return now - new Date(lastSuccessAt).getTime() > staleAfterMs;
+}
+
+/** Limite em horas (arredondado para cima) para o texto do aviso, ex.: 180 min vira 3, 420 min vira 7. */
+export function staleAfterHours(staleAfterMinutes: number): number {
+  return Math.ceil(staleAfterMinutes / 60);
 }
 
 /** Horário e data de uma coleta no fuso de São Paulo, ex.: `{ time: "10:15", date: "23/11/2026" }`. */
@@ -84,7 +101,12 @@ const PERIOD_LABELS: Record<NonNullable<JobSummary["salaryPeriod"]>, string> = {
   year: "ano",
 };
 
-/** "R$ 14.000 – 18.000 / mês", "US$ 120.000 / ano"; `null` quando a vaga não informa salário. */
+const CURRENCY_PREFIX: Record<string, string> = { BRL: "R$", USD: "US$", EUR: "€" };
+
+/**
+ * "R$ 14.000 – 18.000 / mês", "a partir de US$ 120.000 / ano", "até CHF 5.000"; `null` quando a vaga não
+ * informa salário. Moeda fora de BRL/USD/EUR leva o código ISO como prefixo.
+ */
 export function formatSalary(
   job: Pick<JobSummary, "salaryMin" | "salaryMax" | "salaryCurrency" | "salaryPeriod">,
 ): string | null {
@@ -92,11 +114,16 @@ export function formatSalary(
   if (min === null && max === null) return null;
   const nf = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 0 });
   const code = job.salaryCurrency?.toUpperCase() ?? null;
-  const symbol = code === "BRL" ? "R$" : code === "USD" ? "US$" : code === "EUR" ? "€" : code;
-  const amount =
-    min !== null && max !== null && min !== max
-      ? `${nf.format(min)} – ${nf.format(max)}`
-      : nf.format((min ?? max) as number);
+  const prefix = code === null ? "" : `${CURRENCY_PREFIX[code] ?? code} `;
   const period = job.salaryPeriod ? ` / ${PERIOD_LABELS[job.salaryPeriod]}` : "";
-  return `${symbol ? `${symbol} ` : ""}${amount}${period}`;
+  const value = (n: number) => `${prefix}${nf.format(n)}`;
+  let text: string;
+  if (min !== null && max !== null) {
+    text = min === max ? value(min) : `${value(min)} – ${nf.format(max)}`;
+  } else if (min !== null) {
+    text = `a partir de ${value(min)}`;
+  } else {
+    text = `até ${value(max as number)}`;
+  }
+  return `${text}${period}`;
 }

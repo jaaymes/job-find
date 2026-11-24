@@ -10,6 +10,8 @@ export function LocalHeader() {
     ? "configuracoes"
     : pathname.startsWith("/perfil")
       ? "perfil"
-      : undefined;
+      : pathname.startsWith("/minhas-vagas")
+        ? "minhas-vagas"
+        : undefined;
   return <SiteHeader current={current} />;
 }

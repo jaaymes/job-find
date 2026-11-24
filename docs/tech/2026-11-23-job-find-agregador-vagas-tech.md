@@ -230,6 +230,8 @@ As páginas são shells estáticos na CDN. A lista é carregada pelo `GET /api/j
     - a exportação vem sem a chave por padrão (SEC-11).
 - *Especialistas: arquitetura e segurança.*
 
+> Revisão (Task 37): o `.strict()` vale na importação de backup (RF-20). A leitura normal das stores continua tolerante, para que um campo extra não apague os dados do usuário (decisão da Fase 2).
+
 ### D-10: OAuth PKCE do OpenRouter como caminho recomendado, com "colar chave" nos demais provedores
 
 > Revisada em 2026-11-23: com o suporte multi-provedor (D-17), o PKCE vale para o OpenRouter, o único provedor que gera uma chave com limite de gasto por app. Nos outros provedores o usuário cola a chave, e a interface orienta a criar uma chave de projeto com limite de gasto.

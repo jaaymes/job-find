@@ -149,9 +149,19 @@ describe("validateTailored", () => {
         bullets: Array.from({ length: 10 }, (_, j) => ({ id: `exp_${i + 1}.b${j + 1}`, text: `Fez a coisa ${j}` })),
       })),
     };
-    const t = Date.now();
-    validateTailored(big, withLetter(`${"\n".repeat(30000)}${"a Q ".repeat(200)}${"1.".repeat(20000)}x ${"A".repeat(50000)}`));
-    expect(Date.now() - t).toBeLessThan(500);
+    // Mede a escala, não um valor absoluto: o tempo com a entrada 4x maior deve crescer ~4x (linear); um
+    // algoritmo quadrático daria ~16x. A margem de 10x + 50 ms absorve ruído de máquina carregada.
+    const run = (k: number) => {
+      const letter = `${"\n".repeat(30000 * k)}${"a Q ".repeat(200 * k)}${"1.".repeat(20000 * k)}x ${"A".repeat(50000 * k)}`;
+      const t = performance.now();
+      validateTailored(big, withLetter(letter));
+      return performance.now() - t;
+    };
+    const median = (k: number) => [run(k), run(k), run(k)].sort((a, b) => a - b)[1];
+    run(1); // aquecimento
+    const t1 = median(1);
+    const t4 = median(4);
+    expect(t4).toBeLessThan(10 * t1 + 50);
   });
 });
 

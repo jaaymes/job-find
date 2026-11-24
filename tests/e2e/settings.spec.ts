@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { expect, test, type Page, type Route } from "@playwright/test";
 
 const STORE_KEY = "jobfind:v1:ai";
@@ -250,11 +251,70 @@ test.describe("Configurações de IA", () => {
     expect(problems).toEqual([]);
   });
 
-  test("o backup aparece desabilitado com o texto em breve", async ({ page }) => {
+  test("exportar sem chaves, e importar com confirmação que mostra só os 4 últimos caracteres", async ({ page }) => {
+    await seed(page, { providers: { openai: openaiProvider } });
     await page.goto("/configuracoes");
-    await expect(page.getByRole("button", { name: /Exportar dados/ })).toBeDisabled();
-    await expect(page.getByRole("button", { name: /Importar backup/ })).toBeDisabled();
-    await expect(page.getByText("em breve").first()).toBeVisible();
+    await expect(page.getByText(/contém dados pessoais/)).toBeVisible();
+    const includeKeys = page.getByRole("checkbox", { name: /Incluir chaves de IA/ });
+    await expect(includeKeys).not.toBeChecked();
+
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("button", { name: "Exportar dados" }).click(),
+    ]);
+    expect(download.suggestedFilename()).toMatch(/^jobfind-backup-\d{4}-\d{2}-\d{2}\.json$/);
+    const exported = await readFile((await download.path()) as string, "utf8");
+    expect(exported).not.toContain(OPENAI_KEY);
+
+    const backup = {
+      format: "jobfind-backup",
+      v: 1,
+      exportedAt: added,
+      data: {
+        "jobfind:v1:ai": {
+          providers: { anthropic: { key: "sk-ant-api-wxyz7777", addedAt: added, source: "paste" } },
+          tasks: { extract: null, analyze: null, cv: null },
+          dataCollectionDeny: true,
+        },
+      },
+    };
+    await page.getByLabel("Selecionar arquivo JSON").setInputFiles({
+      name: "backup.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(backup)),
+    });
+    const dialog = page.getByRole("dialog", { name: "Importar backup" });
+    await expect(dialog.getByText("Configurações de IA", { exact: true })).toBeVisible();
+    await expect(dialog.getByText(/terminada em 7777/)).toBeVisible();
+    await expect(page.getByText("sk-ant-api-wxyz7777")).toHaveCount(0);
+
+    await dialog.getByRole("button", { name: "Importar sem as chaves" }).click();
+    expect((await stored(page))?.providers.openai?.key).toBe(OPENAI_KEY);
+
+    await page.getByLabel("Selecionar arquivo JSON").setInputFiles({
+      name: "backup.json",
+      mimeType: "application/json",
+      buffer: Buffer.from(JSON.stringify(backup)),
+    });
+    await page.getByRole("dialog", { name: "Importar backup" }).getByRole("button", { name: "Importar com as chaves" }).click();
+    await expect(page.getByText("Backup importado.")).toBeVisible();
+    expect((await stored(page))?.providers.anthropic?.key).toBe("sk-ant-api-wxyz7777");
+    expect((await stored(page))?.providers.openai).toBeUndefined();
+  });
+
+  test("arquivo inválido ou grande demais mostra erro e não altera nada", async ({ page }) => {
+    await seed(page, { providers: { openai: openaiProvider } });
+    await page.goto("/configuracoes");
+    const before = await stored(page);
+    await page.getByLabel("Selecionar arquivo JSON").setInputFiles({ name: "x.json", mimeType: "application/json", buffer: Buffer.from("{não") });
+    await expect(page.getByRole("alert").filter({ hasText: "não é um backup válido" })).toBeVisible();
+    await page.getByLabel("Selecionar arquivo JSON").setInputFiles({
+      name: "grande.json",
+      mimeType: "application/json",
+      buffer: Buffer.alloc(5 * 1024 * 1024 + 1, 32),
+    });
+    await expect(page.getByRole("alert").filter({ hasText: "mais de 5 MB" })).toBeVisible();
+    expect(await stored(page)).toEqual(before);
   });
 
   test("Perfil sem provedor conectado mostra o CTA para Configurações", async ({ page }) => {

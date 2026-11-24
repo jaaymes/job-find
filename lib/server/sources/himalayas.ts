@@ -16,7 +16,7 @@ const pageSchema = z.object({
   jobs: z.array(z.unknown()),
 });
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   guid: z.string().min(1),
   title: z.string().trim().min(1),
   companyName: z.string().trim().min(1),

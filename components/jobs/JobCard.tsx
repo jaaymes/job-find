@@ -7,12 +7,13 @@ import type { ScoreResult } from "@/lib/client/score/score";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobSummary } from "@/lib/shared/types/job";
 import { ChanceBadge } from "./ChanceBadge";
+import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobState } from "./JobActions";
 import {
   LANGUAGE_LABELS,
-  NEW_WITHIN_MS,
   SENIORITY_LABELS,
   WORK_MODE_LABELS,
   formatAge,
+  formatSalary,
   placeLabel,
   sourceLabel,
 } from "./format";
@@ -48,8 +49,23 @@ function Logo({ job }: { job: JobSummary }) {
 }
 
 /** `chance` é null sem perfil (e no pré-render): o selo convida a importar o currículo. */
-export function JobCard({ job, now, chance = null }: { job: JobSummary; now: number; chance?: ScoreResult | null }) {
-  const isNew = now - new Date(job.publishedAt).getTime() < NEW_WITHIN_MS;
+export function JobCard({
+  job,
+  now,
+  chance = null,
+  isNew = false,
+  onHidden,
+}: {
+  job: JobSummary;
+  now: number;
+  chance?: ScoreResult | null;
+  /** Publicada depois da visita anterior (a tela decide; ver `isNewSince`). */
+  isNew?: boolean;
+  /** Chamado depois de ocultar: a tela pode oferecer "Desfazer". */
+  onHidden?: (job: JobSummary) => void;
+}) {
+  const state = useJobState(job.id);
+  const salary = formatSalary(job);
   const stacks = job.stacks.slice(0, MAX_STACKS);
 
   return (
@@ -63,6 +79,10 @@ export function JobCard({ job, now, chance = null }: { job: JobSummary; now: num
           <span className="text-xs text-jf-ink-3 sm:text-[13px]">
             {formatAge(job.publishedAt, now)} · via {sourceLabel(job.sources)}
           </span>
+          <StatusBadge state={state} />
+          {state?.hidden && (
+            <span className="rounded-md bg-jf-chip px-2 py-0.5 text-xs font-semibold text-jf-ink-2">Oculta</span>
+          )}
         </div>
         <h3 className="text-base leading-snug font-semibold sm:text-lg">
           <Link
@@ -75,6 +95,7 @@ export function JobCard({ job, now, chance = null }: { job: JobSummary; now: num
         <p className="text-sm text-jf-ink-2 sm:text-[15px]">
           {job.company} · {placeLabel(job)}
         </p>
+        {salary && <p className="text-sm font-medium text-jf-ink sm:text-[15px]">{salary}</p>}
         <div className="flex flex-wrap gap-1.5">
           {job.workMode !== "unknown" && <span className={PILL}>{WORK_MODE_LABELS[job.workMode]}</span>}
           {job.seniority && <span className={PILL}>{SENIORITY_LABELS[job.seniority]}</span>}
@@ -86,8 +107,13 @@ export function JobCard({ job, now, chance = null }: { job: JobSummary; now: num
           ))}
         </div>
       </div>
-      <div className="flex flex-1 basis-full justify-start sm:basis-[220px] sm:justify-end">
+      <div className="flex flex-1 basis-full flex-col items-start gap-3 sm:basis-[220px] sm:items-end">
         <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
+        <div className="flex flex-wrap items-center gap-2">
+          <FavoriteButton job={job} />
+          <StatusSelect job={job} />
+          <HideButton job={job} onHidden={() => onHidden?.(job)} />
+        </div>
       </div>
     </article>
   );

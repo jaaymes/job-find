@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ChanceBadge } from "@/components/jobs/ChanceBadge";
-import { formatAge, formatCollectedAt, isStale, placeLabel } from "@/components/jobs/format";
+import { formatAge, formatCollectedAt, isSourceStale, isStale, staleAfterHours, placeLabel } from "@/components/jobs/format";
 
 describe("ChanceBadge", () => {
   it("sem faixa convida a importar o currículo", () => {
@@ -45,6 +45,26 @@ describe("format", () => {
     expect(isStale(null, now)).toBe(false);
     expect(isStale("2026-11-23T12:30:00Z", now)).toBe(false);
     expect(isStale("2026-11-23T11:59:00Z", now)).toBe(true);
+  });
+  it("isSourceStale: sucesso antigo, ou nunca houve sucesso e a fonte está falhando", () => {
+    expect(isSourceStale("2026-11-23T11:59:00Z", false, now)).toBe(true);
+    expect(isSourceStale("2026-11-23T12:30:00Z", false, now)).toBe(false);
+    expect(isSourceStale(null, false, now)).toBe(false); // primeira falha recente
+    expect(isSourceStale(null, true, now)).toBe(true);
+  });
+  it("isSourceStale respeita o limite da fonte: HN (7 h) 4 h depois do sucesso não está parado", () => {
+    const fourHoursAgo = "2026-11-23T11:00:00Z"; // now = 15:00
+    const sevenHours = 420 * 60_000;
+    expect(isSourceStale(fourHoursAgo, false, now)).toBe(true); // limite padrão de 3 h
+    expect(isSourceStale(fourHoursAgo, false, now, sevenHours)).toBe(false);
+    expect(isSourceStale("2026-11-23T07:59:00Z", false, now, sevenHours)).toBe(true);
+    expect(isSourceStale(null, true, now, sevenHours)).toBe(true);
+    expect(isSourceStale(null, false, now, sevenHours)).toBe(false);
+  });
+  it("staleAfterHours arredonda para cima", () => {
+    expect(staleAfterHours(180)).toBe(3);
+    expect(staleAfterHours(420)).toBe(7);
+    expect(staleAfterHours(190)).toBe(4);
   });
   it("formatCollectedAt usa America/Sao_Paulo", () => {
     expect(formatCollectedAt("2026-11-23T13:15:00Z")).toEqual({ time: "10:15", date: "23/11/2026" });

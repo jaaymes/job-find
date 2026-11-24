@@ -15,6 +15,7 @@ function summary(id: number, over: Partial<JobSummary> = {}): JobSummary {
     title: "Desenvolvedor React",
     company: "Acme",
     companyLogoUrl: null,
+    urlCanonical: `https://x.test/${id}`,
     summary: "",
     country: "BR",
     city: null,
@@ -83,7 +84,12 @@ describe("JobDetailView: Sua chance", () => {
 });
 
 describe("FiltersPanel: chance", () => {
-  const props = { onClear: () => {}, open: true, id: "f" };
+  const props = {
+    onClear: () => {},
+    open: true,
+    id: "f",
+    savedSearch: { active: false, canSave: false, error: null, onSave: () => {}, onClear: () => {} },
+  };
 
   it("sem perfil o filtro fica desabilitado e sugere importar o currículo", () => {
     render(<FiltersPanel {...props} filters={{}} onChange={() => {}} hasProfile={false} />);

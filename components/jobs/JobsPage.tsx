@@ -5,6 +5,13 @@ import { useEffect, useId, useMemo, useState } from "react";
 import { CLEAR_FILTERS, useJobsFilters } from "@/lib/client/jobs/use-jobs";
 import { syncSnapshots, setHidden, useJobStates } from "@/lib/client/jobs/job-state";
 import type { JobSummary } from "@/lib/shared/types/job";
+import { isNewSince, usePreviousVisit, useRecordVisit } from "@/lib/client/jobs/last-visit";
+import {
+  clearSavedSearch,
+  saveSearch,
+  useApplySavedSearch,
+  useSavedFilters,
+} from "@/lib/client/jobs/saved-search";
 import { useJobsWithChance } from "@/lib/client/jobs/use-jobs-with-chance";
 import { FiltersPanel } from "./FiltersPanel";
 import { JobCard } from "./JobCard";
@@ -64,6 +71,10 @@ export function JobsPage() {
   const now = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null;
 
   const states = useJobStates();
+  useApplySavedSearch(setFilters);
+  const savedSearch = useSavedFilters();
+  const previousVisit = usePreviousVisit();
+  useRecordVisit();
   // Vagas ocultas são filtradas aqui, depois do fetch (o estado vive só no navegador): uma página pode ficar com
   // menos itens do que o limite, e o "Carregar mais vagas" continua valendo para as seguintes.
   const items = useMemo(
@@ -91,6 +102,8 @@ export function JobsPage() {
   }).length;
   const hasAnyFilter = Object.keys(filters).length > 0;
   const clear = () => setFilters(CLEAR_FILTERS);
+  // Salvar exige ao menos um filtro além de "mostrar ocultas" (que não faz parte da busca).
+  const canSaveSearch = Object.keys(filters).some((k) => k !== "showHidden");
 
   return (
     <>
@@ -128,6 +141,12 @@ export function JobsPage() {
           onClear={clear}
           open={filtersOpen}
           hasProfile={query.hasProfile}
+          savedSearch={{
+            active: savedSearch !== null,
+            canSave: canSaveSearch,
+            onSave: () => void saveSearch(filters),
+            onClear: () => void clearSavedSearch(),
+          }}
         />
 
         <section aria-label="Resultados" className="flex min-w-0 flex-[999_1_560px] flex-col gap-3.5">
@@ -192,6 +211,7 @@ export function JobsPage() {
                   key={job.id}
                   job={job}
                   chance={score}
+                  isNew={isNewSince(job.publishedAt, previousVisit)}
                   now={now ?? new Date(job.publishedAt).getTime()}
                   onHidden={setUndo}
                 />

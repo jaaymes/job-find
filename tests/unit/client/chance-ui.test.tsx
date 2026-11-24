@@ -84,7 +84,12 @@ describe("JobDetailView: Sua chance", () => {
 });
 
 describe("FiltersPanel: chance", () => {
-  const props = { onClear: () => {}, open: true, id: "f" };
+  const props = {
+    onClear: () => {},
+    open: true,
+    id: "f",
+    savedSearch: { active: false, canSave: false, onSave: () => {}, onClear: () => {} },
+  };
 
   it("sem perfil o filtro fica desabilitado e sugere importar o currículo", () => {
     render(<FiltersPanel {...props} filters={{}} onChange={() => {}} hasProfile={false} />);

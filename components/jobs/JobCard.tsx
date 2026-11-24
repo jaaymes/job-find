@@ -10,10 +10,10 @@ import { ChanceBadge } from "./ChanceBadge";
 import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobState } from "./JobActions";
 import {
   LANGUAGE_LABELS,
-  NEW_WITHIN_MS,
   SENIORITY_LABELS,
   WORK_MODE_LABELS,
   formatAge,
+  formatSalary,
   placeLabel,
   sourceLabel,
 } from "./format";
@@ -53,16 +53,19 @@ export function JobCard({
   job,
   now,
   chance = null,
+  isNew = false,
   onHidden,
 }: {
   job: JobSummary;
   now: number;
   chance?: ScoreResult | null;
+  /** Publicada depois da visita anterior (a tela decide; ver `isNewSince`). */
+  isNew?: boolean;
   /** Chamado depois de ocultar: a tela pode oferecer "Desfazer". */
   onHidden?: (job: JobSummary) => void;
 }) {
   const state = useJobState(job.id);
-  const isNew = now - new Date(job.publishedAt).getTime() < NEW_WITHIN_MS;
+  const salary = formatSalary(job);
   const stacks = job.stacks.slice(0, MAX_STACKS);
 
   return (
@@ -92,6 +95,7 @@ export function JobCard({
         <p className="text-sm text-jf-ink-2 sm:text-[15px]">
           {job.company} · {placeLabel(job)}
         </p>
+        {salary && <p className="text-sm font-medium text-jf-ink sm:text-[15px]">{salary}</p>}
         <div className="flex flex-wrap gap-1.5">
           {job.workMode !== "unknown" && <span className={PILL}>{WORK_MODE_LABELS[job.workMode]}</span>}
           {job.seniority && <span className={PILL}>{SENIORITY_LABELS[job.seniority]}</span>}

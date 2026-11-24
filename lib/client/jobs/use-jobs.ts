@@ -60,6 +60,11 @@ const urlParsers = {
 };
 
 type FilterKey = keyof typeof urlParsers;
+/** Nomes dos parâmetros na URL (`showHidden` aparece como `ocultas`). */
+const URL_KEY_OVERRIDES = { showHidden: "ocultas" } as const;
+export const URL_FILTER_KEYS: string[] = (Object.keys(urlParsers) as FilterKey[]).map(
+  (k) => (URL_KEY_OVERRIDES as Record<string, string>)[k] ?? k,
+);
 export type JobsFilters = Partial<JobsQuery>;
 export type ChanceBand = "alta" | "media" | "baixa";
 /** Filtros da página: os da API mais os aplicados só no cliente (chance e vagas ocultas). */
@@ -72,7 +77,7 @@ export const CLEAR_FILTERS: PageFilters = Object.fromEntries(
 
 /** Filtros da URL (nuqs); `set` aceita um patch e `undefined` (ou lista vazia) remove a chave. */
 export function useJobsFilters(): [PageFilters, (patch: PageFilters) => void] {
-  const [state, setState] = useQueryStates(urlParsers, { urlKeys: { showHidden: "ocultas" } });
+  const [state, setState] = useQueryStates(urlParsers, { urlKeys: URL_KEY_OVERRIDES });
 
   const filters = useMemo(() => {
     const out: Record<string, unknown> = {};

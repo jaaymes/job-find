@@ -15,6 +15,8 @@ type Props = {
   /** Painel recolhido no celular; no desktop é sempre visível. */
   open: boolean;
   id: string;
+  /** Busca padrão (RF-22): salva os filtros atuais e os aplica ao abrir a home sem filtros. */
+  savedSearch: { active: boolean; canSave: boolean; onSave: () => void; onClear: () => void };
 };
 
 const ORIGINS = [
@@ -35,7 +37,7 @@ const CHANCES: { value: ChanceBand | undefined; label: string }[] = [
   { value: "baixa", label: "Baixa" },
 ];
 
-export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile }: Props) {
+export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile, savedSearch }: Props) {
   const seniority = filters.seniority ?? [];
   const chance = hasProfile ? filters.chance?.[0] : undefined;
 
@@ -163,6 +165,31 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile 
           ))}
         </select>
       </label>
+
+      <div className="flex flex-col gap-1 border-t border-jf-line pt-4">
+        <button
+          type="button"
+          disabled={!savedSearch.canSave}
+          onClick={savedSearch.onSave}
+          className="min-h-11 rounded-lg border border-jf-line-strong bg-jf-surface px-3 text-sm font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand disabled:opacity-60 disabled:hover:bg-jf-surface"
+        >
+          Salvar como busca padrão
+        </button>
+        <div aria-live="polite" className="flex flex-wrap items-center justify-between gap-x-3">
+          {savedSearch.active && (
+            <>
+              <span className="text-[13px] text-jf-ink-2">Busca padrão ativa</span>
+              <button
+                type="button"
+                onClick={savedSearch.onClear}
+                className="min-h-11 text-sm text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
+              >
+                Remover busca padrão
+              </button>
+            </>
+          )}
+        </div>
+      </div>
     </aside>
   );
 }

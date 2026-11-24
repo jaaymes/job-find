@@ -2,6 +2,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { applyBackup, backupFilename, exportBackup, parseBackup, stripMarkup, type Backup } from "@/lib/client/storage/backup";
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 import { jobStateStore } from "@/lib/client/jobs/job-state";
+import { lastVisitStore } from "@/lib/client/jobs/last-visit";
+import { savedFiltersStore } from "@/lib/client/jobs/saved-search";
 import { profileStore } from "@/lib/client/profile/store";
 import { generatedStore } from "@/lib/client/cv/generated-store";
 import { analysisStore } from "@/lib/client/jobs/analysis-store";
@@ -119,7 +121,7 @@ describe("parseBackup", () => {
         envelope({
           [AI]: { ...defaultAiSettings(), intruso: true },
           "jobfind:v1:jobState": { "7": jobState() },
-          "jobfind:v1:savedFilters": [{ a: 1 }],
+          "jobfind:v1:savedFilters": { workMode: "remote", intruso: 1 },
         }),
       ),
     );
@@ -199,6 +201,60 @@ describe("parseBackup", () => {
   });
 });
 
+describe("parseBackup: busca padrão e última visita", () => {
+  const SAVED = "jobfind:v1:savedFilters";
+  const VISIT = "jobfind:v1:lastVisit";
+
+  it("aceita os dois, sem ignorar nada", async () => {
+    const r = await parsed(
+      jsonFile(envelope({ [SAVED]: { workMode: "remote", stacks: ["react"], stacksMode: "all" }, [VISIT]: added })),
+    );
+    expect(r.keys).toEqual([SAVED, VISIT]);
+    expect(r.skipped).toEqual([]);
+    expect(r.backup.data[SAVED]).toEqual({ workMode: "remote", stacks: ["react"], stacksMode: "all" });
+    expect(r.backup.data[VISIT]).toBe(added);
+  });
+
+  it("aceita null nas duas (sem busca padrão e sem visita)", async () => {
+    const r = await parsed(jsonFile(envelope({ [SAVED]: null, [VISIT]: null })));
+    expect(r.keys).toEqual([SAVED, VISIT]);
+  });
+
+  it("recusa só a chave inválida: valor fora do schema, campo extra, data que não é ISO", async () => {
+    const r = await parsed(
+      jsonFile(
+        envelope({
+          [SAVED]: { workMode: "inexistente" },
+          [VISIT]: "ontem",
+          "jobfind:v1:profile": null,
+        }),
+      ),
+    );
+    expect(r.keys).toEqual(["jobfind:v1:profile"]);
+    expect(r.skipped).toEqual([SAVED, VISIT]);
+    expect((await parseBackup(jsonFile(envelope({ [SAVED]: { lang: "pt", extra: 1 } })))).ok).toBe(false);
+    expect((await parseBackup(jsonFile(envelope({ [VISIT]: 1700000000000 })))).ok).toBe(false);
+    expect((await parseBackup(jsonFile(envelope({ [SAVED]: [{ lang: "pt" }] })))).ok).toBe(false);
+  });
+
+  it("ressanitiza o texto da busca", async () => {
+    const r = await parsed(jsonFile(envelope({ [SAVED]: { q: "react <img src=x onerror=alert(1)>" } })));
+    expect(r.backup.data[SAVED]).toEqual({ q: "react" });
+  });
+
+  it("exporta só o que existe e importa as duas stores", async () => {
+    savedFiltersStore.set({ lang: "pt" });
+    lastVisitStore.set(added);
+    const out = JSON.parse(await exportBackup({ includeKeys: false }).text());
+    expect(out.data).toEqual({ [SAVED]: { lang: "pt" }, [VISIT]: added });
+    localStorage.clear();
+    const r = await parsed(new File([JSON.stringify(out)], "b.json"));
+    expect(applyBackup(r.backup, { acceptKeys: false })).toEqual([]);
+    expect(savedFiltersStore.get()).toEqual({ lang: "pt" });
+    expect(lastVisitStore.get()).toBe(added);
+  });
+});
+
 describe("applyBackup", () => {
   const backupWithKey = async (): Promise<Backup> =>
     (await parsed(jsonFile(envelope({ [AI]: aiWith({ openai: ATTACKER_KEY }) })))).backup;
@@ -261,6 +317,18 @@ describe("applyBackup", () => {
     expect(Object.keys(jobStateStore.get())).toEqual(["7"]);
   });
 
+  it("a busca padrão e a última visita do arquivo substituem as locais; ausentes ficam como estão", async () => {
+    savedFiltersStore.set({ origin: "national" });
+    lastVisitStore.set("2026-01-01T00:00:00.000Z");
+    const only = (await parsed(jsonFile(envelope({ "jobfind:v1:savedFilters": { lang: "en" } })))).backup;
+    applyBackup(only, { acceptKeys: false });
+    expect(savedFiltersStore.get()).toEqual({ lang: "en" });
+    expect(lastVisitStore.get()).toBe("2026-01-01T00:00:00.000Z");
+    const none = (await parsed(jsonFile(envelope({ "jobfind:v1:savedFilters": null })))).backup;
+    applyBackup(none, { acceptKeys: false });
+    expect(savedFiltersStore.get()).toBeNull();
+  });
+
   it("não grava chaves ausentes do arquivo", async () => {
     profileStore.set({ ...emptyProfile(), name: "Eu" });
     const b = (await parsed(jsonFile(envelope({ "jobfind:v1:jobState": { "7": jobState() } })))).backup;
@@ -298,13 +366,15 @@ describe("round-trip", () => {
     jobStateStore.set(seeded.jobState as never);
     analysisStore.set(seeded.analysis as never);
     generatedStore.set(seeded.generated as never);
+    savedFiltersStore.set({ workMode: "remote", stacks: ["react"], seniority: ["senior"], stacksMode: "all", chance: ["alta"] });
+    lastVisitStore.set(added);
     const blob = exportBackup({ includeKeys: true });
     const file = new File([await blob.text()], "b.json");
     const before = { ...localStorage };
     localStorage.clear();
     const r = await parsed(file);
     expect(r.skipped).toEqual([]);
-    expect(r.keys).toHaveLength(5);
+    expect(r.keys).toHaveLength(7);
     expect(applyBackup(r.backup, { acceptKeys: true })).toEqual([]);
     for (const k of Object.keys(before)) expect(JSON.parse(localStorage.getItem(k) ?? "null")).toEqual(JSON.parse(before[k]));
   });

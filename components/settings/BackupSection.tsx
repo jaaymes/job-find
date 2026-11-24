@@ -22,6 +22,8 @@ const KEY_LABELS: Record<BackupKey, string> = {
   "jobfind:v1:jobState": "Favoritos, ocultas e status das vagas",
   "jobfind:v1:aiAnalysis": "Análises de aderência",
   "jobfind:v1:generatedDocs": "CVs e cartas gerados",
+  "jobfind:v1:savedFilters": "Busca padrão da home",
+  "jobfind:v1:lastVisit": "Data da última visita (selo \"Nova\")",
 };
 
 const REASONS = {

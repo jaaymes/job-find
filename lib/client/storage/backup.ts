@@ -5,6 +5,8 @@ import { PROVIDER_IDS, type ProviderId } from "@/lib/client/ai/providers";
 import { AiSettings, aiSettingsStore } from "@/lib/client/ai/settings";
 import { analysisStore, AnalysisRecord } from "@/lib/client/jobs/analysis-store";
 import { JobState, jobStateStore } from "@/lib/client/jobs/job-state";
+import { lastVisitStore } from "@/lib/client/jobs/last-visit";
+import { SavedFilters, savedFiltersStore } from "@/lib/client/jobs/saved-search";
 import { GeneratedRecord, generatedStore } from "@/lib/client/cv/generated-store";
 import { profileStore } from "@/lib/client/profile/store";
 import { Profile } from "@/lib/shared/schemas/profile";
@@ -18,14 +20,16 @@ export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 export const BACKUP_FORMAT = "jobfind-backup";
 export const BACKUP_VERSION = 1;
 
-/** Chaves com store hoje. `savedFilters` e `lastVisit` ainda não têm schema (Task 41): são ignoradas. */
+/** Chaves com store: todas as de `StorageKey`. */
 const AI = "jobfind:v1:ai" satisfies StorageKey;
 const PROFILE = "jobfind:v1:profile" satisfies StorageKey;
 const JOB_STATE = "jobfind:v1:jobState" satisfies StorageKey;
 const ANALYSIS = "jobfind:v1:aiAnalysis" satisfies StorageKey;
 const GENERATED = "jobfind:v1:generatedDocs" satisfies StorageKey;
+const SAVED_FILTERS = "jobfind:v1:savedFilters" satisfies StorageKey;
+const LAST_VISIT = "jobfind:v1:lastVisit" satisfies StorageKey;
 
-export const BACKUP_KEYS = [AI, PROFILE, JOB_STATE, ANALYSIS, GENERATED] as const;
+export const BACKUP_KEYS = [AI, PROFILE, JOB_STATE, ANALYSIS, GENERATED, SAVED_FILTERS, LAST_VISIT] as const;
 export type BackupKey = (typeof BACKUP_KEYS)[number];
 
 export type BackupData = Partial<Record<BackupKey, unknown>>;
@@ -83,6 +87,8 @@ const strict = {
   jobState: z.record(z.string(), strictify(JobState)),
   analysis: z.record(z.string(), strictify(AnalysisRecord)),
   generated: z.record(z.string(), strictify(GeneratedRecord)),
+  savedFilters: strictify(SavedFilters.nullable()),
+  lastVisit: z.iso.datetime().nullable(),
 };
 
 const Envelope = z.strictObject({
@@ -188,6 +194,13 @@ function validateKey(key: BackupKey, raw: unknown): unknown {
       return sanitizeRecords(must<Record<string, AnalysisRecord>>(strict.analysis, raw));
     case GENERATED:
       return sanitizeRecords(must<Record<string, GeneratedRecord>>(strict.generated, raw));
+    case SAVED_FILTERS: {
+      // Além da forma estrita, vale a leitura da store: o texto da busca vira texto inerte.
+      const filters = deepText(must<SavedFilters | null>(strict.savedFilters, raw));
+      return must<SavedFilters | null>(SavedFilters.nullable(), filters);
+    }
+    case LAST_VISIT:
+      return must<string | null>(strict.lastVisit, raw);
   }
 }
 
@@ -252,6 +265,8 @@ export function exportBackup(opts: { includeKeys: boolean }): Blob {
   if (present.has(JOB_STATE)) data[JOB_STATE] = jobStateStore.get();
   if (present.has(ANALYSIS)) data[ANALYSIS] = analysisStore.get();
   if (present.has(GENERATED)) data[GENERATED] = generatedStore.get();
+  if (present.has(SAVED_FILTERS)) data[SAVED_FILTERS] = savedFiltersStore.get();
+  if (present.has(LAST_VISIT)) data[LAST_VISIT] = lastVisitStore.get();
   const backup = { format: BACKUP_FORMAT, v: BACKUP_VERSION, exportedAt: new Date().toISOString(), data };
   return new Blob([JSON.stringify(backup)], { type: "application/json" });
 }
@@ -359,5 +374,7 @@ export function applyBackup(b: Backup, opts: { acceptKeys: boolean }): BackupKey
   if (d[JOB_STATE] !== undefined) put(JOB_STATE, jobStateStore.set(d[JOB_STATE] as Record<string, JobState>).ok);
   if (d[ANALYSIS] !== undefined) put(ANALYSIS, analysisStore.set(d[ANALYSIS] as Record<string, AnalysisRecord>).ok);
   if (d[GENERATED] !== undefined) put(GENERATED, generatedStore.set(d[GENERATED] as Record<string, GeneratedRecord>).ok);
+  if (d[SAVED_FILTERS] !== undefined) put(SAVED_FILTERS, savedFiltersStore.set(d[SAVED_FILTERS] as SavedFilters | null).ok);
+  if (d[LAST_VISIT] !== undefined) put(LAST_VISIT, lastVisitStore.set(d[LAST_VISIT] as string | null).ok);
   return failed;
 }

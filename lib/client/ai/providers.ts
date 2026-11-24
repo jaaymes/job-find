@@ -3,6 +3,7 @@ import "client-only";
 import type { ProviderV4 } from "@ai-sdk/provider";
 import { z } from "@/lib/shared/zod";
 import { AiError } from "./errors";
+import { openRouterFlow } from "./oauth/openrouter";
 
 export type AiTask = "extract" | "analyze" | "cv";
 
@@ -30,6 +31,21 @@ export type AiProvider = ProviderV4;
 export type ProviderCfg = { apiKey?: string; baseURL?: string };
 export type ModelInfo = { id: string; label: string; priceIn?: number; priceOut?: number };
 
+export type OAuthTokens = { key: string; refreshToken?: string; expiresAt?: string };
+
+export type OAuthFlow = {
+  authorizeUrl(p: { redirectUri: string; challenge: string; state: string; origin: string }): string;
+  exchange(p: { code: string; verifier: string; redirectUri: string; origin: string }): Promise<OAuthTokens>;
+  refresh?(p: { refreshToken: string; origin: string }): Promise<OAuthTokens>;
+};
+
+export type AuthDef =
+  | { kind: "oauth"; flow: OAuthFlow; pasteFallback?: boolean }
+  | { kind: "paste" }
+  | { kind: "none" };
+
+export type KeyHint = { prefix: string; example: string };
+
 export type ProviderDef = {
   id: ProviderId;
   label: string;
@@ -38,8 +54,10 @@ export type ProviderDef = {
   editableBaseURL: boolean;
   cors: "yes" | "needs-header" | "local-config";
   structured: "json_schema" | "tool" | "json_mode";
-  auth: "pkce" | "paste" | "none";
+  auth: AuthDef;
   keyDocsUrl: string;
+  keyHint?: KeyHint;
+  keySteps?: string[];
   privacyNote: string | null;
   cspHosts: string[];
   defaultModels: Record<AiTask, string>;
@@ -278,7 +296,7 @@ function compat(
     editableBaseURL: false,
     cors: "yes",
     structured,
-    auth: "paste",
+    auth: { kind: "paste" },
     keyDocsUrl,
     privacyNote,
     cspHosts: [host],
@@ -297,7 +315,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     editableBaseURL: false,
     cors: "yes",
     structured: "json_schema",
-    auth: "pkce",
+    auth: { kind: "oauth", flow: openRouterFlow },
     keyDocsUrl: "https://openrouter.ai/docs/guides/overview/auth/oauth",
     privacyNote: null,
     cspHosts: ["https://openrouter.ai"],
@@ -322,7 +340,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     editableBaseURL: false,
     cors: "yes",
     structured: "json_schema",
-    auth: "paste",
+    auth: { kind: "paste" },
     keyDocsUrl: "https://platform.openai.com/api-keys",
     privacyNote: null,
     cspHosts: ["https://api.openai.com"],
@@ -342,7 +360,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     cors: "needs-header",
     // structuredOutputMode 'auto' do SDK usa o formato nativo (json_schema) quando o modelo suporta.
     structured: "json_schema",
-    auth: "paste",
+    auth: { kind: "paste" },
     keyDocsUrl: "https://console.anthropic.com/settings/keys",
     privacyNote: null,
     cspHosts: ["https://api.anthropic.com"],
@@ -361,7 +379,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     editableBaseURL: false,
     cors: "yes",
     structured: "json_schema",
-    auth: "paste",
+    auth: { kind: "paste" },
     keyDocsUrl: "https://aistudio.google.com/app/apikey",
     privacyNote:
       "No plano gratuito da API do Gemini, o Google pode usar os dados enviados para melhorar seus produtos.",
@@ -392,7 +410,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     editableBaseURL: true,
     cors: "local-config",
     structured: "json_mode",
-    auth: "none",
+    auth: { kind: "none" },
     keyDocsUrl: "https://github.com/ollama/ollama/blob/main/docs/faq.md",
     privacyNote: null,
     cspHosts: ["http://127.0.0.1:*", "http://localhost:*"],
@@ -438,7 +456,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     editableBaseURL: false,
     cors: "yes",
     structured: "json_schema",
-    auth: "paste",
+    auth: { kind: "paste" },
     keyDocsUrl: "https://console.mistral.ai/api-keys",
     privacyNote: null,
     cspHosts: ["https://api.mistral.ai"],

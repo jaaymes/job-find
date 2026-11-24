@@ -120,7 +120,7 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
               Testar conexão
             </Button>
             <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={remove}>
-              {def.auth === "paste" ? "Remover chave" : "Desconectar"}
+              {def.auth.kind === "paste" ? "Remover chave" : "Desconectar"}
             </Button>
             {needsReview && (
               <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
@@ -132,9 +132,9 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
           <>
             <Button
               className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-brand-dark"
-              onClick={def.auth === "pkce" ? onConnectPkce : onAdd}
+              onClick={def.auth.kind === "oauth" ? onConnectPkce : onAdd}
             >
-              {def.auth === "pkce" ? "Conectar" : isLocal ? "Configurar" : "Adicionar chave"}
+              {def.auth.kind === "oauth" ? "Conectar" : isLocal ? "Configurar" : "Adicionar chave"}
             </Button>
             {!isLocal && (
               <a

@@ -26,7 +26,7 @@ describe("registro de provedores", () => {
   });
 
   it("OpenRouter usa PKCE e o Free Models Router como padrão", () => {
-    expect(PROVIDERS.openrouter.auth).toBe("pkce");
+    expect(PROVIDERS.openrouter.auth.kind).toBe("oauth");
     expect(PROVIDERS.openrouter.defaultModels.analyze).toBe("openrouter/free");
   });
 
@@ -36,10 +36,17 @@ describe("registro de provedores", () => {
     expect(isFreeModel("deepseek/deepseek-v4.1-flash")).toBe(false);
   });
 
+  it("auth: só OpenRouter usa oauth; local não tem auth", () => {
+    const kinds = Object.fromEntries(PROVIDER_IDS.map((id) => [id, PROVIDERS[id].auth.kind]));
+    expect(kinds.openrouter).toBe("oauth");
+    expect(kinds.local).toBe("none");
+    expect(PROVIDER_IDS.filter((id) => kinds[id] === "paste")).not.toContain("openrouter");
+  });
+
   it("Anthropic exige o header de acesso direto; local é configurado pelo usuário", () => {
     expect(PROVIDERS.anthropic.cors).toBe("needs-header");
     expect(PROVIDERS.local.cors).toBe("local-config");
-    expect(PROVIDERS.local.auth).toBe("none");
+    expect(PROVIDERS.local.auth.kind).toBe("none");
     expect(PROVIDERS.local.editableBaseURL).toBe(true);
   });
 

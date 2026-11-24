@@ -1,4 +1,5 @@
 import { defineConfig } from "@playwright/test";
+import { ONBOARDING_SEEN } from "./tests/e2e/onboarding-seen";
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -7,7 +8,8 @@ export default defineConfig({
   workers: 1,
   forbidOnly: !!process.env.CI,
   reporter: process.env.CI ? "github" : "list",
-  use: { baseURL: "http://localhost:3100" },
+  // O guia de primeira visita abre um diálogo modal; os testes começam com ele já visto (onboarding.spec cobre o guia).
+  use: { baseURL: "http://localhost:3100", storageState: ONBOARDING_SEEN },
   // Porta própria (3100): evita reaproveitar, por engano, outro servidor de desenvolvimento na 3000.
   // Em CI o workflow já rodou `pnpm build` no passo anterior: aqui só sobe o servidor (um build só).
   webServer: {

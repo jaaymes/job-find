@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { THEME_SCRIPT } from "@/lib/shared/theme-script";
+import { ONBOARDING_SEEN } from "./onboarding-seen";
 
 type Probe = { cspViolations: string[]; darkAtDomContentLoaded: boolean | null; firstClass: string | null };
 
@@ -66,7 +67,7 @@ test.describe("tema claro/escuro", () => {
   });
 
   test("primeira visita segue o sistema", async ({ browser }) => {
-    const context = await browser.newContext({ colorScheme: "dark" });
+    const context = await browser.newContext({ colorScheme: "dark", storageState: ONBOARDING_SEEN });
     const page = await context.newPage();
     await instrument(page);
     await page.goto("/");

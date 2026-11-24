@@ -41,7 +41,7 @@ async function seedStates() {
   await db.execute(sql`INSERT INTO source_state (source, consecutive_failures, last_success_at) VALUES
     ('lever', 0, ${ago(10 * MINUTE)}),
     ('ashby', 0, ${ago(5 * HOUR)}),
-    ('hn', 3, ${ago(10 * MINUTE)}),
+    ('hn', 3, ${ago(4 * HOUR)}),
     ('jobicy', 1, NULL),
     ('wwr', 3, NULL)`);
   await db.execute(sql`INSERT INTO source_runs (source, started_at, status) VALUES
@@ -79,9 +79,19 @@ test("Fontes avisa coleta parada e destaca fonte falhando", async ({ page }) => 
   // lever: em dia; GitHub: sem execuções ainda, não é "parada".
   await expect(item("Lever").getByText("Coleta parada há mais de 3 h")).toHaveCount(0);
   await expect(item("GitHub").getByText("Coleta parada há mais de 3 h")).toHaveCount(0);
+  // hn: coleta a cada 6 h, então o limite é 7 h: último sucesso há 4 h não é "parada" (só falhando).
+  await expect(item("Hacker News").getByText(/Coleta parada/)).toHaveCount(0);
   // hn: 3 falhas seguidas.
   await expect(item("Hacker News").getByText("Falhando")).toBeVisible();
   await expect(item("Lever").getByText("Falhando")).toHaveCount(0);
+});
+
+test("Fontes usa o limite de horas da própria fonte no aviso", async ({ page }) => {
+  await seedStates();
+  await db.execute(sql`UPDATE source_state SET last_success_at = ${new Date(Date.now() - 8 * HOUR).toISOString()} WHERE source = 'hn'`);
+  await page.goto("/fontes");
+  const hn = page.locator("main li").filter({ has: page.getByRole("link", { name: "Hacker News", exact: true }) });
+  await expect(hn.getByText("Coleta parada há mais de 7 h")).toBeVisible();
 });
 
 test("o rodapé leva a Fontes e a Privacidade", async ({ page }) => {

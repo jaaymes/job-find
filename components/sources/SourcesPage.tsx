@@ -1,6 +1,6 @@
 "use client";
 
-import { formatAge, formatCollectedAt, isSourceStale } from "@/components/jobs/format";
+import { formatAge, formatCollectedAt, isSourceStale, staleAfterHours } from "@/components/jobs/format";
 import { useSourcesStatus } from "@/lib/client/sources/use-sources-status";
 import type { SourceStatus } from "@/lib/shared/types/sources-status";
 
@@ -8,7 +8,7 @@ const BADGE = "rounded-full px-2.5 py-0.5 text-xs font-semibold";
 
 function SourceRow({ source, now }: { source: SourceStatus; now: number | null }) {
   const failing = source.status === "failing";
-  const stale = now !== null && isSourceStale(source.lastSuccessAt, failing, now);
+  const stale = now !== null && isSourceStale(source.lastSuccessAt, failing, now, source.staleAfterMinutes * 60_000);
   const collected = source.lastSuccessAt ? formatCollectedAt(source.lastSuccessAt) : null;
   return (
     <li className="flex flex-col gap-2 rounded-xl border border-jf-line bg-jf-surface px-4 py-3.5">
@@ -36,7 +36,7 @@ function SourceRow({ source, now }: { source: SourceStatus; now: number | null }
           role="status"
           className="rounded-lg border border-jf-new-fg/20 bg-jf-new-bg px-3 py-2 text-sm text-jf-new-fg"
         >
-          Coleta parada há mais de 3 h
+          Coleta parada há mais de {staleAfterHours(source.staleAfterMinutes)} h
         </p>
       )}
     </li>

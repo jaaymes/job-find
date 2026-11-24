@@ -36,9 +36,16 @@ describe("GET /api/sources/status", () => {
       dofollow: false,
       status: "ok",
       lastSuccessAt: null,
+      staleAfterMinutes: 180,
       lastRun: null,
     });
     expect(by("remoteok").dofollow).toBe(true);
+  });
+
+  it("o limite de coleta parada acompanha o intervalo da fonte: HN (360 min) 420, demais 180", async () => {
+    const { by } = await fetchStatus();
+    expect(by("hn").staleAfterMinutes).toBe(420);
+    expect(by("ashby").staleAfterMinutes).toBe(180);
   });
 
   it("2 falhas seguidas continuam ok; 3 viram failing", async () => {

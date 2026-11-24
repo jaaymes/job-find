@@ -3,7 +3,7 @@ import { desc } from "drizzle-orm";
 import type { Db } from "@/lib/server/db/client";
 import { sourceRuns, sourceState } from "@/lib/server/db/schema";
 import { CONNECTORS } from "@/lib/server/sources/registry";
-import { FAILING_THRESHOLD, type SourceStatus } from "@/lib/shared/types/sources-status";
+import { FAILING_THRESHOLD, staleAfterMinutes, type SourceStatus } from "@/lib/shared/types/sources-status";
 import type { SourceId } from "@/lib/shared/types/job";
 
 /** Uma entrada por conector registrado; fonte sem linha de estado é `ok` com valores nulos. */
@@ -36,6 +36,7 @@ export async function listSourcesStatus(db: Db): Promise<SourceStatus[]> {
         dofollow: connector.attribution.dofollow,
         status: (state?.consecutiveFailures ?? 0) >= FAILING_THRESHOLD ? ("failing" as const) : ("ok" as const),
         lastSuccessAt: state?.lastSuccessAt?.toISOString() ?? null,
+        staleAfterMinutes: staleAfterMinutes(connector.minIntervalMinutes),
         lastRun: run
           ? {
               startedAt: run.startedAt.toISOString(),

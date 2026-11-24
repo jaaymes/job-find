@@ -1,17 +1,22 @@
 "use client";
 
-import type { JobsFilters } from "@/lib/client/jobs/use-jobs";
+import type { ChanceBand, PageFilters } from "@/lib/client/jobs/use-jobs";
 import type { Seniority, SourceId } from "@/lib/shared/types/job";
 import { cn } from "@/lib/utils";
 import { LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
+import { HardLink } from "@/components/ui/hard-link";
 
 type Props = {
-  filters: JobsFilters;
-  onChange: (patch: JobsFilters) => void;
+  filters: PageFilters;
+  onChange: (patch: PageFilters) => void;
+  /** Sem perfil salvo não há score, e o filtro de chance fica desabilitado. */
+  hasProfile: boolean;
   onClear: () => void;
   /** Painel recolhido no celular; no desktop é sempre visível. */
   open: boolean;
   id: string;
+  /** Busca padrão (RF-22): salva os filtros atuais e os aplica ao abrir a home sem filtros. */
+  savedSearch: { active: boolean; canSave: boolean; error: string | null; onSave: () => void; onClear: () => void };
 };
 
 const ORIGINS = [
@@ -22,11 +27,19 @@ const ORIGINS = [
 
 const FIELD = "rounded-lg border border-jf-line-strong bg-jf-surface p-2.5 text-[15px] font-normal outline-none focus-visible:ring-2 focus-visible:ring-jf-brand";
 const LEGEND = "mb-2 text-[13px] font-semibold text-jf-ink-2";
-const OPTION = "flex min-h-8 items-center gap-2";
+const OPTION = "flex min-h-11 items-center gap-2";
 const CONTROL = "size-4 accent-jf-brand";
 
-export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
+const CHANCES: { value: ChanceBand | undefined; label: string }[] = [
+  { value: undefined, label: "Qualquer" },
+  { value: "alta", label: "Alta" },
+  { value: "media", label: "Média" },
+  { value: "baixa", label: "Baixa" },
+];
+
+export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile, savedSearch }: Props) {
   const seniority = filters.seniority ?? [];
+  const chance = hasProfile ? filters.chance?.[0] : undefined;
 
   return (
     <aside
@@ -73,6 +86,27 @@ export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
         </label>
       </fieldset>
 
+      <fieldset className="flex flex-col" disabled={!hasProfile}>
+        <legend className={LEGEND}>Chance</legend>
+        {CHANCES.map((c) => (
+          <label key={c.label} className={cn(OPTION, !hasProfile && "text-jf-ink-3")}>
+            <input
+              type="radio"
+              name="chance"
+              className={CONTROL}
+              checked={chance === c.value}
+              onChange={() => onChange({ chance: c.value ? [c.value] : undefined })}
+            />
+            {c.label === "Qualquer" ? c.label : `Chance: ${c.label}`}
+          </label>
+        ))}
+        {!hasProfile && (
+          <HardLink href="/perfil" className="mt-1 inline-flex min-h-11 items-center text-sm text-jf-brand hover:text-jf-brand-dark">
+            Importe seu currículo
+          </HardLink>
+        )}
+      </fieldset>
+
       <fieldset className="flex flex-col">
         <legend className={LEGEND}>Senioridade</legend>
         {(Object.keys(SENIORITY_LABELS) as Seniority[]).map((level) => (
@@ -95,7 +129,7 @@ export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
         <select
           className={FIELD}
           value={filters.lang ?? ""}
-          onChange={(e) => onChange({ lang: (e.target.value || undefined) as JobsFilters["lang"] })}
+          onChange={(e) => onChange({ lang: (e.target.value || undefined) as PageFilters["lang"] })}
         >
           <option value="">Qualquer</option>
           {Object.entries(LANGUAGE_LABELS).map(([value, label]) => (
@@ -104,6 +138,16 @@ export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
             </option>
           ))}
         </select>
+      </label>
+
+      <label className={OPTION}>
+        <input
+          type="checkbox"
+          className={CONTROL}
+          checked={filters.showHidden === true}
+          onChange={(e) => onChange({ showHidden: e.target.checked ? true : undefined })}
+        />
+        Mostrar vagas ocultas
       </label>
 
       <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-jf-ink-2">
@@ -121,6 +165,36 @@ export function FiltersPanel({ filters, onChange, onClear, open, id }: Props) {
           ))}
         </select>
       </label>
+
+      <div className="flex flex-col gap-1 border-t border-jf-line pt-4">
+        <button
+          type="button"
+          disabled={!savedSearch.canSave}
+          onClick={savedSearch.onSave}
+          className="min-h-11 rounded-lg border border-jf-line-strong bg-jf-surface px-3 text-sm font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand disabled:opacity-60 disabled:hover:bg-jf-surface"
+        >
+          Salvar como busca padrão
+        </button>
+        <div aria-live="polite" className="flex flex-wrap items-center justify-between gap-x-3">
+          {savedSearch.active && (
+            <>
+              <span className="text-[13px] text-jf-ink-2">Busca padrão ativa</span>
+              <button
+                type="button"
+                onClick={savedSearch.onClear}
+                className="min-h-11 text-sm text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
+              >
+                Remover busca padrão
+              </button>
+            </>
+          )}
+        </div>
+        {savedSearch.error && (
+          <p role="alert" className="text-[13px] text-jf-danger-fg">
+            {savedSearch.error}
+          </p>
+        )}
+      </div>
     </aside>
   );
 }

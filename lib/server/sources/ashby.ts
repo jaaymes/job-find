@@ -1,5 +1,5 @@
 import "server-only";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import { countryCodeFromName, parseLocation } from "@/lib/server/sources/location";
 import { safeUrl } from "@/lib/shared/url";
@@ -11,7 +11,7 @@ export const ASHBY_HOST = "api.ashbyhq.com";
 
 /** Boards curados da D-07 (nada além desta lista é consultado). */
 export const ASHBY_BOARDS = [
-  "nubank", "supabase", "openai", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
+  "nubank", "supabase", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
 ] as const;
 
 const boardSchema = z.object({ jobs: z.array(z.unknown()) });
@@ -24,7 +24,7 @@ const componentSchema = z.object({
   maxValue: z.number().nullish(),
 });
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   /** Slug do board, acrescentado pelo conector ao devolver cada vaga. */
   board: z.string().min(1),
   id: z.string().min(1),

@@ -1,5 +1,5 @@
 import "server-only";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
 import type { Seniority } from "@/lib/shared/types/job";
 import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
@@ -13,7 +13,7 @@ const PAGE_SIZE = 50;
 
 const feedSchema = z.object({ jobs: z.array(z.unknown()) });
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   id: z.union([z.string().min(1), z.number()]),
   url: z.string().min(1),
   jobTitle: z.string().trim().min(1),

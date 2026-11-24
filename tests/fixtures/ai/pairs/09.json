@@ -1,0 +1,130 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Igor Fictício",
+    "headline": "Desenvolvedor Full Stack Pleno",
+    "location": "Florianópolis, SC",
+    "seniority": "mid",
+    "englishLevel": "intermediate",
+    "summary": "Desenvolvedor full stack com 5 anos de experiência em Node.js, React e PostgreSQL.",
+    "contact": {
+      "email": "igor.ficticio@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Node.js",
+        "years": 5,
+        "stackId": "nodejs"
+      },
+      {
+        "name": "React",
+        "years": 4,
+        "stackId": "react"
+      },
+      {
+        "name": "PostgreSQL",
+        "years": 5,
+        "stackId": "postgresql"
+      },
+      {
+        "name": "TypeScript",
+        "years": 4,
+        "stackId": "typescript"
+      },
+      {
+        "name": "Docker",
+        "years": 3,
+        "stackId": "docker"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Startup Maré Demo",
+        "title": "Desenvolvedor Full Stack",
+        "startDate": "2021-08",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Criou a API de agendamentos em Node.js e PostgreSQL, com 25 endpoints"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Implementou o painel administrativo em React usado por 300 operadores"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Reduziu o tempo das consultas mais lentas em 60% com índices"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Software House Faro Fictícia",
+        "title": "Desenvolvedor Júnior",
+        "startDate": "2019-03",
+        "endDate": "2021-07",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Entregou 9 projetos web para clientes de pequeno porte"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Configurou Docker no ambiente de desenvolvimento do time"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Fictícia de Santa Catarina",
+        "degree": "Bacharelado em Ciência da Computação",
+        "startYear": "2015",
+        "endYear": "2019"
+      }
+    ]
+  },
+  "job": {
+    "id": 9008,
+    "title": "Full Stack Developer",
+    "company": "Zenite Plataformas",
+    "companyLogoUrl": null,
+    "summary": "Desenvolvedor full stack para produto SaaS B2B.",
+    "country": "BR",
+    "city": null,
+    "origin": "national",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "mid",
+    "language": "unknown",
+    "stacks": [
+      "nodejs",
+      "react",
+      "postgresql",
+      "typescript"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9008",
+    "applyUrl": "https://vagas.exemplo.test/9008/apply",
+    "descriptionHtml": "<h3>Sobre a vaga</h3><p>A Zenite Plataformas desenvolve um SaaS B2B de gestão de agendamentos e busca uma pessoa full stack para o time de produto.</p><h3>Você vai</h3><p>Trabalhar de ponta a ponta.</p><ul><li>Criar APIs em Node.js e TypeScript</li><li>Construir telas em React</li><li>Modelar e otimizar consultas em PostgreSQL</li></ul><h3>Requisitos</h3><p>Experiência com o stack acima e boas práticas de código.</p>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9008",
+        "dofollow": true
+      }
+    ]
+  }
+}

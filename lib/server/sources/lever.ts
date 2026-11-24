@@ -1,5 +1,5 @@
 import "server-only";
-import { z } from "zod";
+import { z } from "@/lib/shared/zod";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import { countryNameFromCode, parseLocation } from "@/lib/server/sources/location";
 import { safeUrl } from "@/lib/shared/url";
@@ -14,7 +14,7 @@ export const LEVER_BOARDS = ["ciandt", "neon", "swile", "toptal", "spotify"] as 
 
 const boardSchema = z.array(z.unknown());
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   /** Slug do board, acrescentado pelo conector ao devolver cada vaga. */
   board: z.string().min(1),
   id: z.string().min(1),

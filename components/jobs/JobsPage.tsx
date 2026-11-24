@@ -1,8 +1,19 @@
 "use client";
 
 import { SlidersHorizontal } from "lucide-react";
-import { useId, useState } from "react";
-import { CLEAR_FILTERS, useJobs, useJobsFilters } from "@/lib/client/jobs/use-jobs";
+import { useEffect, useId, useMemo, useState } from "react";
+import { CLEAR_FILTERS, useJobsFilters } from "@/lib/client/jobs/use-jobs";
+import { syncSnapshots, setHidden, useJobStates } from "@/lib/client/jobs/job-state";
+import type { JobSummary } from "@/lib/shared/types/job";
+import { isNewSince, usePreviousVisit, useRecordVisit } from "@/lib/client/jobs/last-visit";
+import {
+  clearSavedSearch,
+  saveSearch,
+  useApplySavedSearch,
+  toSavedFilters,
+  useSavedFilters,
+} from "@/lib/client/jobs/saved-search";
+import { useJobsWithChance } from "@/lib/client/jobs/use-jobs-with-chance";
 import { FiltersPanel } from "./FiltersPanel";
 import { JobCard } from "./JobCard";
 import { ModeTabs } from "./ModeTabs";
@@ -11,7 +22,9 @@ import { StackChips } from "./StackChips";
 import { formatAge, formatCollectedAt, isStale } from "./format";
 
 const FILTERS_ID = "jobs-filters";
-const SIDEBAR_KEYS = ["origin", "acceptsBrazil", "seniority", "lang", "source"] as const;
+const SIDEBAR_KEYS = ["origin", "acceptsBrazil", "chance", "seniority", "lang", "source", "showHidden"] as const;
+const UNDO_MS = 8000;
+const SAVE_ERROR = "Não foi possível salvar a busca padrão: o navegador não permitiu gravar os dados.";
 
 function JobCardSkeleton() {
   return (
@@ -52,22 +65,48 @@ function Heading({ lastCollectedAt, now }: { lastCollectedAt: string | null; now
 
 export function JobsPage() {
   const [filters, setFilters] = useJobsFilters();
-  const query = useJobs(filters);
+  const { chance, showHidden, ...apiFilters } = filters;
+  const searchReady = useApplySavedSearch(filters, setFilters);
+  const query = useJobsWithChance(apiFilters, chance ?? null, searchReady);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const panelId = useId();
   // Relógio do cliente = instante em que os dados chegaram (o pré-render não conhece a hora).
   const now = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null;
 
-  const pages = query.data?.pages ?? [];
-  const items = pages.flatMap((p) => p.items);
-  const counts = pages[0]?.counts;
-  const lastCollectedAt = pages[0]?.lastCollectedAt ?? null;
+  const states = useJobStates();
+  const savedSearch = useSavedFilters();
+  const previousVisit = usePreviousVisit();
+  useRecordVisit();
+  // Vagas ocultas são filtradas aqui, depois do fetch (o estado vive só no navegador): uma página pode ficar com
+  // menos itens do que o limite, e o "Carregar mais vagas" continua valendo para as seguintes.
+  const items = useMemo(
+    () => (showHidden || !states ? query.items : query.items.filter((x) => !states[String(x.job.id)]?.hidden)),
+    [query.items, states, showHidden],
+  );
+  const hiddenCount = query.items.length - items.length;
+  // Vaga vista de novo com dados novos: atualiza a cópia guardada para "Minhas vagas".
+  useEffect(() => {
+    syncSnapshots(query.items.map((x) => x.job));
+  }, [query.items]);
+
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [undo, setUndo] = useState<JobSummary | null>(null);
+  useEffect(() => {
+    if (!undo) return;
+    const t = setTimeout(() => setUndo(null), UNDO_MS);
+    return () => clearTimeout(t);
+  }, [undo]);
+  const counts = query.counts;
+  const lastCollectedAt = query.lastCollectedAt;
   const activeSidebar = SIDEBAR_KEYS.filter((k) => {
+    if (k === "chance" && !query.hasProfile) return false;
     const v = filters[k];
     return Array.isArray(v) ? v.length > 0 : v !== undefined;
   }).length;
   const hasAnyFilter = Object.keys(filters).length > 0;
   const clear = () => setFilters(CLEAR_FILTERS);
+  // Salvar exige ao menos um filtro além de "mostrar ocultas" (que não faz parte da busca).
+  const canSaveSearch = Object.keys(filters).some((k) => k !== "showHidden");
 
   return (
     <>
@@ -98,7 +137,27 @@ export function JobsPage() {
           <SlidersHorizontal aria-hidden="true" className="size-4" />
           Filtros{activeSidebar > 0 ? ` · ${activeSidebar}` : ""}
         </button>
-        <FiltersPanel id={FILTERS_ID} filters={filters} onChange={setFilters} onClear={clear} open={filtersOpen} />
+        <FiltersPanel
+          id={FILTERS_ID}
+          filters={filters}
+          onChange={setFilters}
+          onClear={clear}
+          open={filtersOpen}
+          hasProfile={query.hasProfile}
+          savedSearch={{
+            active: savedSearch !== null && toSavedFilters(savedSearch) !== null,
+            canSave: canSaveSearch,
+            error: saveError,
+            onSave: () => {
+              const r = saveSearch(filters);
+              setSaveError(r.ok ? null : SAVE_ERROR);
+            },
+            onClear: () => {
+              const r = clearSavedSearch();
+              setSaveError(r.ok ? null : SAVE_ERROR);
+            },
+          }}
+        />
 
         <section aria-label="Resultados" className="flex min-w-0 flex-[999_1_560px] flex-col gap-3.5">
           <ModeTabs
@@ -128,8 +187,20 @@ export function JobsPage() {
                   Tentar de novo
                 </button>
               </div>
-            ) : query.isPending ? (
+            ) : query.isPending || (items.length === 0 && query.isFetchingNextPage) ? (
               [0, 1, 2, 3].map((i) => <JobCardSkeleton key={i} />)
+            ) : items.length === 0 && hiddenCount > 0 ? (
+              <div className="flex flex-col items-center gap-3 rounded-2xl border border-jf-line bg-jf-surface p-8 text-center">
+                <p className="font-semibold">As vagas carregadas estão ocultas</p>
+                <p className="text-sm text-jf-ink-3">Você ocultou todas as vagas desta página.</p>
+                <button
+                  type="button"
+                  onClick={() => setFilters({ showHidden: true })}
+                  className="min-h-11 rounded-xl border border-jf-line-strong bg-jf-surface px-5 font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand"
+                >
+                  Mostrar vagas ocultas
+                </button>
+              </div>
             ) : items.length === 0 ? (
               <div className="flex flex-col items-center gap-3 rounded-2xl border border-jf-line bg-jf-surface p-8 text-center">
                 <p className="font-semibold">Nenhuma vaga encontrada</p>
@@ -145,19 +216,35 @@ export function JobsPage() {
                 )}
               </div>
             ) : (
-              items.map((job) => <JobCard key={job.id} job={job} now={now ?? new Date(job.publishedAt).getTime()} />)
+              items.map(({ job, chance: score }) => (
+                <JobCard
+                  key={job.id}
+                  job={job}
+                  chance={score}
+                  isNew={isNewSince(job.publishedAt, previousVisit)}
+                  now={now ?? new Date(job.publishedAt).getTime()}
+                  onHidden={setUndo}
+                />
+              ))
             )}
 
             {query.isError && items.length > 0 && (
-              <p role="alert" className="text-center text-sm text-jf-danger-fg">
-                Não foi possível carregar mais vagas.
-              </p>
+              <div role="alert" className="flex flex-col items-center gap-2 text-center">
+                <p className="text-sm text-jf-danger-fg">Não foi possível carregar mais vagas.</p>
+                <button
+                  type="button"
+                  onClick={query.retryNext}
+                  className="min-h-11 rounded-xl border border-jf-line-strong bg-jf-surface px-5 font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand"
+                >
+                  Tentar de novo
+                </button>
+              </div>
             )}
-            {query.hasNextPage && (
+            {query.hasMore && (
               <button
                 type="button"
                 disabled={query.isFetchingNextPage}
-                onClick={() => void query.fetchNextPage()}
+                onClick={query.loadMore}
                 className="mt-2 min-h-12 self-center rounded-xl border border-jf-line-strong bg-jf-surface px-6 font-semibold outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand disabled:opacity-60"
               >
                 {query.isFetchingNextPage ? "Carregando…" : "Carregar mais vagas"}
@@ -165,6 +252,24 @@ export function JobsPage() {
             )}
           </div>
         </section>
+      </div>
+
+      <div aria-live="polite" data-testid="undo-region" className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex justify-center">
+        {undo && (
+          <div className="pointer-events-auto flex items-center gap-3 rounded-xl bg-jf-ink py-1.5 pr-1.5 pl-4 text-sm text-white shadow-lg">
+            <span>Vaga oculta</span>
+            <button
+              type="button"
+              onClick={() => {
+                setHidden(undo, false);
+                setUndo(null);
+              }}
+              className="min-h-11 rounded-lg px-3 font-semibold text-white underline outline-none hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white"
+            >
+              Desfazer
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

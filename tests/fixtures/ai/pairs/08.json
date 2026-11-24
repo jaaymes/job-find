@@ -1,0 +1,120 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Helena Muestra",
+    "headline": "Analista de Datos Junior",
+    "location": "Madrid, España",
+    "seniority": "junior",
+    "englishLevel": "basic",
+    "summary": "Analista de datos junior con experiencia en SQL, Excel y Power BI en el sector comercio.",
+    "contact": {
+      "email": "helena.muestra@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "SQL",
+        "years": 2,
+        "stackId": "sql"
+      },
+      {
+        "name": "Power BI",
+        "years": 2,
+        "stackId": "powerbi"
+      },
+      {
+        "name": "Excel",
+        "years": 3,
+        "stackId": null
+      },
+      {
+        "name": "Python",
+        "years": 1,
+        "stackId": "python"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Distribuidora Sol Ficticia",
+        "title": "Analista de Datos Junior",
+        "startDate": "2023-06",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Creó 15 paneles de Power BI para ventas y logística"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Automatizó un informe mensual con Python y SQL, ahorrando 8 horas al mes"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Cooperativa Verde Demo",
+        "title": "Becaria de Análisis",
+        "startDate": "2022-09",
+        "endDate": "2023-05",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Limpió y documentó 4 bases de datos de clientes"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Preparó informes semanales en Excel"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidad Ficticia de Madrid",
+        "degree": "Grado en Estadística",
+        "startYear": "2019",
+        "endYear": "2023"
+      }
+    ]
+  },
+  "job": {
+    "id": 9007,
+    "title": "Analista de Datos (Junior)",
+    "company": "Costa Datos",
+    "companyLogoUrl": null,
+    "summary": "Analista junior para equipo de inteligencia de negocio.",
+    "country": "ES",
+    "city": "Madrid",
+    "origin": "international",
+    "acceptsBrazil": true,
+    "workMode": "hybrid",
+    "seniority": "junior",
+    "language": "es",
+    "stacks": [
+      "sql",
+      "powerbi",
+      "python"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9007",
+    "applyUrl": "https://vagas.exemplo.test/9007/apply",
+    "descriptionHtml": "<h3>El puesto</h3><p>Costa Datos busca un analista junior para su equipo de inteligencia de negocio.</p><h3>Funciones</h3><p>Apoyo a las áreas comerciales.</p><ul><li>Construir paneles en Power BI</li><li>Escribir consultas SQL</li><li>Automatizar informes con Python</li><li>Presentar resultados a las áreas de negocio</li></ul><h3>Requisitos</h3><p>Formación en estadística, ingeniería o similar y ganas de aprender.</p>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9007",
+        "dofollow": true
+      }
+    ]
+  }
+}

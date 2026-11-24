@@ -24,6 +24,8 @@ export type JobSummary = {
   title: string;
   company: string;
   companyLogoUrl: string | null;
+  /** URL canônica pública da vaga (a mesma do detalhe): serve de link para a fonte em "Minhas vagas". */
+  urlCanonical: string;
   summary: string;
   country: string | null;
   city: string | null;
@@ -50,8 +52,6 @@ export type JobAttribution = {
 };
 
 export type JobDetail = JobSummary & {
-  /** Só para deduplicação: sem parâmetros de rastreamento. Nunca vira link de candidatura. */
-  urlCanonical: string;
   /**
    * Link de candidatura: a URL bruta (`job_sources.url`) da fonte vista por último, sem nenhuma
    * alteração (D-07: o Himalayas exige o `applicationLink` intacto). `null` sem fonte registrada.

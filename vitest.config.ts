@@ -23,7 +23,10 @@ export default defineConfig({
       },
       {
         // Mesmo projeto lógico "unit": testes de código client-side rodam em jsdom.
-        resolve: { alias },
+        // mammoth: o bundler do Next usa o build de navegador (campo "browser"); aqui o alias reproduz isso.
+        resolve: {
+          alias: { ...alias, mammoth: resolve(import.meta.dirname, "node_modules/mammoth/mammoth.browser.js") },
+        },
         test: {
           name: "unit-client",
           include: ["tests/unit/client/**/*.test.{ts,tsx}"],

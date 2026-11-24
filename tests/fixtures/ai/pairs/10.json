@@ -1,0 +1,134 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Julia Example",
+    "headline": "DevOps and Platform Lead",
+    "location": "São Paulo, SP",
+    "seniority": "lead",
+    "englishLevel": "fluent",
+    "summary": "Platform engineering lead with 12 years of experience in cloud infrastructure, Kubernetes and developer tooling.",
+    "contact": {
+      "email": "julia.example@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "AWS",
+        "years": 9,
+        "stackId": "aws"
+      },
+      {
+        "name": "Terraform",
+        "years": 6,
+        "stackId": "terraform"
+      },
+      {
+        "name": "Kubernetes",
+        "years": 6,
+        "stackId": "kubernetes"
+      },
+      {
+        "name": "Docker",
+        "years": 9,
+        "stackId": "docker"
+      },
+      {
+        "name": "Python",
+        "years": 7,
+        "stackId": "python"
+      },
+      {
+        "name": "Prometheus",
+        "years": 5,
+        "stackId": null
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Plataforma Aurora Fictícia",
+        "title": "Platform Engineering Lead",
+        "startDate": "2020-01",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Led a team of 7 engineers running 120 services on Kubernetes across 3 AWS regions"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Cut deployment time from 45 minutes to 8 minutes with a new CI/CD pipeline"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Reduced the monthly cloud bill by 28% through rightsizing and savings plans"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Fintech Rio Demo",
+        "title": "DevOps Engineer",
+        "startDate": "2014-05",
+        "endDate": "2019-12",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Automated infrastructure with Terraform for 4 environments"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Built Prometheus alerting that reduced incident detection time to under 5 minutes"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Fictícia do Rio",
+        "degree": "BSc in Computer Engineering",
+        "startYear": "2009",
+        "endYear": "2013"
+      }
+    ]
+  },
+  "job": {
+    "id": 9009,
+    "title": "Head of Platform Engineering",
+    "company": "Helix Cloud",
+    "companyLogoUrl": null,
+    "summary": "Lead the platform engineering team running multi-region Kubernetes infrastructure.",
+    "country": "US",
+    "city": null,
+    "origin": "international",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "lead",
+    "language": "en",
+    "stacks": [
+      "aws",
+      "terraform",
+      "kubernetes"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9009",
+    "applyUrl": "https://vagas.exemplo.test/9009/apply",
+    "descriptionHtml": "<h3>The role</h3><p>Helix Cloud is looking for a platform engineering lead to own reliability, cost and developer experience.</p><h3>Responsibilities</h3><p>Lead and grow the team.</p><ul><li>Lead a team of platform engineers</li><li>Own multi-region Kubernetes on AWS</li><li>Drive cost and reliability goals</li><li>Partner with product engineering on tooling</li></ul><h3>Requirements</h3><p>Proven leadership.</p><ul><li>8+ years in infrastructure or DevOps</li><li>Experience leading teams</li><li>Terraform and Kubernetes at scale</li></ul>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9009",
+        "dofollow": true
+      }
+    ]
+  }
+}

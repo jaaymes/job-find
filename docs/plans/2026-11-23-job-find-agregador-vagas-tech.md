@@ -1086,12 +1086,12 @@ expect(cvFileName('Ana Souza', 'Lumen Pay', 'Frontend Sênior')).toBe('CV-Ana-So
 - [ ] **Passo 4:** rodar o teste. Esperado: PASS.
 - [ ] **Passo 5:** commitar.
 
-### Task 35: Avaliação da IA com 10 pares
+### Task 35: Avaliação da IA com 10 pares (11 desde a revisão final)
 
 **Arquivos:** criar `scripts/eval-ai.ts` e `tests/fixtures/ai/pairs/{01..10}.json` (perfil e vaga, sem dados reais)
 
 - [ ] **Passo 1:** escrever o script. Ele roda `CV_TAILOR_V1` com a chave do executor e imprime uma tabela com: violações do validador, JSON válido (sim/não), tempo e custo de cada par.
-- [ ] **Passo 2:** rodar `pnpm tsx scripts/eval-ai.ts --provider openrouter`. **Esperado:** zero violações persistentes nos 10 pares; p95 do tempo até 60 s.
+- [ ] **Passo 2:** rodar `pnpm tsx scripts/eval-ai.ts --provider openrouter`. **Esperado:** zero violações persistentes nos 11 pares (eram 10; a revisão final da Fase 3 acrescentou o par 11, de perfil abaixo da senioridade da vaga e com ferramentas da vaga fora do perfil); p95 do tempo até 60 s.
 - [ ] **Passo 3:** registrar o resultado em `docs/tech/spikes.md`, na seção "Avaliação v1".
 - [ ] **Passo 4:** commitar.
 

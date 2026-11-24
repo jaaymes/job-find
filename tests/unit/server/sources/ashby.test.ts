@@ -37,7 +37,7 @@ describe("conector Ashby", () => {
     expect(ashby.attribution.dofollow).toBe(false);
     expect(CONNECTORS.ashby).toBe(ashby);
     expect(ASHBY_BOARDS).toEqual([
-      "nubank", "supabase", "openai", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
+      "nubank", "supabase", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
     ]);
   });
 

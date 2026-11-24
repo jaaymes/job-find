@@ -1,0 +1,128 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Ana Exemplo",
+    "headline": "Desenvolvedora Frontend Júnior",
+    "location": "Recife, PE",
+    "seniority": "junior",
+    "englishLevel": "none",
+    "summary": "Desenvolvedora frontend em início de carreira, com foco em React e acessibilidade.",
+    "contact": {
+      "email": "ana.exemplo@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "React",
+        "years": 2,
+        "stackId": "react"
+      },
+      {
+        "name": "TypeScript",
+        "years": 1,
+        "stackId": "typescript"
+      },
+      {
+        "name": "HTML",
+        "years": 3,
+        "stackId": "html"
+      },
+      {
+        "name": "CSS",
+        "years": 3,
+        "stackId": "css"
+      },
+      {
+        "name": "Git",
+        "years": 2,
+        "stackId": "git"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Estúdio Brisa Digital",
+        "title": "Desenvolvedora Frontend Júnior",
+        "startDate": "2024-02",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Construiu 12 telas em React e TypeScript para o painel de clientes"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Reduziu o tempo de carregamento da home de 4 s para 2 s com divisão de código"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Escreveu testes de componentes com Testing Library"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Agência Pixel Norte",
+        "title": "Estagiária de Desenvolvimento",
+        "startDate": "2023-01",
+        "endDate": "2024-01",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Montou páginas responsivas em HTML e CSS para 5 clientes"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Corrigiu 30 problemas de acessibilidade apontados em auditoria"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Federal Fictícia do Nordeste",
+        "degree": "Bacharelado em Sistemas de Informação",
+        "startYear": "2020",
+        "endYear": "2024"
+      }
+    ]
+  },
+  "job": {
+    "id": 9000,
+    "title": "Desenvolvedor(a) Frontend Júnior",
+    "company": "Lumen Pagamentos",
+    "companyLogoUrl": null,
+    "summary": "Vaga júnior de frontend com React e TypeScript em time de produto.",
+    "country": "BR",
+    "city": "Recife",
+    "origin": "national",
+    "acceptsBrazil": true,
+    "workMode": "hybrid",
+    "seniority": "junior",
+    "language": "pt",
+    "stacks": [
+      "react",
+      "typescript"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9000",
+    "applyUrl": "https://vagas.exemplo.test/9000/apply",
+    "descriptionHtml": "<h3>Sobre a vaga</h3><p>Você vai trabalhar no app web de pagamentos da Lumen, em um time pequeno e colaborativo.</p><h3>O que esperamos</h3><p>Experiência inicial com interfaces web.</p><ul><li>React e TypeScript no dia a dia</li><li>HTML e CSS semânticos</li><li>Noções de testes automatizados</li><li>Vontade de aprender e receber feedback</li></ul><h3>Diferenciais</h3><p>Acessibilidade e Git.</p>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9000",
+        "dofollow": true
+      }
+    ]
+  }
+}

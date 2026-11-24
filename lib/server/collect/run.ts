@@ -379,5 +379,13 @@ export async function runCollection(opts: RunCollectionOptions): Promise<SourceR
       console.error(`[coleta] falha ao invalidar o cache: ${describeError(e)}`);
     }
   }
+  // O status das fontes muda a cada execução (falhas seguidas, última coleta): o cache de 5 min não deve esperar.
+  if (results.length > 0) {
+    try {
+      await invalidate("sources-status");
+    } catch (e) {
+      console.error(`[coleta] falha ao invalidar o cache de status: ${describeError(e)}`);
+    }
+  }
   return results;
 }

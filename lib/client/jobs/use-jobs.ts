@@ -1,6 +1,7 @@
 import "client-only";
 import { infiniteQueryOptions, keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import {
+  createParser,
   parseAsArrayOf,
   parseAsBoolean,
   parseAsString,
@@ -21,6 +22,12 @@ export type JobsPage = {
 };
 
 /** Filtros da URL: mesmas chaves do `JobsQuery` (sem `cursor` e `limit`, que não são estado de página). */
+/** `ocultas=1` liga o filtro; qualquer outro valor (ou a ausência) o desliga. */
+const parseAsFlag = createParser<true>({
+  parse: (v) => (v === "1" ? true : null),
+  serialize: () => "1",
+});
+
 const urlParsers = {
   q: parseAsString,
   stacks: parseAsArrayOf(parseAsString, ","),
@@ -31,6 +38,10 @@ const urlParsers = {
   seniority: parseAsArrayOf(parseAsStringLiteral(["intern", "junior", "mid", "senior", "lead"] as const), ","),
   lang: parseAsStringLiteral(["pt", "en", "es"] as const),
   since: parseAsStringLiteral(["24h", "7d", "30d"] as const),
+  // Só do cliente: o score depende do perfil, que não sai do navegador. Nunca vai para `/api/jobs`.
+  chance: parseAsArrayOf(parseAsStringLiteral(["alta", "media", "baixa"] as const), ","),
+  // Só do cliente: as vagas ocultas ficam no localStorage. Na URL é `ocultas=1`.
+  showHidden: parseAsFlag,
   source: parseAsArrayOf(
     parseAsStringLiteral([
       "himalayas",
@@ -49,16 +60,24 @@ const urlParsers = {
 };
 
 type FilterKey = keyof typeof urlParsers;
+/** Nomes dos parâmetros na URL (`showHidden` aparece como `ocultas`). */
+const URL_KEY_OVERRIDES = { showHidden: "ocultas" } as const;
+export const URL_FILTER_KEYS: string[] = (Object.keys(urlParsers) as FilterKey[]).map(
+  (k) => (URL_KEY_OVERRIDES as Record<string, string>)[k] ?? k,
+);
 export type JobsFilters = Partial<JobsQuery>;
+export type ChanceBand = "alta" | "media" | "baixa";
+/** Filtros da página: os da API mais os aplicados só no cliente (chance e vagas ocultas). */
+export type PageFilters = JobsFilters & { chance?: ChanceBand[]; showHidden?: true };
 
 /** Remove tudo da URL: cada chave recebe `undefined`. */
-export const CLEAR_FILTERS: JobsFilters = Object.fromEntries(
+export const CLEAR_FILTERS: PageFilters = Object.fromEntries(
   (Object.keys(urlParsers) as FilterKey[]).map((k) => [k, undefined]),
 );
 
 /** Filtros da URL (nuqs); `set` aceita um patch e `undefined` (ou lista vazia) remove a chave. */
-export function useJobsFilters(): [JobsFilters, (patch: JobsFilters) => void] {
-  const [state, setState] = useQueryStates(urlParsers);
+export function useJobsFilters(): [PageFilters, (patch: PageFilters) => void] {
+  const [state, setState] = useQueryStates(urlParsers, { urlKeys: URL_KEY_OVERRIDES });
 
   const filters = useMemo(() => {
     const out: Record<string, unknown> = {};
@@ -66,11 +85,11 @@ export function useJobsFilters(): [JobsFilters, (patch: JobsFilters) => void] {
       if (value === null || (Array.isArray(value) && value.length === 0)) continue;
       out[key] = value;
     }
-    return out as JobsFilters;
+    return out as PageFilters;
   }, [state]);
 
   const set = useCallback(
-    (patch: JobsFilters) => {
+    (patch: PageFilters) => {
       const next: Record<string, unknown> = {};
       for (const key of Object.keys(patch) as FilterKey[]) {
         if (!(key in urlParsers)) continue;

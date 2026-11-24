@@ -2,7 +2,7 @@
 
 O Job Find é uma plataforma open-source que reúne num só lugar vagas de tecnologia do Brasil e do exterior. Ele usa a **IA que você escolher** para adaptar o seu currículo a cada vaga.
 
-> Status: em planejamento. Ainda não há código. Por enquanto, este repositório guarda o PRD, a spec técnica e o protótipo das telas.
+> Status: Fase 1 (índice de vagas) em desenvolvimento.
 
 ## O que ele faz
 
@@ -24,6 +24,7 @@ Não há login. O currículo, o perfil, as chaves de IA e as candidaturas ficam 
 
 - [PRD](docs/prd/2026-11-23-job-find-agregador-vagas-tech.md): problema, escopo, requisitos e métricas.
 - [Spec técnica](docs/tech/2026-11-23-job-find-agregador-vagas-tech.md): arquitetura, decisões, modelo de dados e plano de entrega.
+- [Fontes de vagas](docs/fontes.md): endpoints, termos de uso, atribuição e limites de cada fonte.
 
 ## Stack prevista
 

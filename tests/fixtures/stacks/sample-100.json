@@ -1,0 +1,974 @@
+[
+  {
+    "title": "Desenvolvedor Front-end React Pleno",
+    "body": "Buscamos pessoa desenvolvedora com experiência em React, TypeScript, Redux e testes com Jest. Diferencial: Next.js.",
+    "expected": [
+      "jest",
+      "nextjs",
+      "react",
+      "redux",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Pessoa Desenvolvedora Backend Pleno",
+    "body": "Somos uma fintech em crescimento e queremos alguém para evoluir nossos serviços de pagamentos. Você vai trabalhar com Go (Golang) no dia a dia, desenhar APIs e conversar com o time de produto. Nosso CTO é ex-Oracle e valoriza quem já passou por ambientes de alto volume. Faixa salarial: R$ 12.000 a R$ 15.000, CLT, remoto. Buscamos alguém que goste de aprender, e não vemos problema se você ainda não conhece tudo: let's go juntos! Diferenciais: PostgreSQL e Docker.",
+    "expected": [
+      "docker",
+      "go",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Go Developer",
+    "body": "We are hiring a Go developer to join our infrastructure team. Day to day you will write services, review code and go deep on performance. Experience: Go. Nice to have: Kubernetes and Terraform on AWS. The salary range is up to R$ 20.000 for Brazil-based hires, and we offer equity too. We are a remote-first company and our go-to-market team works in the same timezone. Go ahead and apply if this sounds fun!",
+    "expected": [
+      "aws",
+      "go",
+      "kubernetes",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Analista de Dados",
+    "body": "Procuramos analista para apoiar o time comercial. Você vai usar a linguagem R para análise estatística, montar dashboards no Power BI e consultar bases com SQL. Conhecimento avançado em Excel e pacote Office é esperado, mas não é o foco. Salário: R$ 8.000 + benefícios. Atuação híbrida em São Paulo, 3 dias por semana no escritório. Se você ama contar histórias com dados, queremos conhecer você.",
+    "expected": [
+      "powerbi",
+      "r",
+      "sql"
+    ]
+  },
+  {
+    "title": "Software Engineer, Systems",
+    "body": "Our team builds low-level tooling in C++17 and some Rust. You will work with Linux internals, profile hot paths and own performance. We also use Go for tooling around the build. Spring is our busiest season for releases, so expect an energetic first quarter after joining in spring. Please note this is not a web role, and no frontend skills are needed.",
+    "expected": [
+      "cpp",
+      "go",
+      "linux",
+      "rust"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software Backend",
+    "body": "Trabalhe na Oracle e ajude a construir a próxima geração de serviços em nuvem. A vaga é para um time de infraestrutura onde você vai programar em Java e atuar com microsserviços e Kubernetes. Exigimos inglês fluente. A empresa oferece plano de carreira global e programas de mentoria. Experiência anterior com bancos de dados não é necessária, pois você receberá treinamento completo nos primeiros meses.",
+    "expected": [
+      "java",
+      "kubernetes"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Mobile iOS",
+    "body": "Estamos procurando pessoa para nosso app de pagamentos. Você vai desenvolver em Swift e SwiftUI, seguindo boas práticas de arquitetura. Nosso jeito de trabalhar é swift e direto: entregas rápidas, swift feedback, sem burocracia. Também temos um app Android em Kotlin, então saber conversar com o time é um plus. Benefícios: VR, plano de saúde e auxílio home office.",
+    "expected": [
+      "android",
+      "ios",
+      "kotlin",
+      "swift"
+    ]
+  },
+  {
+    "title": "Frontend Engineer",
+    "body": "You will build our customer dashboard with Next 14 and TS, and help us migrate legacy JS code. We care about accessibility and performance. Our stack includes Tailwind and Cypress for end-to-end tests. This role reports to the Head of Engineering. You do not need to know everything; strong fundamentals matter more. Compensation is competitive, up to US$ 6,000 per month, paid in dollars.",
+    "expected": [
+      "cypress",
+      "javascript",
+      "nextjs",
+      "react",
+      "tailwind",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Dev Fullstack",
+    "body": "Estamos montando um time para um produto SaaS de logística. Você vai atuar do front ao back, usando Next.js 14 com React, Node.js no servidor e MongoDB. Conhecimento de AWS ajuda. Nossa cultura é colaborativa e valorizamos quem sabe dizer não. Experiência com TS é bem-vinda, e queremos pessoas que sejam o go-to para dúvidas do time. Modelo remoto, PJ, de R$ 10.000 a R$ 14.000.",
+    "expected": [
+      "aws",
+      "mongodb",
+      "nextjs",
+      "nodejs",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Embedded Software Engineer",
+    "body": "We make industrial controllers. Most firmware is written in C, with some C++20 for tooling, and you will debug on Linux-based boards. Programação em C is the daily bread, but we also need people who understand RTOS concepts and communication protocols. Our founder is ex-Oracle and still talks about enterprise software. If you love going deep on hardware, apply and tell us about your best project.",
+    "expected": [
+      "c",
+      "cpp",
+      "linux"
+    ]
+  },
+  {
+    "title": "Cientista de Dados Sênior",
+    "body": "Vamos construir modelos de previsão de demanda para o varejo. Stack: Python, pandas e PyTorch, com dados no BigQuery. Linguagens: Python e R. Excel e Power BI são usados pelo time de negócio, você só precisa conversar com eles e entender o que precisam. Salário a combinar, entre R$ 16.000 e R$ 22.000, com bônus anual.",
+    "expected": [
+      "bigquery",
+      "pandas",
+      "python",
+      "pytorch",
+      "r"
+    ]
+  },
+  {
+    "title": "Senior Data Engineer",
+    "body": "Join a team of 12 engineers moving petabytes daily. You will own Airflow pipelines, Spark jobs on Databricks, and models in dbt on Snowflake. Strong Python and SQL required. We run on AWS. Experience with Kafka is a plus. Our values: ownership, transparency, curiosity. Fully remote across LATAM, paid in USD, with a yearly learning budget and a home office stipend.",
+    "expected": [
+      "airflow",
+      "aws",
+      "databricks",
+      "dbt",
+      "kafka",
+      "python",
+      "snowflake",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "QA Automation Engineer",
+    "body": "Você será responsável pela qualidade das nossas entregas, escrevendo testes automatizados end-to-end com Playwright e TS, e testes de API. Também fará testes manuais exploratórios e acompanhará o pipeline no GitHub Actions. Conhecimento de Excel para relatórios de bugs é desejável, mas não pesa na decisão. Trabalhamos com Scrum e quinzenas, com retrospectivas honestas.",
+    "expected": [
+      "githubactions",
+      "playwright",
+      "typescript"
+    ]
+  },
+  {
+    "title": "DevOps Engineer",
+    "body": "We are a Series B startup running on Google Cloud. You will manage GKE clusters (Kubernetes), write Terraform modules, and improve CI in GitLab CI. Some of our tooling is written in Go and Python. Spring is when we do our yearly infra review, so you will start with a clear roadmap. 24/7 on-call rotation, paid fairly, and you will never be alone during an incident.",
+    "expected": [
+      "gcp",
+      "gitlab-ci",
+      "go",
+      "kubernetes",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Java Pleno",
+    "body": "Atuamos com sistemas bancários críticos. Você vai trabalhar com Java 17, Spring e Kafka, além de JUnit para testes. Parte do legado roda em Oracle, e você ajudará a migrar para PostgreSQL. Ambiente tradicional, com processos claros, e muita troca com o time de arquitetura. Oferecemos plano de saúde, previdência privada e participação nos lucros.",
+    "expected": [
+      "java",
+      "junit",
+      "kafka",
+      "oracle",
+      "postgresql",
+      "spring"
+    ]
+  },
+  {
+    "title": "Mobile Engineer",
+    "body": "Build apps with React Native and Expo for 2M users. You will collaborate with designers, ship weekly and write tests with Jest. TS is mandatory. Experience: Swift or Kotlin native modules is a plus. Our spring release brought a redesign and we are ready for the next step. Remote across Brazil, with a quarterly in-person meetup in Sao Paulo.",
+    "expected": [
+      "jest",
+      "kotlin",
+      "react",
+      "react-native",
+      "swift",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Analista de Sistemas Júnior",
+    "body": "Vaga para início de carreira. Você aprenderá desenvolvimento web com JS, HTML e CSS e ajudará nossa equipe com rotinas em SQL. Precisa saber Excel? Sim, para relatórios simples, mas o foco é programar. Bolsa de R$ 3.500. Se você curte dar o go para ideias novas, venha fazer parte de um time que valoriza quem está aprendendo.",
+    "expected": [
+      "css",
+      "html",
+      "javascript",
+      "sql"
+    ]
+  },
+  {
+    "title": "Principal Engineer",
+    "body": "At Oracle, I led database teams; now at our company we need a principal to guide architecture. You will work with Rust, Go, and PostgreSQL, set standards and mentor engineers. We are agnostic about the cloud but mostly use AWS. Let's go build something meaningful together, with autonomy and a leadership group that listens to the engineers.",
+    "expected": [
+      "aws",
+      "go",
+      "postgresql",
+      "rust"
+    ]
+  },
+  {
+    "title": "Engenheira de Software .NET",
+    "body": "Time de 8 pessoas desenvolvendo ERP em C# e .NET 8, com SQL Server e Azure. Diferencial: experiência com Angular. A empresa está em ótimo momento e foi eleita uma das melhores para trabalhar. Trabalho 100% remoto, jornada flexível. Salário: R$ 11.000 a R$ 13.500, mais bônus semestral e auxílio educação para cursos e certificações.",
+    "expected": [
+      "angular",
+      "azure",
+      "csharp",
+      "dotnet",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Staff Backend Engineer (Elixir)",
+    "body": "We use Elixir and Phoenix for real-time messaging with Redis and Postgres underneath. Some services are written in Go; one is in Ruby on Rails which you will help retire. Experience: Elixir. Our go-to-market is product-led, so engineers talk to customers weekly and join support rotations. Competitive pay and generous parental leave.",
+    "expected": [
+      "elixir",
+      "go",
+      "postgresql",
+      "rails",
+      "redis",
+      "ruby"
+    ]
+  },
+  {
+    "title": "Tech Lead Mobile",
+    "body": "Você vai liderar três squads mobile, com apps em Flutter e módulos nativos em Kotlin e Swift. Firebase para analytics e push. Esperamos experiência prévia liderando times e boas conversas com produto. Você também vai definir a trilha de carreira e conduzir o processo seletivo. Salário de R$ 18.000 a R$ 24.000, regime CLT, com stock options.",
+    "expected": [
+      "dart",
+      "firebase",
+      "flutter",
+      "kotlin",
+      "swift"
+    ]
+  },
+  {
+    "title": "Site Reliability Engineer",
+    "body": "Own reliability for a platform serving 40M requests per day. Tools: Prometheus, Grafana, Kubernetes, Terraform and Docker on Azure. Write automation in Python or Go. Experience: Linux. We follow blameless postmortems and treat incidents as learning. You will be part of a small, senior team with a lot of ownership over architecture and tooling.",
+    "expected": [
+      "azure",
+      "docker",
+      "go",
+      "kubernetes",
+      "linux",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Estágio em Engenharia de Software",
+    "body": "Venha aprender com times de ponta! Você vai estudar Python e Git, participar de code reviews e apresentar projetos. Precisa de conhecimento básico em lógica e programação em C, da faculdade. Valorizamos quem tem curiosidade. Bolsa de R$ 2.800 e vale-refeição. Não é necessário saber Excel avançado, nem ter experiência prévia no mercado.",
+    "expected": [
+      "c",
+      "git",
+      "python"
+    ]
+  },
+  {
+    "title": "Full Stack Engineer",
+    "body": "Work on both sides with Vue.js and Nuxt on the front, Laravel on the back and MySQL for data. We deploy with Docker. The team is small, so you will wear many hats. Ideal for someone who loves shipping. Salary: up to R$ 9.000 net, plus a learning budget and flexible hours. We do not do crunch, and we like people who care about users.",
+    "expected": [
+      "docker",
+      "laravel",
+      "mysql",
+      "nuxt",
+      "php",
+      "vue"
+    ]
+  },
+  {
+    "title": "Engenheiro de Dados",
+    "body": "Responsável por pipelines em PySpark e SQL, orquestrados com Airflow. Usamos Hadoop legado, em processo de substituição por Databricks. Valorizamos código limpo e testes. Nossa sede é em Florianópolis, com opção remoto. Excel é usado apenas pelo time financeiro, e você não precisará mexer nele. Benefícios incluem gympass, plano odontológico e dias de folga extra.",
+    "expected": [
+      "airflow",
+      "databricks",
+      "hadoop",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "Backend Developer (Python)",
+    "body": "We need a Python developer who knows Django and FastAPI. You will build REST APIs, integrate with third parties and own tests. Go-getters welcome! We are a close team and we like people who go the extra mile. Experience with Redis is a plus. The process has three steps: a chat, a take-home exercise and a pairing session with the team.",
+    "expected": [
+      "django",
+      "fastapi",
+      "python",
+      "redis",
+      "rest"
+    ]
+  },
+  {
+    "title": "Desenvolvedor WordPress",
+    "body": "Agência digital busca dev para criar temas e plugins em WordPress e PHP. Você vai cuidar de sites de clientes de pequeno e médio porte, com JavaScript e jQuery. Trabalhamos com Git e entrega contínua. Experiência com Photoshop é bem-vinda. Remuneração de R$ 6.000, horário flexível e ambiente descontraído, com cafés e happy hours na sexta-feira.",
+    "expected": [
+      "git",
+      "javascript",
+      "jquery",
+      "php",
+      "wordpress"
+    ]
+  },
+  {
+    "title": "Cloud Solutions Engineer",
+    "body": "Help enterprise customers adopt AWS and Azure. Design landing zones, write Terraform and advise on cost. Previous experience at Oracle Cloud or similar is valued. Excellent communication in English and Portuguese is a must, since you will present to executives. Travel up to 20 percent, and compensation includes a sales-linked bonus.",
+    "expected": [
+      "aws",
+      "azure",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Backend Node.js",
+    "body": "Procuramos pessoa com sólida experiência em Node.js e NestJS para APIs de alto tráfego. Nosso stack usa TypeScript, Redis e RabbitMQ. Você participará de decisões de arquitetura. Aqui, a gente vai com calma para ir longe: nada de hype. Salário até R$ 15.000, com PLR. Se você gosta de ensinar e aprender com o time, vai se sentir em casa.",
+    "expected": [
+      "nestjs",
+      "nodejs",
+      "rabbitmq",
+      "redis",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Software Engineer (Go)",
+    "tags": [
+      "Go"
+    ],
+    "body": "Our team ships Go services every day. Strong Go fundamentals matter. You will work with gRPC, Kafka and PostgreSQL. Experience: Go. Nice to have: Rust. We are a small and friendly crew that reviews each other's code kindly. The recruiting process is quick, and we give feedback on every step so that you always know where you stand.",
+    "expected": [
+      "go",
+      "grpc",
+      "kafka",
+      "postgresql",
+      "rust"
+    ]
+  },
+  {
+    "title": "Tech Lead Backend",
+    "body": "Liderança técnica; stack: Java, Spring, Kafka, AWS (EKS, RDS) e PostgreSQL.",
+    "expected": [
+      "aws",
+      "java",
+      "kafka",
+      "postgresql",
+      "spring"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Mobile Híbrido Ionic",
+    "body": "Ionic, Angular, Capacitor, TypeScript.",
+    "expected": [
+      "angular",
+      "ionic",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software Scala",
+    "body": "Scala, Akka, Spark, Kafka, AWS.",
+    "expected": [
+      "aws",
+      "kafka",
+      "scala",
+      "spark"
+    ]
+  },
+  {
+    "title": "Elixir Developer",
+    "body": "Elixir, Phoenix, PostgreSQL, Docker.",
+    "expected": [
+      "docker",
+      "elixir",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "DBA PostgreSQL",
+    "body": "PostgreSQL, MySQL, tuning, replicação, backup. Linux.",
+    "expected": [
+      "linux",
+      "mysql",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Analista de Banco de Dados Oracle",
+    "body": "Oracle Database, PL/SQL, SQL Server, MySQL.",
+    "expected": [
+      "mysql",
+      "oracle",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Desenvolvedor WordPress",
+    "body": "WordPress, PHP, MySQL, JavaScript, HTML e CSS.",
+    "expected": [
+      "css",
+      "html",
+      "javascript",
+      "mysql",
+      "php",
+      "wordpress"
+    ]
+  },
+  {
+    "title": "Product Engineer (TypeScript)",
+    "body": "TypeScript, React, Node, GraphQL, PostgreSQL.",
+    "expected": [
+      "graphql",
+      "nodejs",
+      "postgresql",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Engenheiro Frontend",
+    "body": "React, Next.js, Tailwind, Storybook, Cypress.",
+    "expected": [
+      "cypress",
+      "nextjs",
+      "react",
+      "tailwind"
+    ]
+  },
+  {
+    "title": "Dev Next.js",
+    "body": "Vamos going forward com TypeScript.",
+    "expected": [
+      "nextjs",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Analista de Suporte",
+    "body": "Conhecimentos em Windows, pacote Office, Excel e Word.",
+    "expected": []
+  },
+  {
+    "title": "Gerente de Projetos de TI",
+    "body": "Scrum, Kanban, Jira. Excel avançado.",
+    "expected": []
+  },
+  {
+    "title": "UX Designer",
+    "body": "Figma, pesquisa com usuários, design system.",
+    "expected": []
+  },
+  {
+    "title": "Engenheiro de Dados Sênior",
+    "body": "BigQuery, dbt, Airflow, GCP, Python, SQL.",
+    "expected": [
+      "airflow",
+      "bigquery",
+      "dbt",
+      "gcp",
+      "python",
+      "sql"
+    ]
+  },
+  {
+    "title": "Databricks Engineer",
+    "body": "Databricks, PySpark, Delta Lake, Azure, SQL.",
+    "expected": [
+      "azure",
+      "databricks",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Backend Node.js Júnior",
+    "body": "Node.js, Express.js, MongoDB, Git.",
+    "expected": [
+      "express",
+      "git",
+      "mongodb",
+      "nodejs"
+    ]
+  },
+  {
+    "title": "Frontend Developer",
+    "body": "HTML, CSS, JavaScript, React.js e Git/GitHub.",
+    "expected": [
+      "css",
+      "git",
+      "html",
+      "javascript",
+      "react"
+    ]
+  },
+  {
+    "title": "Mobile Engineer",
+    "body": "Swift ou Kotlin; experiência com arquitetura limpa e CI/CD.",
+    "expected": [
+      "kotlin",
+      "swift"
+    ]
+  },
+  {
+    "title": "Full Stack .NET + Angular",
+    "body": "ASP.NET Core, C#, Angular, SQL Server, Docker.",
+    "expected": [
+      "angular",
+      "csharp",
+      "docker",
+      "dotnet",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Java Developer",
+    "body": "Java EE, Hibernate, Maven, JUnit, MySQL.",
+    "expected": [
+      "java",
+      "junit",
+      "mysql"
+    ]
+  },
+  {
+    "title": "Engenheiro DevOps AWS",
+    "body": "AWS (EC2, S3, Lambda), Terraform, Docker, GitLab CI, Linux, Bash.",
+    "expected": [
+      "aws",
+      "docker",
+      "gitlab-ci",
+      "linux",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Cloud Architect",
+    "body": "Azure, AWS e GCP; Kubernetes; Terraform.",
+    "expected": [
+      "aws",
+      "azure",
+      "gcp",
+      "kubernetes",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Analista de Testes",
+    "body": "Testes manuais, Jira, SQL básico, Postman.",
+    "expected": [
+      "sql"
+    ]
+  },
+  {
+    "title": "SDET",
+    "body": "Java, Selenium, JUnit, Appium, CI/CD with Jenkins.",
+    "expected": [
+      "appium",
+      "java",
+      "jenkins",
+      "junit",
+      "selenium"
+    ]
+  },
+  {
+    "title": "Desenvolvedor React Native",
+    "body": "React Native, Expo, TypeScript, Firebase.",
+    "expected": [
+      "firebase",
+      "react",
+      "react-native",
+      "typescript"
+    ]
+  },
+  {
+    "title": "React Developer",
+    "body": "React, Redux, hooks, REST APIs, Jest.",
+    "expected": [
+      "jest",
+      "react",
+      "redux",
+      "rest"
+    ]
+  },
+  {
+    "title": "Engenheira de Software Python",
+    "body": "Python, FastAPI, SQLAlchemy, PostgreSQL, Docker, AWS.",
+    "expected": [
+      "aws",
+      "docker",
+      "fastapi",
+      "postgresql",
+      "python"
+    ]
+  },
+  {
+    "title": "Flask Developer",
+    "body": "Flask, Python, Redis, Celery.",
+    "expected": [
+      "flask",
+      "python",
+      "redis"
+    ]
+  },
+  {
+    "title": "Dev Backend Sênior",
+    "body": "Kotlin, Spring Boot, Kafka, Kubernetes.",
+    "expected": [
+      "java",
+      "kafka",
+      "kotlin",
+      "kubernetes",
+      "spring"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Fullstack",
+    "body": "Experiência com Vue.js, Node e MongoDB.",
+    "expected": [
+      "mongodb",
+      "nodejs",
+      "vue"
+    ]
+  },
+  {
+    "title": "Svelte Developer",
+    "body": "SvelteKit, TypeScript, Tailwind.",
+    "expected": [
+      "svelte",
+      "tailwind",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Engenheiro de Observabilidade",
+    "body": "Elasticsearch, Kafka, Kubernetes, Linux, Go.",
+    "expected": [
+      "elasticsearch",
+      "go",
+      "kafka",
+      "kubernetes",
+      "linux"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Unity",
+    "body": "C#, Unity, jogos 3D.",
+    "expected": [
+      "csharp"
+    ]
+  },
+  {
+    "title": "Engenheiro Embarcado",
+    "body": "Linguagem C, C++, RTOS, Linux embarcado.",
+    "expected": [
+      "c",
+      "cpp",
+      "linux"
+    ]
+  },
+  {
+    "title": "Analista de Dados R",
+    "body": "Linguagem R, RStudio, SQL, estatística.",
+    "expected": [
+      "r",
+      "sql"
+    ]
+  },
+  {
+    "title": "Estatístico Data Analyst",
+    "body": "R, Python, SQL e Tableau.",
+    "expected": [
+      "python",
+      "r",
+      "sql",
+      "tableau"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software Pleno",
+    "body": "Nossa stack: Go, React e PostgreSQL.",
+    "expected": [
+      "go",
+      "postgresql",
+      "react"
+    ]
+  },
+  {
+    "title": "Backend Developer (Golang)",
+    "body": "Golang, REST, MongoDB.",
+    "expected": [
+      "go",
+      "mongodb",
+      "rest"
+    ]
+  },
+  {
+    "title": "SAP ABAP Developer",
+    "body": "ABAP, SAP S/4HANA.",
+    "expected": []
+  },
+  {
+    "title": "Salesforce Developer",
+    "body": "Apex, LWC, Salesforce.",
+    "expected": []
+  },
+  {
+    "title": "Desenvolvedor Backend",
+    "body": "We use Node and Python; going all in on cloud with AWS.",
+    "expected": [
+      "aws",
+      "nodejs",
+      "python"
+    ]
+  },
+  {
+    "title": "Data Scientist",
+    "body": "Python (pandas, NumPy), SQL, MLflow, Spark.",
+    "expected": [
+      "pandas",
+      "python",
+      "spark",
+      "sql"
+    ]
+  },
+  {
+    "title": "Analista BI",
+    "body": "Power BI, DAX, SQL Server, Excel.",
+    "expected": [
+      "powerbi",
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Software Engineer, Platform",
+    "body": "gRPC, Kubernetes, Rust or Go.",
+    "expected": [
+      "go",
+      "grpc",
+      "kubernetes",
+      "rust"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Python",
+    "body": "Python 3, Django, DRF, Postgres.",
+    "expected": [
+      "django",
+      "postgresql",
+      "python"
+    ]
+  },
+  {
+    "title": "Engenheiro SRE",
+    "body": "Prometheus, Grafana, Kubernetes, Terraform, Python.",
+    "expected": [
+      "kubernetes",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Frontend Engineer",
+    "body": "Vue.js 3, TypeScript, Vite, Vitest.",
+    "expected": [
+      "typescript",
+      "vue"
+    ]
+  },
+  {
+    "title": "Analista Desenvolvedor",
+    "body": "Experiência com Oracle e PL/SQL.",
+    "expected": [
+      "oracle"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Mobile",
+    "body": "Android nativo (Java/Kotlin) ou iOS (Swift).",
+    "expected": [
+      "android",
+      "ios",
+      "java",
+      "kotlin",
+      "swift"
+    ]
+  },
+  {
+    "title": "Senior Frontend Engineer",
+    "body": "React, TypeScript, GraphQL, Next.js; remote-first company.",
+    "expected": [
+      "graphql",
+      "nextjs",
+      "react",
+      "typescript"
+    ]
+  },
+  {
+    "title": "QA Mobile",
+    "body": "Appium, Android, iOS, Cypress.",
+    "expected": [
+      "android",
+      "appium",
+      "cypress",
+      "ios"
+    ]
+  },
+  {
+    "title": "Engenheiro de Plataforma",
+    "body": "Docker, Kubernetes, ArgoCD, GitHub Actions, AWS, Terraform.",
+    "expected": [
+      "aws",
+      "docker",
+      "githubactions",
+      "kubernetes",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Node.js",
+    "body": "Node.js, TypeScript, Redis, RabbitMQ, MongoDB.",
+    "expected": [
+      "mongodb",
+      "nodejs",
+      "rabbitmq",
+      "redis",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Backend Kotlin",
+    "body": "Ktor, Kotlin, PostgreSQL.",
+    "expected": [
+      "kotlin",
+      "postgresql"
+    ]
+  },
+  {
+    "title": "Dev Fullstack C#",
+    "body": "C#, .NET 8, React, PostgreSQL.",
+    "expected": [
+      "csharp",
+      "dotnet",
+      "postgresql",
+      "react"
+    ]
+  },
+  {
+    "title": "Tech Recruiter de TI",
+    "body": "Recrutamos para vagas Java, .NET e React.",
+    "expected": [
+      "dotnet",
+      "java",
+      "react"
+    ]
+  },
+  {
+    "title": "Estágio em Desenvolvimento",
+    "body": "Lógica de programação, Python ou JavaScript, Git.",
+    "expected": [
+      "git",
+      "javascript",
+      "python"
+    ]
+  },
+  {
+    "title": "Engenheiro de Dados Pleno",
+    "body": "Kafka, Spark, Scala, Hadoop.",
+    "expected": [
+      "hadoop",
+      "kafka",
+      "scala",
+      "spark"
+    ]
+  },
+  {
+    "title": "Desenvolvedor PHP Legado",
+    "body": "PHP 7, jQuery, MySQL, Linux.",
+    "expected": [
+      "jquery",
+      "linux",
+      "mysql",
+      "php"
+    ]
+  },
+  {
+    "title": "Cloud Engineer GCP",
+    "body": "Google Cloud Platform, Terraform, BigQuery, Python.",
+    "expected": [
+      "bigquery",
+      "gcp",
+      "python",
+      "terraform"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Web",
+    "body": "Conhecimento em React Native é um diferencial; foco em React no dia a dia.",
+    "expected": [
+      "react",
+      "react-native"
+    ]
+  },
+  {
+    "title": "Staff Engineer",
+    "body": "TypeScript, Node.js, AWS, DynamoDB.",
+    "expected": [
+      "aws",
+      "nodejs",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Dev Nuxt",
+    "body": "Nuxt 3, Vue, TypeScript.",
+    "expected": [
+      "nuxt",
+      "typescript",
+      "vue"
+    ]
+  },
+  {
+    "title": "AngularJS to Angular Migration",
+    "body": "AngularJS legado e Angular moderno, TypeScript.",
+    "expected": [
+      "angular",
+      "typescript"
+    ]
+  },
+  {
+    "title": "Desenvolvedor Laravel/Vue",
+    "body": "Laravel, Vue.js, MySQL, Redis.",
+    "expected": [
+      "laravel",
+      "mysql",
+      "php",
+      "redis",
+      "vue"
+    ]
+  },
+  {
+    "title": "Engenheiro de Software",
+    "body": "Experiência com Rust e WebAssembly; Swift é bônus.",
+    "expected": [
+      "rust",
+      "swift"
+    ]
+  },
+  {
+    "title": "Analista Programador",
+    "body": "Visual Basic, Delphi, SQL Server.",
+    "expected": [
+      "sqlserver"
+    ]
+  },
+  {
+    "title": "Engenheiro de Dados",
+    "body": "Redshift, S3, Glue, Python, SQL: AWS.",
+    "expected": [
+      "aws",
+      "python",
+      "sql"
+    ]
+  },
+  {
+    "title": "Fullstack Engineer",
+    "body": "MySQL e PostgreSQL; Docker Compose; React & Node.js.",
+    "expected": [
+      "docker",
+      "mysql",
+      "nodejs",
+      "postgresql",
+      "react"
+    ]
+  },
+  {
+    "title": "Frontend Lead",
+    "body": "Angular ou React; testes com Jest e Cypress.",
+    "expected": [
+      "angular",
+      "cypress",
+      "jest",
+      "react"
+    ]
+  }
+]

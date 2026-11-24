@@ -1,0 +1,53 @@
+# Fontes de vagas
+
+Registro das fontes de vagas do Job Find (RN-09 do PRD, D-07 da spec técnica). Cada conector fica em `lib/server/sources/<fonte>.ts` e é registrado em `lib/server/sources/registry.ts`, que também define a atribuição exibida na interface.
+
+Regras comuns a todos os conectores:
+
+- O fetch só vai para o host fixo declarado em `allowedHosts` (URL base definida no código), com timeout de 20 s, resposta de até 10 MB e `redirect: 'manual'` (até 3 saltos, cada um revalidado).
+- A coleta roda de hora em hora (`17 * * * *`, ver `vercel.json`), e cada conector respeita `minIntervalMinutes`.
+- **Snapshot completo (`fullSnapshot: true`):** a resposta lista todas as vagas abertas, então as que sumiram podem expirar. **Incremental (`false`):** a fonte só devolve as mais novas e o cursor guarda onde a coleta parou; a ausência de uma vaga não a expira.
+- Lista vazia ou parcial com HTTP 200 não expira vagas da fonte.
+
+## Fontes implementadas (Fase 1)
+
+| Fonte | Endpoint | ToS (link e data da checagem) | Atribuição exigida | `fullSnapshot` | Limites |
+|---|---|---|---|---|---|
+| Himalayas | `https://himalayas.app/jobs/api` (paginação por cursor, `limit=20`, `Authorization: Bearer $HIMALAYAS_API_KEY` quando definida) | [Docs da API](https://himalayas.app/docs/remote-jobs-api), checada em 2026-11-23: exibir crédito visível com link para himalayas.app, citando o Himalayas como fonte; usar o `applicationLink` da API; pode exibir as vagas no próprio site sem pedir permissão; não repassar a outros job boards, agregadores, Google Jobs ou LinkedIn Jobs (inclui feeds e dados estruturados `JobPosting`). Os termos completos da API (`himalayas.app/terms#api`) não foram lidos: a confirmar | Link visível para o Himalayas; `applicationLink` intacto; não repassar a agregadores nem ao Google. Registro: rótulo "Himalayas", sem dofollow | Não (incremental por cursor/guid) | 60 req/min na API gratuita; máximo de 25 páginas (500 vagas) por coleta; intervalo mínimo de 60 min |
+| Greenhouse | `https://boards-api.greenhouse.io/v1/boards/<slug>/jobs?content=true` | A confirmar. [Docs da Job Board API](https://docs.greenhouse.io/job-board.html), checada em 2026-11-23: endpoints de leitura sem autenticação e sujeitos a rate limit sem valor publicado; a página não traz termos de uso, atribuição nem regras de reuso | Link para a vaga (decisão da spec, não exigência confirmada). Registro: rótulo "Greenhouse", sem dofollow | Sim | 19 boards curados (abaixo); até 3 requisições simultâneas; board fora do ar é ignorado, e só falha se todos falharem |
+| Ashby | `https://api.ashbyhq.com/posting-api/job-board/<slug>?includeCompensation=true` | A confirmar. [Docs da API pública](https://developers.ashbyhq.com/docs/public-job-posting-api), checada em 2026-11-23: a página não traz termos, atribuição nem rate limit | Link para a vaga (decisão da spec, não exigência confirmada). Registro: rótulo "Ashby", sem dofollow | Sim | 12 boards curados (abaixo); até 3 requisições simultâneas |
+| Lever | `https://api.lever.co/v0/postings/<slug>?mode=json` | A confirmar. [Postings API](https://github.com/lever/postings-api), checada em 2026-11-23: vagas `published` são públicas; a página não traz termos de uso nem atribuição (o limite de 2 POST/s vale só para candidaturas) | Link para a vaga (decisão da spec, não exigência confirmada). Registro: rótulo "Lever", sem dofollow | Sim | 5 boards curados (abaixo); até 3 requisições simultâneas |
+| Jobicy | `https://jobicy.com/api/v2/remote-jobs?count=50&industry=engineering&geo=brazil` e `geo=latam` | [Docs da API/feed](https://jobicy.com/jobs-rss-feed), checada em 2026-11-23: uso em produtos próprios sem pedir permissão, inclusive comercial; armazenar e cachear é permitido se vagas fechadas ou expiradas forem marcadas como indisponíveis; o Jobicy deve ser creditado como fonte original, sem apagar a atribuição. Os Termos de Serviço (`jobicy.com/terms-and-conditions`) não foram lidos: a confirmar | Crédito com link para o Jobicy; candidatura pelo link do Jobicy. Registro: rótulo "Jobicy", sem dofollow | Não (incremental, janela de 7 dias) | 50 vagas por consulta (2 consultas, ids duplicados descartados); a doc pede no máximo 1 requisição/s por IP e cache, e o projeto coleta no máximo 1 vez por hora (`minIntervalMinutes: 60`). Atenção: a doc atual cita `GET /api/jobs`, enquanto o conector usa `/api/v2/remote-jobs`; verificar se o caminho ainda vale |
+
+Os hosts de Ashby e Lever estão em `ASHBY_HOST` e `LEVER_HOST` nos respectivos conectores (`allowedHosts`); os demais são `himalayas.app`, `boards-api.greenhouse.io` e `jobicy.com`.
+
+### Boards curados
+
+Nada além destas listas é consultado. Mudar a lista exige editar o conector.
+
+- **Greenhouse:** stone, c6bank, btgpactual, xpinc, inter, quintoandar, gympass, clara, ebanx, vtex, jusbrasil, wildlifestudios, getnet, gitlab, canonical, twilio, datadog, stripe, databricks.
+- **Ashby:** nubank, supabase, openai, posthog, linear, sanity, replit, vanta, plaid, ramp, notion, cohere.
+- **Lever:** ciandt, neon, swile, toptal, spotify.
+
+## Fontes planejadas
+
+Planejadas para a Fase 4: GitHub issues, We Work Remotely (RSS), RemoteOK, Hacker News "Who is hiring" e SmartRecruiters. Fora da lista por termos de uso: Gupy, Coodesh e Remotive.
+
+## Operação
+
+Passos manuais para quem mantém o projeto (não automatizados):
+
+0. **Confirmar os termos (RN-09):** uma fonte só fica em dia quando link e data de checagem dos termos estão preenchidos na tabela acima.
+   - Confirmar os termos de Greenhouse, Ashby e Lever e preencher o link e a data. As páginas de API checadas não trazem termos nem atribuição.
+   - Confirmar os termos de Himalayas (`https://himalayas.app/terms#api`) e de Jobicy (`https://jobicy.com/terms-and-conditions`) e registrar a data da leitura.
+
+1. **Provisionar na Vercel:**
+   - Criar o banco Neon pelo Marketplace da Vercel (região `gru1`/`sa-east-1`, máximo de 0,25 CU).
+   - Configurar as quatro variáveis aprovadas: `DATABASE_URL`, `CRON_SECRET`, `GITHUB_TOKEN` e `HIMALAYAS_API_KEY`.
+   - Criar a regra do WAF: caminho `/api/*`, 120 requisições a cada 60 s por IP, resposta 429.
+2. **Deploy e primeira coleta:**
+   - Fazer o deploy (em produção, o build roda `pnpm db:migrate`).
+   - Disparar a coleta manualmente. A rota `/api/cron/collect` aceita GET e POST; o agendador da Vercel usa GET, então prefira:
+     `curl -H "Authorization: Bearer $CRON_SECRET" https://<app>/api/cron/collect`
+   - Conferir a tabela `source_runs` (uma linha por fonte, sem erros).
+3. **Portão da Fase 1:** 1.000 ou mais vagas ativas depois de 24 h; atraso p90 da coleta de até 2 h; `/api/jobs` com p95 de até 500 ms sem cache (medido com `autocannon`).

@@ -1,0 +1,16 @@
+# Banco Postgres descartável para os testes de integração.
+# URL fixa: postgres://postgres:postgres@127.0.0.1:54329/jobfind_test
+services:
+  postgres-test:
+    image: postgres:17
+    ports:
+      - "54329:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobfind_test
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jobfind_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20

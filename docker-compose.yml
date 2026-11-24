@@ -1,0 +1,86 @@
+# Ambiente local completo: docker compose up --build
+# App em http://localhost:3000. Variáveis em .env.local (veja .env.example).
+#
+# - postgres:  banco Postgres 17 (porta 54320 no host, para inspeção com psql).
+# - neon-proxy: proxy que imita o Neon (HTTP /sql e WebSocket /v2) na porta 4444.
+#               O app usa o driver do Neon; a DATABASE_URL com host db.localtest.me
+#               cai aqui, tanto de dentro do Docker quanto do host (pnpm dev).
+# - migrate:   aplica as migrations do Drizzle e sai.
+# - app:       Next.js em modo produção (next build + next start).
+# - cron:      imita o cron da Vercel: chama /api/cron/collect ao subir e a cada hora.
+services:
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: jobfind
+    ports:
+      - "54320:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d jobfind"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  neon-proxy:
+    image: ghcr.io/timowilhelm/local-neon-http-proxy:main
+    environment:
+      PG_CONNECTION_STRING: postgres://postgres:postgres@postgres:5432/jobfind
+    ports:
+      - "4444:4444"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - db.localtest.me
+
+  migrate:
+    build: .
+    image: job-find-app
+    command: ["pnpm", "db:migrate"]
+    environment:
+      # Migrations falam direto com o Postgres (driver pg), sem passar pelo proxy.
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/jobfind
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    image: job-find-app
+    env_file: .env.local
+    ports:
+      - "3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      neon-proxy:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  cron:
+    image: curlimages/curl:8.11.1
+    env_file: .env.local
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        while true; do
+          echo "[cron] disparando coleta"
+          curl -sS -m 330 -H "Authorization: Bearer $$CRON_SECRET" http://app:3000/api/cron/collect
+          echo
+          sleep 3600
+        done
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  pgdata:

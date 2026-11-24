@@ -38,7 +38,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
-        <VercelAnalytics />
+        {/* Só em builds na Vercel (VERCEL=1, variável de sistema dela): fora dela /_vercel/insights não
+            existe e o script vira erro de console no `next dev`, no `next start` local e nos e2e. */}
+        {process.env.VERCEL === "1" && <VercelAnalytics />}
       </body>
     </html>
   );

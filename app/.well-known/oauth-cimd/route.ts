@@ -4,7 +4,7 @@ import { cimdOrigin } from "@/lib/server/cimd";
 export function GET(req: Request): Response {
   const origin = cimdOrigin(req);
   if (!origin) {
-    return Response.json({ error: "origem inválida" }, { status: 400 });
+    return Response.json({ error: "origem inválida" }, { status: 400, headers: { "Cache-Control": "no-store" } });
   }
   return Response.json(
     {

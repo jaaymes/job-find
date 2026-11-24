@@ -1,7 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { WWR_CATEGORY_FEEDS, WWR_HOST, parseRssItems, wwr } from "@/lib/server/sources/wwr";
+import { WWR_CATEGORY_FEEDS, WWR_HOST, wwr } from "@/lib/server/sources/wwr";
+import { parseRssItems } from "@/lib/server/sources/rss";
 import { UNKNOWN_COMPANY } from "@/lib/server/sources/types";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";

@@ -1,7 +1,7 @@
 import "server-only";
 import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
-import { decodeEntities } from "@/lib/server/sources/text";
+import { parseRssItems } from "@/lib/server/sources/rss";
 import { countryCodeFromName } from "@/lib/server/sources/location";
 import { UNKNOWN_COMPANY, type Connector, type ConnectorContext, type NormalizedJob } from "@/lib/server/sources/types";
 
@@ -10,8 +10,6 @@ export const WWR_HOST = "weworkremotely.com";
 
 /** Feeds RSS das categorias tech (cada um traz as vagas mais recentes da categoria). */
 export const WWR_CATEGORY_FEEDS = ["remote-programming-jobs.rss", "remote-devops-sysadmin-jobs.rss"] as const;
-
-const FIELDS = ["title", "region", "category", "description", "pubDate", "guid", "link"] as const;
 
 export const itemSchema = z.object({
   title: z.string().trim().min(1),
@@ -22,30 +20,6 @@ export const itemSchema = z.object({
   pubDate: z.string().nullish(),
   guid: z.string().nullish(),
 });
-
-// --- RSS (sem dependência de XML: o feed é plano, um nível de campos por <item>) -------------------
-
-const CDATA = /^\s*<!\[CDATA\[([\s\S]*?)\]\]>\s*$/;
-
-/** Valor de texto de um campo: CDATA vale como está; fora dele, as entidades XML são decodificadas. */
-function fieldValue(inner: string): string {
-  const cdata = CDATA.exec(inner);
-  return (cdata ? cdata[1]! : decodeEntities(inner)).trim();
-}
-
-/** Extrai os campos conhecidos de cada `<item>` do RSS; sem itens (ou HTML no lugar do feed), devolve `[]`. */
-export function parseRssItems(xml: string): Record<string, string>[] {
-  const items: Record<string, string>[] = [];
-  for (const block of xml.matchAll(/<item>([\s\S]*?)<\/item>/g)) {
-    const item: Record<string, string> = {};
-    for (const field of FIELDS) {
-      const m = new RegExp(`<${field}>([\\s\\S]*?)</${field}>`).exec(block[1]!);
-      if (m) item[field] = fieldValue(m[1]!);
-    }
-    items.push(item);
-  }
-  return items;
-}
 
 // --- coleta -----------------------------------------------------------------------------------
 

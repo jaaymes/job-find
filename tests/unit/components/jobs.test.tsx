@@ -40,6 +40,7 @@ describe("format", () => {
   it("rótulos das novas fontes", () => {
     expect(SOURCE_LABELS.fourdayweek).toBe("4 Day Week");
     expect(SOURCE_LABELS.getonboard).toBe("Get on Board");
+    expect(SOURCE_LABELS.arbeitnow).toBe("Arbeitnow");
   });
   it("formatAge", () => {
     expect(formatAge("2026-11-23T14:37:00Z", now)).toBe("há 23 min");

@@ -138,6 +138,8 @@ Entram depois de checar os termos (RN-09), cada uma com esforço P:
 - Arbeitnow, só as remotas;
 - Landing.jobs, só as remotas.
 
+**Resultado (2026-11-24):** entrou só a Arbeitnow (termos §11 da API, link de volta). NoDesk (termos §7 e §19: uso comercial e scrape/crawl), Working Nomads (termos 3.1 d: produto concorrente) e Jobspresso (termos: só uso pessoal e não comercial) ficaram fora por termos; Landing.jobs ficou fora pelo `robots.txt` (`Disallow: /api/`). Detalhes em `docs/fontes.md`.
+
 Somam menos de 150 vagas e aumentam a diversidade, não o volume. Getro (job boards de VCs como Kaszek e monashees) vira o **spike S-3**, porque pode ser a melhor fonte de startups BR.
 
 Ficam para quando houver lista de empresas vinda do D-03 os ATS europeus Recruitee, Personio, Teamtailor, Breezy e Rippling. Eles usam **subdomínio por cliente**, o que conflita com o RNF-A2. Se entrarem, a allowlist passa a ser a lista curada de hosts completos gerada no código, nunca um curinga.
@@ -200,7 +202,7 @@ O caminho crítico é D-01 → D-03. As tarefas 4dayweek, Get on Board, GitHub e
 
 - S-1: o 4dayweek ordena por data de publicação? Se não, o modo vira snapshot por consulta Brasil e a consulta remota fica com teto fixo.
 - ~~S-2: termos e atribuição da Adzuna, e o volume tech BR real.~~ Cancelado em 2026-11-24 (Adzuna é paga).
-- S-3: o Getro tem API ou feed público por rede?
+- ~~S-3: o Getro tem API ou feed público por rede?~~ Resolvido em 2026-11-24: **não viável** (ver S-3 em [docs/tech/spikes.md](spikes.md)).
 - Ação do produto: mandar e-mail pedindo autorização para Remotar e Programathor (já prevista na spec base, pergunta 1).
 
 ## Histórico

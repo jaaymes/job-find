@@ -13,6 +13,7 @@ import { safeUrl } from "@/lib/shared/url";
 import type { ConnectorContext, SafeFetch, SafeResponse } from "@/lib/server/sources/types";
 import type { SourceId } from "@/lib/shared/types/job";
 import type { z } from "@/lib/shared/zod";
+import { jobSchema as arbeitnowJob } from "@/lib/server/sources/arbeitnow";
 import { ASHBY_BOARDS, jobSchema as ashbyJob } from "@/lib/server/sources/ashby";
 import { jobSchema as fourdayweekJob } from "@/lib/server/sources/fourdayweek";
 import { jobSchema as getonboardJob } from "@/lib/server/sources/getonboard";
@@ -63,6 +64,8 @@ const BOUNDS: Partial<Record<SourceId, Bound>> = {
       return url.toString();
     },
   },
+  // Só a primeira página (300 vagas, cerca de 2 MB) vai à rede.
+  arbeitnow: { isBeyondFirst: (u) => new URL(u).searchParams.get("page") !== "1", emptyBody: '{"data":[],"links":{"next":null}}' },
   wwr: { isBeyondFirst: (u) => !u.endsWith("/remote-programming-jobs.rss"), emptyBody: "" },
 };
 
@@ -200,6 +203,11 @@ describe("contrato das fontes (APIs reais)", () => {
   it("wwr: RSS real pelo fetch seguro bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {
     const run = await expectSource("wwr", wwrItem);
     expect(run.partials.filter((p) => !/remote-devops/.test(p.label)), "wwr: feed principal falhou").toEqual([]);
+  });
+
+  it("arbeitnow: payload real só traz vagas remotas e bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {
+    const run = await expectSource("arbeitnow", arbeitnowJob);
+    expect(run.items.every((i) => (i as { remote?: unknown }).remote === true), "arbeitnow: veio vaga não remota").toBe(true);
   });
 
   it("github: só issues abertas, sem pull requests, e payload bate com o schema", { timeout: TEST_TIMEOUT_MS }, async () => {

@@ -77,6 +77,10 @@ describe("parseJobsQuery", () => {
     expect(parse("acceptsBrazil=talvez").ok).toBe(false);
   });
 
+  it("aceita o id de fonte arbeitnow", () => {
+    expect(jobsQuerySchema.parse({ source: ["arbeitnow"] }).source).toEqual(["arbeitnow"]);
+  });
+
   it("aceita os ids de fonte fourdayweek e getonboard", () => {
     expect(() =>
       jobsQuerySchema.parse({ source: ["fourdayweek", "getonboard"] }),

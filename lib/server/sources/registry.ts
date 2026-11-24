@@ -12,10 +12,12 @@ import { jobicy } from "@/lib/server/sources/jobicy";
 import { lever } from "@/lib/server/sources/lever";
 import { remoteok } from "@/lib/server/sources/remoteok";
 import { smartrecruiters } from "@/lib/server/sources/smartrecruiters";
+import { arbeitnow } from "@/lib/server/sources/arbeitnow";
 import { wwr } from "@/lib/server/sources/wwr";
 
 /** Preenchido pelas Tarefas 11–14 e 38; começa vazio. */
 export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
+  arbeitnow,
   ashby,
   fourdayweek,
   getonboard,

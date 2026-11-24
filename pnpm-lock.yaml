@@ -260,8 +260,8 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       undici:
-        specifier: 7.30.2
-        version: 7.30.2
+        specifier: 8.13.1
+        version: 8.13.1
       unpdf:
         specifier: ^2.2.1
         version: 2.2.1

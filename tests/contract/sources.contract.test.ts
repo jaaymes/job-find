@@ -1,6 +1,6 @@
 /**
  * Testes de contrato contra as APIs reais das fontes (Tarefa 40). Ficam fora dos projetos `unit` e
- * `integration` e rodam por `pnpm test:contract` (workflow diário `.github/workflows/contracts.yml`).
+ * `integration` (config própria, vitest.contract.config.ts) e rodam por `pnpm test:contract` (workflow diário `.github/workflows/contracts.yml`).
  *
  * Cada fonte recebe poucas requisições reais, pelo mesmo `createSafeFetch` do runner (allowlist de hosts
  * do SSRF incluída), e cada item cru é validado com o mesmo schema Zod do conector. Os tokens são

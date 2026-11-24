@@ -9,7 +9,7 @@ import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/so
 export const REMOTEOK_HOST = "remoteok.com";
 const API_URL = `https://${REMOTEOK_HOST}/api`;
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   id: z.union([z.string().min(1), z.number()]),
   /** Página da vaga no RemoteOK (a atribuição exige o link para ela). */
   url: z.string().min(1),

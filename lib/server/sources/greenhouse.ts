@@ -20,7 +20,7 @@ export const GREENHOUSE_BOARDS = [
 
 const boardSchema = z.object({ jobs: z.array(z.unknown()) });
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   /** Slug do board, acrescentado pelo conector ao devolver cada vaga. */
   board: z.string().min(1),
   id: z.number(),

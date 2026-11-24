@@ -14,7 +14,7 @@ const searchSchema = z.object({
 });
 const threadSchema = z.object({ children: z.array(z.unknown()) });
 
-const commentSchema = z.object({
+export const commentSchema = z.object({
   id: z.union([z.string().min(1), z.number()]),
   text: z.string().min(1),
   created_at: z.string().nullish(),

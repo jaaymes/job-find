@@ -42,6 +42,17 @@ export default defineConfig({
           fileParallelism: false,
         },
       },
+      {
+        // Contratos contra as APIs reais (rede): fora de `pnpm test` e `pnpm test:integration`
+        // (que filtram por projeto); rodam por `pnpm test:contract` e pelo workflow diário.
+        resolve: { alias },
+        test: {
+          name: "contract",
+          include: ["tests/contract/**/*.test.ts"],
+          environment: "node",
+          testTimeout: 120_000,
+        },
+      },
     ],
   },
 });

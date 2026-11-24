@@ -19,7 +19,7 @@ const PAGE_SIZE = 100;
 /** Teto de páginas por repositório: 500 issues abertas é bem mais que o volume real (dezenas). */
 const MAX_PAGES = 5;
 
-const issueSchema = z.object({
+export const issueSchema = z.object({
   /** Repositório `dono/nome`, acrescentado pelo conector ao devolver cada issue. */
   repo: z.string().min(1),
   number: z.number().int(),

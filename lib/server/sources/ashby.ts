@@ -24,7 +24,7 @@ const componentSchema = z.object({
   maxValue: z.number().nullish(),
 });
 
-const jobSchema = z.object({
+export const jobSchema = z.object({
   /** Slug do board, acrescentado pelo conector ao devolver cada vaga. */
   board: z.string().min(1),
   id: z.string().min(1),

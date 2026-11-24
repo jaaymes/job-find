@@ -13,7 +13,7 @@ export const WWR_CATEGORY_FEEDS = ["remote-programming-jobs.rss", "remote-devops
 
 const FIELDS = ["title", "region", "category", "description", "pubDate", "guid", "link"] as const;
 
-const itemSchema = z.object({
+export const itemSchema = z.object({
   title: z.string().trim().min(1),
   link: z.string().min(1),
   region: z.string().nullish(),

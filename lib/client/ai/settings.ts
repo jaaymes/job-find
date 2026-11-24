@@ -27,7 +27,12 @@ export const AiSettings = z
         key: z.string().optional(),
         baseURL: z.string().optional(),
         addedAt: z.string(),
-        source: z.enum(["pkce", "paste"]),
+        /** Legado: `"pkce"` (login do OpenRouter antes do OAuth genérico) é lido como `"oauth"`. */
+        source: z.preprocess((v) => (v === "pkce" ? "oauth" : v), z.enum(["oauth", "paste"])),
+        /** OAuth: renova a chave quando o provedor emite token com validade (ex.: Hugging Face). */
+        refreshToken: z.string().optional(),
+        /** OAuth: validade da chave em ISO 8601, quando o provedor informa. */
+        expiresAt: z.string().optional(),
         privacyAccepted: z.boolean().optional(),
         /** OpenRouter: aceitou o aviso dos modelos gratuitos (podem guardar, treinar com ou publicar o texto). */
         freeConsent: z.boolean().optional(),

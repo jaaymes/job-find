@@ -27,7 +27,7 @@ export function extractFailure(e: ExtractError): string {
 export function aiFailure(e: AiError): string {
   return sharedAiFailure(e, {
     noProvider: "Conecte uma IA em Configurações para ler o currículo.",
-    truncated: "A resposta da IA foi cortada. Tente de novo ou use um currículo mais curto.",
+    truncated: "A resposta da IA foi cortada. Tente de novo ou escolha outro modelo em Configurações.",
     fallback: "Não foi possível estruturar o currículo.",
   });
 }

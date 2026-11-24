@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "@/lib/shared/zod";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
+import { LEVER_BOARDS } from "@/lib/server/sources/boards/lever";
 import { countryNameFromCode, parseLocation } from "@/lib/server/sources/location";
 import { safeUrl } from "@/lib/shared/url";
 import type { WorkMode } from "@/lib/shared/types/job";
@@ -9,8 +10,8 @@ import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/so
 /** Host fixo da API (D-07): o fetch seguro só aceita URLs base definidas no código. */
 export const LEVER_HOST = "api.lever.co";
 
-/** Boards curados da D-07 (nada além desta lista é consultado). */
-export const LEVER_BOARDS = ["ciandt", "neon", "swile", "toptal", "spotify"] as const;
+/** Boards curados (D-03): a lista fica em `boards/lever.ts`; nada além dela é consultado. */
+export { LEVER_BOARDS };
 
 const boardSchema = z.array(z.unknown());
 

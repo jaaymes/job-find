@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
+import { THEME_SCRIPT } from "@/lib/shared/theme-script";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -22,7 +23,18 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}>
+    // suppressHydrationWarning: o THEME_SCRIPT põe a classe `dark` e o color-scheme no <html> antes da hidratação.
+    <html
+      lang="pt-BR"
+      className={`${inter.variable} ${spaceGrotesk.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        {/* Aplica o tema antes da pintura (sem flash). O texto vai exatamente como exportado: nas rotas
+            (local) ele é liberado pelo hash THEME_SCRIPT_HASH da CSP; na pública, por 'unsafe-inline'.
+            Sem nonce de propósito: ler headers() aqui tornaria todas as páginas dinâmicas (D-15). */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <Providers>{children}</Providers>
       </body>

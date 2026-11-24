@@ -181,7 +181,7 @@ describe("aiFailure", () => {
   it("data_policy manda trocar de modelo ou desmarcar a opção do OpenRouter, sem falar em aviso", () => {
     const text = aiFailure(new AiError("data_policy"), ctx);
     expect(text).toBe(
-      "Nenhum provedor do OpenRouter atende este modelo sem guardar dados. Escolha outro modelo ou desmarque 'Pedir ao OpenRouter que use só provedores que não guardam meus dados' em Configurações.",
+      "Nenhum provedor do OpenRouter atende este modelo com a sua política de dados. Em modelos gratuitos, libere-os em openrouter.ai/settings/privacy. Nos pagos, escolha outro modelo ou desmarque 'Pedir ao OpenRouter que use só provedores que não guardam meus dados' em Configurações.",
     );
     expect(text).not.toMatch(/aviso/i);
   });

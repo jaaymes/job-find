@@ -1,0 +1,147 @@
+{
+ "data": [
+  {
+   "id": "product-designer-ai-first-mercado-brasil-portugues-witi-santiago-montevideo-sao-paulo",
+   "type": "job",
+   "attributes": {
+    "title": "Product Designer AI First – Mercado Brasil (Portugués)",
+    "description_headline": "Requisitos excluyentes",
+    "description": "<ul><li>Al menos 3 años como Product Designer en productos digitales.</li><li>Experiencia en product discovery e investigación cualitativa y cuantitativa.</li><li>Uso diario de IA en discovery, síntesis, prototipado o documentación, con ejemplos concretos.</li><li>Figma avanzado y experiencia con sistemas de diseño.</li><li>Trabajo en metodologías ágiles.</li><li>Carrera de al menos 4 años en Diseño, Ingeniería, Publicidad, Ciencias Sociales o afín.</li><li>Portugués (oral y escrito).</li><li>Residir en Montevideo (Uruguay), Santiago (Chile) o São Paulo (Brasil), con disponibilidad para modali",
+    "projects": "<p>WiTI conecta talento tecnológico con proyectos de alto impacto en Latinoamérica, como partner estratégico de grandes organizaciones, con foco en calidad, escalabilidad y resultados (desde 2017 en Chile, Uruguay y Colombia).</p><p>Buscamos un/a Product Designer para el equipo de experiencia digital de uno de los principales grupos de retail de la región, con productos de e-commerce web y app usados por millones de personas. Esta posición es parte del equipo que atiende el mercado de Brasil, por lo que el portugués es clave. Es una posición de reemplazo por 6 meses. Serás referente de experie",
+    "functions_headline": "Funciones del cargo",
+    "functions": "<ul><li>Hacer product discovery, benchmarking e investigación cualitativa y cuantitativa, y convertir los hallazgos en decisiones de diseño.</li><li>Diseñar la experiencia de los productos para el mercado de Brasil, trabajando con equipos y usuarios en portugués.</li><li>Prototipar y validar ideas con herramientas asistidas por IA (Figma o código) y testearlas con usuarios.</li><li>Operar el sistema de diseño y proponer componentes, tokens y patrones, cuidando la accesibilidad (WCAG).</li><li>Definir y analizar métricas de experiencia y colaborar en experimentos A/B.</li><li>Trabajar con Produ",
+    "benefits_headline": "Beneficios",
+    "benefits": "<ul><li>Plan de carrera personalizado.</li><li>Certificaciones.</li><li>Cursos de idiomas.</li><li>Modalidad híbrida en Montevideo, Santiago o São Paulo.</li><li>Posición de reemplazo por 6 meses.</li></ul>",
+    "desirable_headline": "Requisitos deseables",
+    "desirable": "<ul><li>Experiencia en B2C o e-commerce.</li><li>Inglés avanzado.</li><li>5 años o más de experiencia, con proyectos liderados.</li><li>Skills, automatizaciones o flujos con IA propios.</li><li>Prototipado con herramientas de construcción asistida por IA (Cursor, Claude Code u otras).</li><li>Métricas de producto (Analytics).</li><li>Diplomado o certificación en diseño de producto o Service Design.</li></ul>",
+    "remote": false,
+    "remote_modality": "hybrid",
+    "remote_zone": null,
+    "countries": [
+     "Chile",
+     "Brasil",
+     "Uruguay"
+    ],
+    "lang": "es",
+    "category_name": "Design / UX",
+    "perks": [
+     "remote_partial",
+     "digital_library",
+     "computer_provided",
+     "personal_coaching",
+     "informal_dresscode"
+    ],
+    "min_salary": null,
+    "max_salary": null,
+    "published_at": 1794494701,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 13,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": []
+    },
+    "location_cities": {
+     "data": [
+      {
+       "id": 1,
+       "type": "location_city"
+      },
+      {
+       "id": 272,
+       "type": "location_city"
+      },
+      {
+       "id": 243,
+       "type": "location_city"
+      }
+     ]
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 3,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "qualitative-research",
+       "type": "tag",
+       "attributes": {
+        "name": "Qualitative Research",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "quantitative-research",
+       "type": "tag",
+       "attributes": {
+        "name": "Quantitative Research",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "figma",
+       "type": "tag",
+       "attributes": {
+        "name": "Figma",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "portuguese",
+       "type": "tag",
+       "attributes": {
+        "name": "Portuguese",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "witi",
+      "type": "company",
+      "attributes": {
+       "name": "WiTi",
+       "description": "WiTi, Tecnología para innovar.",
+       "long_description": "<div>Nos dedicamos al desarrollo de software y soluciones tecnológicas. Nuestra ",
+       "projects": "<p>En WiTi conectamos al mejor talento tecnológico con proyectos de alto impacto",
+       "benefits": "<p>En WiTi, ofrecemos un entorno de trabajo 100% remoto, lo que permite una gran",
+       "web": "http://www.witi.cl",
+       "twitter": "",
+       "github": "",
+       "facebook": "witi.cl",
+       "angellist": "",
+       "country": "CL",
+       "response_time_in_days": {
+        "min": 6,
+        "max": 16
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/4881/Logo_WiTI_SII.png"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/product-designer-ai-first-mercado-brasil-portugues-witi-santiago-montevideo-sao-paulo"
+   }
+  }
+ ],
+ "meta": {
+  "page": 1,
+  "per_page": 100,
+  "total_pages": 1
+ }
+}

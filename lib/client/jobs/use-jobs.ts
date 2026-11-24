@@ -54,6 +54,8 @@ const urlParsers = {
       "remoteok",
       "hn",
       "smartrecruiters",
+      "fourdayweek",
+      "getonboard",
     ] as const),
     ",",
   ),

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseJobsQuery } from "@/lib/shared/schemas/jobs-query";
+import { jobsQuerySchema, parseJobsQuery } from "@/lib/shared/schemas/jobs-query";
 
 const parse = (qs: string) => parseJobsQuery(new URLSearchParams(qs));
 
@@ -75,5 +75,11 @@ describe("parseJobsQuery", () => {
     expect(t.ok && t.value.acceptsBrazil).toBe(true);
     expect(f.ok && f.value.acceptsBrazil).toBe(false);
     expect(parse("acceptsBrazil=talvez").ok).toBe(false);
+  });
+
+  it("aceita os ids de fonte fourdayweek e getonboard", () => {
+    expect(() =>
+      jobsQuerySchema.parse({ source: ["fourdayweek", "getonboard"] }),
+    ).not.toThrow();
   });
 });

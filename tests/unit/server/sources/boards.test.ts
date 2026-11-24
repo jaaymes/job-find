@@ -49,4 +49,85 @@ describe("fetchBoardsPooled", () => {
       collect(fetchBoardsPooled(ctx, "Teste", BOARDS, async () => { throw new Error("x"); })),
     ).rejects.toThrow("Teste: todos os boards falharam");
   });
+
+  it("começa no board do cursor e dá a volta", async () => {
+    const ctx = fakeCtx({ serve: () => [], cursor: "5" });
+    const called: string[] = [];
+    await collect(
+      fetchBoardsPooled(ctx, "Teste", BOARDS, async (b) => {
+        called.push(b);
+        return [b];
+      }),
+    );
+    expect(called).toEqual(["f", "g", "a", "b", "c", "d", "e"]);
+    expect(ctx.cursors).toEqual(["5"]);
+  });
+
+  it("para de agendar perto do prazo e grava onde parou", async () => {
+    const ctx = fakeCtx({ serve: () => [], deadlineAt: Date.now() + 4_000 });
+    const called: string[] = [];
+    await collect(
+      fetchBoardsPooled(ctx, "Teste", BOARDS, async (b) => {
+        called.push(b);
+        return [b];
+      }),
+    );
+    expect(called).toEqual(["a"]);
+    expect(ctx.cursors).toEqual(["1"]);
+  });
+
+  it.each(["abc", "-1", "99"])("cursor inválido %s recomeça do zero", async (cursor) => {
+    const ctx = fakeCtx({ serve: () => [], cursor });
+    const called: string[] = [];
+    await collect(
+      fetchBoardsPooled(ctx, "Teste", BOARDS, async (b) => {
+        called.push(b);
+        return [];
+      }),
+    );
+    expect(called[0]).toBe("a");
+  });
+
+  it("board com lista vazia ou com falha fica fora do escopo", async () => {
+    const ctx = fakeCtx({ serve: () => [] });
+    await collect(
+      fetchBoardsPooled(ctx, "Teste", ["a", "b", "c"], async (b) => {
+        if (b === "a") return [1];
+        if (b === "b") return [];
+        throw new Error("x");
+      }),
+    );
+    expect(ctx.scopes.flat()).toEqual(["a:"]);
+  });
+
+  it("usa scopePrefix customizado", async () => {
+    const ctx = fakeCtx({ serve: () => [] });
+    await collect(
+      fetchBoardsPooled(ctx, "Teste", ["o/r"], async () => [1], { scopePrefix: (r) => `${r}#` }),
+    );
+    expect(ctx.scopes.flat()).toEqual(["o/r#"]);
+  });
+
+  it("prazo vencido ainda tenta 1 board e não lança 'todos falharam'", async () => {
+    const ctx = fakeCtx({ serve: () => [], deadlineAt: Date.now() - 1 });
+    let calls = 0;
+    await expect(
+      collect(
+        fetchBoardsPooled(ctx, "Teste", BOARDS, async () => {
+          calls++;
+          return [];
+        }),
+      ),
+    ).resolves.toEqual([]);
+    expect(calls).toBe(1);
+    expect(ctx.cursors).toEqual(["1"]);
+  });
+
+  it("janela inteira falha: lança, mas o cursor avança para o board seguinte", async () => {
+    const ctx = fakeCtx({ serve: () => [], cursor: "2", deadlineAt: Date.now() - 1 });
+    await expect(
+      collect(fetchBoardsPooled(ctx, "Teste", BOARDS, async () => { throw new Error("x"); })),
+    ).rejects.toThrow("Teste: todos os boards falharam");
+    expect(ctx.cursors).toEqual(["3"]);
+  });
 });

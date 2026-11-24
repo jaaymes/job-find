@@ -4,6 +4,8 @@ export type FakeCtxOptions = {
   /** Resolve a URL pedida para o corpo JSON (ou texto) servido; `undefined` vira 404. */
   serve: (url: URL) => unknown;
   cursor?: string | null;
+  /** Prazo da fonte em epoch ms; o padrão é 60 s à frente. */
+  deadlineAt?: number;
 };
 
 export type FakeCtx = ConnectorContext & {
@@ -11,6 +13,8 @@ export type FakeCtx = ConnectorContext & {
   cursors: (string | null)[];
   /** Falhas parciais reportadas pelo conector via `reportPartial`. */
   partials: { label: string; error: unknown }[];
+  /** Prefixos de escopo reportados via `reportScope`, um array por chamada. */
+  scopes: string[][];
 };
 
 function response(url: string, status: number, body: unknown): SafeResponse {
@@ -29,6 +33,7 @@ export function fakeCtx(opts: FakeCtxOptions): FakeCtx {
   const requests: FakeCtx["requests"] = [];
   const cursors: FakeCtx["cursors"] = [];
   const partials: FakeCtx["partials"] = [];
+  const scopes: FakeCtx["scopes"] = [];
   const fetcher: SafeFetch = async (url, init) => {
     requests.push({ url, headers: init?.headers ?? {} });
     const body = opts.serve(new URL(url));
@@ -44,11 +49,16 @@ export function fakeCtx(opts: FakeCtxOptions): FakeCtx {
     reportPartial: (label, error) => {
       partials.push({ label, error });
     },
+    reportScope: (prefixes) => {
+      scopes.push([...prefixes]);
+    },
+    deadlineAt: opts.deadlineAt ?? Date.now() + 60_000,
     signal: new AbortController().signal,
     now: new Date("2026-11-23T12:00:00Z"),
     requests,
     cursors,
     partials,
+    scopes,
   };
 }
 

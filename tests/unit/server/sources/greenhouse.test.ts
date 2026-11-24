@@ -32,11 +32,16 @@ describe("conector Greenhouse", () => {
     expect(greenhouse.attribution.dofollow).toBe(false);
     expect(greenhouse.minIntervalMinutes).toBe(60);
     expect(greenhouse.allowedHosts).toEqual([GREENHOUSE_HOST]);
+    // Boards grandes (databricks ~9,7 MB com content=true) passam do padrão de 10 MB do fetch seguro.
+    expect(greenhouse.maxResponseBytes).toBe(25 * 1024 * 1024);
     expect(CONNECTORS.greenhouse).toBe(greenhouse);
-    expect(GREENHOUSE_BOARDS).toEqual([
+    // A lista cresceu na D-03 (descoberta de boards): os curados originais continuam nela, sem duplicatas.
+    expect(new Set(GREENHOUSE_BOARDS).size).toBe(GREENHOUSE_BOARDS.length);
+    expect(GREENHOUSE_BOARDS.length).toBeGreaterThanOrEqual(50);
+    expect(GREENHOUSE_BOARDS).toEqual(expect.arrayContaining([
       "stone", "c6bank", "btgpactual", "xpinc", "inter", "quintoandar", "gympass", "clara", "ebanx", "vtex",
       "jusbrasil", "wildlifestudios", "getnet", "gitlab", "canonical", "twilio", "datadog", "stripe", "databricks",
-    ]);
+    ]));
   });
 
   it("coleta e normaliza a fixture (teste comum)", async () => {
@@ -53,7 +58,7 @@ describe("conector Greenhouse", () => {
     expect(greenhouse.normalize({ lixo: true })).toBeNull();
   });
 
-  it("consulta cada slug com content=true e concorrência de no máximo 3", async () => {
+  it("consulta cada slug com content=true e concorrência de no máximo 5", async () => {
     let active = 0;
     let peak = 0;
     const ctx = fakeCtx({ serve });
@@ -70,7 +75,7 @@ describe("conector Greenhouse", () => {
     };
     await collect(greenhouse.fetch(ctx));
     expect(ctx.requests.map((r) => boardSlug(new URL(r.url))).sort()).toEqual([...GREENHOUSE_BOARDS].sort());
-    expect(peak).toBe(3);
+    expect(peak).toBe(5);
   });
 
   it("um slug com 404 não derruba os demais", async () => {

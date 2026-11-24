@@ -1,11 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useId } from "react";
+import { useId, useMemo } from "react";
 import { isConnected } from "@/lib/client/ai/model";
-import { PROVIDER_IDS, PROVIDERS, type AiTask, type ModelInfo, type ProviderId } from "@/lib/client/ai/providers";
+import { isFreeModel, PROVIDER_IDS, PROVIDERS, type AiTask, type ModelInfo, type ProviderId } from "@/lib/client/ai/providers";
 import type { AiSettings } from "@/lib/client/ai/settings";
-import { estimateCost } from "./cost";
+import { Combobox, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList, ComboboxPopup, ComboboxTrigger } from "@/components/ui/combobox";
+import { estimateCost, priceLabel, sortModelsByCost } from "./cost";
 
 export const TASK_COPY: Record<AiTask, { name: string; desc: string }> = {
   extract: { name: "Ler currículo", desc: "Transforma seu PDF em perfil estruturado." },
@@ -17,6 +18,16 @@ const SELECT =
   "min-h-11 rounded-lg border border-jf-line-strong bg-jf-surface px-2.5 text-[15px] font-normal text-jf-ink outline-none focus-visible:ring-2 focus-visible:ring-jf-brand disabled:opacity-60";
 
 const STALE = "__stale";
+
+/** Minúsculas e sem acento: "Gêmini" vira "gemini". */
+function fold(text: string): string {
+  return text.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
+/** Busca no nome e no id do modelo, ignorando caixa e acento. */
+function matchesModel(model: ModelInfo, query: string): boolean {
+  return fold(`${model.label} ${model.id}`).includes(fold(query.trim()));
+}
 
 type Props = {
   task: AiTask;
@@ -50,12 +61,20 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
 
   const def = active ? PROVIDERS[active.provider] : null;
   const recommended = def?.defaultModels[task];
-  const list: ModelInfo[] = [...(models.data ?? [])];
-  for (const id of [active?.model, recommended]) {
-    if (id && !list.some((m) => m.id === id)) list.unshift({ id, label: id });
-  }
-  const current = active ? list.find((m) => m.id === active.model) : undefined;
-  const isFree = active?.provider === "openrouter" && active.model.endsWith(":free");
+  const activeModel = active?.model;
+  // Identidade estável entre renders: o Base UI ressincroniza o input com o label quando o valor muda de
+  // referência, e um `{ id, label }` recriado a cada render apagaria o que o usuário está digitando.
+  const { items, current } = useMemo(() => {
+    const list: ModelInfo[] = [...(models.data ?? [])];
+    for (const id of [activeModel, recommended]) {
+      if (id && !list.some((m) => m.id === id)) list.unshift({ id, label: id });
+    }
+    return {
+      items: sortModelsByCost(task, list),
+      current: activeModel === undefined ? undefined : list.find((m) => m.id === activeModel),
+    };
+  }, [models.data, activeModel, recommended, task]);
+  const isFree = active?.provider === "openrouter" && isFreeModel(active.model);
 
   return (
     <div
@@ -101,20 +120,36 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
           <label htmlFor={modelId} className="text-[13px] font-semibold text-jf-ink-2">
             Modelo
           </label>
-          <select
-            id={modelId}
-            className={SELECT}
+          <Combobox<ModelInfo>
+            items={items}
+            value={current ?? null}
             disabled={!active}
-            value={active?.model ?? ""}
-            onChange={(e) => active && onChange({ provider: active.provider, model: e.target.value })}
+            filter={matchesModel}
+            itemToStringLabel={(m) => m.label}
+            isItemEqualToValue={(a, b) => a.id === b.id}
+            onValueChange={(m) => {
+              if (active && m) onChange({ provider: active.provider, model: m.id });
+            }}
           >
-            {!active && <option value="">Modelo padrão do provedor</option>}
-            {list.map((m) => (
-              <option key={m.id} value={m.id}>
-                {m.id === recommended ? `${m.label} (recomendado)` : m.label}
-              </option>
-            ))}
-          </select>
+            <div className="relative">
+              <ComboboxInput id={modelId} placeholder={active ? "Buscar modelo" : "Modelo padrão do provedor"} />
+              <ComboboxTrigger aria-label="Abrir lista de modelos" />
+            </div>
+            <ComboboxPopup>
+              <ComboboxEmpty>Nenhum modelo encontrado</ComboboxEmpty>
+              <ComboboxList>
+                {(m: ModelInfo) => (
+                  <ComboboxItem key={m.id} value={m}>
+                    <span className="min-w-0 flex-1 truncate" title={m.id}>
+                      {m.label}
+                      {m.id === recommended && <span className="text-jf-ink-3"> (recomendado)</span>}
+                    </span>
+                    <span className="flex-none text-[13px] text-jf-ink-3">{priceLabel(task, m)}</span>
+                  </ComboboxItem>
+                )}
+              </ComboboxList>
+            </ComboboxPopup>
+          </Combobox>
         </div>
         <span className="flex min-h-11 flex-none items-center text-[13px] text-jf-ink-3">
           {active ? (models.isPending ? "Carregando preços…" : estimateCost(task, current)) : "custo depende do modelo"}
@@ -133,8 +168,8 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
       )}
       {isFree && (
         <p role="note" className="rounded-lg bg-jf-new-bg px-2.5 py-2 text-[13px] text-jf-new-fg">
-          Modelos gratuitos (:free) do OpenRouter costumam registrar e reutilizar os dados enviados, além de terem
-          limites de uso. Evite enviar o currículo completo com eles.
+          Modelos gratuitos têm limite de uso por dia e quem os oferece pode guardar, usar para treino ou publicar o
+          que você envia. E-mail, telefone, endereço e nome nunca são enviados.
         </p>
       )}
     </div>

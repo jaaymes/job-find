@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
+import { FREE_MODELS_NOTE, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
 import { startOpenRouterAuth } from "@/lib/client/ai/pkce";
 import { isConnected } from "@/lib/client/ai/model";
 import { aiSettingsStore, type AiSettings } from "@/lib/client/ai/settings";
@@ -18,8 +18,11 @@ const SHOULD = PROVIDER_IDS.filter((id) => PROVIDERS[id].tier === "should");
 const SAVE_ERROR = "Não foi possível salvar neste navegador.";
 const SECTION = "flex flex-col gap-3 rounded-2xl border border-jf-line bg-jf-surface p-6";
 
-/** O aviso de privacidade antecede a chave (`then: "key"`) ou revisa um provedor já conectado (`then: "accept"`). */
-type Privacy = { id: ProviderId; then: "key" | "accept" };
+/**
+ * O aviso de privacidade antecede a chave (`then: "key"`), o login do OpenRouter (`then: "pkce"`, aviso dos modelos
+ * gratuitos, que são o padrão) ou revisa um provedor já conectado (`then: "accept"`).
+ */
+type Privacy = { id: ProviderId; then: "key" | "accept" | "pkce" };
 type KeyTarget = { id: ProviderId; privacyAccepted: boolean };
 
 export function AiSettingsScreen() {
@@ -77,20 +80,31 @@ export function AiSettingsScreen() {
     if (!privacy) return;
     const { id, then } = privacy;
     setPrivacy(null);
+    if (then === "pkce") {
+      void startPkce();
+      return;
+    }
     if (then === "key") {
       setKeyTarget({ id, privacyAccepted: true });
       return;
     }
     update((s) => {
       const cfg = s.providers[id];
-      return cfg ? { ...s, providers: { ...s.providers, [id]: { ...cfg, privacyAccepted: true } } } : s;
+      if (!cfg) return s;
+      const ack = id === "openrouter" ? { freeConsent: true } : { privacyAccepted: true };
+      return { ...s, providers: { ...s.providers, [id]: { ...cfg, ...ack } } };
     });
   }
 
-  async function connectPkce() {
+  function connectPkce() {
     setPkceError(null);
+    setPrivacy({ id: "openrouter", then: "pkce" });
+  }
+
+  async function startPkce() {
     try {
-      window.location.assign(await startOpenRouterAuth(`${window.location.origin}/configuracoes/callback`));
+      const callback = `${window.location.origin}/configuracoes/callback`;
+      window.location.assign(await startOpenRouterAuth(callback, { freeConsent: true }));
     } catch {
       setPkceError("Não foi possível iniciar a conexão. Verifique se o navegador permite guardar dados da sessão.");
     }
@@ -103,7 +117,7 @@ export function AiSettingsScreen() {
       entry={settings.providers[id]}
       connected={isConnected(settings, id)}
       onAdd={() => startAdd(id)}
-      onConnectPkce={() => void connectPkce()}
+      onConnectPkce={connectPkce}
       onRemove={() => remove(id)}
       onReviewPrivacy={() => setPrivacy({ id, then: "accept" })}
       pkceError={id === "openrouter" ? pkceError : null}
@@ -171,7 +185,10 @@ export function AiSettingsScreen() {
               checked={settings.dataCollectionDeny}
               onChange={(e) => update((s) => ({ ...s, dataCollectionDeny: e.target.checked }))}
             />
-            <span>Pedir ao OpenRouter que use só provedores que não guardam meus dados</span>
+            <span>
+              Pedir ao OpenRouter que use só provedores que não guardam meus dados (não vale para os modelos
+              gratuitos)
+            </span>
           </label>
           <p className="text-sm text-jf-ink-2">E-mail, telefone e endereço nunca são enviados à IA.</p>
           <p className="text-[13px] text-jf-ink-3">Cada provedor tem a própria política de dados.</p>
@@ -182,6 +199,8 @@ export function AiSettingsScreen() {
 
       <PrivacyConsentDialog
         provider={privacy ? PROVIDERS[privacy.id] : null}
+        title={privacy?.id === "openrouter" ? "Aviso dos modelos gratuitos — OpenRouter" : undefined}
+        note={privacy?.id === "openrouter" ? FREE_MODELS_NOTE : undefined}
         onConfirm={confirmPrivacy}
         onCancel={() => setPrivacy(null)}
       />

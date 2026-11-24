@@ -382,7 +382,7 @@ function Generator({ job }: { job: JobDetail }) {
               <>
                 <ReviewBanner count={review.flaggedCount} removedExperiences={review.removedExperiences} />
                 {pages !== null && pages > MAX_PAGES && activeTab === "cv" && (
-                  <p role="status" className="rounded-xl border border-[#E0B060] bg-jf-new-bg px-4 py-3 text-sm text-jf-new-fg">
+                  <p role="status" className="rounded-xl border border-jf-warn-line bg-jf-new-bg px-4 py-3 text-sm text-jf-new-fg">
                     O CV passou de {MAX_PAGES} páginas ({pages}). Remova ou encurte trechos para ficar mais fácil de ler na
                     triagem.
                   </p>

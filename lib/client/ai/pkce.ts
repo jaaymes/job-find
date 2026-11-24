@@ -3,6 +3,7 @@ import "client-only";
 import { AiError } from "./errors";
 
 const VERIFIER_KEY = "jobfind:pkce";
+const FREE_CONSENT_KEY = "jobfind:pkce:free";
 const AUTH_URL = "https://openrouter.ai/auth";
 const KEYS_URL = "https://openrouter.ai/api/v1/auth/keys";
 
@@ -21,11 +22,14 @@ function clearVerifier(): void {
 }
 
 /** Gera o verifier (32 bytes aleatórios), guarda no sessionStorage e devolve a URL de autorização do OpenRouter. */
-export async function startOpenRouterAuth(callbackUrl: string): Promise<string> {
+export async function startOpenRouterAuth(callbackUrl: string, opts: { freeConsent?: boolean } = {}): Promise<string> {
   const verifier = base64url(crypto.getRandomValues(new Uint8Array(32)));
   const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
   try {
     sessionStorage.setItem(VERIFIER_KEY, verifier);
+    // O aceite do aviso dos gratuitos precisa atravessar o redirect até o callback.
+    if (opts.freeConsent) sessionStorage.setItem(FREE_CONSENT_KEY, "1");
+    else sessionStorage.removeItem(FREE_CONSENT_KEY);
   } catch (cause) {
     throw new AiError("unavailable", { meta: { reason: "storage" }, cause });
   }
@@ -80,5 +84,16 @@ export async function completeOpenRouterAuth(code: string): Promise<string> {
     return key;
   } finally {
     clearVerifier();
+  }
+}
+
+/** Lê e apaga o aceite do aviso dos gratuitos guardado por `startOpenRouterAuth`. */
+export function takeFreeConsentIntent(): boolean {
+  try {
+    const v = sessionStorage.getItem(FREE_CONSENT_KEY);
+    sessionStorage.removeItem(FREE_CONSENT_KEY);
+    return v === "1";
+  } catch {
+    return false;
   }
 }

@@ -133,6 +133,34 @@ describe("generateStructured", () => {
     await expect(run(model)).rejects.toMatchObject({ code: "truncated" });
   });
 
+  it("OpenRouter soma folga para o raciocínio no maxOutputTokens", async () => {
+    const model = mockModel([...text(ok), finish("stop")]);
+    await run(model, { maxOutputTokens: 2000 }, "openrouter");
+    expect(model.doStreamCalls[0]?.maxOutputTokens).toBe(2000 + 6000);
+  });
+
+  it("OpenRouter: resposta cortada tenta de novo com o dobro do orçamento", async () => {
+    const model = mockModel([...text(ok.slice(0, 12)), finish("length")], [...text(ok), finish("stop")]);
+    const r = await run(model, { maxOutputTokens: 2000 }, "openrouter");
+    expect(r.data).toEqual({ name: "Ana", years: 3 });
+    expect(r.calls).toBe(2);
+    expect(model.doStreamCalls[1]?.maxOutputTokens).toBe((2000 + 6000) * 2);
+    // Mesmo pedido: o corte não é erro do modelo, então não vai feedback no prompt.
+    expect(JSON.stringify(model.doStreamCalls[1]?.prompt)).not.toContain("rejeitada");
+  });
+
+  it("OpenRouter: cortada nas duas tentativas vira truncated", async () => {
+    const model = mockModel([...text(ok.slice(0, 12)), finish("length")], [...text(ok.slice(0, 12)), finish("length")]);
+    await expect(run(model, {}, "openrouter")).rejects.toMatchObject({ code: "truncated" });
+    expect(model.doStreamCalls).toHaveLength(2);
+  });
+
+  it("outros provedores não repetem a chamada cortada", async () => {
+    const model = mockModel([...text(ok.slice(0, 12)), finish("length")], [...text(ok), finish("stop")]);
+    await expect(run(model, {}, "openai")).rejects.toMatchObject({ code: "truncated" });
+    expect(model.doStreamCalls).toHaveLength(1);
+  });
+
   it("erro HTTP do provedor é mapeado (402 -> no_credit)", async () => {
     const model = new MockLanguageModelV4({
       doStream: async () => {
@@ -158,11 +186,76 @@ describe("generateStructured", () => {
     expect(opts.openrouter?.provider).toMatchObject({ require_parameters: true, data_collection: "deny" });
   });
 
+  it("OpenRouter com modelo gratuito não envia data_collection deny (o usuário aceitou o aviso dos gratuitos)", async () => {
+    for (const modelId of ["openrouter/free", "google/gemma-4-31b-it:free"]) {
+      const model = mockModel([...text(ok), finish("stop")]);
+      await run(model, {
+        settings: { ...defaultAiSettings(), dataCollectionDeny: true },
+        resolveModel: async () => ({ model, provider: PROVIDERS.openrouter, modelId }),
+      });
+      const opts = model.doStreamCalls[0]?.providerOptions as { openrouter?: { provider?: Record<string, unknown> } };
+      expect(opts.openrouter?.provider).toMatchObject({ require_parameters: true });
+      expect(opts.openrouter?.provider).not.toHaveProperty("data_collection");
+    }
+  });
+
   it("OpenRouter sem dataCollectionDeny não envia data_collection", async () => {
     const model = mockModel([...text(ok), finish("stop")]);
     await run(model, { settings: { ...defaultAiSettings(), dataCollectionDeny: false } }, "openrouter");
     const opts = model.doStreamCalls[0]?.providerOptions as { openrouter?: { provider?: Record<string, unknown> } };
     expect(opts.openrouter?.provider).not.toHaveProperty("data_collection");
+  });
+
+  it("extract na OpenAI pede reasoningEffort low", async () => {
+    const model = mockModel([...text(ok), finish("stop")]);
+    await run(model, { task: "extract" }, "openai");
+    const opts = model.doStreamCalls[0]?.providerOptions as { openai?: unknown };
+    expect(opts.openai).toEqual({ reasoningEffort: "low" });
+  });
+
+  it.each(["gemini-2.5-flash", "models/gemini-2.5-pro", "gemini-3-flash-preview"])(
+    "extract no Google (%s) limita o thinkingBudget a 128",
+    async (modelId) => {
+      const model = mockModel([...text(ok), finish("stop")]);
+      await run(
+        model,
+        { task: "extract", resolveModel: async () => ({ model, provider: PROVIDERS.google, modelId }) },
+        "google",
+      );
+      const opts = model.doStreamCalls[0]?.providerOptions as { google?: unknown };
+      expect(opts.google).toEqual({ thinkingConfig: { thinkingBudget: 128 } });
+    },
+  );
+
+  it.each(["gemini-2.5-flash-lite", "models/gemini-2.5-flash-lite-preview", "gemini-2.0-flash", "gemma-3-27b-it"])(
+    "extract no Google (%s) não envia thinkingConfig",
+    async (modelId) => {
+      const model = mockModel([...text(ok), finish("stop")]);
+      await run(
+        model,
+        { task: "extract", resolveModel: async () => ({ model, provider: PROVIDERS.google, modelId }) },
+        "google",
+      );
+      const opts = model.doStreamCalls[0]?.providerOptions as { google?: unknown } | undefined;
+      expect(opts?.google).toBeUndefined();
+    },
+  );
+
+  it("analyze na OpenAI não mexe no raciocínio", async () => {
+    const model = mockModel([...text(ok), finish("stop")]);
+    await run(model, { task: "analyze" }, "openai");
+    const opts = model.doStreamCalls[0]?.providerOptions as { openai?: unknown } | undefined;
+    expect(opts?.openai).toBeUndefined();
+  });
+
+  it("OpenRouter mantém reasoning low e require_parameters em qualquer tarefa", async () => {
+    const model = mockModel([...text(ok), finish("stop")]);
+    await run(model, { task: "extract" }, "openrouter");
+    const opts = model.doStreamCalls[0]?.providerOptions as {
+      openrouter: { reasoning: unknown; provider: unknown };
+    };
+    expect(opts.openrouter.reasoning).toEqual({ effort: "low", exclude: true });
+    expect(opts.openrouter.provider).toMatchObject({ require_parameters: true });
   });
 
   it("json_mode coloca o schema em texto no system prompt", async () => {

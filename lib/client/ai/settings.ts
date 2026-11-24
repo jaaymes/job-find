@@ -29,6 +29,8 @@ export const AiSettings = z
         addedAt: z.string(),
         source: z.enum(["pkce", "paste"]),
         privacyAccepted: z.boolean().optional(),
+        /** OpenRouter: aceitou o aviso dos modelos gratuitos (podem guardar, treinar com ou publicar o texto). */
+        freeConsent: z.boolean().optional(),
       }),
     ),
     tasks: z.object({ extract: TaskChoice, analyze: TaskChoice, cv: TaskChoice }),

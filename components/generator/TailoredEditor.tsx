@@ -45,7 +45,7 @@ function Item({
     );
   }
   return (
-    <div data-flagged="true" className="flex flex-col gap-2 rounded-xl border-2 border-[#E0B060] bg-jf-new-bg p-2.5">
+    <div data-flagged="true" className="flex flex-col gap-2 rounded-xl border-2 border-jf-warn-line bg-jf-new-bg p-2.5">
       {children}
       <ul className="list-disc pl-[18px] text-[13px] text-jf-new-fg">
         {state.violations.map((v, i) => (

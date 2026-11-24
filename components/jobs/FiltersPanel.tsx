@@ -3,7 +3,7 @@
 import type { ChanceBand, PageFilters } from "@/lib/client/jobs/use-jobs";
 import type { Seniority, SourceId } from "@/lib/shared/types/job";
 import { cn } from "@/lib/utils";
-import { LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
+import { FILTERABLE_SOURCES, LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
 import { HardLink } from "@/components/ui/hard-link";
 
 type Props = {
@@ -158,9 +158,9 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile,
           onChange={(e) => onChange({ source: e.target.value ? [e.target.value as SourceId] : undefined })}
         >
           <option value="">Todas as fontes</option>
-          {Object.entries(SOURCE_LABELS).map(([value, label]) => (
+          {FILTERABLE_SOURCES.map((value) => (
             <option key={value} value={value}>
-              {label}
+              {SOURCE_LABELS[value]}
             </option>
           ))}
         </select>

@@ -4,7 +4,7 @@ import { HardLink } from "@/components/ui/hard-link";
 export type ChanceBand = "alta" | "media" | "baixa";
 
 const BAND_STYLES: Record<ChanceBand, { label: string; className: string }> = {
-  alta: { label: "Alta", className: "bg-jf-alta text-white" },
+  alta: { label: "Alta", className: "bg-jf-alta text-jf-surface" },
   media: { label: "Média", className: "bg-jf-media-bg text-jf-media-fg" },
   baixa: { label: "Baixa", className: "bg-jf-baixa-bg text-jf-baixa-fg" },
 };

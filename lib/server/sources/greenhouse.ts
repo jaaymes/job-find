@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
+import { GREENHOUSE_BOARDS } from "@/lib/server/sources/boards/greenhouse";
 import { parseLocation } from "@/lib/server/sources/location";
 import { decodeEntities } from "@/lib/server/sources/text";
 import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
@@ -12,11 +13,11 @@ export { decodeEntities };
 /** Host fixo da API (D-07): o fetch seguro só aceita URLs base definidas no código. */
 export const GREENHOUSE_HOST = "boards-api.greenhouse.io";
 
-/** Boards curados da D-07 (nada além desta lista é consultado). */
-export const GREENHOUSE_BOARDS = [
-  "stone", "c6bank", "btgpactual", "xpinc", "inter", "quintoandar", "gympass", "clara", "ebanx", "vtex",
-  "jusbrasil", "wildlifestudios", "getnet", "gitlab", "canonical", "twilio", "datadog", "stripe", "databricks",
-] as const;
+/** Boards grandes passam do padrão de 10 MB (databricks: ~9,7 MB com `content=true` em 2026-11). */
+const GREENHOUSE_MAX_RESPONSE_BYTES = 25 * 1024 * 1024;
+
+/** Boards curados (D-03): a lista fica em `boards/greenhouse.ts`; nada além dela é consultado. */
+export { GREENHOUSE_BOARDS };
 
 const boardSchema = z.object({ jobs: z.array(z.unknown()) });
 
@@ -65,6 +66,7 @@ export const greenhouse: Connector = {
   fullSnapshot: true,
   minIntervalMinutes: 60,
   allowedHosts: [GREENHOUSE_HOST],
+  maxResponseBytes: GREENHOUSE_MAX_RESPONSE_BYTES,
   attribution: { label: "Greenhouse", url: "https://www.greenhouse.com", dofollow: false },
   fetch: fetchBoards,
   normalize(raw): NormalizedJob | null {

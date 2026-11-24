@@ -54,7 +54,7 @@ export function StackChips({ filters, onChange }: Props) {
             className={cn(
               "min-h-10 shrink-0 rounded-full border px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2 sm:min-h-9",
               pressed
-                ? "border-jf-ink bg-jf-ink font-medium text-white"
+                ? "border-jf-ink bg-jf-ink font-medium text-jf-surface"
                 : "border-jf-line-strong bg-jf-surface text-jf-ink hover:bg-jf-chip",
             )}
           >

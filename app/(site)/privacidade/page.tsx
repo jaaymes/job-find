@@ -55,7 +55,9 @@ export default function PrivacidadePage() {
           <p>
             Ao escolher um provedor, é você quem transfere os dados a ele, e alguns ficam fora do Brasil: o OpenRouter
             opera nos Estados Unidos e a DeepSeek opera na China. No plano gratuito do Gemini, o Google pode usar o que
-            você enviar para treinar seus modelos. Se isso importa para você, prefira um plano pago ou outro provedor, e
+            você enviar para treinar seus modelos. Nos modelos gratuitos do OpenRouter (o padrão do Job Find quando você conecta
+            o OpenRouter), quem oferece o modelo pode guardar o texto, usá-lo para treino ou publicá-lo; você vê e aceita
+            esse aviso antes de conectar. Se isso importa para você, prefira um plano pago ou outro provedor, e
             evite enviar dados que não queira compartilhar.
           </p>
         </Section>

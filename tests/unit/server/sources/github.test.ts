@@ -44,7 +44,10 @@ describe("conector GitHub issues", () => {
     expect(CONNECTORS.github).toBe(github);
     expect(GITHUB_REPOS).toEqual([
       "frontendbr/vagas", "backend-br/vagas", "react-brasil/vagas", "qa-brasil/vagas", "androiddevbr/vagas",
+      "soujava/vagas-java", "DevOps-Brasil/Vagas", "phpdevbr/vagas", "CocoaHeadsBrasil/vagas",
+      "dotnetdevbr/vagas", "vuejs-br/vagas", "flutterbr/vagas",
     ]);
+    expect(GITHUB_REPOS).toHaveLength(12);
   });
 
   it("coleta e normaliza a fixture (teste comum)", async () => {

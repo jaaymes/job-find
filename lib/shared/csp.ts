@@ -1,3 +1,5 @@
+import { THEME_SCRIPT_HASH } from "./theme-script";
+
 export type SecurityHeader = { key: string; value: string };
 
 type CspOptions = {
@@ -54,7 +56,9 @@ export function buildNonceCsp(
 ): string {
   // 'wasm-unsafe-eval' só aqui (rotas `(local)`): o yoga-layout 3.x do @react-pdf/renderer 4.x instancia WebAssembly
   // para gerar o PDF do CV no navegador (docs/tech, spec). Libera só WASM; não libera eval()/new Function.
-  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"];
+  // THEME_SCRIPT_HASH só aqui: o script de tema no <head> roda antes da hidratação e não recebe
+  // nonce. Na CSP pública (buildCsp) um hash faria o navegador ignorar 'unsafe-inline'.
+  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'", THEME_SCRIPT_HASH];
   if (options.dev) scriptSrc.push("'unsafe-eval'");
   // `data:` no connect-src só aqui: o yoga-layout carrega o próprio WASM via fetch("data:application/octet-stream;base64,...").
   // Uma URL data: só devolve os bytes embutidos nela, sem abrir conexão de rede, então não serve para exfiltrar dados.

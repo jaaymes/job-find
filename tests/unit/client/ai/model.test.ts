@@ -35,11 +35,11 @@ describe("resolveTaskModel", () => {
   it("sem configuração da tarefa, cai no primeiro provedor conectado com o modelo padrão", async () => {
     const s: AiSettings = {
       ...defaultAiSettings(),
-      providers: { openrouter: { key: "sk-or", addedAt: at, source: "pkce" } },
+      providers: { openrouter: { key: "sk-or", addedAt: at, source: "pkce", freeConsent: true } },
     };
     const r = await resolveTaskModel(s, "analyze");
     expect(r.provider.id).toBe("openrouter");
-    expect(r.modelId).toBe("deepseek/deepseek-v4.1-flash");
+    expect(r.modelId).toBe("openrouter/free");
   });
 
   it("provedor local conta como conectado com baseURL (sem chave)", async () => {
@@ -72,6 +72,40 @@ describe("resolveTaskModel", () => {
       tasks: { extract: { provider: "deepseek", model: "deepseek-chat" }, analyze: null, cv: null },
     };
     await expect(resolveTaskModel(s, "extract")).rejects.toMatchObject({ code: "blocked_by_privacy" });
+  });
+
+  it("modelo gratuito escolhido sem o aviso dos gratuitos aceito lança blocked_by_privacy (free_models)", async () => {
+    const s: AiSettings = {
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "k", addedAt: at, source: "pkce" } },
+      tasks: { extract: null, analyze: { provider: "openrouter", model: "acme/x:free" }, cv: null },
+    };
+    await expect(resolveTaskModel(s, "analyze")).rejects.toMatchObject({
+      code: "blocked_by_privacy",
+      meta: { provider: "openrouter", reason: "free_models" },
+    });
+  });
+
+  it("modelo pago do OpenRouter não exige o aviso dos gratuitos", async () => {
+    const s: AiSettings = {
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "k", addedAt: at, source: "pkce" } },
+      tasks: { extract: null, analyze: { provider: "openrouter", model: "deepseek/deepseek-v4.1-flash" }, cv: null },
+    };
+    expect((await resolveTaskModel(s, "analyze")).modelId).toBe("deepseek/deepseek-v4.1-flash");
+  });
+
+  it("fallback pula o OpenRouter (padrão gratuito) sem o aviso dos gratuitos aceito", async () => {
+    const s: AiSettings = {
+      ...defaultAiSettings(),
+      providers: {
+        openrouter: { key: "k", addedAt: at, source: "pkce" },
+        openai: { key: "k", addedAt: at, source: "paste" },
+      },
+    };
+    expect((await resolveTaskModel(s, "analyze")).provider.id).toBe("openai");
+    s.providers.openrouter = { key: "k", addedAt: at, source: "pkce", freeConsent: true };
+    expect((await resolveTaskModel(s, "analyze")).modelId).toBe("openrouter/free");
   });
 });
 
@@ -106,5 +140,17 @@ describe("hasUsableProvider", () => {
       providers: { deepseek: { key: "k", addedAt: at, source: "paste", privacyAccepted: true } },
     };
     expect(hasUsableProvider(accepted, "extract")).toBe(true);
+  });
+
+  it("OpenRouter no padrão gratuito só conta com o aviso dos gratuitos aceito", () => {
+    const s: AiSettings = { ...defaultAiSettings(), providers: { openrouter: { key: "k", addedAt: at, source: "pkce" } } };
+    expect(hasUsableProvider(s, "analyze")).toBe(false);
+    const paid = { ...s, tasks: { extract: null, analyze: { provider: "openrouter" as const, model: "x/pago" }, cv: null } };
+    expect(hasUsableProvider(paid, "analyze")).toBe(true);
+    const ok: AiSettings = {
+      ...s,
+      providers: { openrouter: { key: "k", addedAt: at, source: "pkce", freeConsent: true } },
+    };
+    expect(hasUsableProvider(ok, "analyze")).toBe(true);
   });
 });

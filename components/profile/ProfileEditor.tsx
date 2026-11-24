@@ -39,7 +39,7 @@ export function ProfileEditor({ profile, onSave }: Props) {
         </h2>
         <button
           type="button"
-          className="inline-flex min-h-11 items-center rounded-[10px] bg-jf-ink px-[18px] text-sm font-semibold text-white outline-none hover:bg-jf-ink-2 focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center rounded-[10px] bg-jf-ink px-[18px] text-sm font-semibold text-jf-surface outline-none hover:bg-jf-ink-2 focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
           onClick={() => setSaved(onSave(draft) ? "ok" : "idle")}
         >
           Salvar perfil

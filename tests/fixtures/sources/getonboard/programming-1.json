@@ -1,0 +1,515 @@
+{
+ "data": [
+  {
+   "id": "senior-technical-project-manager-microsoft-365-synogen-solutions-remote",
+   "type": "job",
+   "attributes": {
+    "title": "Lead Microsoft 365 Project Engineer",
+    "description_headline": "Qualifications and requirements",
+    "description": "<ul><li>5+ years of professional IT infrastructure or cloud engineering experience.</li><li>Extensive hands-on experience with Microsoft 365.</li><li>Proven experience leading and executing complex Microsoft 365 migrations.</li><li>Strong knowledge of Exchange Online, Microsoft Entra ID, Active Directory, SharePoint and OneDrive.</li><li>Previous technical project management or project leadership experience.</li><li>Excellent spoken and written English (C1 or equivalent proficiency).</li><li>Ability to communicate confidently with US-based clients.</li><li>Strong problem-solving, organizationa",
+    "projects": "<p>We are looking for a Lead Microsoft 365 Project Engineer with extensive hands-on Microsoft 365 experience to join our growing US-based IT and cybersecurity team.</p><p>You will lead IT infrastructure and cloud migration projects, working directly with our technical team, company leadership and US-based clients.</p><p>The ideal candidate is a technically skilled professional who can independently manage and execute projects from initial planning through successful implementation and final handover.</p><p>This is a full-time, long-term, fully remote opportunity for professionals based in Lati",
+    "functions_headline": "Job functions",
+    "functions": "<ul><li>Lead, manage and execute Microsoft 365 migration projects.</li><li>Perform tenant-to-tenant and Exchange Online migrations.</li><li>Manage Microsoft Entra ID and Active Directory transitions.</li><li>Execute SharePoint and OneDrive migrations.</li><li>Implement Microsoft 365 security configurations and best practices.</li><li>Manage project timelines, deliverables, documentation and risks.</li><li>Conduct technical meetings with US-based clients.</li><li>Troubleshoot and resolve complex infrastructure issues.</li><li>Take full ownership of projects from planning to completion.</li><li>",
+    "benefits_headline": "Conditions",
+    "benefits": "<ul><li>Competitive monthly compensation of $3,000–$4,000 USD.</li><li>100% remote work from anywhere in Latin America.</li><li>Long-term independent contractor opportunity.</li><li>Flexible and accommodating work environment.</li><li>Performance-based bonus opportunities.</li><li>High level of autonomy and independence without micromanagement.</li><li>Flexibility to request time off with prior coordination.</li><li>Direct collaboration with US-based professionals.</li><li>Professional growth and exposure to diverse Microsoft 365 and IT infrastructure projects.</li><li>Informal and supportive ",
+    "desirable_headline": "Desirable skills",
+    "desirable": "<ul><li>Previous experience working for a Managed Service Provider (MSP).</li><li>Microsoft professional certifications.</li><li>Microsoft Azure and Intune experience.</li><li>PowerShell scripting and automation.</li><li>Experience with Microsoft Defender and Microsoft 365 security.</li><li>Familiarity with migration tools such as BitTitan MigrationWiz and ShareGate.</li><li>PMP or other project management certifications.</li></ul>",
+    "remote": true,
+    "remote_modality": "fully_remote",
+    "remote_zone": null,
+    "countries": [
+     "Remote"
+    ],
+    "lang": "en",
+    "category_name": "Programming",
+    "perks": [
+     "remote_full",
+     "flexible_hours",
+     "informal_dresscode"
+    ],
+    "min_salary": 3000,
+    "max_salary": 4000,
+    "published_at": 1795041907,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 50,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": []
+    },
+    "location_cities": {
+     "data": []
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 4,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "microsoft-365",
+       "type": "tag",
+       "attributes": {
+        "name": "Microsoft 365",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "exchange-online",
+       "type": "tag",
+       "attributes": {
+        "name": "Exchange Online",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "active-directory",
+       "type": "tag",
+       "attributes": {
+        "name": "Active Directory",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "sharepoint",
+       "type": "tag",
+       "attributes": {
+        "name": "SharePoint",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "synogen-solutions-us",
+      "type": "company",
+      "attributes": {
+       "name": "Synogen Solutions",
+       "description": "Synogen Solutions is a US-based Managed IT Services and Cybersecurity provider s",
+       "long_description": "",
+       "projects": "",
+       "benefits": "<ul><li>Competitive monthly compensation of $3,000–$4,000 USD.</li><li>100% remo",
+       "web": "https://synogensolutions.com/",
+       "twitter": null,
+       "github": null,
+       "facebook": null,
+       "angellist": null,
+       "country": "US",
+       "response_time_in_days": {
+        "min": null,
+        "max": null
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/21296/download__4_.jpg"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/senior-technical-project-manager-microsoft-365-synogen-solutions-remote"
+   }
+  },
+  {
+   "id": "semi-senior-software-engineer-python-23people-remote-f4b6",
+   "type": "job",
+   "attributes": {
+    "title": "Semi Senior Software Engineer Python",
+    "description_headline": "Requerimientos del cargo",
+    "description": "<ul><li>Dominio avanzado de Python.</li><li>Conocimientos sólidos en frameworks de JavaScript / TypeScript (React, Vue o Angular).</li><li>Manejo fluido de Git y Shell Scripting.</li><li>Inglés técnico/básico: Capacidad para leer documentación, entender requerimientos y redactar mensajes sencillos.</li></ul>",
+    "projects": "<div>Equifax es mucho más que una empresa de informes; es una compañía global líder en datos, analítica y tecnología con presencia en 24 países. En Chile, operan desde 1979 entregando soluciones críticas de ciberseguridad, identidad y riesgo a más de 14.000 empresas.</div><div>El Hub Tecnológico (SDC) Lo que hace única a esta oportunidad es que Chile alberga el Santiago Development Center (SDC). Este centro lidera la transformación digital de Equifax a nivel mundial, concentrando cerca del 60% de sus desarrollos tecnológicos globales.</div><div>Cultura y Visión Equifax promueve un entorno de c",
+    "functions_headline": "Funciones del cargo",
+    "functions": "<p>Transformar un motor de IA diseñado para Chile en una plataforma escalable para toda la región, utilizando su dominio de <strong>Python</strong> para desacoplar la lógica local y crear arquitecturas de respuesta adaptables a los modismos y regulaciones de cada país. </p>",
+    "benefits_headline": "Beneficios",
+    "benefits": "<ul><li><strong>Seguro complementario</strong>: Seguro de salud, vida y dental, para que estés protegido.</li><li><strong>Curso de inglés</strong>: En nuestro programa de formación en el idioma, ofrecemos dos modalidades para adaptarnos a tus necesidades y objetivos, con profesores nativos.</li><li><strong>Reembolso de certificaciones internacionales</strong>: Apoyamos el crecimiento profesional, por lo que te reembolsamos el costo de un examen de certificación internacional que quieras realizar.</li><li><strong>Bono de vacaciones</strong>: Recibe una compensación económica por cada semana de ",
+    "desirable_headline": "Deseables ",
+    "desirable": "<ul><li><strong>IA Generativa:</strong> Prompt Engineering, LangChain / LlamaIndex y arquitecturas RAG con bases vectoriales (Pinecone, pgvector).</li><li><strong>GCP:</strong> Vertex AI (Gemini), BigQuery y Cloud Run / GKE.</li><li><strong>Ingeniería de Software:</strong> Docker, microservicios y CI/CD.</li><li><strong>Otros:</strong> Java Spring Boot, Jupyter Notebooks y Gemini CLI</li></ul>",
+    "remote": true,
+    "remote_modality": "remote_local",
+    "remote_zone": null,
+    "countries": [
+     "Remote"
+    ],
+    "lang": "es",
+    "category_name": "Programming",
+    "perks": [
+     "flexible_hours",
+     "life_insurance",
+     "health_coverage",
+     "dental_insurance",
+     "computer_provided",
+     "vacation_on_birthday"
+    ],
+    "min_salary": 2000,
+    "max_salary": 2200,
+    "published_at": 1795523273,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 87,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": [
+      {
+       "id": 1,
+       "type": "location_tenant"
+      }
+     ]
+    },
+    "location_cities": {
+     "data": []
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 3,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "python",
+       "type": "tag",
+       "attributes": {
+        "name": "Python",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "javascript",
+       "type": "tag",
+       "attributes": {
+        "name": "JavaScript",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "typescript",
+       "type": "tag",
+       "attributes": {
+        "name": "TypeScript",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "react",
+       "type": "tag",
+       "attributes": {
+        "name": "React",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "23people-cl",
+      "type": "company",
+      "attributes": {
+       "name": "23people",
+       "description": "Básicamente, somos un grupo de geeks apasionados por lo que hacemos: programar y",
+       "long_description": "<div><strong> En 23people ayudamos a nuestros clientes a digitalizar sus servici",
+       "projects": "<div>Equifax es mucho más que una empresa de informes; es una compañía global lí",
+       "benefits": "<ul><li><strong>Seguro complementario</strong>: Seguro de salud, vida y dental, ",
+       "web": "https://www.23people.io",
+       "twitter": "",
+       "github": "",
+       "facebook": "23people",
+       "angellist": "",
+       "country": "CL",
+       "response_time_in_days": {
+        "min": 0,
+        "max": 12
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/4457/Foto_perfil_Tiktok.png"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/semi-senior-software-engineer-python-23people-remote-f4b6"
+   }
+  },
+  {
+   "id": "software-engineer-technical-lead-data-acquisition-checkr-santiago",
+   "type": "job",
+   "attributes": {
+    "title": "Software Engineer Technical Lead Data Acquisition",
+    "description_headline": "What you bring",
+    "description": "<ul><li><strong>Advanced English proficiency (verbal and written).</strong></li><li><strong>Availability to work a hybrid schedule in Santiago, Chile (3 days per week in-office).</strong></li><li>10+ years of industry experience as a software engineer, and significant experience working with Python</li><li>Leadership skills, and a passion for mentoring more junior engineers</li><li>Experience with running Scrum rituals (sprint planning, daily standup, sprint review and retrospective)</li><li>Hands-on experience with AWS</li><li>A strong understanding of microservice architecture infrastructure",
+    "projects": "<p>We are seeking an experienced and talented Software Engineer Tech Lead to join our Engineering team. This role involves integrating a recently acquired background check product into the Checkr ecosystem and developing it into a solid foundation for a comprehensive identity verification solution.</p><p>The Tech Lead will oversee the near-term integration of newly acquired background check solutions into Checkr. Responsibilities include working on data vendor integrations and developing the system into a long-term identity verification platform. The current background check solution includes ",
+    "functions_headline": "What you’ll do",
+    "functions": "<ul><li>Own the product development from ideation, design, implementation, to release</li><li>Collaborate with other engineers and product manager on designing and architecting new systems</li><li>Design, develop, test, deploy, maintain and improve software</li><li>Manage individual project priorities, deadlines and deliverables</li><li>Deliver performant, reliable, scalable, and secure code</li></ul>",
+    "benefits_headline": "What We Offer",
+    "benefits": "<ul><li>Lunch at the office</li><li>A collaborative and fast-moving environment</li><li>Be part of an international company based in the United States</li><li>$3,000 USD per year learning and development reimbursement allowance</li><li>Competitive compensation and opportunity for professional and personal advancement</li><li>100% medical, dental, and vision coverage for employees and dependents</li><li>Additional vacation benefits of 5 extra days and flexibility to take time off</li></ul>",
+    "desirable_headline": "",
+    "desirable": "",
+    "remote": false,
+    "remote_modality": "hybrid",
+    "remote_zone": null,
+    "countries": [
+     "Chile"
+    ],
+    "lang": "en",
+    "category_name": "Programming",
+    "perks": [],
+    "min_salary": 4500,
+    "max_salary": 5600,
+    "published_at": 1795487275,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 3,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": []
+    },
+    "location_cities": {
+     "data": [
+      {
+       "id": 1,
+       "type": "location_city"
+      }
+     ]
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 5,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "python",
+       "type": "tag",
+       "attributes": {
+        "name": "Python",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "aws",
+       "type": "tag",
+       "attributes": {
+        "name": "AWS",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "microservices",
+       "type": "tag",
+       "attributes": {
+        "name": "Microservices",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "kubernetes",
+       "type": "tag",
+       "attributes": {
+        "name": "Kubernetes",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "checkr-cl",
+      "type": "company",
+      "attributes": {
+       "name": "Checkr",
+       "description": "Checkr is a San Francisco–based tech company that modernizes verification checks",
+       "long_description": "",
+       "projects": "<div>Acerca de Checkr</div><div>Checkr está creando una plataforma de datos para",
+       "benefits": "<ul><li>Un entorno de colaboración y rápido movimiento</li><li>Formar parte de u",
+       "web": "https://checkr.com/",
+       "twitter": "",
+       "github": "",
+       "facebook": "",
+       "angellist": "",
+       "country": "CL",
+       "response_time_in_days": {
+        "min": 10,
+        "max": 24
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/17087/Checkr_Trademark_Monogram_2025.png"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/software-engineer-technical-lead-data-acquisition-checkr-santiago"
+   }
+  },
+  {
+   "id": "desarrollador-full-stack-junior-python-django-react-magnet-santiago",
+   "type": "job",
+   "attributes": {
+    "title": "Desarrollador Full-Stack Junior (Python, Django, React)",
+    "description_headline": "Requisitos mínimos",
+    "description": "<ul><li>Entre 0 y 2 años de experiencia en desarrollo web. También consideramos recién egresados/as con proyectos propios, portafolio sólido o prácticas profesionales relevantes.</li><li>Formación en Ingeniería Civil Informática, Ingeniería en Ejecución Informática, Analista Programador o carreras afines.</li><li>Conocimientos de HTML, CSS y JavaScript/TypeScript.</li><li>Conocimientos de lógica de programación y fundamentos de desarrollo web.</li><li>Manejo de Git para control de versiones.</li><li>Experiencia o conocimientos en algún framework de desarrollo web, como Django o NestJS.</li></u",
+    "projects": "<p>Magnet es una empresa de ingeniería enfocada en usar software para entregar soluciones de alta calidad a los problemas de nuestros clientes. Nos gusta entender sus procesos y su negocio para así entregarles el máximo valor posible.</p><p>Hace 14 años comenzamos desarrollando pequeñas plataformas de software, pero hoy trabajamos en grandes proyectos, como gestionar las limitaciones operacionales de una aerolínea completa o digitalizar el proceso de migraciones de un país.</p><p>Si bien somos bastante exigentes en términos técnicos, ya que tenemos un gran enfoque en la ingeniería, también nos",
+    "functions_headline": "Propósito del cargo",
+    "functions": "<p>¡Estamos en búsqueda de un/a <strong>Desarrollador/a Web Fullstack Junior</strong> para sumarse al equipo de <strong>Innovación y Desarrollo</strong>!</p><p>Buscamos a alguien con ganas de aprender, experimentar y participar en la construcción de soluciones tecnológicas desde cero. Serás parte de un equipo enfocado en desarrollar aplicaciones web que respondan a necesidades del negocio, trabajando tanto en el frontend como en el backend.</p><p>Tu rol será desarrollar, probar y mantener aplicaciones web de extremo a extremo, integrando APIs y servicios en la nube, y contribuyendo a la mejora",
+    "benefits_headline": "Beneficios",
+    "benefits": "<p>Nos esforzamos en crear un ambiente de trabajo y una cultura que potencie a nuestro equipo. Tenemos una organización horizontal en la que hay espacio para el aporte de todos al tomar decisiones. Fomentamos una cultura abierta para tener feedback constante por parte del equipo y así mejorar cuando nos equivocamos.</p><p>Celebramos los cumpleaños y planificamos actividades de encuentro de equipo durante el año. También el equipo ha creado varios \"clubes secretos\" que organizan actividades por su cuenta (after office, salidas al cine, etc).</p><p><strong>Además:</strong></p><ul><li>Seguro comp",
+    "desirable_headline": "Requisitos opcionales",
+    "desirable": "<ul><li>Back-end: Conocimientos de Python y Django o Django REST Framework.</li><li>Front-end: Conocimientos de React.</li><li>Cloud / Infraestructura: Nociones de Google Cloud Platform (GCP) o experiencia realizando despliegues en la nube.</li><li>Bases de Datos: Manejo de bases de datos SQL (PostgreSQL, MySQL) o NoSQL.</li></ul>",
+    "remote": false,
+    "remote_modality": "no_remote",
+    "remote_zone": null,
+    "countries": [
+     "Chile"
+    ],
+    "lang": "es",
+    "category_name": "Programming",
+    "perks": [
+     "internal_talks",
+     "life_insurance",
+     "paid_sick_days",
+     "digital_library",
+     "health_coverage",
+     "company_retreats",
+     "computer_repairs",
+     "dental_insurance",
+     "computer_provided",
+     "personal_coaching",
+     "shopping_discounts"
+    ],
+    "min_salary": 1600,
+    "max_salary": 1900,
+    "published_at": 1795469057,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 99,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": []
+    },
+    "location_cities": {
+     "data": [
+      {
+       "id": 1,
+       "type": "location_city"
+      }
+     ]
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 2,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "nestjs",
+       "type": "tag",
+       "attributes": {
+        "name": "NestJS",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "react",
+       "type": "tag",
+       "attributes": {
+        "name": "React",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "python",
+       "type": "tag",
+       "attributes": {
+        "name": "Python",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "sql",
+       "type": "tag",
+       "attributes": {
+        "name": "SQL",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "magnet",
+      "type": "company",
+      "attributes": {
+       "name": "Magnet",
+       "description": "Magnet es una empresa de ingeniería enfocada en usar software para entregar solu",
+       "long_description": "<p>Después de 12 años ya somos 30 ingenieros y seguimos creciendo. Trabajamos co",
+       "projects": "<p>Magnet es una empresa de ingeniería enfocada en usar software para entregar s",
+       "benefits": "<p>Nos esforzamos en crear un ambiente de trabajo y una cultura que potencie a n",
+       "web": "http://www.magnet.cl",
+       "twitter": "",
+       "github": "",
+       "facebook": "",
+       "angellist": "",
+       "country": "CL",
+       "response_time_in_days": {
+        "min": 5,
+        "max": 15
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/1517/Logo-200px.jpg"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/desarrollador-full-stack-junior-python-django-react-magnet-santiago"
+   }
+  }
+ ],
+ "meta": {
+  "page": 1,
+  "per_page": 100,
+  "total_pages": 2
+ }
+}

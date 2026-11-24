@@ -34,7 +34,10 @@ describe("conector Lever", () => {
     expect(lever.allowedHosts).toEqual([LEVER_HOST]);
     expect(lever.attribution.dofollow).toBe(false);
     expect(CONNECTORS.lever).toBe(lever);
-    expect(LEVER_BOARDS).toEqual(["ciandt", "neon", "swile", "toptal", "spotify"]);
+    // A lista cresceu na D-03 (descoberta de boards): os curados originais continuam nela, sem duplicatas.
+    expect(new Set(LEVER_BOARDS).size).toBe(LEVER_BOARDS.length);
+    expect(LEVER_BOARDS.length).toBeGreaterThanOrEqual(15);
+    expect(LEVER_BOARDS).toEqual(expect.arrayContaining(["ciandt", "neon", "swile", "toptal", "spotify"]));
   });
 
   it("coleta e normaliza a fixture (teste comum)", async () => {

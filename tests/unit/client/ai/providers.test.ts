@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AI_CSP_HOSTS } from "@/lib/shared/ai-hosts";
-import { PROVIDERS, PROVIDER_IDS } from "@/lib/client/ai/providers";
+import { isFreeModel, PROVIDERS, PROVIDER_IDS } from "@/lib/client/ai/providers";
 import { AiSettings, defaultAiSettings } from "@/lib/client/ai/settings";
 
 afterEach(() => vi.unstubAllGlobals());
@@ -25,9 +25,15 @@ describe("registro de provedores", () => {
     for (const id of PROVIDER_IDS) expect(PROVIDERS[id].id).toBe(id);
   });
 
-  it("OpenRouter usa PKCE e o modelo padrão da D-11", () => {
+  it("OpenRouter usa PKCE e o Free Models Router como padrão", () => {
     expect(PROVIDERS.openrouter.auth).toBe("pkce");
-    expect(PROVIDERS.openrouter.defaultModels.analyze).toBe("deepseek/deepseek-v4.1-flash");
+    expect(PROVIDERS.openrouter.defaultModels.analyze).toBe("openrouter/free");
+  });
+
+  it("isFreeModel reconhece o roteador grátis e as variantes :free", () => {
+    expect(isFreeModel("openrouter/free")).toBe(true);
+    expect(isFreeModel("google/gemma-4-31b-it:free")).toBe(true);
+    expect(isFreeModel("deepseek/deepseek-v4.1-flash")).toBe(false);
   });
 
   it("Anthropic exige o header de acesso direto; local é configurado pelo usuário", () => {

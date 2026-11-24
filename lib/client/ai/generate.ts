@@ -1,11 +1,12 @@
 import "client-only";
 
+import type { SharedV4ProviderOptions } from "@ai-sdk/provider";
 import { Output, parsePartialJson, streamText } from "ai";
 import { jsonrepair } from "jsonrepair";
 import { z } from "@/lib/shared/zod";
 import { AiError, isAbortError, mapProviderError } from "./errors";
 import { resolveTaskModel } from "./model";
-import type { AiTask, ProviderDef, ProviderId } from "./providers";
+import { isFreeModel, type AiTask, type ProviderDef, type ProviderId } from "./providers";
 import type { AiSettings } from "./settings";
 
 /** No máximo 2 chamadas ao modelo por operação, somando a retentativa do Zod e a do `validate`. */
@@ -38,15 +39,43 @@ export type GenerateArgs<T> = {
   resolveModel?: ResolveModel;
 };
 
-function providerOptions(def: ProviderDef, settings: AiSettings) {
+/**
+ * Na extração do currículo o raciocínio só come o orçamento de saída (finishReason "length"), então pedimos o mínimo.
+ * OpenAI: "minimal" não vale nos modelos o-series, por isso "low". Google: 128 só vale no 2.5 Pro, no 2.5 Flash (não o Lite, que exige 512+) e na família 3;
+ * Gemma e Gemini 2.0 não têm thinking, então nesses modelos não enviamos thinkingConfig.
+ */
+const GOOGLE_THINKING_128 = /^(models\/)?gemini-(2\.5-(pro|flash)(?!-lite)|3)/;
+
+/**
+ * No OpenRouter, todos os modelos gratuitos (e o roteador `openrouter/free`) raciocinam, e os tokens de raciocínio
+ * contam no mesmo `max_tokens` da resposta. Alguns ignoram `effort: "low"`. Sem folga, o orçamento do JSON acaba no
+ * raciocínio e a resposta volta cortada (`finish_reason: "length"`). Só é cobrado o que o modelo de fato usa.
+ */
+const OPENROUTER_REASONING_HEADROOM = 6000;
+
+function outputBudget(def: ProviderDef, base: number): number {
+  return def.id === "openrouter" ? base + OPENROUTER_REASONING_HEADROOM : base;
+}
+
+function providerOptions(def: ProviderDef, settings: AiSettings, task: AiTask, modelId: string): SharedV4ProviderOptions | undefined {
+  if (def.id === "openai" && task === "extract") return { openai: { reasoningEffort: "low" as const } };
+  if (def.id === "google") {
+    if (task === "extract" && GOOGLE_THINKING_128.test(modelId)) {
+      return { google: { thinkingConfig: { thinkingBudget: 128 } } };
+    }
+    return undefined;
+  }
   if (def.id !== "openrouter") return undefined;
   return {
     openrouter: {
       provider: {
         require_parameters: true,
-        ...(settings.dataCollectionDeny ? { data_collection: "deny" as const } : {}),
+        // Modelos gratuitos quase sempre vêm de endpoints que guardam dados: com `deny` não sobra nenhum.
+        // Só chegam aqui com o aviso dos gratuitos aceito (`freeConsent`, ver `resolveTaskModel`).
+        ...(settings.dataCollectionDeny && !isFreeModel(modelId) ? { data_collection: "deny" as const } : {}),
       },
-      reasoning: { effort: "low" as const },
+      // `exclude`: o raciocínio não vem no stream (não usamos e só pesaria no download).
+      reasoning: { effort: "low" as const, exclude: true },
     },
   };
 }
@@ -81,6 +110,7 @@ async function callOnce<T>(
   model: Awaited<ReturnType<ResolveModel>>,
   system: string,
   prompt: string,
+  maxOutputTokens: number,
 ): Promise<{ text: string; usage: TokenUsage }> {
   const providerId: ProviderId = model.provider.id;
   let streamError: { error: unknown } | undefined;
@@ -89,11 +119,11 @@ async function callOnce<T>(
     system,
     prompt,
     output: Output.object({ schema: a.schema }),
-    maxOutputTokens: a.maxOutputTokens,
+    maxOutputTokens,
     temperature: a.temperature,
     abortSignal: a.signal,
     maxRetries: 0,
-    providerOptions: providerOptions(model.provider, a.settings),
+    providerOptions: providerOptions(model.provider, a.settings, a.task, model.modelId),
     // Sem isso o SDK imprime o erro no console; nós o tratamos abaixo.
     onError: () => {},
   });
@@ -164,8 +194,19 @@ export async function generateStructured<T>(
   let prompt = a.prompt;
   let usage: TokenUsage = {};
   let problems: { issues?: string[]; violations?: string[] } = {};
+  let budget = outputBudget(resolved.provider, a.maxOutputTokens);
   for (let call = 1; call <= MAX_CALLS; call++) {
-    const once = await callOnce(a, resolved, system, prompt);
+    let once: Awaited<ReturnType<typeof callOnce>>;
+    try {
+      once = await callOnce(a, resolved, system, prompt, budget);
+    } catch (e) {
+      // OpenRouter: o corte vem do raciocínio que passou da folga. Repete o mesmo pedido com o dobro do orçamento.
+      const retryCut =
+        e instanceof AiError && e.code === "truncated" && resolved.provider.id === "openrouter" && call < MAX_CALLS;
+      if (!retryCut) throw e;
+      budget *= 2;
+      continue;
+    }
     const raw = once.text;
     usage = addUsage(usage, once.usage);
     const parsed = parseLoose(raw);

@@ -1,0 +1,128 @@
+{
+ "id": "744000163340009",
+ "name": "Analista de Soluções III ( Flutter)",
+ "uuid": "eafeb429-0cfb-4136-9a46-76c0d8a86f4a",
+ "jobId": "76d9591d-701a-4bc3-8806-0be3c5261331",
+ "jobAdId": "484365b1-fe96-48b7-9c78-b29bcc9f4152",
+ "defaultJobAd": true,
+ "refNumber": "REF33333O",
+ "company": {
+  "name": "Experian",
+  "identifier": "Experian"
+ },
+ "location": {
+  "city": "Blumenau",
+  "country": "br",
+  "address": "Rua Doutor Léo de Carvalho, 74",
+  "remote": false,
+  "hybrid": true,
+  "fullLocation": "Blumenau, , Brazil"
+ },
+ "customField": [
+  {
+   "fieldId": "60e69c4340634a60d33cee4a",
+   "fieldLabel": "Cost Centre",
+   "valueId": "1807.BR.208.403500",
+   "valueLabel": "1807.BR.208.403500"
+  },
+  {
+   "fieldId": "60e69e937e79e3168b3b0cff",
+   "fieldLabel": "Employee Status",
+   "valueId": "2316a0dc-542b-4be2-a231-d586b8528aab",
+   "valueLabel": "Regular"
+  },
+  {
+   "fieldId": "6156f582e72a6b6d239c984f",
+   "fieldLabel": "Work Location",
+   "valueId": "10550899",
+   "valueLabel": "BR SP SAO PAULO (0001-80)"
+  },
+  {
+   "fieldId": "60e6a34d7e79e3168b3b0d01",
+   "fieldLabel": "Grade",
+   "valueId": "63189",
+   "valueLabel": "EB9.Tech | EB9"
+  },
+  {
+   "fieldId": "COUNTRY",
+   "fieldLabel": "Country/Region",
+   "valueId": "br",
+   "valueLabel": "Brazil"
+  },
+  {
+   "fieldId": "60e69e78b91f374974b7ff3d",
+   "fieldLabel": "Role Type",
+   "valueId": "bf21b4b0-99e7-4670-a4f0-222ad3790c9b",
+   "valueLabel": "Hybrid"
+  },
+  {
+   "fieldId": "60bf852122069d3816fd7cd1",
+   "fieldLabel": "Department",
+   "valueId": "13221468",
+   "valueLabel": "Technology"
+  },
+  {
+   "fieldId": "60e69eb6b672f26743759012",
+   "fieldLabel": "Schedule",
+   "valueId": "2b5b66bb-53a3-42b0-a68b-88bd1810c947",
+   "valueLabel": "Full Time"
+  },
+  {
+   "fieldId": "60bf852122069d3816fd7cd0",
+   "fieldLabel": "Brands",
+   "valueId": "bc8773eb-6c9f-4abb-8067-798e9b50dfb5",
+   "valueLabel": "Serasa Experian"
+  }
+ ],
+ "releasedDate": "2026-11-23T23:15:36.165Z",
+ "postingUrl": "https://jobs.smartrecruiters.com/Experian/744000163340009-analista-de-solucoes-iii-flutter-",
+ "applyUrl": "https://jobs.smartrecruiters.com/Experian/744000163340009-analista-de-solucoes-iii-flutter-?oga=true",
+ "referralUrl": "https://jobs.smartrecruiters.com/external-referrals/company/Experian/publication/eafeb429-0cfb-4136-9a46-76c0d8a86f4a?dcr_ci=Experian",
+ "jobAd": {
+  "sections": {
+   "companyDescription": {
+    "title": "Company Description",
+    "text": "<p>A Experian é uma empresa global de dados e tecnologia que impulsiona oportunidades para pessoas e empresas ao redor do mundo. Atuamos em diversos mercados, como serviços financeiros, saúde, automotivo, agronegócio, seguros, entre outros. A Experian investe em pessoas e em novas tecnologias avançadas para liberar o poder dos dados. Contamos com uma equipe incrível de 25.200 colaboradores em 32 países.</p><p><br>\nNossa singularidade é valorizar a sua. A cultura da Experian, centrada nas pessoas, inclusiva e orientada por propósito, é reconhecida por diversos prêmios — incluindo World’s Best Workplaces™ 2025 (Top 25 global da Fortune) e Great Place To Work™ em 26 países, entre outros. Confira o Experian Life nas redes sociais ou explore nosso site de carreiras para entender o porquê. A Experian também se orgulha de ser uma empregadora que promove igualdade de oportunidades e ação afirmativa.</p>"
+   },
+   "jobDescription": {
+    "title": "Job Description",
+    "text": "<p>Você vai atuar como referência técnica em Flutter, com ownership sobre as funcionalidades que entrega, da concepção à operação em produção. Vai trabalhar com PO e QA e apoiar o crescimento técnico do time.</p><p><strong>Responsabilidades:</strong></p><ul><li>Desenvolver e manter funcionalidades em Flutter, com foco em qualidade, performance e manutenibilidade</li><li>Atuar em código nativo Android (Kotlin/Java) e iOS (Swift) quando necessário, incluindo plugins e integrações via platform channels</li><li>Participar e conduzir code reviews e discussões de definição técnica e arquitetura</li><li>Diagnosticar e resolver problemas em produção, usando ferramentas de monitoramento e logs</li><li>Colaborar com PM, PO e QA em todo o ciclo de entrega, contribuindo com estimativas, priorização e documentação técnica</li><li>Apoiar e mentorar desenvolvedores menos experientes</li></ul><p>&#xa0;</p>"
+   },
+   "qualifications": {
+    "title": "Qualifications",
+    "text": "<ul><li>Experiência sólida com Flutter em produção&#xa0;</li><li>Domínio de gerenciamento de estado (Bloc, Riverpod ou similar) e de arquitetura limpa/modular</li><li>Experiência com testes automatizados (unitários, de widget e de integração)</li><li>Conhecimento de desenvolvimento nativo Android (Kotlin) e/ou iOS (Swift)</li><li>Git, CI/CD e versionamento de apps</li><li>Experiência com publicação, manutenção e evolução de aplicativos nas plataformas Android e iOS, incluindo rollout em etapas</li><li>Uso de ferramentas de IA no dia a dia de desenvolvimento (Cursor, Claude Code, etc.)</li></ul><p><strong>Desejável:</strong></p><ul><li>Experiência com integração de soluções baseadas em IA em produtos</li><li>Experiência com analytics mobile e rastreamento de eventos (UTM, funil de conversão)</li><li>Vivência com monitoramento de rollout (Play Console, App Store Connect)</li><li>Experiência com observabilidade (Crashlytics, Sentry, alertas)</li><li>Uso de feature flags e remote config</li></ul><p><strong>O que esperamos da sua atuação nesta posição:</strong></p><ul><li>Autonomia para tomar decisões técnicas e defendê-las com argumentos</li><li>Comunicação clara com perfis técnicos e não técnicos</li><li>Visão de produto e preocupação com o impacto do que entrega</li></ul><p>.</p>"
+   },
+   "additionalInformation": {
+    "title": "Additional Information",
+    "text": "<p>A Serasa Experian é muito mais do que você imagina. Com o propósito de criar um futuro melhor, ampliando oportunidades para pessoas e empresas, no Brasil somos mais de 4 mil pessoas que atuam em diversos times e especialidades. Aqui, cada conhecimento e diversidade se complementa e você pode trabalhar no que mais ama, estamos comprometidos a construir uma cultura inclusiva e um ambiente no qual pessoas possam equilibrar a carreira com seus compromissos e interesses pessoais, prezando pelo bem-estar.</p><p>A gente se dedica muito em ser uma das melhores e mais inovadoras empresas para se trabalhar do país, possibilitando experiências e carreiras incríveis para nossas pessoas. Nossa forte abordagem de pessoas em primeiro lugar é reconhecida externamente por meio de diversas certificações de mercado: fomos premiados pelo Great Place To Work™ em 24 países e pela certificação internacional Top Employers, além de sermos reconhecidos como uma das melhores empresas para jovens profissionais e contarmos com uma avaliação de 4,6 no Glassdoor. Cada reconhecimento nos indica que estamos no caminho certo, proporcionando um ambiente de trabalho cada vez melhor para nossos talentos.</p><div sr-tagline=\"\"></div><p>Experian Careers - Creating a better tomorrow together</p><p><a href=\"https://www.experian.com/careers/\" rel=\"noopener noreferrer\">Find out what its like to work for Experian by clicking here</a></p>"
+   }
+  }
+ },
+ "active": true,
+ "visibility": "PUBLIC",
+ "industry": {
+  "id": "financial_services",
+  "label": "Financial Services"
+ },
+ "function": {
+  "id": "information_technology",
+  "label": "Information Technology"
+ },
+ "department": {
+  "id": 13221468,
+  "label": "Technology"
+ },
+ "experienceLevel": {
+  "id": "not_applicable",
+  "label": "Not Applicable"
+ },
+ "typeOfEmployment": {
+  "id": "permanent",
+  "label": "Full-time"
+ },
+ "language": {
+  "code": "en",
+  "label": "English",
+  "labelNative": "English (US)"
+ }
+}

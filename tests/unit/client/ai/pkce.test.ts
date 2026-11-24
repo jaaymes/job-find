@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
-import { completeOpenRouterAuth, startOpenRouterAuth } from "@/lib/client/ai/pkce";
+import { completeOpenRouterAuth, startOpenRouterAuth, takeFreeConsentIntent } from "@/lib/client/ai/pkce";
 
 const KEY = "jobfind:pkce";
 
@@ -42,6 +42,14 @@ describe("PKCE do OpenRouter", () => {
       code_challenge_method: "S256",
     });
     expect(sessionStorage.getItem(KEY)).toBeNull();
+  });
+
+  it("o aceite dos gratuitos atravessa o redirect e é lido uma vez só", async () => {
+    await startOpenRouterAuth("https://app/cb", { freeConsent: true });
+    expect(takeFreeConsentIntent()).toBe(true);
+    expect(takeFreeConsentIntent()).toBe(false);
+    await startOpenRouterAuth("https://app/cb");
+    expect(takeFreeConsentIntent()).toBe(false);
   });
 
   it("sem verifier lança AiError sem chamar a rede", async () => {

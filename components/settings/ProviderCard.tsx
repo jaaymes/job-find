@@ -58,7 +58,10 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
   const [test, setTest] = useState<Test>({ state: "idle" });
   const [showGuide, setShowGuide] = useState(false);
   const isLocal = def.id === "local";
-  const needsReview = connected && def.privacyNote !== null && entry?.privacyAccepted !== true;
+  // OpenRouter: o padrão são os modelos gratuitos, que pedem o próprio aviso (`freeConsent`).
+  const isOpenRouter = def.id === "openrouter";
+  const needsReview =
+    connected && (isOpenRouter ? entry?.freeConsent !== true : def.privacyNote !== null && entry?.privacyAccepted !== true);
 
   async function runTest() {
     setTest({ state: "loading" });
@@ -108,12 +111,12 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
       </div>
       <p className="min-h-9 text-[13px] text-jf-ink-3">{detail}</p>
       {def.privacyNote && (
-        <p className="rounded-lg bg-jf-new-bg px-2.5 py-2 text-[13px] text-[#5a3400]">{def.privacyNote}</p>
+        <p className="rounded-lg bg-jf-new-bg px-2.5 py-2 text-[13px] text-jf-warn-fg-strong">{def.privacyNote}</p>
       )}
       <div className="flex flex-wrap gap-2">
         {connected ? (
           <>
-            <Button className="min-h-11 bg-jf-ink px-3.5 text-sm font-semibold text-white hover:bg-jf-ink-2" onClick={runTest} disabled={test.state === "loading"}>
+            <Button className="min-h-11 bg-jf-ink px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-ink-2" onClick={runTest} disabled={test.state === "loading"}>
               Testar conexão
             </Button>
             <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={remove}>
@@ -121,14 +124,14 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectPkce, onRe
             </Button>
             {needsReview && (
               <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
-                Revisar aviso de privacidade
+                {isOpenRouter ? "Revisar aviso dos modelos gratuitos" : "Revisar aviso de privacidade"}
               </Button>
             )}
           </>
         ) : (
           <>
             <Button
-              className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-white hover:bg-jf-brand-dark"
+              className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-brand-dark"
               onClick={def.auth === "pkce" ? onConnectPkce : onAdd}
             >
               {def.auth === "pkce" ? "Conectar" : isLocal ? "Configurar" : "Adicionar chave"}

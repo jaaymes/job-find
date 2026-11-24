@@ -1,7 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 import { ChanceBadge } from "@/components/jobs/ChanceBadge";
-import { formatAge, formatCollectedAt, isSourceStale, isStale, staleAfterHours, placeLabel } from "@/components/jobs/format";
+import { LinkedInSearchLink } from "@/components/jobs/LinkedInSearchLink";
+import { buildLinkedInSearchUrl } from "@/lib/client/jobs/linkedin-search";
+import { formatAge, formatCollectedAt, isSourceStale, isStale, staleAfterHours, placeLabel, SOURCE_LABELS } from "@/components/jobs/format";
 
 describe("ChanceBadge", () => {
   it("sem faixa convida a importar o currículo", () => {
@@ -15,7 +17,7 @@ describe("ChanceBadge", () => {
   });
 
   it.each([
-    ["alta", "bg-jf-alta text-white", "Alta · 86%"],
+    ["alta", "bg-jf-alta text-jf-surface", "Alta · 86%"],
     ["media", "bg-jf-media-bg text-jf-media-fg", "Média · 86%"],
     ["baixa", "bg-jf-baixa-bg text-jf-baixa-fg", "Baixa · 86%"],
   ] as const)("faixa %s usa as cores do protótipo", (band, classes, text) => {
@@ -35,6 +37,10 @@ describe("tokens de cor do protótipo", () => {
 
 describe("format", () => {
   const now = Date.parse("2026-11-23T15:00:00Z");
+  it("rótulos das novas fontes", () => {
+    expect(SOURCE_LABELS.fourdayweek).toBe("4 Day Week");
+    expect(SOURCE_LABELS.getonboard).toBe("Get on Board");
+  });
   it("formatAge", () => {
     expect(formatAge("2026-11-23T14:37:00Z", now)).toBe("há 23 min");
     expect(formatAge("2026-11-23T12:30:00Z", now)).toBe("há 2 h");
@@ -73,5 +79,27 @@ describe("format", () => {
     expect(placeLabel({ city: "São Paulo", country: "BR", acceptsBrazil: true, origin: "national" })).toBe("São Paulo, BR");
     expect(placeLabel({ city: null, country: "US", acceptsBrazil: true, origin: "international" })).toBe("US · aceita Brasil");
     expect(placeLabel({ city: null, country: null, acceptsBrazil: null, origin: "unknown" })).toBe("Local não informado");
+  });
+});
+
+describe("LinkedInSearchLink", () => {
+  const render = (filters: Parameters<typeof LinkedInSearchLink>[0]["filters"]) => {
+    const html = renderToStaticMarkup(<LinkedInSearchLink filters={filters} />);
+    const href = /href="([^"]*)"/.exec(html)?.[1]?.replaceAll("&amp;", "&");
+    return { html, href };
+  };
+
+  it("abre em nova aba, sem opener, com a URL montada dos filtros", () => {
+    const { html, href } = render({ q: "react", stacks: ["node"], workMode: "remote", seniority: ["senior"], since: "24h" });
+    expect(html).toContain(">Buscar também no LinkedIn</a>");
+    expect(html).toContain('target="_blank"');
+    expect(html).toContain('rel="noopener noreferrer"');
+    expect(href).toBe(
+      buildLinkedInSearchUrl({ q: "react", stacks: ["node"], workMode: "remote", seniority: ["senior"], since: "24h" }),
+    );
+  });
+
+  it("sem filtros usa a busca padrão", () => {
+    expect(render({}).href).toBe(buildLinkedInSearchUrl({}));
   });
 });

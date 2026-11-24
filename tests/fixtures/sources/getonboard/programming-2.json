@@ -1,0 +1,142 @@
+{
+ "data": [
+  {
+   "id": "full-stack-software-engineer-llamabara-tech-sac-lima",
+   "type": "job",
+   "attributes": {
+    "title": "Full-Stack Software Engineer",
+    "description_headline": "Requirements",
+    "description": "<p><strong>Bachelor’s degree</strong> in Systems Engineering, Computer Science, Software Engineering, Informatics, or a related field.</p><ul><li><strong>Advanced English</strong> level, including the ability to communicate verbally in English.</li><li><strong>Minimum 2 years</strong> of working experience.</li><li>Strong knowledge of <strong>algorithms</strong> and solid analytical and critical thinking skills.</li><li>Experience working with <strong>SQL databases</strong>.</li><li>Frontend experience with <strong>Vue.js</strong>, <strong>React</strong>, or <strong>Angular</strong>.</li><li>E",
+    "projects": "<p>Llamabara Tech SAC is a fast-growing technology company focused on delivering high-quality software built around real needs. As a Full Stack Software Engineer, you will join our internal engineering team in Magdalena del Mar, Lima. This is an in-house role, not a client placement.</p><p>You will build end-to-end features across the frontend, backend, and data layer, including API integrations and CI/CD, while collaborating daily in English with our global colleagues under Agile and DevOps practices.</p><p>Hybrid role, with the first three months on-site for onboarding. No specific programmi",
+    "functions_headline": "About the Role",
+    "functions": "<p>We are looking for Full Stack Software Engineers to join our team. This role requires close collaboration with international teams, so daily communication is conducted in English.</p><p>Your main goals will be to build reliable features, integrate with modern backend services, and deliver maintainable products following sound engineering practices. You will work across frontend and backend responsibilities, contributing to the full software development lifecycle.</p><ul><li>Develop and maintain frontend and backend components.</li><li>Integrate with RESTful APIs and/or GraphQL.</li><li>Work",
+    "benefits_headline": "What We Offer",
+    "benefits": "<ul><li>Full-time employment with an indefinite-term contract.</li><li>100% EPS health coverage (Rímac – Plan 1).</li><li>Opportunity to participate in international projects.</li><li>Hybrid work model with an office in Magdalena del Mar, Lima, Perú.</li><li>The first 3 months fully onsite for onboarding.</li><li>Company integration activities and team events.</li></ul>",
+    "desirable_headline": "",
+    "desirable": "",
+    "remote": false,
+    "remote_modality": "hybrid",
+    "remote_zone": null,
+    "countries": [
+     "Peru"
+    ],
+    "lang": "en",
+    "category_name": "Programming",
+    "perks": [
+     "accessible",
+     "flexible_hours",
+     "bicycle_parking",
+     "health_coverage",
+     "company_retreats",
+     "computer_repairs",
+     "free_car_parking",
+     "computer_provided",
+     "informal_dresscode",
+     "beverages_and_snacks"
+    ],
+    "min_salary": 1500,
+    "max_salary": 2100,
+    "published_at": 1793291029,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 45,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": []
+    },
+    "location_cities": {
+     "data": [
+      {
+       "id": 130,
+       "type": "location_city"
+      }
+     ]
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 3,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "algorithms",
+       "type": "tag",
+       "attributes": {
+        "name": "Algorithms",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "vue-js",
+       "type": "tag",
+       "attributes": {
+        "name": "Vue.js",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "react",
+       "type": "tag",
+       "attributes": {
+        "name": "React",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "angularjs",
+       "type": "tag",
+       "attributes": {
+        "name": "Angular",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "llamabara-tech-sac",
+      "type": "company",
+      "attributes": {
+       "name": "Llamabara Tech SAC",
+       "description": "Impulsamos a las empresas a través de soluciones de software innovadoras y servi",
+       "long_description": "",
+       "projects": "",
+       "benefits": "<ul><li>Full-time employment with an indefinite-term contract.</li><li>100% EPS ",
+       "web": "https://pe.linkedin.com/company/llamabara",
+       "twitter": null,
+       "github": null,
+       "facebook": null,
+       "angellist": null,
+       "country": "PE",
+       "response_time_in_days": {
+        "min": null,
+        "max": null
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/20943/Llamabara_tech_logo-02.png"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/full-stack-software-engineer-llamabara-tech-sac-lima"
+   }
+  }
+ ],
+ "meta": {
+  "page": 2,
+  "per_page": 100,
+  "total_pages": 2
+ }
+}

@@ -17,7 +17,7 @@ export function NoProviderCta({ task }: { task: AiTask }) {
       </p>
       <HardLink
         href="/configuracoes"
-        className="w-fit inline-flex min-h-11 items-center rounded-lg bg-jf-brand px-4 text-sm font-semibold text-white no-underline outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
+        className="w-fit inline-flex min-h-11 items-center rounded-lg bg-jf-brand px-4 text-sm font-semibold text-jf-surface no-underline outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
       >
         Conecte uma IA em Configurações
       </HardLink>

@@ -13,6 +13,8 @@ export const GITHUB_HOST = "api.github.com";
 /** Repositórios de vagas curados da D-07 (nada além desta lista é consultado). */
 export const GITHUB_REPOS = [
   "frontendbr/vagas", "backend-br/vagas", "react-brasil/vagas", "qa-brasil/vagas", "androiddevbr/vagas",
+  "soujava/vagas-java", "DevOps-Brasil/Vagas", "phpdevbr/vagas", "CocoaHeadsBrasil/vagas",
+  "dotnetdevbr/vagas", "vuejs-br/vagas", "flutterbr/vagas",
 ] as const;
 
 const PAGE_SIZE = 100;
@@ -69,7 +71,9 @@ async function fetchRepo(ctx: ConnectorContext, repo: string): Promise<unknown[]
 }
 
 function fetchRepos(ctx: ConnectorContext): AsyncGenerator<unknown> {
-  return fetchBoardsPooled(ctx, "GitHub", GITHUB_REPOS, (repo) => fetchRepo(ctx, repo));
+  return fetchBoardsPooled(ctx, "GitHub", GITHUB_REPOS, (repo) => fetchRepo(ctx, repo), {
+    scopePrefix: (repo) => `${repo}#`,
+  });
 }
 
 // --- normalização -----------------------------------------------------------------------------

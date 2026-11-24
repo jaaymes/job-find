@@ -110,6 +110,25 @@ describe("FiltersPanel: chance", () => {
   });
 });
 
+describe("FiltersPanel: fonte", () => {
+  const props = {
+    onClear: () => {},
+    open: true,
+    id: "f",
+    savedSearch: { active: false, canSave: false, error: null, onSave: () => {}, onClear: () => {} },
+  };
+
+  it("lista só fontes com conector ativo", () => {
+    render(<FiltersPanel {...props} filters={{}} onChange={() => {}} hasProfile={false} />);
+    const select = screen.getByRole("combobox", { name: /Fonte/ });
+    const labels = Array.from(select.querySelectorAll("option")).map((o) => o.textContent);
+    expect(labels).toContain("Greenhouse");
+    expect(labels).toContain("4 Day Week");
+    expect(labels).toContain("Get on Board");
+    expect(labels).toContain("SmartRecruiters");
+  });
+});
+
 describe("useJobsWithChance", () => {
   function setup(pages: { items: JobSummary[]; nextCursor: string | null }[], bands: ("alta" | "media" | "baixa")[] | null) {
     const queue = [...pages];

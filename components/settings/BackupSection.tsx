@@ -148,7 +148,9 @@ export function BackupSection() {
               {pending.keys.includes("jobfind:v1:ai") && (
                 <p className="text-[13px] text-jf-ink-3">
                   Sem importar as chaves, as configurações de IA vêm do arquivo, mas as chaves de API continuam as deste
-                  navegador (nenhuma chave nova é adicionada) e provedores que existem só aqui são mantidos.
+                  navegador (nenhuma chave nova é adicionada) e provedores que existem só aqui são mantidos. Os avisos de
+                  privacidade dos provedores nunca vêm do arquivo: os que você ainda não aceitou aqui serão pedidos de
+                  novo.
                 </p>
               )}
               {pending.skipped.length > 0 && (

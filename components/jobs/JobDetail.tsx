@@ -149,8 +149,9 @@ function LoadError({ onRetry }: { onRetry: () => void }) {
 
 function Description({ job }: { job: JobDetailData }) {
   // Descrição já sanitizada no servidor; renderiza só depois da segunda camada (SEC-02).
-  const dofollow = job.attribution.some((a) => a.dofollow);
-  const html = useMemo(() => toSafeHtml(job.descriptionHtml, { dofollow }), [job.descriptionHtml, dofollow]);
+  // Links da descrição são sempre nofollow: numa vaga com várias fontes, o texto pode ter vindo de uma fonte
+  // nofollow (HN, GitHub). O dofollow devido à fonte fica no link de atribuição.
+  const html = useMemo(() => toSafeHtml(job.descriptionHtml), [job.descriptionHtml]);
   return (
     <article className={`${CARD} min-w-0 flex-[999_1_560px] p-5 leading-relaxed sm:p-7`}>
       <h2 className="mb-3 text-xl font-semibold">Sobre a vaga</h2>

@@ -239,20 +239,39 @@ describe("getJob", () => {
     expect(d2!.attribution[0]).toMatchObject({ label: "Fonte lever", dofollow: true });
   });
 
-  it("applyUrl é a URL bruta da fonte vista por último, com os parâmetros intactos (D-07)", async () => {
+  it("applyUrl é a URL bruta da fonte vista por último entre as de mesma confiança, com os parâmetros intactos (D-07)", async () => {
     const db = await testDb();
     const [row] = await db.select({ id: jobs.id }).from(jobs).where(sql`dedupe_key = 'dk-0'`);
-    const himalayasUrl = "https://himalayas.app/companies/acme/jobs/dev?utm_source=api";
+    const greenhouseUrl = "https://boards.greenhouse.io/acme/jobs/1?gh_src=api";
     await db.insert(jobSources).values({
-      source: "himalayas",
-      externalId: "him-0",
+      source: "greenhouse",
+      externalId: "gh-0",
       jobId: Number(row.id),
-      url: himalayasUrl,
+      url: greenhouseUrl,
       lastSeenAt: new Date(NOW + HOUR),
     });
     const d = await getJob(db, Number(row.id));
-    expect(d!.applyUrl).toBe(himalayasUrl);
+    expect(d!.applyUrl).toBe(greenhouseUrl);
     expect(d!.urlCanonical).toBe("https://example.com/j/0");
+  });
+
+  it("applyUrl de fonte menos confiável nunca substitui o do ATS, mesmo vista depois", async () => {
+    const db = await testDb();
+    const [row] = await db.select({ id: jobs.id }).from(jobs).where(sql`dedupe_key = 'dk-0'`);
+    for (const [source, url] of [
+      ["hn", "https://evil.example.com/apply"],
+      ["himalayas", "https://himalayas.app/companies/acme/jobs/dev"],
+    ] as const) {
+      await db.insert(jobSources).values({
+        source,
+        externalId: `${source}-0`,
+        jobId: Number(row.id),
+        url,
+        lastSeenAt: new Date(NOW + 2 * HOUR),
+      });
+    }
+    const d = await getJob(db, Number(row.id));
+    expect(d!.applyUrl).toBe("https://lever.example.com/0");
   });
 
   it("retorna null para id inexistente ou vaga expirada", async () => {

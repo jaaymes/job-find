@@ -274,7 +274,8 @@ describe("applyBackup", () => {
     expect(applyBackup(b, { acceptKeys: false })).toEqual([]);
     const now = aiSettingsStore.get();
     expect(now.tasks.extract).toEqual({ provider: "openai", model: "gpt-5-mini" });
-    expect(now.dataCollectionDeny).toBe(false);
+    // O arquivo não afrouxa a recusa de coleta de dados.
+    expect(now.dataCollectionDeny).toBe(true);
     expect(now.providers.local?.baseURL).toBe("http://127.0.0.1:11434/v1");
     expect(currentKey("openai")).toBe(ORIGINAL_KEY);
     expect(currentKey("anthropic")).toBe("sk-ant-keep-0001");
@@ -297,6 +298,46 @@ describe("applyBackup", () => {
     const b = (await parsed(jsonFile(envelope({ [AI]: file })))).backup;
     applyBackup(b, { acceptKeys: true });
     expect(currentKey("openai")).toBe(ORIGINAL_KEY);
+    expect(aiSettingsStore.get().dataCollectionDeny).toBe(true);
+  });
+
+  it("aceites de privacidade nunca vêm do arquivo, com ou sem acceptKeys", async () => {
+    for (const acceptKeys of [false, true]) {
+      aiSettingsStore.set({
+        ...defaultAiSettings(),
+        providers: { openrouter: { key: ORIGINAL_KEY, addedAt: added, source: "paste" } },
+      });
+      const file = {
+        providers: {
+          openrouter: { key: ATTACKER_KEY, addedAt: added, source: "paste", freeConsent: true },
+          deepseek: { key: "sk-deepseek-evil", addedAt: added, source: "paste", privacyAccepted: true },
+        },
+        tasks: { extract: { provider: "openrouter", model: "x/y:free" }, analyze: null, cv: null },
+        dataCollectionDeny: false,
+      };
+      const b = (await parsed(jsonFile(envelope({ [AI]: file })))).backup;
+      expect(applyBackup(b, { acceptKeys })).toEqual([]);
+      const now = aiSettingsStore.get();
+      expect(now.providers.openrouter?.freeConsent).toBeUndefined();
+      expect(now.providers.deepseek?.privacyAccepted).toBeUndefined();
+      expect(now.dataCollectionDeny).toBe(true);
+    }
+  });
+
+  it("aceites locais já dados são mantidos ao importar", async () => {
+    aiSettingsStore.set({
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: ORIGINAL_KEY, addedAt: added, source: "paste", freeConsent: true } },
+      dataCollectionDeny: false,
+    });
+    const file = {
+      providers: { openrouter: { addedAt: added, source: "paste" } },
+      tasks: { extract: null, analyze: null, cv: null },
+      dataCollectionDeny: false,
+    };
+    const b = (await parsed(jsonFile(envelope({ [AI]: file })))).backup;
+    applyBackup(b, { acceptKeys: false });
+    expect(aiSettingsStore.get().providers.openrouter?.freeConsent).toBe(true);
     expect(aiSettingsStore.get().dataCollectionDeny).toBe(false);
   });
 

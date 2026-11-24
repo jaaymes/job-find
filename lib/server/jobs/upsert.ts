@@ -3,6 +3,7 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import type { Db } from "@/lib/server/db/client";
 import { jobSources, jobs } from "@/lib/server/db/schema";
 import type { SourceId } from "@/lib/shared/types/job";
+import { trustOf } from "@/lib/server/sources/trust";
 import type { EnrichedJob } from "./enrich-job";
 import { MAX_AGE_DAYS } from "./expire";
 
@@ -29,6 +30,8 @@ function clampPublished(publishedAt: Date | null, now: Date): Date {
  * depois por URL canônica e por fim por `dedupe_key` (janela de 30 dias); sem
  * nenhuma, insere. A linha de `jobs` só é reescrita se o conteúdo mudou ou se a
  * fonte é nova para ela; `job_sources` sempre recebe `last_seen_at = now`.
+ * O conteúdo só é reescrito se a fonte for ao menos tão confiável quanto todas as que a vaga já tem
+ * (`SOURCE_TRUST`): uma vaga postada no HN não troca a descrição de uma vaga vinda do ATS da empresa.
  */
 export async function upsertJob(
   db: Db,
@@ -58,6 +61,7 @@ export async function upsertJob(
   }
 
   let liveKeyMatch = false;
+  let keyMatchId: number | undefined;
   if (targetId === undefined) {
     // Janela de 30 dias: um registro antigo com a mesma chave não absorve a vaga nova.
     const [byKey] = await db
@@ -68,7 +72,17 @@ export async function upsertJob(
       await db.update(jobs).set({ expiredAt: now }).where(eq(jobs.id, byKey.id));
     } else {
       liveKeyMatch = byKey !== undefined;
+      keyMatchId = byKey?.id;
     }
+  }
+
+  // Fontes já ligadas à vaga existente: decidem se esta fonte pode reescrever o conteúdo.
+  const existingId = targetId ?? keyMatchId;
+  let canOverwrite = true;
+  if (existingId !== undefined) {
+    const [existing] = await db.select({ sources: jobs.sources }).from(jobs).where(eq(jobs.id, existingId));
+    const incoming = trustOf(ref.source);
+    canOverwrite = (existing?.sources ?? []).every((s) => trustOf(s) <= incoming);
   }
 
   const published = clampPublished(job.publishedAt, now);
@@ -103,7 +117,14 @@ export async function upsertJob(
     salaryPeriod: job.salaryPeriod,
     contentHash: job.contentHash,
   };
-  const changed = sql`${jobs.contentHash} IS DISTINCT FROM ${job.contentHash} OR NOT (${ref.source} = ANY(${jobs.sources}))`;
+  const newSource = sql`NOT (${ref.source} = ANY(${jobs.sources}))`;
+  const changed = canOverwrite
+    ? sql`${jobs.contentHash} IS DISTINCT FROM ${job.contentHash} OR ${newSource}`
+    : newSource;
+  // Fonte menos confiável: só entra na lista de fontes (e pode antecipar a data de publicação).
+  const contentSet = canOverwrite
+    ? { ...content, stacks: sql`${stacksLiteral}::text[]`, searchVector }
+    : {};
 
   let jobId: number;
   let status: UpsertStatus;
@@ -122,14 +143,12 @@ export async function upsertJob(
     const rows = await db
       .update(jobs)
       .set({
-        ...content,
-        ...(!keyOwner || keyOwner.id === targetId ? { dedupeKey: job.dedupeKey } : {}),
-        ...(!urlOwner || urlOwner.id === targetId ? { urlCanonical: job.urlCanonical } : {}),
-        stacks: sql`${stacksLiteral}::text[]`,
+        ...contentSet,
+        ...(canOverwrite && (!keyOwner || keyOwner.id === targetId) ? { dedupeKey: job.dedupeKey } : {}),
+        ...(canOverwrite && (!urlOwner || urlOwner.id === targetId) ? { urlCanonical: job.urlCanonical } : {}),
         sources: sourcesUnion,
         publishedAt: sql`LEAST(${jobs.publishedAt}, ${published.toISOString()}::timestamptz)`,
         updatedAt: now,
-        searchVector,
       })
       .where(and(eq(jobs.id, targetId), isNull(jobs.expiredAt), sql`(${changed})`))
       .returning({ id: jobs.id });
@@ -153,12 +172,10 @@ export async function upsertJob(
         target: jobs.dedupeKey,
         targetWhere: isNull(jobs.expiredAt),
         set: {
-          ...content,
-          stacks: sql`${stacksLiteral}::text[]`,
+          ...(canOverwrite ? { ...content, stacks: sql`${stacksLiteral}::text[]`, searchVector: sql`excluded.search_vector` } : {}),
           sources: sourcesUnion,
           publishedAt: sql`LEAST(${jobs.publishedAt}, excluded.published_at)`,
           updatedAt: now,
-          searchVector: sql`excluded.search_vector`,
         },
         setWhere: sql`${changed}`,
       })

@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { AiError } from "@/lib/client/ai/errors";
-import { completeOpenRouterAuth, takeFreeConsentIntent } from "@/lib/client/ai/pkce";
+import { completeOAuth } from "@/lib/client/ai/oauth";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { HardLink } from "@/components/ui/hard-link";
 
@@ -22,6 +22,7 @@ function Callback() {
   const params = useSearchParams();
   // Fixa o code na primeira renderização: replaceState o remove da URL e o useSearchParams passaria a vê-lo vazio.
   const [code] = useState(() => params.get("code"));
+  const [state] = useState(() => params.get("state"));
   const started = useRef(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,12 +31,12 @@ function Callback() {
     started.current = true;
     // Tira o code da URL antes de qualquer outra coisa.
     window.history.replaceState(null, "", window.location.pathname);
-    // Lido (e apagado) antes da troca, para não sobrar no sessionStorage em caso de erro.
-    const freeConsent = takeFreeConsentIntent();
     if (!code) return;
     void (async () => {
       try {
-        const key = await completeOpenRouterAuth(code);
+        const { tokens, intent } = await completeOAuth({ code, state, origin: window.location.origin });
+        const { key } = tokens;
+        const freeConsent = intent.freeConsent === true;
         const current = aiSettingsStore.get();
         const prev = current.providers.openrouter;
         const res = aiSettingsStore.set({
@@ -60,7 +61,7 @@ function Callback() {
         setError(messageFor(e));
       }
     })();
-  }, [code, router]);
+  }, [code, state, router]);
 
   if (error || !code) {
     return (

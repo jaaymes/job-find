@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FREE_MODELS_NOTE, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
-import { startOpenRouterAuth } from "@/lib/client/ai/pkce";
+import { startOAuth } from "@/lib/client/ai/oauth";
 import { isConnected } from "@/lib/client/ai/model";
 import { aiSettingsStore, type AiSettings } from "@/lib/client/ai/settings";
 import { useStore } from "@/lib/client/storage/store";
@@ -103,8 +103,7 @@ export function AiSettingsScreen() {
 
   async function startPkce() {
     try {
-      const callback = `${window.location.origin}/configuracoes/callback`;
-      window.location.assign(await startOpenRouterAuth(callback, { freeConsent: true }));
+      window.location.assign(await startOAuth("openrouter", window.location.origin, { freeConsent: true }));
     } catch {
       setPkceError("Não foi possível iniciar a conexão. Verifique se o navegador permite guardar dados da sessão.");
     }

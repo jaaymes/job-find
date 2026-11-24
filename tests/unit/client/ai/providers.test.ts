@@ -25,7 +25,7 @@ describe("registro de provedores", () => {
     for (const id of PROVIDER_IDS) expect(PROVIDERS[id].id).toBe(id);
   });
 
-  it("OpenRouter usa PKCE e o Free Models Router como padrão", () => {
+  it("OpenRouter usa OAuth e o Free Models Router como padrão", () => {
     expect(PROVIDERS.openrouter.auth.kind).toBe("oauth");
     expect(PROVIDERS.openrouter.defaultModels.analyze).toBe("openrouter/free");
   });

@@ -18,7 +18,7 @@ Só quem tem acesso de escrita ao repositório consegue aplicar labels, então q
 
 ## Configuração (uma vez, pelo mantenedor)
 
-1. **Chave da API:** em *Settings → Secrets and variables → Actions*, crie o secret `ANTHROPIC_API_KEY`. Quem usa assinatura do Claude pode trocar por um token gerado com `claude setup-token`, salvo como `CLAUDE_CODE_OAUTH_TOKEN` (e, no workflow, trocar `anthropic_api_key` por `claude_code_oauth_token`).
+1. **Token do Claude:** no seu computador, com o Claude Code instalado, rode `claude setup-token`, faça login com a conta da assinatura (Pro/Max) e copie o token que aparece. Em *Settings → Secrets and variables → Actions → New repository secret*, crie o secret `CLAUDE_CODE_OAUTH_TOKEN` com esse valor. O uso conta no limite da sua assinatura. Para usar a API paga, crie o secret `ANTHROPIC_API_KEY` (em console.anthropic.com) e troque `claude_code_oauth_token` por `anthropic_api_key` no workflow.
 2. **Label:** crie o label `ia-review` em *Issues → Labels*.
 3. **Actions:** em *Settings → Actions → General*:
    - *Fork pull request workflows from outside collaborators*: **Require approval for all external contributors**.

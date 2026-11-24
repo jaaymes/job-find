@@ -84,6 +84,26 @@ describe("createSafeFetch", () => {
     await expect(createSafeFetch([HOST])(`${ORIGIN}/down`)).rejects.toThrow(/500/);
   });
 
+  it("envia POST com corpo e cabeçalhos", async () => {
+    pool
+      .intercept({ path: "/runs", method: "POST", body: '{"a":1}', headers: { "content-type": "application/json" } })
+      .reply(201, '{"data":{"id":"r1"}}');
+    const res = await createSafeFetch([HOST])(`${ORIGIN}/runs`, {
+      method: "POST",
+      body: '{"a":1}',
+      headers: { "content-type": "application/json" },
+    });
+    expect(res.status).toBe(201);
+    expect(await res.json()).toEqual({ data: { id: "r1" } });
+  });
+
+  it("POST não repete em 5xx nem segue redirect", async () => {
+    pool.intercept({ path: "/p5", method: "POST" }).reply(503, "");
+    await expect(createSafeFetch([HOST])(`${ORIGIN}/p5`, { method: "POST", body: "{}" })).rejects.toThrow(/503/);
+    pool.intercept({ path: "/p3", method: "POST" }).reply(302, "", { headers: { location: "/b" } });
+    await expect(createSafeFetch([HOST])(`${ORIGIN}/p3`, { method: "POST", body: "{}" })).rejects.toThrow(/redirect/);
+  });
+
   it("não tenta de novo em 404 e informa o status", async () => {
     pool.intercept({ path: "/nf" }).reply(404, "");
     await expect(createSafeFetch([HOST])(`${ORIGIN}/nf`)).rejects.toThrow(/404/);

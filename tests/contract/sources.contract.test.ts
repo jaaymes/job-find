@@ -21,6 +21,7 @@ import { GITHUB_REPOS, issueSchema as githubIssue } from "@/lib/server/sources/g
 import { GREENHOUSE_BOARDS, jobSchema as greenhouseJob } from "@/lib/server/sources/greenhouse";
 import { jobSchema as himalayasJob } from "@/lib/server/sources/himalayas";
 import { commentSchema as hnComment } from "@/lib/server/sources/hn";
+import { GUPY_TERMS, jobSchema as gupyJob } from "@/lib/server/sources/gupy";
 import { jobSchema as jobicyJob } from "@/lib/server/sources/jobicy";
 import { LEVER_BOARDS, jobSchema as leverJob } from "@/lib/server/sources/lever";
 import { jobSchema as remoteokJob } from "@/lib/server/sources/remoteok";
@@ -53,6 +54,11 @@ const BOUNDS: Partial<Record<SourceId, Bound>> = {
   fourdayweek: { isBeyondFirst: (u) => new URL(u).searchParams.get("page") !== "1" || new URL(u).searchParams.has("work_arrangement"), emptyBody: '{"data":[],"has_more":false}' },
   getonboard: { isBeyondFirst: (u) => new URL(u).searchParams.get("page") !== "1", emptyBody: '{"data":[]}' },
   github: { isBeyondFirst: (u) => new URL(u).searchParams.get("page") !== "1", emptyBody: "[]" },
+  // Só a primeira página do primeiro termo vai à rede.
+  gupy: {
+    isBeyondFirst: (u) => new URL(u).searchParams.get("jobName") !== GUPY_TERMS[0] || new URL(u).searchParams.get("offset") !== "0",
+    emptyBody: '{"data":[]}',
+  },
   jobicy: { isBeyondFirst: (u) => new URL(u).searchParams.get("geo") !== "brazil", emptyBody: '{"jobs":[]}' },
   // Só 5 vagas por empresa (cada uma custa uma requisição de detalhe) e nenhuma página além da primeira.
   smartrecruiters: {
@@ -190,6 +196,10 @@ describe("contrato das fontes (APIs reais)", () => {
       expect(safeUrl(job.url), `getonboard: url inválida em ${job.externalId}`).toBe(job.url);
       expect(job.title.length).toBeGreaterThan(0);
     }
+  });
+
+  it("gupy: payload real bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {
+    await expectSource("gupy", gupyJob);
   });
 
   it("jobicy: payload real bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {

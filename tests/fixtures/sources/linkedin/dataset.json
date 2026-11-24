@@ -1,0 +1,41 @@
+[
+  {
+    "id": "4321000001",
+    "url": "https://br.linkedin.com/jobs/view/desenvolvedor-react-pleno-at-empresa-exemplo-4321000001",
+    "title": "Desenvolvedor React Pleno",
+    "location": "São Paulo, São Paulo, Brazil",
+    "companyName": "Empresa Exemplo",
+    "companyUrl": "https://br.linkedin.com/company/empresa-exemplo",
+    "experienceLevel": "Mid-Senior level",
+    "contractType": "Full-time",
+    "workType": "Engineering and Information Technology",
+    "sector": "Software Development",
+    "salary": "",
+    "applyType": "EXTERNAL",
+    "postedTimeAgo": "5 hours ago",
+    "postedDate": "2026-11-23",
+    "applicationsCount": "Over 100 applicants",
+    "description": "Buscamos pessoa desenvolvedora React com TypeScript.",
+    "descriptionHtml": "<p>Buscamos pessoa desenvolvedora <strong>React</strong> com TypeScript.</p>"
+  },
+  {
+    "id": "4321000002",
+    "url": "https://www.linkedin.com/jobs/view/estagio-em-desenvolvimento-at-outra-4321000002",
+    "title": "Estágio em Desenvolvimento de Software",
+    "location": "Brazil",
+    "companyName": "Outra Empresa",
+    "experienceLevel": "Internship",
+    "contractType": "Internship",
+    "postedDate": "2026-11-23",
+    "description": "Estágio remoto em desenvolvimento.",
+    "descriptionHtml": ""
+  },
+  {
+    "id": "4321000003",
+    "url": "https://evil.example.com/jobs/view/4321000003",
+    "title": "Desenvolvedor Java",
+    "location": "Brazil",
+    "companyName": "Golpe",
+    "postedDate": "2026-11-23"
+  }
+]

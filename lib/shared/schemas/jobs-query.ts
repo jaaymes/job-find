@@ -16,6 +16,8 @@ const SOURCE_IDS = [
   "fourdayweek",
   "getonboard",
   "arbeitnow",
+  "gupy",
+  "linkedin",
 ] as const satisfies readonly SourceId[];
 
 /**

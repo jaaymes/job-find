@@ -15,7 +15,9 @@ export type SourceId =
   | "smartrecruiters"
   | "fourdayweek"
   | "getonboard"
-  | "arbeitnow";
+  | "arbeitnow"
+  | "gupy"
+  | "linkedin";
 
 export type JobOrigin = "national" | "international" | "unknown";
 

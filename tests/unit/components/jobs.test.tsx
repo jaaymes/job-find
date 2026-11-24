@@ -41,6 +41,8 @@ describe("format", () => {
     expect(SOURCE_LABELS.fourdayweek).toBe("4 Day Week");
     expect(SOURCE_LABELS.getonboard).toBe("Get on Board");
     expect(SOURCE_LABELS.arbeitnow).toBe("Arbeitnow");
+    expect(SOURCE_LABELS.gupy).toBe("Gupy");
+    expect(SOURCE_LABELS.linkedin).toBe("LinkedIn");
   });
   it("formatAge", () => {
     expect(formatAge("2026-11-23T14:37:00Z", now)).toBe("há 23 min");

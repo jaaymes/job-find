@@ -63,7 +63,8 @@ async function readBodyCapped(body: { getReader(): ReadableStreamDefaultReader<U
 /**
  * Fetch restrito para as fontes (SEC-06): só https para hosts da allowlist, redirect manual
  * (máx. 3 saltos, cada um revalidado), timeout total, limite de bytes em streaming e
- * 1 retentativa em 5xx/429.
+ * 1 retentativa em 5xx/429. POST (só para APIs que exigem, como iniciar uma execução no Apify) não
+ * segue redirect nem repete a requisição.
  */
 export function createSafeFetch(allowedHosts: string[], opts: Options = {}): SafeFetch {
   const timeoutMs = opts.timeoutMs ?? DEFAULT_TIMEOUT_MS;
@@ -99,16 +100,19 @@ export function createSafeFetch(allowedHosts: string[], opts: Options = {}): Saf
       else external.addEventListener("abort", onExternalAbort, { once: true });
     }
     const headers = { ...DEFAULT_HEADERS, ...opts.headers, ...init.headers };
+    const method = init.method ?? "GET";
+    const body = method === "POST" ? init.body : undefined;
 
     try {
       let current = url;
       let redirects = 0;
       let retried = false;
       for (;;) {
-        const res = await fetch(current, { headers, redirect: "manual", signal: controller.signal });
+        const res = await fetch(current, { method, headers, body, redirect: "manual", signal: controller.signal });
 
         if (REDIRECT_STATUSES.has(res.status)) {
           await res.body?.cancel().catch(() => undefined);
+          if (method === "POST") throw new Error(`redirect não permitido em POST (status ${res.status})`);
           const location = res.headers.get("location");
           if (!location) throw new Error(`redirect sem Location (status ${res.status})`);
           if (++redirects > MAX_REDIRECTS) throw new Error(`redirect: mais de ${MAX_REDIRECTS} saltos`);
@@ -116,7 +120,7 @@ export function createSafeFetch(allowedHosts: string[], opts: Options = {}): Saf
           continue;
         }
 
-        if ((res.status >= 500 || res.status === 429) && !retried) {
+        if ((res.status >= 500 || res.status === 429) && !retried && method === "GET") {
           retried = true;
           await res.body?.cancel().catch(() => undefined);
           const wait = parseRetryAfterMs(res.headers.get("retry-after")) ?? RETRY_BASE_DELAY_MS;

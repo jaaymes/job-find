@@ -33,7 +33,7 @@ export const EvalJob: z.ZodType<JobDetail> = z.object({
   language: z.string(),
   stacks: z.array(z.string()),
   sources: z.array(
-    z.enum(["himalayas", "greenhouse", "ashby", "lever", "jobicy", "github", "wwr", "remoteok", "hn", "smartrecruiters", "fourdayweek", "getonboard", "arbeitnow"]),
+    z.enum(["himalayas", "greenhouse", "ashby", "lever", "jobicy", "github", "wwr", "remoteok", "hn", "smartrecruiters", "fourdayweek", "getonboard", "arbeitnow", "gupy", "linkedin"]),
   ),
   salaryMin: Nullable(z.number()),
   salaryMax: Nullable(z.number()),
@@ -45,7 +45,7 @@ export const EvalJob: z.ZodType<JobDetail> = z.object({
   descriptionHtml: z.string(),
   attribution: z.array(
     z.object({
-      source: z.enum(["himalayas", "greenhouse", "ashby", "lever", "jobicy", "github", "wwr", "remoteok", "hn", "smartrecruiters", "fourdayweek", "getonboard", "arbeitnow"]),
+      source: z.enum(["himalayas", "greenhouse", "ashby", "lever", "jobicy", "github", "wwr", "remoteok", "hn", "smartrecruiters", "fourdayweek", "getonboard", "arbeitnow", "gupy", "linkedin"]),
       label: z.string(),
       url: z.string(),
       dofollow: z.boolean(),

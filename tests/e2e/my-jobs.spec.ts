@@ -211,10 +211,14 @@ test("do cabeçalho público para Minhas vagas sem violar a CSP, e as abas funci
   );
 
   // Hidratou sob a CSP de nonce: a navegação por setas troca a aba selecionada.
+  // O título vem do HTML do servidor e aparece antes da hidratação; uma seta antes dela se perde (CI lento).
+  // Repete foco + seta até o React responder, em vez de supor que já hidratou.
   const first = page.getByRole("tab", { name: /Favoritas/ });
-  await first.focus();
-  await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("tab", { name: /Salvas/ })).toHaveAttribute("aria-selected", "true");
+  await expect(async () => {
+    await first.focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.getByRole("tab", { name: /Salvas/ })).toHaveAttribute("aria-selected", "true", { timeout: 1000 });
+  }).toPass({ timeout: 15_000 });
   await page.keyboard.press("End");
   await expect(page.getByRole("tab", { name: /Ocultas/ })).toHaveAttribute("aria-selected", "true");
   await page.keyboard.press("Home");

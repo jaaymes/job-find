@@ -1,0 +1,617 @@
+{
+ "data": [
+  {
+   "id": "01a20343-c1b4-796e-a499-9485645c0e63",
+   "slug": "staff-engineer-at-ledgebrook-58be5667",
+   "title": "Staff Engineer",
+   "description": "#### Description\n\nLedgebrook is an AI-native specialty insurance platform. When a business needs coverage that is custom and complex, its broker comes to us, and our underwriters give them an answer, often in hours rather than weeks.\n\nWe built our technology from scratch, with AI in it from the first line of code. The technology helps price the risk; the underwriter uses their judgment to decide. ",
+   "url": "https://4dayweek.io/job/staff-engineer-at-ledgebrook-58be5667",
+   "category": "engineering",
+   "role": "Software Engineer",
+   "level": "senior",
+   "schedule_type": "unlimited_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "United States",
+     "continent": "North America",
+     "latitude": 39.83,
+     "longitude": -98.58,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "country": "Canada",
+     "continent": "North America",
+     "latitude": 56.13,
+     "longitude": -106.35,
+     "work_arrangement": "remote"
+    }
+   ],
+   "skills": [
+    {
+     "name": "Agile",
+     "slug": "agile"
+    },
+    {
+     "name": "Communication",
+     "slug": "communication"
+    },
+    {
+     "name": "Design Reviews",
+     "slug": "design-reviews"
+    },
+    {
+     "name": "Mentoring",
+     "slug": "mentoring"
+    },
+    {
+     "name": "Software Architecture",
+     "slug": "software-architecture"
+    },
+    {
+     "name": "Stakeholder Management",
+     "slug": "stakeholder-management"
+    },
+    {
+     "name": "System Design",
+     "slug": "system-design"
+    },
+    {
+     "name": "Technical Leadership",
+     "slug": "technical-leadership"
+    }
+   ],
+   "stack": [
+    {
+     "name": "Angular",
+     "slug": "angular"
+    },
+    {
+     "name": "JavaScript",
+     "slug": "javascript"
+    },
+    {
+     "name": "Node.js",
+     "slug": "nodejs"
+    },
+    {
+     "name": "Python",
+     "slug": "python"
+    },
+    {
+     "name": "React",
+     "slug": "react"
+    },
+    {
+     "name": "TypeScript",
+     "slug": "typescript"
+    }
+   ],
+   "tools": [
+    {
+     "name": "AWS CodePipeline",
+     "slug": "aws-codepipeline"
+    },
+    {
+     "name": "CI/CD",
+     "slug": "ci-cd"
+    },
+    {
+     "name": "GitHub Actions",
+     "slug": "github-actions"
+    },
+    {
+     "name": "Jenkins",
+     "slug": "jenkins"
+    }
+   ],
+   "posted_at": "2026-11-22T12:38:22Z",
+   "company": {
+    "id": "01a057d1-212f-7615-8a7f-73534d19b3ea",
+    "slug": "ledgebrook",
+    "name": "Ledgebrook",
+    "url": "https://4dayweek.io/company/ledgebrook",
+    "website": "https://www.ledgebrook.com",
+    "logo_url": "https://media.4dayweek.io/files/1788117170123_b3c4d6c645ce6c63.jpg",
+    "short_description": "The fast-growing E&S insurtech is remote-first with flexible hours and an unlimited time-off policy.",
+    "country": "United States",
+    "employees": 250,
+    "schedule_type": "unlimited_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a20186-ad30-7054-9bcd-b154d06de0ff",
+   "slug": "data-and-bi-specialist-at-intetics-f0978b0b",
+   "title": "Data & BI Specialist",
+   "description": "**Intetics Inc.**, a global technology company providing custom software application development, distributed professional teams, software product quality assessment, and “all-things-digital” solutions, is seeking a highly skilled and experienced **Data & BI Specialist** to join our dynamic team.\n\nOur client is an international organization supporting global environmental and sustainability initia",
+   "url": "https://4dayweek.io/job/data-and-bi-specialist-at-intetics-f0978b0b",
+   "category": "data",
+   "role": "BI Specialist",
+   "schedule_type": "part_time",
+   "hours_per_week_min": 20,
+   "hours_per_week_max": 20,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Estonia",
+     "continent": "Europe",
+     "latitude": 58.6,
+     "longitude": 25.01,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "country": "Latvia",
+     "continent": "Europe",
+     "latitude": 56.88,
+     "longitude": 24.6,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Poland",
+     "continent": "Europe",
+     "latitude": 51.92,
+     "longitude": 19.15,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Romania",
+     "continent": "Europe",
+     "latitude": 45.94,
+     "longitude": 24.97,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Serbia",
+     "continent": "Europe",
+     "latitude": 44.02,
+     "longitude": 21.01,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Ukraine",
+     "continent": "Europe",
+     "latitude": 48.38,
+     "longitude": 31.17,
+     "work_arrangement": "remote"
+    }
+   ],
+   "skills": [
+    {
+     "name": "Data Modeling",
+     "slug": "data-modeling"
+    },
+    {
+     "name": "Data Validation",
+     "slug": "data-validation"
+    },
+    {
+     "name": "KPI Definition",
+     "slug": "kpi-definition"
+    },
+    {
+     "name": "Stakeholder Management",
+     "slug": "stakeholder-management"
+    },
+    {
+     "name": "Technical Documentation",
+     "slug": "technical-documentation"
+    }
+   ],
+   "stack": [
+    {
+     "name": "DAX",
+     "slug": "dax"
+    },
+    {
+     "name": "SQL",
+     "slug": "sql"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Power BI",
+     "slug": "power-bi"
+    },
+    {
+     "name": "Power Query",
+     "slug": "power-query"
+    }
+   ],
+   "posted_at": "2026-11-22T04:32:13Z"
+  },
+  {
+   "id": "01a20090-f3e3-76d5-a08f-61b8f3d9a493",
+   "slug": "full-stack-engineer-tiger-at-ledgebrook-523d9c5a",
+   "title": "Full Stack Engineer - Tiger",
+   "description": "#### Description\n\nLedgebrook is an AI-native specialty insurance platform. When a business needs coverage that is custom and complex, its broker comes to us, and our underwriters give them an answer, often in hours rather than weeks.\n\nWe built our technology from scratch, with AI in it from the first line of code. The technology helps price the risk; the underwriter uses their judgment to decide. ",
+   "url": "https://4dayweek.io/job/full-stack-engineer-tiger-at-ledgebrook-523d9c5a",
+   "category": "engineering",
+   "role": "Full Stack Engineer",
+   "level": "mid",
+   "schedule_type": "unlimited_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "United States",
+     "continent": "North America",
+     "latitude": 39.83,
+     "longitude": -98.58,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "country": "Canada",
+     "continent": "North America",
+     "latitude": 56.13,
+     "longitude": -106.35,
+     "work_arrangement": "remote"
+    }
+   ],
+   "salary_min": 10000000,
+   "salary_max": 15000000,
+   "salary_currency": "USD",
+   "salary_period": "year",
+   "skills": [
+    {
+     "name": "Agile",
+     "slug": "agile"
+    },
+    {
+     "name": "Code Review",
+     "slug": "code-review"
+    },
+    {
+     "name": "Communication",
+     "slug": "communication"
+    },
+    {
+     "name": "Data Modeling",
+     "slug": "data-modeling"
+    },
+    {
+     "name": "Requirements Gathering",
+     "slug": "requirements-gathering"
+    },
+    {
+     "name": "Test Automation",
+     "slug": "test-automation"
+    },
+    {
+     "name": "Time Management",
+     "slug": "time-management"
+    }
+   ],
+   "stack": [
+    {
+     "name": "Angular",
+     "slug": "angular"
+    },
+    {
+     "name": "Bootstrap",
+     "slug": "bootstrap"
+    },
+    {
+     "name": "CSS",
+     "slug": "css"
+    },
+    {
+     "name": "HTML",
+     "slug": "html"
+    },
+    {
+     "name": "JavaScript",
+     "slug": "javascript"
+    },
+    {
+     "name": "Node.js",
+     "slug": "nodejs"
+    },
+    {
+     "name": "Python",
+     "slug": "python"
+    },
+    {
+     "name": "React",
+     "slug": "react"
+    },
+    {
+     "name": "TypeScript",
+     "slug": "typescript"
+    }
+   ],
+   "tools": [
+    {
+     "name": "AWS CodePipeline",
+     "slug": "aws-codepipeline"
+    },
+    {
+     "name": "Docker",
+     "slug": "docker"
+    },
+    {
+     "name": "GitHub Actions",
+     "slug": "github-actions"
+    },
+    {
+     "name": "Jenkins",
+     "slug": "jenkins"
+    },
+    {
+     "name": "Kubernetes",
+     "slug": "kubernetes"
+    }
+   ],
+   "posted_at": "2026-11-22T00:03:49Z",
+   "company": {
+    "id": "01a057d1-212f-7615-8a7f-73534d19b3ea",
+    "slug": "ledgebrook",
+    "name": "Ledgebrook",
+    "url": "https://4dayweek.io/company/ledgebrook",
+    "website": "https://www.ledgebrook.com",
+    "logo_url": "https://media.4dayweek.io/files/1788117170123_b3c4d6c645ce6c63.jpg",
+    "short_description": "The fast-growing E&S insurtech is remote-first with flexible hours and an unlimited time-off policy.",
+    "country": "United States",
+    "employees": 250,
+    "schedule_type": "unlimited_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1fe0e-f41d-7e24-bd9a-ce75ea04eb24",
+   "slug": "full-stack-engineer-tiger-at-ledgebrook-4436232d",
+   "title": "Full Stack Engineer - Tiger",
+   "description": "#### Description\n\nLedgebrook is an AI-native specialty insurance platform. When a business needs coverage that is custom and complex, its broker comes to us, and our underwriters give them an answer, often in hours rather than weeks.\n\nWe built our technology from scratch, with AI in it from the first line of code. The technology helps price the risk; the underwriter uses their judgment to decide. ",
+   "url": "https://4dayweek.io/job/full-stack-engineer-tiger-at-ledgebrook-4436232d",
+   "category": "engineering",
+   "role": "Full Stack Engineer",
+   "level": "mid",
+   "schedule_type": "unlimited_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "United States",
+     "continent": "North America",
+     "latitude": 39.83,
+     "longitude": -98.58,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "country": "Canada",
+     "continent": "North America",
+     "latitude": 56.13,
+     "longitude": -106.35,
+     "work_arrangement": "remote"
+    }
+   ],
+   "salary_min": 10000000,
+   "salary_max": 15000000,
+   "salary_currency": "USD",
+   "salary_period": "year",
+   "skills": [
+    {
+     "name": "Agile",
+     "slug": "agile"
+    },
+    {
+     "name": "Code Review",
+     "slug": "code-review"
+    },
+    {
+     "name": "Communication",
+     "slug": "communication"
+    },
+    {
+     "name": "Data Modeling",
+     "slug": "data-modeling"
+    },
+    {
+     "name": "Requirements Gathering",
+     "slug": "requirements-gathering"
+    },
+    {
+     "name": "Test Automation",
+     "slug": "test-automation"
+    },
+    {
+     "name": "Time Management",
+     "slug": "time-management"
+    }
+   ],
+   "stack": [
+    {
+     "name": "Angular",
+     "slug": "angular"
+    },
+    {
+     "name": "Bootstrap",
+     "slug": "bootstrap"
+    },
+    {
+     "name": "CSS",
+     "slug": "css"
+    },
+    {
+     "name": "HTML",
+     "slug": "html"
+    },
+    {
+     "name": "JavaScript",
+     "slug": "javascript"
+    },
+    {
+     "name": "Node.js",
+     "slug": "nodejs"
+    },
+    {
+     "name": "Python",
+     "slug": "python"
+    },
+    {
+     "name": "React",
+     "slug": "react"
+    },
+    {
+     "name": "TypeScript",
+     "slug": "typescript"
+    }
+   ],
+   "tools": [
+    {
+     "name": "AWS CodePipeline",
+     "slug": "aws-codepipeline"
+    },
+    {
+     "name": "Docker",
+     "slug": "docker"
+    },
+    {
+     "name": "GitHub Actions",
+     "slug": "github-actions"
+    },
+    {
+     "name": "Jenkins",
+     "slug": "jenkins"
+    },
+    {
+     "name": "Kubernetes",
+     "slug": "kubernetes"
+    }
+   ],
+   "posted_at": "2026-11-21T12:22:35Z",
+   "company": {
+    "id": "01a057d1-212f-7615-8a7f-73534d19b3ea",
+    "slug": "ledgebrook",
+    "name": "Ledgebrook",
+    "url": "https://4dayweek.io/company/ledgebrook",
+    "website": "https://www.ledgebrook.com",
+    "logo_url": "https://media.4dayweek.io/files/1788117170123_b3c4d6c645ce6c63.jpg",
+    "short_description": "The fast-growing E&S insurtech is remote-first with flexible hours and an unlimited time-off policy.",
+    "country": "United States",
+    "employees": 250,
+    "schedule_type": "unlimited_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1fd33-3c2c-7d66-a258-335f6db4cf6d",
+   "slug": "manager-data-quality-at-ledgebrook-d590fac1",
+   "title": "Manager, Data Quality",
+   "description": "#### Description\n\nLedgebrook is an AI-native specialty insurance platform. When a business needs coverage that is custom and complex, its broker comes to us, and our underwriters give them an answer, often in hours rather than weeks.\n\nWe built our technology from scratch, with AI in it from the first line of code. The technology helps price the risk; the underwriter uses their judgment to decide. ",
+   "url": "https://4dayweek.io/job/manager-data-quality-at-ledgebrook-d590fac1",
+   "category": "data",
+   "role": "Data Quality Manager",
+   "level": "lead",
+   "schedule_type": "unlimited_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "United States",
+     "continent": "North America",
+     "latitude": 39.83,
+     "longitude": -98.58,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "country": "Canada",
+     "continent": "North America",
+     "latitude": 56.13,
+     "longitude": -106.35,
+     "work_arrangement": "remote"
+    }
+   ],
+   "skills": [
+    {
+     "name": "Data Governance",
+     "slug": "data-governance"
+    },
+    {
+     "name": "Data Quality",
+     "slug": "data-quality"
+    },
+    {
+     "name": "Data Validation",
+     "slug": "data-validation"
+    },
+    {
+     "name": "Insurance Data (P&C)",
+     "slug": "insurance-data-(pandc)"
+    },
+    {
+     "name": "Requirements translation",
+     "slug": "requirements-translation"
+    },
+    {
+     "name": "Root cause analysis",
+     "slug": "root-cause-analysis"
+    },
+    {
+     "name": "Stakeholder Management",
+     "slug": "stakeholder-management"
+    },
+    {
+     "name": "Statistical Analysis",
+     "slug": "statistical-analysis"
+    },
+    {
+     "name": "Team Leadership",
+     "slug": "team-leadership"
+    }
+   ],
+   "stack": [
+    {
+     "name": "SQL",
+     "slug": "sql"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Excel",
+     "slug": "excel"
+    },
+    {
+     "name": "Power BI",
+     "slug": "power-bi"
+    }
+   ],
+   "posted_at": "2026-11-21T08:22:36Z",
+   "company": {
+    "id": "01a057d1-212f-7615-8a7f-73534d19b3ea",
+    "slug": "ledgebrook",
+    "name": "Ledgebrook",
+    "url": "https://4dayweek.io/company/ledgebrook",
+    "website": "https://www.ledgebrook.com",
+    "logo_url": "https://media.4dayweek.io/files/1788117170123_b3c4d6c645ce6c63.jpg",
+    "short_description": "The fast-growing E&S insurtech is remote-first with flexible hours and an unlimited time-off policy.",
+    "country": "United States",
+    "employees": 250,
+    "schedule_type": "unlimited_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  }
+ ],
+ "page": 1,
+ "limit": 5,
+ "total": 3382,
+ "has_more": true
+}

@@ -13,6 +13,9 @@ const SOURCE_IDS = [
   "remoteok",
   "hn",
   "smartrecruiters",
+  "fourdayweek",
+  "getonboard",
+  "arbeitnow",
 ] as const satisfies readonly SourceId[];
 
 /**

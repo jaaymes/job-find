@@ -59,7 +59,7 @@ function Result({ r }: { r: AnalysisRecord }) {
         )}
       </div>
       <div>
-        <h3 className="mb-1.5 text-sm font-semibold text-[#7A4500]">Lacunas</h3>
+        <h3 className="mb-1.5 text-sm font-semibold text-jf-warn-fg">Lacunas</h3>
         {r.gaps.length > 0 ? (
           <ul className="list-disc pl-[18px] text-sm leading-relaxed">
             {r.gaps.map((s, i) => (

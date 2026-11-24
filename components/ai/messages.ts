@@ -31,9 +31,12 @@ export function aiFailure(e: AiError, ctx: AiFailureContext): string {
     case "invalid_output":
       return "A IA devolveu um resultado que não consegui usar. Tente de novo.";
     case "blocked_by_privacy":
+      if (e.meta?.reason === "free_models") {
+        return "Para usar os modelos gratuitos do OpenRouter, aceite o aviso deles no card do OpenRouter em Configurações.";
+      }
       return "Aceite o aviso de privacidade deste provedor em Configurações para usá-lo.";
     case "data_policy":
-      return "Nenhum provedor do OpenRouter atende este modelo sem guardar dados. Escolha outro modelo ou desmarque 'Pedir ao OpenRouter que use só provedores que não guardam meus dados' em Configurações.";
+      return "Nenhum provedor do OpenRouter atende este modelo com a sua política de dados. Em modelos gratuitos, libere-os em openrouter.ai/settings/privacy. Nos pagos, escolha outro modelo ou desmarque 'Pedir ao OpenRouter que use só provedores que não guardam meus dados' em Configurações.";
     case "local_blocked":
       return "Não foi possível acessar a IA local. O servidor precisa liberar esta página (CORS).";
     default:

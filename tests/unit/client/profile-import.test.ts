@@ -78,6 +78,9 @@ describe("importProfile", () => {
 });
 
 describe("PROFILE_EXTRACT_V1", () => {
+  it("a extração pede até 16000 tokens de saída", () => {
+    expect(PROFILE_EXTRACT_V1.maxOutputTokens).toBe(16000);
+  });
   it("tem id, versão e buildUser que embrulha o texto", () => {
     expect(PROFILE_EXTRACT_V1.id).toBe("profile.extract");
     expect(PROFILE_EXTRACT_V1.version).toBe(1);

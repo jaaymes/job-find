@@ -2,6 +2,7 @@ import { pathToRegexp } from "next/dist/compiled/path-to-regexp";
 import { describe, expect, it } from "vitest";
 import { AI_CSP_HOSTS } from "../../../lib/shared/ai-hosts";
 import { buildCsp, buildNonceCsp, buildSecurityHeaders } from "../../../lib/shared/csp";
+import { THEME_SCRIPT_HASH } from "../../../lib/shared/theme-script";
 
 function directive(csp: string, name: string): string {
   const found = csp.split("; ").find((d) => d === name || d.startsWith(`${name} `));
@@ -59,7 +60,14 @@ describe("buildNonceCsp (rotas (local))", () => {
 
   it("script-src com nonce, strict-dynamic e wasm-unsafe-eval, sem unsafe-inline nem unsafe-eval", () => {
     const script = directive(csp, "script-src").split(" ");
-    expect(script).toEqual(["script-src", "'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"]);
+    expect(script).toEqual([
+      "script-src",
+      "'self'",
+      `'nonce-${nonce}'`,
+      "'strict-dynamic'",
+      "'wasm-unsafe-eval'",
+      THEME_SCRIPT_HASH,
+    ]);
     expect(csp).toContain("'wasm-unsafe-eval'");
     expect(csp).not.toContain("'unsafe-eval'");
   });
@@ -89,6 +97,16 @@ describe("buildNonceCsp (rotas (local))", () => {
     expect(local).not.toContain("https:");
     expect(local).not.toContain("*");
     expect(directive(csp, "script-src")).not.toContain("'unsafe-inline'");
+  });
+
+  it("a CSP com nonce libera o script de tema por hash", () => {
+    expect(directive(buildNonceCsp([], "n"), "script-src")).toContain(THEME_SCRIPT_HASH);
+    expect(directive(buildNonceCsp([], "n", { dev: true }), "script-src")).toContain(THEME_SCRIPT_HASH);
+  });
+
+  it("a CSP pública não leva hash (senão 'unsafe-inline' seria ignorado)", () => {
+    expect(directive(buildCsp([]), "script-src")).not.toContain("sha256-");
+    expect(directive(buildCsp([], { dev: true }), "script-src")).not.toContain("sha256-");
   });
 
   it("muda o nonce a cada chamada com nonces diferentes", () => {

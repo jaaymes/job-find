@@ -36,9 +36,12 @@ describe("conector Ashby", () => {
     expect(ashby.allowedHosts).toEqual([ASHBY_HOST]);
     expect(ashby.attribution.dofollow).toBe(false);
     expect(CONNECTORS.ashby).toBe(ashby);
-    expect(ASHBY_BOARDS).toEqual([
-      "nubank", "supabase", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
-    ]);
+    // A lista cresceu na D-03 (descoberta de boards): os curados originais continuam nela, sem duplicatas.
+    expect(new Set(ASHBY_BOARDS).size).toBe(ASHBY_BOARDS.length);
+    expect(ASHBY_BOARDS.length).toBeGreaterThanOrEqual(50);
+    expect(ASHBY_BOARDS).toEqual(
+      expect.arrayContaining(["nubank", "supabase", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",]),
+    );
   });
 
   it("coleta e normaliza a fixture (teste comum)", async () => {

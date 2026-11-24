@@ -51,9 +51,21 @@ export type ConnectorContext = {
   /**
    * Falha parcial que não derruba a fonte (ex.: um board fora do ar num conector multi-board).
    * O runner registra o resumo em `source_runs.error` e, nessa coleta, não conta coleta perdida
-   * (`markMissedRuns`), porque o snapshot ficou incompleto.
+   * (`markMissedRuns`) da fonte inteira, porque o snapshot ficou incompleto, salvo quando o
+   * conector reporta escopo (`reportScope`): aí só os boards do escopo contam.
    */
   reportPartial(label: string, error: unknown): void;
+  /**
+   * Prefixos de `externalId` dos boards lidos por completo nesta coleta (só os que vieram sem erro e
+   * com vagas). Com escopo, o runner conta coleta perdida e expira só as vagas desses prefixos.
+   */
+  reportScope(prefixes: readonly string[]): void;
+  /**
+   * Prazo de busca da fonte em epoch ms: conectores em rodízio param de agendar requisições perto
+   * dele. O runner já desconta a margem para a requisição em andamento e a gravação, então a fonte
+   * inteira cabe no teto de 90 s.
+   */
+  deadlineAt: number;
   signal: AbortSignal;
   now: Date;
 };
@@ -65,6 +77,15 @@ export type Connector = {
   minIntervalMinutes: number;
   /** Hosts liberados no fetch seguro desta fonte (URLs base fixas no código). */
   allowedHosts: string[];
+  /** Limite de bytes por resposta no fetch seguro; sem ele vale o padrão de `createSafeFetch` (10 MB). */
+  maxResponseBytes?: number;
+  /**
+   * Só para fontes incrementais (`fullSnapshot: false`) que revisitam o catálogo inteiro dentro
+   * deste número de horas. Com ele, a coleta conta coleta perdida para as vagas da fonte não vistas
+   * há mais que isso, e `expireJobs` as alcança como faz com as fontes de snapshot. Fontes que só
+   * trazem as vagas mais novas e nunca revisitam as antigas (Himalayas, Jobicy, HN) não declaram.
+   */
+  revisitsCatalogWithinHours?: number;
   attribution: { label: string; url: string; dofollow: boolean };
   fetch: (ctx: ConnectorContext) => AsyncIterable<unknown>;
   /** Retorna `null` para vagas que não são de tecnologia (RN-01). */

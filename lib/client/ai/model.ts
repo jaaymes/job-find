@@ -2,7 +2,7 @@ import "client-only";
 
 import type { LanguageModel } from "ai";
 import { AiError } from "./errors";
-import { PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderDef, type ProviderId } from "./providers";
+import { isFreeModel, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderDef, type ProviderId } from "./providers";
 import type { AiSettings } from "./settings";
 
 export function isConnected(s: AiSettings, id: ProviderId): boolean {
@@ -16,6 +16,16 @@ function needsPrivacyAck(s: AiSettings, id: ProviderId): boolean {
   return PROVIDERS[id].privacyNote !== null && s.providers[id]?.privacyAccepted !== true;
 }
 
+/** Modelo gratuito do OpenRouter sem o aviso dos gratuitos aceito. */
+function needsFreeAck(s: AiSettings, id: ProviderId, modelId: string): boolean {
+  return id === "openrouter" && isFreeModel(modelId) && s.providers.openrouter?.freeConsent !== true;
+}
+
+/** Provedor conectado e liberado para rodar este modelo. */
+function usable(s: AiSettings, id: ProviderId, modelId: string): boolean {
+  return isConnected(s, id) && !needsPrivacyAck(s, id) && !needsFreeAck(s, id, modelId);
+}
+
 /**
  * Há como rodar a tarefa agora? Mesma regra do `resolveTaskModel`: com escolha explícita, o provedor
  * escolhido precisa estar conectado e com o aviso de privacidade aceito; sem escolha, basta algum
@@ -23,8 +33,8 @@ function needsPrivacyAck(s: AiSettings, id: ProviderId): boolean {
  */
 export function hasUsableProvider(s: AiSettings, task: AiTask): boolean {
   const choice = s.tasks[task];
-  if (choice) return isConnected(s, choice.provider) && !needsPrivacyAck(s, choice.provider);
-  return PROVIDER_IDS.some((p) => isConnected(s, p) && !needsPrivacyAck(s, p));
+  if (choice) return usable(s, choice.provider, choice.model);
+  return PROVIDER_IDS.some((p) => usable(s, p, PROVIDERS[p].defaultModels[task]));
 }
 
 /**
@@ -45,10 +55,13 @@ export async function resolveTaskModel(
     if (needsPrivacyAck(s, choice.provider)) {
       throw new AiError("blocked_by_privacy", { meta: { provider: choice.provider } });
     }
+    if (needsFreeAck(s, choice.provider, choice.model)) {
+      throw new AiError("blocked_by_privacy", { meta: { provider: choice.provider, reason: "free_models" } });
+    }
     id = choice.provider;
     modelId = choice.model;
   } else {
-    const first = PROVIDER_IDS.find((p) => isConnected(s, p) && !needsPrivacyAck(s, p));
+    const first = PROVIDER_IDS.find((p) => usable(s, p, PROVIDERS[p].defaultModels[task]));
     if (!first) throw new AiError("no_provider");
     id = first;
     modelId = PROVIDERS[first].defaultModels[task];

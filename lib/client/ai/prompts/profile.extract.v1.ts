@@ -27,6 +27,6 @@ export const PROFILE_EXTRACT_V1: PromptDef<{ cvText: string }, Profile> = {
   buildUser: ({ cvText }) =>
     `Extraia o perfil do currículo abaixo.\n\n${wrapUntrusted("cv", cvText, CV_MAX_CHARS)}`,
   schema: Profile,
-  maxOutputTokens: 8000,
+  maxOutputTokens: 16000,
   temperature: 0,
 };

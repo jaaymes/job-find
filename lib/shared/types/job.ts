@@ -12,7 +12,10 @@ export type SourceId =
   | "wwr"
   | "remoteok"
   | "hn"
-  | "smartrecruiters";
+  | "smartrecruiters"
+  | "fourdayweek"
+  | "getonboard"
+  | "arbeitnow";
 
 export type JobOrigin = "national" | "international" | "unknown";
 

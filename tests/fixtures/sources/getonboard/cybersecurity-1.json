@@ -1,0 +1,136 @@
+{
+ "data": [
+  {
+   "id": "infosec-analyst-i-lemontech-remote",
+   "type": "job",
+   "attributes": {
+    "title": "Infosec Analyst I",
+    "description_headline": "Requisitos 🎯 (Excluyente)",
+    "description": "<ul><li><strong>Formación:</strong> Titulado/a o egresado/a de Ingeniería Informática, Seguridad de la Información o carreras afines.</li><li><strong>Experiencia:</strong> 0 a 2 años de experiencia en seguridad de la información, GRC, auditoría TI o roles similares.</li><li><strong>Conocimientos técnicos:</strong> Fundamentos comprobables de ISO 27001, buenas prácticas de seguridad y nociones de protección de datos (normativa LATAM).</li><li><strong>Herramientas:</strong> Manejo de herramientas de ofimática y sistemas de gestión de tickets/evidencia. Nociones de herramientas de escaneo de vuln",
+    "projects": "<p>En <strong>LemonTech🍋</strong>, desarrollamos tecnología para la industria legal (Legaltech) en Latinoamérica, optimizando tiempos, facturación, casos y documentos para estudios jurídicos y departamentos legales. <strong>Buscamos a nuestro próximo InfoSec Analyst I </strong>para unirse a nuestro equipo. Este rol es el punto de entrada ideal para desarrollarte en el área de ciberseguridad y GRC (Gobierno, Riesgo y Cumplimiento).</p><p>Serás responsable de apoyar la operación de nuestro Sistema de Gestión de Seguridad de la Información (SGSI), trabajando codo a codo y bajo la supervisión de n",
+    "functions_headline": "Funciones Principales ✅",
+    "functions": "<p>Tu día a día se enfocará en las siguientes áreas operativas:</p><ul><li><strong>Políticas y SGSI:</strong> Mantener actualizada la documentación del SGSI (control de versiones) y redactar borradores de procedimientos y registros utilizando plantillas existentes.</li><li><strong>Riesgos y Controles:</strong> Levantar y mantener el inventario de activos, recopilar insumos para evaluaciones de riesgo (evidencia, vulnerabilidades) y hacer seguimiento al avance de los planes de tratamiento.</li><li><strong>Due Diligence y Proveedores:</strong> Completar cuestionarios estándar de seguridad de cli",
+    "benefits_headline": "🍋 Beneficios LemonTech",
+    "benefits": "<p>En<strong> LemonTech creemos que el talento se cuida, </strong>se potencia y se disfruta. Por eso, además de tu compensación, contamos con más de <i><strong>beneficios pensados para tu desarrollo, tu bienestar y tu día a día..</strong></i></p><ul><li><strong>⏰ Viernes corto </strong>— hasta las 15:00 hrs</li><li>🏝️ +7 días <strong>extra de vacaciones</strong> al cumplir 1 año</li><li>📖 Cofinanciamos hasta el<strong> 50% de tus estudio</strong></li><li><strong>🇺🇸 Inglés </strong>desde 15 USD al mes</li><li><strong>🎂 Día libre </strong>en tu cumpleaños</li><li><strong>🍼 Postnatal parental</st",
+    "desirable_headline": "Competencias Deseadas ⭐️",
+    "desirable": "<ul><li><strong>Certificación:</strong> ISO 27001 Foundation (será un requisito obligatorio más adelante para tu ascenso a nivel Analyst, por lo que es un gran plus si ya la tienes).</li><li><strong>Uso de IA:</strong> Interés y capacidad para usar herramientas de Inteligencia Artificial de forma segura para acelerar tareas simples (resumir, redactar), protegiendo siempre la información clasificada.</li><li class=\"lexxy-nested-listitem\"><strong>Soft Skills clave:</strong><ul><li><strong>Grit &amp; Accountability:</strong> Das seguimiento a las tareas hasta su cierre y respondes por la calidad ",
+    "remote": true,
+    "remote_modality": "fully_remote",
+    "remote_zone": null,
+    "countries": [
+     "Remote"
+    ],
+    "lang": "lang_not_specified",
+    "category_name": "Cybersecurity",
+    "perks": [
+     "remote_full",
+     "flexible_hours",
+     "remote_partial",
+     "health_coverage",
+     "computer_provided",
+     "informal_dresscode",
+     "vacation_over_legal",
+     "vacation_on_birthday",
+     "parental_leave_over_legal"
+    ],
+    "min_salary": null,
+    "max_salary": null,
+    "published_at": 1794582115,
+    "response_time_in_days": {
+     "min": null,
+     "max": null
+    },
+    "applications_count": 476,
+    "location_regions": {
+     "data": []
+    },
+    "location_tenants": {
+     "data": []
+    },
+    "location_cities": {
+     "data": []
+    },
+    "modality": {
+     "data": {
+      "id": 1,
+      "type": "modality"
+     }
+    },
+    "seniority": {
+     "data": {
+      "id": 2,
+      "type": "seniority"
+     }
+    },
+    "tags": {
+     "data": [
+      {
+       "id": "information-security",
+       "type": "tag",
+       "attributes": {
+        "name": "Information Security",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "iso-27001",
+       "type": "tag",
+       "attributes": {
+        "name": "ISO 27001",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "data-protection",
+       "type": "tag",
+       "attributes": {
+        "name": "Data Protection",
+        "keywords": ""
+       }
+      },
+      {
+       "id": "vulnerability-scanning",
+       "type": "tag",
+       "attributes": {
+        "name": "Vulnerability Scanning",
+        "keywords": ""
+       }
+      }
+     ]
+    },
+    "company": {
+     "data": {
+      "id": "lemontech",
+      "type": "company",
+      "attributes": {
+       "name": "LemonTech",
+       "description": "Empresa SaaS (Software as a Service) líder a nivel LATAM en el rubro Legaltech.",
+       "long_description": "<h2> ¿Qué es LemonTech? 🎯</h2><p>En<strong> LemonTech somos pioneros y referente",
+       "projects": "<p>En <strong>LemonTech🍋,</strong> somos una empresa <strong>SaaS líder</strong>",
+       "benefits": "<h3><strong>🍋 Beneficios LemonTech</strong></h3><p>En<strong> LemonTech creemos ",
+       "web": "http://www.lemontech.com",
+       "twitter": "",
+       "github": "LemontechSA",
+       "facebook": "",
+       "angellist": "",
+       "country": "CL",
+       "response_time_in_days": {
+        "min": 10,
+        "max": 24
+       },
+       "logo": "https://getonbrd-prod.s3.amazonaws.com/uploads/users/logo/497/Captura_de_pantalla_2025-06-09_125308.png"
+      }
+     }
+    }
+   },
+   "links": {
+    "public_url": "https://www.getonbrd.com/jobs/infosec-analyst-i-lemontech-remote"
+   }
+  }
+ ],
+ "meta": {
+  "page": 1,
+  "per_page": 100,
+  "total_pages": 1
+ }
+}

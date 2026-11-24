@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "@/lib/shared/zod";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
+import { ASHBY_BOARDS } from "@/lib/server/sources/boards/ashby";
 import { countryCodeFromName, parseLocation } from "@/lib/server/sources/location";
 import { safeUrl } from "@/lib/shared/url";
 import type { WorkMode } from "@/lib/shared/types/job";
@@ -9,10 +10,8 @@ import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/so
 /** Host fixo da API (D-07): o fetch seguro só aceita URLs base definidas no código. */
 export const ASHBY_HOST = "api.ashbyhq.com";
 
-/** Boards curados da D-07 (nada além desta lista é consultado). */
-export const ASHBY_BOARDS = [
-  "nubank", "supabase", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
-] as const;
+/** Boards curados (D-03): a lista fica em `boards/ashby.ts`; nada além dela é consultado. */
+export { ASHBY_BOARDS };
 
 const boardSchema = z.object({ jobs: z.array(z.unknown()) });
 

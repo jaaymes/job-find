@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { THEME_SCRIPT } from "@/lib/shared/theme-script";
 
 function scriptSrc(csp: string): string {
   const found = csp.split("; ").find((d) => d.startsWith("script-src "));
@@ -51,7 +52,7 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
     expect(await page.evaluate(() => (window as unknown as { __cspViolations: string[] }).__cspViolations)).toEqual([]);
   });
 
-  test("o nonce muda a cada requisição e os scripts inline levam o nonce", async ({ page, request }) => {
+  test("o nonce muda a cada requisição e os scripts inline levam o nonce (exceto o do tema, liberado por hash)", async ({ page, request }) => {
     const nonceOf = async () => {
       const res = await request.get("/perfil");
       return /'nonce-([^']+)'/.exec(res.headers()["content-security-policy"])?.[1];
@@ -63,8 +64,14 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
 
     const response = await page.goto("/perfil");
     const nonce = /'nonce-([^']+)'/.exec(response!.headers()["content-security-policy"])?.[1];
-    const inline = await page.evaluate(() =>
-      [...document.scripts].filter((s) => !s.src).map((s) => s.nonce || s.getAttribute("nonce")),
+    // O THEME_SCRIPT do layout raiz não tem nonce (ler o nonce lá deixaria todas as páginas dinâmicas):
+    // a CSP o libera pelo hash THEME_SCRIPT_HASH.
+    const inline = await page.evaluate(
+      (themeScript) =>
+        [...document.scripts]
+          .filter((s) => !s.src && s.textContent !== themeScript)
+          .map((s) => s.nonce || s.getAttribute("nonce")),
+      THEME_SCRIPT,
     );
     expect(inline.length).toBeGreaterThan(0);
     for (const n of inline) expect(n).toBe(nonce);

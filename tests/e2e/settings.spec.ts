@@ -5,7 +5,7 @@ const STORE_KEY = "jobfind:v1:ai";
 const OPENAI_KEY = "sk-test-openai-abcd1234";
 
 type Stored = {
-  providers: Record<string, { key?: string; baseURL?: string; addedAt: string; source: "pkce" | "paste"; privacyAccepted?: boolean }>;
+  providers: Record<string, { key?: string; baseURL?: string; addedAt: string; source: "pkce" | "paste"; privacyAccepted?: boolean; freeConsent?: boolean }>;
   tasks: Record<"extract" | "analyze" | "cv", { provider: string; model: string } | null>;
 };
 
@@ -134,6 +134,10 @@ test.describe("Configurações de IA", () => {
     await page.goto("/configuracoes");
     const authRequest = page.waitForRequest((r) => r.url().startsWith("https://openrouter.ai/auth"));
     await card(page, "OpenRouter").getByRole("button", { name: "Conectar" }).click();
+    // Antes do login, o aviso dos modelos gratuitos (padrão do OpenRouter).
+    const notice = page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
+    await expect(notice).toContainText("limite de uso por dia");
+    await notice.getByRole("button", { name: "Entendi e aceito" }).click();
     const url = new URL((await authRequest).url());
     expect(url.origin + url.pathname).toBe("https://openrouter.ai/auth");
     expect(url.searchParams.get("callback_url")).toMatch(/\/configuracoes\/callback$/);
@@ -147,6 +151,31 @@ test.describe("Configurações de IA", () => {
     await expect(openrouter.getByText("Conectado", { exact: true })).toBeVisible();
     await expect(openrouter.getByText("9999")).toBeVisible();
     expect((await stored(page))?.providers.openrouter?.source).toBe("pkce");
+    expect((await stored(page))?.providers.openrouter?.freeConsent).toBe(true);
+  });
+
+  test("OpenRouter: cancelar o aviso dos gratuitos não abre o login", async ({ page }) => {
+    let authOpened = false;
+    await page.route("https://openrouter.ai/auth*", (route) => {
+      authOpened = true;
+      return route.fulfill({ contentType: "text/html", body: "<!doctype html><p>login</p>" });
+    });
+    await page.goto("/configuracoes");
+    await card(page, "OpenRouter").getByRole("button", { name: "Conectar" }).click();
+    const notice = page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
+    await notice.getByRole("button", { name: "Cancelar" }).click();
+    await expect(notice).toBeHidden();
+    expect(authOpened).toBe(false);
+  });
+
+  test("OpenRouter conectado sem o aviso dos gratuitos oferece revisá-lo e grava o aceite", async ({ page }) => {
+    await seed(page, { providers: { openrouter: openrouterProvider } });
+    await page.goto("/configuracoes");
+    const openrouter = card(page, "OpenRouter");
+    await openrouter.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" }).click();
+    await page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ }).getByRole("button", { name: "Entendi e aceito" }).click();
+    await expect.poll(async () => (await stored(page))?.providers.openrouter?.freeConsent).toBe(true);
+    await expect(openrouter.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" })).toBeHidden();
   });
 
   test("modelo por tarefa: provedor e modelo de Gerar CV e carta persistem após recarregar", async ({ page }) => {
@@ -154,9 +183,12 @@ test.describe("Configurações de IA", () => {
     await page.goto("/configuracoes");
     const row = page.getByRole("group", { name: "Gerar CV e carta" });
     await row.getByLabel("Provedor").selectOption("openrouter");
-    const model = row.getByLabel("Modelo");
-    await expect(model.locator("option[value='deepseek/deepseek-v4.1-flash']")).toHaveCount(1);
-    await model.selectOption("deepseek/deepseek-v4.1-flash");
+    const model = row.getByRole("combobox", { name: "Modelo" });
+    // Campo pesquisável: digitar filtra a lista (popup em portal, fora do grupo).
+    await model.fill("v4.1");
+    await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(1);
+    await page.getByRole("option", { name: /DeepSeek V4\.1 Flash/ }).click();
+    await expect(model).toHaveValue("DeepSeek V4.1 Flash");
     // Custo estimado a partir dos preços do listModels.
     await expect(row.getByText(/≈ US\$ [\d,]+ por CV/)).toBeVisible();
 
@@ -167,7 +199,7 @@ test.describe("Configurações de IA", () => {
     await page.reload();
     const again = page.getByRole("group", { name: "Gerar CV e carta" });
     await expect(again.getByLabel("Provedor")).toHaveValue("openrouter");
-    await expect(again.getByLabel("Modelo")).toHaveValue("deepseek/deepseek-v4.1-flash");
+    await expect(again.getByRole("combobox", { name: "Modelo" })).toHaveValue("DeepSeek V4.1 Flash");
     // As outras tarefas continuam no padrão automático.
     await expect(page.getByRole("group", { name: "Analisar vaga" }).getByLabel("Provedor")).toHaveValue("");
   });
@@ -177,7 +209,8 @@ test.describe("Configurações de IA", () => {
     await page.goto("/configuracoes");
     const row = page.getByRole("group", { name: "Analisar vaga" });
     await row.getByLabel("Provedor").selectOption("openrouter");
-    await row.getByLabel("Modelo").selectOption("acme/modelo-gratis:free");
+    await row.getByRole("button", { name: "Abrir lista de modelos" }).click();
+    await page.getByRole("option", { name: /Modelo grátis/ }).click();
     await expect(row.getByText(/modelos gratuitos/i)).toBeVisible();
   });
 

@@ -1,0 +1,564 @@
+{
+ "data": [
+  {
+   "id": "01a1fabb-dc35-7e1b-b8d1-0129cf9083e4",
+   "slug": "senior-solutions-architect-application-modernisation-at-mongodb-08cdcde9",
+   "title": "Senior Solutions Architect - Application Modernisation",
+   "description": "#### AMP Solutions Architect\n\nMongoDB’s mission is to empower innovators to create, transform, and disrupt industries by unleashing the power of software and data. We enable organizations of all sizes to easily build, scale, and run modern applications by helping them modernize legacy workloads, embrace innovation, and unleash AI. Our industry-leading developer data platform, MongoDB Atlas, is the",
+   "url": "https://4dayweek.io/job/senior-solutions-architect-application-modernisation-at-mongodb-08cdcde9",
+   "category": "engineering",
+   "role": "Solutions Architect",
+   "level": "senior",
+   "schedule_type": "generous_parental_leave",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Mexico",
+     "continent": "North America",
+     "latitude": 23.63,
+     "longitude": -102.55,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "city": "Mexico City",
+     "country": "Mexico",
+     "continent": "North America",
+     "latitude": 19.42847,
+     "longitude": -99.12766,
+     "work_arrangement": "hybrid"
+    },
+    {
+     "country": "Brazil",
+     "continent": "South America",
+     "latitude": -14.24,
+     "longitude": -51.93,
+     "work_arrangement": "remote"
+    }
+   ],
+   "skills": [
+    {
+     "name": "Agile",
+     "slug": "agile"
+    },
+    {
+     "name": "Distributed Systems",
+     "slug": "distributed-systems"
+    },
+    {
+     "name": "Domain Driven Design",
+     "slug": "domain-driven-design"
+    },
+    {
+     "name": "Event-Driven Design",
+     "slug": "event-driven-design"
+    },
+    {
+     "name": "MEDDPICC",
+     "slug": "meddpicc"
+    },
+    {
+     "name": "Microservices",
+     "slug": "microservices"
+    },
+    {
+     "name": "Portuguese",
+     "slug": "portuguese"
+    },
+    {
+     "name": "Pre-sales",
+     "slug": "pre-sales"
+    },
+    {
+     "name": "Spanish",
+     "slug": "spanish"
+    },
+    {
+     "name": "Technical workshops",
+     "slug": "technical-workshops"
+    },
+    {
+     "name": "Test-Driven Dev",
+     "slug": "test-driven-dev"
+    }
+   ],
+   "stack": [
+    {
+     "name": "C#",
+     "slug": "csharp"
+    },
+    {
+     "name": "C/C++",
+     "slug": "c-cplusplus"
+    },
+    {
+     "name": "Docker",
+     "slug": "docker"
+    },
+    {
+     "name": "Java",
+     "slug": "java"
+    },
+    {
+     "name": "Node.js",
+     "slug": "nodejs"
+    },
+    {
+     "name": "Python",
+     "slug": "python"
+    },
+    {
+     "name": "SQL",
+     "slug": "sql"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Claude Code",
+     "slug": "claude-code"
+    },
+    {
+     "name": "Cursor",
+     "slug": "cursor"
+    },
+    {
+     "name": "Devin",
+     "slug": "devin"
+    },
+    {
+     "name": "GitHub Copilot",
+     "slug": "github-copilot"
+    },
+    {
+     "name": "Github Codespaces",
+     "slug": "github-codespaces"
+    },
+    {
+     "name": "MongoDB Atlas",
+     "slug": "mongodb-atlas"
+    }
+   ],
+   "posted_at": "2026-11-20T20:52:58Z",
+   "company": {
+    "id": "019e74ae-12bc-7b15-8169-19a59034a8bc",
+    "slug": "mongodb",
+    "name": "MongoDB",
+    "url": "https://4dayweek.io/company/mongodb",
+    "website": "https://www.mongodb.com",
+    "logo_url": "https://media.4dayweek.io/files/1780305938280_0ca005d8c16e1acc.jpg",
+    "short_description": "US developer data platform (NASDAQ: MDB) behind the MongoDB document database, Atlas managed service, Compass, Realm + Vector Search. 20 weeks fully paid for ALL parents (mothers AND fathers, equal) after 1 year tenure, plus 4 weeks flexible return-to-work.",
+    "country": "United States",
+    "employees": 5600,
+    "schedule_type": "generous_parental_leave",
+    "hours_full_time": 40,
+    "remote_level": "hybrid",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f9f0-79c3-7fe0-8e81-55e4eb747bbb",
+   "slug": "financial-content-analyst-at-lseg-92e226b3",
+   "title": "Financial Content Analyst",
+   "description": "**Position Summary**\n\nThe role will be responsible for building & maintaining the Brazilian asset back securities & related content coverage in our database and maintaining on-going reference data changes working with market sources and supporting client engagements (pre & post sales).\n\nFluency in English and Portuguese (local dialect) language is needed given the extensive market contacts interac",
+   "url": "https://4dayweek.io/job/financial-content-analyst-at-lseg-92e226b3",
+   "category": "data",
+   "role": "Financial Content Analyst",
+   "level": "mid",
+   "schedule_type": "generous_parental_leave",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "hybrid",
+   "locations": [
+    {
+     "city": "São Paulo",
+     "country": "Brazil",
+     "continent": "South America",
+     "latitude": -23.5475,
+     "longitude": -46.63611,
+     "work_arrangement": "hybrid",
+     "is_primary": true
+    }
+   ],
+   "skills": [
+    {
+     "name": "Attention to Detail",
+     "slug": "attention-to-detail"
+    },
+    {
+     "name": "Bilingual communication",
+     "slug": "bilingual-communication"
+    },
+    {
+     "name": "Client Management",
+     "slug": "client-management"
+    },
+    {
+     "name": "Data Analysis",
+     "slug": "data-analysis"
+    },
+    {
+     "name": "Financial Analysis",
+     "slug": "financial-analysis"
+    },
+    {
+     "name": "Market Data",
+     "slug": "market-data"
+    },
+    {
+     "name": "Quality Control",
+     "slug": "quality-control"
+    },
+    {
+     "name": "Relationship Management",
+     "slug": "relationship-management"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Microsoft Excel",
+     "slug": "microsoft-excel"
+    },
+    {
+     "name": "SQL",
+     "slug": "sql"
+    }
+   ],
+   "posted_at": "2026-11-20T17:10:49Z",
+   "company": {
+    "id": "019fc41f-13ec-79cc-b7ac-67c107475d87",
+    "slug": "lseg",
+    "name": "LSEG",
+    "url": "https://4dayweek.io/company/lseg",
+    "website": "https://www.lseg.com",
+    "logo_url": "https://media.4dayweek.io/files/1785425960322_dfa82d02eaa53577.jpg",
+    "short_description": "London Stock Exchange Group — global financial markets infrastructure and data (FTSE Russell, Refinitiv data, LCH clearing) with 26 weeks fully paid parental leave for every parent, worldwide.",
+    "country": "United Kingdom",
+    "employees": 26000,
+    "schedule_type": "generous_parental_leave",
+    "hours_full_time": 40,
+    "remote_level": "hybrid",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f9e7-94cc-7360-94a4-f443bae02248",
+   "slug": "photoshop-graphic-design-and-photo-production-virtual-assistant-at-jobgether-b2378521",
+   "title": "Photoshop Graphic Design & Photo Production Virtual Assistant",
+   "description": "Accountabilities\nProcess athlete images using the client’s established Photoshop workflow, placing predetermined poses into existing design templates.\nProperly size, center, and position athletes within each design, and adjust team names, colors, and other approved template elements.\nPrepare finished JPEG files for printing or digital delivery, maintaining consistent visual quality across large ba",
+   "url": "https://4dayweek.io/job/photoshop-graphic-design-and-photo-production-virtual-assistant-at-jobgether-b2378521",
+   "category": "design",
+   "role": "Virtual Assistant",
+   "level": "entry",
+   "contract_type": "contract",
+   "schedule_type": "part_time",
+   "hours_per_week_min": 20,
+   "hours_per_week_max": 20,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Brazil",
+     "continent": "South America",
+     "latitude": -14.24,
+     "longitude": -51.93,
+     "work_arrangement": "remote",
+     "is_primary": true
+    }
+   ],
+   "skills": [
+    {
+     "name": "Attention to Detail",
+     "slug": "attention-to-detail"
+    },
+    {
+     "name": "Batch processing",
+     "slug": "batch-processing"
+    },
+    {
+     "name": "Graphic Design",
+     "slug": "graphic-design"
+    },
+    {
+     "name": "Photo Editing",
+     "slug": "photo-editing"
+    },
+    {
+     "name": "Print Production",
+     "slug": "print-production"
+    },
+    {
+     "name": "Time Management",
+     "slug": "time-management"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Adobe Photoshop",
+     "slug": "adobe-photoshop"
+    },
+    {
+     "name": "Dropbox",
+     "slug": "dropbox"
+    }
+   ],
+   "posted_at": "2026-11-20T17:01:06Z",
+   "company": {
+    "id": "019e1919-9a2a-7ecc-8246-fefbdabd43fd",
+    "slug": "jobgether",
+    "name": "Jobgether",
+    "url": "https://4dayweek.io/company/jobgether",
+    "website": "https://jobgether.com",
+    "logo_url": "https://media.4dayweek.io/files/1778579828773_89eee67849d9ea09.jpg",
+    "short_description": "AI-powered remote job platform with 27 active part-time roles across engineering, marketing, operations and finance — all remote, hosted on their Lever board.",
+    "country": "Belgium",
+    "schedule_type": "part_time",
+    "hours_full_time": 20,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f918-e84b-7214-8e2b-1bf7e45640de",
+   "slug": "red-team-lead-at-supabase-5740fbee",
+   "title": "Red Team Lead",
+   "description": "### **About Supabase**\n\nSupabase is the Postgres development platform, built by developers for developers. We provide a complete backend solution including Database, Auth, Storage, Edge Functions, Realtime, and Vector Search. All services are deeply integrated and designed for growth.\n\n**What we're looking for**\n\nWe're looking for a **Red Team Lead** to establish our Red Team and strengthen the se",
+   "url": "https://4dayweek.io/job/red-team-lead-at-supabase-5740fbee",
+   "category": "security",
+   "role": "Red Team Operator",
+   "level": "lead",
+   "schedule_type": "async_hours",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "skills": [
+    {
+     "name": "Attack Simulation",
+     "slug": "attack-simulation"
+    },
+    {
+     "name": "Cross-functional collaboration",
+     "slug": "cross-functional-collaboration"
+    },
+    {
+     "name": "Executive Communication",
+     "slug": "executive-communication"
+    },
+    {
+     "name": "Mentoring",
+     "slug": "mentoring"
+    },
+    {
+     "name": "Security Strategy",
+     "slug": "security-strategy"
+    },
+    {
+     "name": "Team Leadership",
+     "slug": "team-leadership"
+    },
+    {
+     "name": "adversary emulation",
+     "slug": "adversary-emulation"
+    }
+   ],
+   "tools": [
+    {
+     "name": "CI/CD pipelines",
+     "slug": "ci-cd-pipelines"
+    },
+    {
+     "name": "Cloud Infrastructure",
+     "slug": "cloud-infrastructure"
+    },
+    {
+     "name": "Command and Control",
+     "slug": "command-and-control"
+    }
+   ],
+   "posted_at": "2026-11-20T13:15:22Z",
+   "company": {
+    "id": "019b776e-f058-71cd-8667-e49ae6c94f4e",
+    "slug": "supabase",
+    "name": "Supabase",
+    "url": "https://4dayweek.io/company/supabase",
+    "website": "https://supabase.com",
+    "logo_url": "https://media.4dayweek.io/files/1767269524643_1be68176089431ff.jpg",
+    "short_description": "Open-source Postgres development platform born remote — 280+ team members across 55+ countries building the developer platform behind hundreds of thousands of apps.",
+    "country": "United States",
+    "employees": 280,
+    "schedule_type": "async_hours",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": true
+   }
+  },
+  {
+   "id": "01a1ed05-3514-79f6-bb95-125c1dc1ff31",
+   "slug": "smartphone-video-recorder-at-micro1-8e65cf26",
+   "title": "Smartphone Video Recorder",
+   "description": "**Pay:** $6-$6 per hour (USD).\n\n**Job Title:** Home Video Recorder\n\n**Engagement Type:** Independent Contractor\n\n**Location:** Remote – professionals based in Latin America and the Caribbean. Eligible countries include:\n\nArgentina, Bahamas, Barbados, **Brazil**, Chile, Colombia, Costa Rica, Dominican Republic, Jamaica, Mexico, Panama and Uruguay.\n\n**Job Summary:**\n\nIn this role, you will use your ",
+   "url": "https://4dayweek.io/job/smartphone-video-recorder-at-micro1-8e65cf26",
+   "category": "data",
+   "role": "Video Recorder",
+   "contract_type": "contract",
+   "schedule_type": "part_time",
+   "hours_per_week_min": 10,
+   "hours_per_week_max": 15,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Brazil",
+     "continent": "South America",
+     "latitude": -14.24,
+     "longitude": -51.93,
+     "work_arrangement": "remote",
+     "is_primary": true
+    },
+    {
+     "country": "Argentina",
+     "continent": "South America",
+     "latitude": -38.42,
+     "longitude": -63.62,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Chile",
+     "continent": "South America",
+     "latitude": -35.68,
+     "longitude": -71.54,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Colombia",
+     "continent": "South America",
+     "latitude": 4.57,
+     "longitude": -74.3,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Uruguay",
+     "continent": "South America",
+     "latitude": -32.52,
+     "longitude": -55.77,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Mexico",
+     "continent": "North America",
+     "latitude": 23.63,
+     "longitude": -102.55,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Costa Rica",
+     "continent": "North America",
+     "latitude": 9.75,
+     "longitude": -83.75,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Panama",
+     "continent": "North America",
+     "latitude": 8.54,
+     "longitude": -80.78,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Dominican Republic",
+     "continent": "North America",
+     "latitude": 18.74,
+     "longitude": -70.16,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Jamaica",
+     "continent": "North America",
+     "latitude": 18.11,
+     "longitude": -77.3,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Barbados",
+     "continent": "North America",
+     "latitude": 13.19,
+     "longitude": -59.54,
+     "work_arrangement": "remote"
+    },
+    {
+     "country": "Bahamas",
+     "continent": "North America",
+     "latitude": 25.03,
+     "longitude": -77.4,
+     "work_arrangement": "remote"
+    }
+   ],
+   "salary_min": 600,
+   "salary_max": 600,
+   "salary_currency": "USD",
+   "salary_period": "hour",
+   "skills": [
+    {
+     "name": "Attention to Detail",
+     "slug": "attention-to-detail"
+    },
+    {
+     "name": "Data Labeling",
+     "slug": "data-labeling"
+    },
+    {
+     "name": "Movement data capture",
+     "slug": "movement-data-capture"
+    },
+    {
+     "name": "Protocol adherence",
+     "slug": "protocol-adherence"
+    },
+    {
+     "name": "Verbal Communication",
+     "slug": "verbal-communication"
+    },
+    {
+     "name": "Written Communication",
+     "slug": "written-communication"
+    },
+    {
+     "name": "video recording",
+     "slug": "video-recording"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Head strap camera",
+     "slug": "head-strap-camera"
+    },
+    {
+     "name": "IMU Sensors",
+     "slug": "imu-sensors"
+    },
+    {
+     "name": "smartphone",
+     "slug": "smartphone"
+    }
+   ],
+   "posted_at": "2026-11-18T04:58:24Z",
+   "company": {
+    "id": "019dfd05-2824-7645-9125-e1325a00e833",
+    "slug": "micro1",
+    "name": "Micro1",
+    "url": "https://4dayweek.io/company/micro1",
+    "website": "https://www.micro1.ai",
+    "logo_url": "https://media.4dayweek.io/files/1778067295200_bc30d3ae9ec4cb80.png",
+    "short_description": "Part-time, fully-remote opportunities for domain experts to help train AI models. Hourly contracts ($30-$135+/hr) with no minimum commitment, available worldwide.",
+    "country": "United States",
+    "schedule_type": "part_time",
+    "hours_full_time": 10,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  }
+ ],
+ "page": 1,
+ "limit": 5,
+ "total": 294,
+ "has_more": true
+}

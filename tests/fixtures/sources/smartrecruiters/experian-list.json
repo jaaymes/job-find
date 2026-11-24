@@ -1,0 +1,203 @@
+{
+ "offset": 0,
+ "limit": 100,
+ "totalFound": 4,
+ "content": [
+  {
+   "id": "744000163340009",
+   "name": "Analista de Soluções III ( Flutter)",
+   "uuid": "eafeb429-0cfb-4136-9a46-76c0d8a86f4a",
+   "jobAdId": "484365b1-fe96-48b7-9c78-b29bcc9f4152",
+   "defaultJobAd": true,
+   "refNumber": "REF33333O",
+   "company": {
+    "identifier": "Experian",
+    "name": "Experian"
+   },
+   "releasedDate": "2026-11-23T23:15:36.165Z",
+   "location": {
+    "city": "Blumenau",
+    "country": "br",
+    "address": "Rua Doutor Léo de Carvalho, 74",
+    "remote": false,
+    "hybrid": true,
+    "fullLocation": "Blumenau, , Brazil"
+   },
+   "industry": {
+    "id": "financial_services",
+    "label": "Financial Services"
+   },
+   "department": {
+    "id": "13221468",
+    "label": "Technology"
+   },
+   "function": {
+    "id": "information_technology",
+    "label": "Information Technology"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "not_applicable",
+    "label": "Not Applicable"
+   },
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/Experian/postings/744000163340009",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "744000162618349",
+   "name": "Analista de Desenvolvimento de Software Júnior - Vaga Afirmativa para Mulheres",
+   "uuid": "4342589e-ecf7-49b8-9932-e58b1e0ce1e7",
+   "jobAdId": "cd19dcb7-ea86-4515-b34b-42b00209132a",
+   "defaultJobAd": true,
+   "refNumber": "REF33612Q",
+   "company": {
+    "identifier": "Experian",
+    "name": "Experian"
+   },
+   "releasedDate": "2026-11-19T23:20:58.655Z",
+   "location": {
+    "city": "São Carlos",
+    "country": "br",
+    "address": "Av. Pres. Juscelino Kubitscheck, 100",
+    "remote": true,
+    "hybrid": false,
+    "fullLocation": "São Carlos, , Brazil"
+   },
+   "industry": {
+    "id": "financial_services",
+    "label": "Financial Services"
+   },
+   "department": {
+    "id": "13221468",
+    "label": "Technology"
+   },
+   "function": {
+    "id": "information_technology",
+    "label": "Information Technology"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "not_applicable",
+    "label": "Not Applicable"
+   },
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/Experian/postings/744000162618349",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "744000163313399",
+   "name": "BizDev IV (Marketing Services)",
+   "uuid": "8d958011-5a1f-4d18-9e93-2c882bf42270",
+   "jobAdId": "03cc5648-589c-4fc9-8530-5aa465bbec7f",
+   "defaultJobAd": true,
+   "refNumber": "REF33719Y",
+   "company": {
+    "identifier": "Experian",
+    "name": "Experian"
+   },
+   "releasedDate": "2026-11-23T20:14:31.335Z",
+   "location": {
+    "city": "São Paulo",
+    "country": "br",
+    "address": "Av. das Nações Unidas, 14.401",
+    "remote": false,
+    "hybrid": false,
+    "fullLocation": "São Paulo, , Brazil"
+   },
+   "industry": {
+    "id": "financial_services",
+    "label": "Financial Services"
+   },
+   "department": {
+    "id": "2618891",
+    "label": "Sales & Business Development"
+   },
+   "function": {
+    "id": "information_technology",
+    "label": "Information Technology"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "not_applicable",
+    "label": "Not Applicable"
+   },
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/Experian/postings/744000163313399",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  },
+  {
+   "id": "744000039634496",
+   "name": "Executivo(a) Comercial Pleno - Vaga Exclusiva para Pessoa com Deficiência",
+   "uuid": "35bc9dc8-e351-417a-9318-28d44476b7f7",
+   "jobAdId": "5d7f8d1d-7def-4bbe-9ed6-070aff323a13",
+   "defaultJobAd": true,
+   "refNumber": "REF22976F",
+   "company": {
+    "identifier": "Experian",
+    "name": "Experian"
+   },
+   "releasedDate": "2025-01-30T14:07:39.630Z",
+   "location": {
+    "city": "São Paulo",
+    "region": "SP",
+    "country": "br",
+    "address": "Avenida das Nações Unidas 14401",
+    "postalCode": "04794-000",
+    "remote": false,
+    "hybrid": false,
+    "latitude": "-23.6246011",
+    "longitude": "-46.7037489",
+    "fullLocation": "São Paulo, SP, Brazil"
+   },
+   "industry": {
+    "id": "financial_services",
+    "label": "Financial Services"
+   },
+   "department": {
+    "id": "2618891",
+    "label": "Sales & Business Development"
+   },
+   "function": {
+    "id": "sales",
+    "label": "Sales"
+   },
+   "typeOfEmployment": {
+    "id": "permanent",
+    "label": "Full-time"
+   },
+   "experienceLevel": {
+    "id": "not_applicable",
+    "label": "Not Applicable"
+   },
+   "visibility": "PUBLIC",
+   "ref": "https://api.smartrecruiters.com/v1/companies/Experian/postings/744000039634496",
+   "language": {
+    "code": "en",
+    "label": "English",
+    "labelNative": "English (US)"
+   }
+  }
+ ]
+}

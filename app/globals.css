@@ -48,27 +48,31 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
 
-  /* Paleta do protótipo (Main.dc.html). */
-  --color-jf-bg: #f6f5f2;
-  --color-jf-surface: #ffffff;
-  --color-jf-line: #e3e1db;
-  --color-jf-line-strong: #cfccc4;
-  --color-jf-ink: #15171c;
-  --color-jf-ink-2: #3d424d;
-  --color-jf-ink-3: #5b616e;
-  --color-jf-brand: #2446d8;
-  --color-jf-brand-dark: #1a33a6;
-  --color-jf-brand-soft: #eef1fd;
-  --color-jf-chip: #f0eee9;
-  --color-jf-new-bg: #fdf1dc;
-  --color-jf-new-fg: #7a4500;
-  --color-jf-alta: #0b6b5c;
-  --color-jf-media-bg: #e3f1ee;
-  --color-jf-media-fg: #0a5a4d;
-  --color-jf-baixa-bg: #eeedea;
-  --color-jf-baixa-fg: #4a4f5a;
-  --color-jf-danger-bg: #fdecec;
-  --color-jf-danger-fg: #8a1f1f;
+  /* Paleta do protótipo (Main.dc.html): valores em --jf-* (:root claro, .dark escuro). */
+  --color-jf-bg: var(--jf-bg);
+  --color-jf-surface: var(--jf-surface);
+  --color-jf-surface-2: var(--jf-surface-2);
+  --color-jf-line: var(--jf-line);
+  --color-jf-line-strong: var(--jf-line-strong);
+  --color-jf-ink: var(--jf-ink);
+  --color-jf-ink-2: var(--jf-ink-2);
+  --color-jf-ink-3: var(--jf-ink-3);
+  --color-jf-brand: var(--jf-brand);
+  --color-jf-brand-dark: var(--jf-brand-dark);
+  --color-jf-brand-soft: var(--jf-brand-soft);
+  --color-jf-chip: var(--jf-chip);
+  --color-jf-new-bg: var(--jf-new-bg);
+  --color-jf-new-fg: var(--jf-new-fg);
+  --color-jf-alta: var(--jf-alta);
+  --color-jf-media-bg: var(--jf-media-bg);
+  --color-jf-media-fg: var(--jf-media-fg);
+  --color-jf-baixa-bg: var(--jf-baixa-bg);
+  --color-jf-baixa-fg: var(--jf-baixa-fg);
+  --color-jf-danger-bg: var(--jf-danger-bg);
+  --color-jf-danger-fg: var(--jf-danger-fg);
+  --color-jf-warn-line: var(--jf-warn-line);
+  --color-jf-warn-fg: var(--jf-warn-fg);
+  --color-jf-warn-fg-strong: var(--jf-warn-fg-strong);
 }
 
 :root {
@@ -104,6 +108,32 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+
+  /* Paleta jf (tema claro). Só hex: tests/unit/shared/palette.test.ts confere o contraste. */
+  --jf-bg: #f6f5f2;
+  --jf-surface: #ffffff;
+  --jf-surface-2: #fbfaf8;
+  --jf-line: #e3e1db;
+  --jf-line-strong: #cfccc4;
+  --jf-ink: #15171c;
+  --jf-ink-2: #3d424d;
+  --jf-ink-3: #5b616e;
+  --jf-brand: #2446d8;
+  --jf-brand-dark: #1a33a6;
+  --jf-brand-soft: #eef1fd;
+  --jf-chip: #f0eee9;
+  --jf-new-bg: #fdf1dc;
+  --jf-new-fg: #7a4500;
+  --jf-alta: #0b6b5c;
+  --jf-media-bg: #e3f1ee;
+  --jf-media-fg: #0a5a4d;
+  --jf-baixa-bg: #eeedea;
+  --jf-baixa-fg: #4a4f5a;
+  --jf-danger-bg: #fdecec;
+  --jf-danger-fg: #8a1f1f;
+  --jf-warn-line: #e0b060;
+  --jf-warn-fg: #7a4500;
+  --jf-warn-fg-strong: #5a3400;
 }
 
 .dark {
@@ -138,11 +168,38 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+
+  /* Paleta jf (tema escuro). Só hex: tests/unit/shared/palette.test.ts confere o contraste. */
+  --jf-bg: #121418;
+  --jf-surface: #1b1e24;
+  --jf-surface-2: #16191e;
+  --jf-line: #2c3038;
+  --jf-line-strong: #3b404a;
+  --jf-ink: #eceae5;
+  --jf-ink-2: #c9c6bf;
+  --jf-ink-3: #a3a7b0;
+  --jf-brand: #7d95ff;
+  --jf-brand-dark: #a9b8ff;
+  --jf-brand-soft: #1e2645;
+  --jf-chip: #252930;
+  --jf-new-bg: #3a2a10;
+  --jf-new-fg: #f2c27a;
+  --jf-alta: #5cc9b2;
+  --jf-media-bg: #11332d;
+  --jf-media-fg: #8fdcc9;
+  --jf-baixa-bg: #2a2d33;
+  --jf-baixa-fg: #c9c6bf;
+  --jf-danger-bg: #3d1a1c;
+  --jf-danger-fg: #ffb3b3;
+  --jf-warn-line: #a8792c;
+  --jf-warn-fg: #f2c27a;
+  --jf-warn-fg-strong: #f7d49c;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    --tw-ring-offset-color: var(--jf-bg);
   }
   body {
     @apply bg-jf-bg text-jf-ink;

@@ -7,6 +7,7 @@ import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import * as enrich from "@/lib/server/jobs/enrich-job";
 import * as expire from "@/lib/server/jobs/expire";
 import * as upsert from "@/lib/server/jobs/upsert";
+import * as http from "@/lib/server/sources/http";
 import { SANITIZER_VERSION } from "@/lib/server/sanitize";
 import type { Connector, NormalizedJob } from "@/lib/server/sources/types";
 import type { SourceId } from "@/lib/shared/types/job";
@@ -209,6 +210,266 @@ describe("runCollection", () => {
       expect(spy).not.toHaveBeenCalled();
     } finally {
       spy.mockRestore();
+    }
+  });
+
+  describe("expiração por escopo de boards", () => {
+    async function missed(db: Awaited<ReturnType<typeof testDb>>) {
+      const rows = await db
+        .select({ externalId: jobSources.externalId, missedRuns: jobSources.missedRuns })
+        .from(jobSources);
+      return Object.fromEntries(rows.map((r) => [r.externalId, r.missedRuns]));
+    }
+
+    async function seedAndRescope(seed: string[], read: string[], scope: string[]) {
+      const db = await testDb();
+      await runCollection({
+        db,
+        sources: ["greenhouse"],
+        now: T0,
+        connectors: { greenhouse: conn("greenhouse", { items: seed.map((id) => ({ id })) }) },
+      });
+      const scoped = conn("greenhouse", {
+        async *fetch(ctx) {
+          for (const id of read) yield { id };
+          ctx.reportScope(scope);
+        },
+      });
+      await runCollection({
+        db,
+        sources: ["greenhouse"],
+        now: new Date(T0.getTime() + 3_600_000),
+        connectors: { greenhouse: scoped },
+      });
+      return missed(db);
+    }
+
+    it("fonte com escopo marca coleta perdida só nos boards lidos", async () => {
+      const m = await seedAndRescope(["a:1", "b:1"], ["a:2"], ["a:"]);
+      expect(m["a:1"]).toBe(1);
+      expect(m["b:1"]).toBe(0);
+      expect(m["a:2"]).toBe(0);
+    });
+
+    it("prefixo com _ não casa outro board", async () => {
+      const m = await seedAndRescope(["wild_x:1", "wildAx:1"], ["wild_x:2"], ["wild_x:"]);
+      expect(m["wild_x:1"]).toBe(1);
+      expect(m["wildAx:1"]).toBe(0);
+    });
+
+    it.each([
+      ["%", "pct%x:", "pctAAx:"],
+      ["\\", "bs\\x:", "bsx:"],
+    ])("prefixo com %s literal não casa outro board", async (_nome, inside, outside) => {
+      const m = await seedAndRescope([`${inside}1`, `${outside}1`], [`${inside}2`], [inside]);
+      expect(m[`${inside}1`]).toBe(1);
+      expect(m[`${outside}1`]).toBe(0);
+    });
+
+    it("com escopo, falha parcial não impede a coleta perdida nos boards lidos", async () => {
+      const db = await testDb();
+      await runCollection({
+        db,
+        sources: ["greenhouse"],
+        now: T0,
+        connectors: { greenhouse: conn("greenhouse", { items: [{ id: "a:1" }, { id: "b:1" }] }) },
+      });
+      const scoped = conn("greenhouse", {
+        async *fetch(ctx) {
+          yield { id: "a:2" };
+          ctx.reportPartial("b", new Error("fora do ar"));
+          ctx.reportScope(["a:"]);
+        },
+      });
+      await runCollection({
+        db,
+        sources: ["greenhouse"],
+        now: new Date(T0.getTime() + 3_600_000),
+        connectors: { greenhouse: scoped },
+      });
+      const m = await missed(db);
+      expect(m["a:1"]).toBe(1);
+      expect(m["b:1"]).toBe(0);
+    });
+
+    it("ctx.deadlineAt reserva margem para a requisição em andamento e a gravação (60 s de busca)", async () => {
+      const db = await testDb();
+      const seen: number[] = [];
+      const probe = conn("greenhouse", {
+        async *fetch(ctx) {
+          seen.push(ctx.deadlineAt);
+          yield { id: "p1" };
+        },
+      });
+      const START = 1_000_000;
+      const clock = () => START;
+      // Budget padrão (240 s): a busca vai até 60 s depois do início da fonte, deixando 30 s para
+      // a requisição em andamento (timeout de 20 s) e a gravação dentro dos 90 s da fonte.
+      await runCollection({ db, sources: ["greenhouse"], now: T0, clock, connectors: { greenhouse: probe } });
+      expect(seen[0]).toBe(START + 60_000);
+
+      // Budget curto (60 s): o prazo é o fim do budget menos o rabo (5 s) e a reserva (60 s / 8 = 7,5 s).
+      seen.length = 0;
+      await runCollection({ db, sources: ["greenhouse"], now: T0, clock, budgetMs: 60_000, connectors: { greenhouse: probe } });
+      expect(seen[0]).toBe(START + 60_000 - 5_000 - 7_500);
+    });
+
+    it("fonte que começa sem margem para buscar e gravar é pulada sem tocar no cursor nem na expiração", async () => {
+      const db = await testDb();
+      await runCollection({
+        db,
+        sources: ["ashby"],
+        now: T0,
+        connectors: { ashby: conn("ashby", { items: [{ id: "a:1" }] }) },
+      });
+      await db.update(sourceState).set({ cursor: "7" }).where(eq(sourceState.source, "ashby"));
+      const markSpy = vi.spyOn(expire, "markMissedRuns");
+      const lateFetch = vi.fn();
+      try {
+        // Relógio injetado: budget padrão (240 s), sem margem a partir de 240 − 5 − 30 = 205 s.
+        // A fonte 1 "consome" 206 s avançando o relógio, sem espera real.
+        let fakeNow = 1_000_000;
+        const clock = () => fakeNow;
+        const first = conn("greenhouse", {
+          async *fetch() {
+            fakeNow += 206_000;
+            yield { id: "g1" };
+          },
+        });
+        const late = conn("ashby", {
+          async *fetch(ctx) {
+            lateFetch();
+            ctx.setCursor("99");
+            yield { id: "a:2" };
+          },
+        });
+        const T1 = new Date(T0.getTime() + 3_600_000);
+        const res = await runCollection({
+          db,
+          sources: ["greenhouse", "ashby"],
+          now: T1,
+          clock,
+          concurrency: 1,
+          connectors: { greenhouse: first, ashby: late },
+        });
+        expect(res[0]).toMatchObject({ status: "ok", fetched: 1 });
+        expect(res[1]).toMatchObject({ status: "skipped", fetched: 0 });
+        expect(res[1].error).toContain("sem margem");
+        expect(lateFetch).not.toHaveBeenCalled();
+        expect(markSpy).not.toHaveBeenCalledWith(expect.anything(), "ashby", expect.anything(), expect.anything(), expect.anything());
+        expect(markSpy).not.toHaveBeenCalledWith(expect.anything(), "ashby", expect.anything(), expect.anything(), expect.anything(), expect.anything());
+      } finally {
+        markSpy.mockRestore();
+      }
+      const s = await state(db, "ashby");
+      expect(s.cursor).toBe("7");
+      expect(s.consecutiveFailures).toBe(0);
+      expect(s.lockedUntil).toBeNull();
+      const runs = await db.select().from(sourceRuns).where(eq(sourceRuns.source, "ashby"));
+      expect(runs).toHaveLength(1);
+      const [a1] = await db.select().from(jobSources).where(eq(jobSources.externalId, "a:1"));
+      expect(a1.missedRuns).toBe(0);
+    });
+  });
+
+  describe("fonte incremental que revisita o catálogo", () => {
+    const HOUR = 3_600_000;
+    const at = (h: number) => new Date(T0.getTime() + h * HOUR);
+    const incremental = (id: SourceId, items: Raw[], over: Partial<Connector> = {}) =>
+      conn(id, { fullSnapshot: false, items, ...over });
+
+    async function missedOf(db: Awaited<ReturnType<typeof testDb>>, externalId: string) {
+      const [r] = await db.select().from(jobSources).where(eq(jobSources.externalId, externalId));
+      return r.missedRuns;
+    }
+
+    const four = (items: Raw[]) => incremental("fourdayweek", items, { revisitsCatalogWithinHours: 24 });
+
+    it("conta coleta perdida só para linhas não vistas há mais que o ciclo declarado, e expira", async () => {
+      const db = await testDb();
+      const run = (h: number, items: Raw[]) =>
+        runCollection({ db, sources: ["fourdayweek"], now: at(h), connectors: { fourdayweek: four(items) } });
+
+      await run(0, [{ id: "a" }, { id: "b" }]);
+      // Coletas horárias sem "b": dentro do ciclo de 24 h ainda não conta como perdida.
+      for (let h = 1; h <= 24; h++) await run(h, [{ id: "a" }]);
+      expect(await missedOf(db, "b")).toBe(0);
+      await run(25, [{ id: "a" }]);
+      expect(await missedOf(db, "b")).toBe(1);
+      // Coleta vazia (fetched 0) não conta nada.
+      await run(26, []);
+      expect(await missedOf(db, "b")).toBe(1);
+      await run(27, [{ id: "a" }]);
+      expect(await missedOf(db, "b")).toBe(2);
+      expect(await missedOf(db, "a")).toBe(0);
+      await run(28, [{ id: "a" }]);
+      expect(await missedOf(db, "b")).toBe(3);
+
+      const [bSrc] = await db.select().from(jobSources).where(eq(jobSources.externalId, "b"));
+      const [aSrc] = await db.select().from(jobSources).where(eq(jobSources.externalId, "a"));
+      const [bJob] = await db.select().from(jobs).where(eq(jobs.id, bSrc.jobId));
+      const [aJob] = await db.select().from(jobs).where(eq(jobs.id, aSrc.jobId));
+      expect(bJob.expiredAt).not.toBeNull();
+      expect(aJob.expiredAt).toBeNull();
+    });
+
+    it("depois de uma parada maior que o ciclo, a volta não conta coleta perdida até cobrir o ciclo de novo", async () => {
+      const db = await testDb();
+      const run = (h: number, items: Raw[]) =>
+        runCollection({ db, sources: ["fourdayweek"], now: at(h), connectors: { fourdayweek: four(items) } });
+
+      for (let h = 0; h <= 2; h++) await run(h, [{ id: "a" }, { id: "b" }]);
+      // Parada de 30 h; na volta o catálogo ainda está sendo revisto e "b" não reaparece logo.
+      for (let h = 33; h <= 40; h++) await run(h, [{ id: "a" }]);
+      expect(await missedOf(db, "b")).toBe(0);
+    });
+
+    it("fonte incremental sem ciclo declarado não conta coleta perdida", async () => {
+      const db = await testDb();
+      await runCollection({ db, sources: ["himalayas"], now: at(0), connectors: { himalayas: incremental("himalayas", [{ id: "h1" }, { id: "h2" }]) } });
+      for (const h of [30, 31, 32, 33]) {
+        await runCollection({ db, sources: ["himalayas"], now: at(h), connectors: { himalayas: incremental("himalayas", [{ id: "h1" }]) } });
+      }
+      expect(await missedOf(db, "h2")).toBe(0);
+    });
+  });
+
+  it("repassa o limite de bytes de resposta do conector ao fetch seguro", async () => {
+    const db = await testDb();
+    const spy = vi.spyOn(http, "createSafeFetch");
+    try {
+      await runCollection({
+        db,
+        sources: ["greenhouse", "ashby"],
+        now: T0,
+        connectors: {
+          greenhouse: conn("greenhouse", { items: [{ id: "g1" }], maxResponseBytes: 25 * 1024 * 1024 }),
+          ashby: conn("ashby", { items: [{ id: "a1" }] }),
+        },
+      });
+      expect(spy).toHaveBeenCalledWith(["boards.example.com"], { maxBytes: 25 * 1024 * 1024 });
+      expect(spy).toHaveBeenCalledWith(["boards.example.com"], { maxBytes: undefined });
+    } finally {
+      spy.mockRestore();
+    }
+  });
+
+  it("janela inteira de boards falha: erro registrado e cursor do rodízio avança", async () => {
+    const db = await testDb();
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    try {
+      const c = conn("greenhouse", {
+        fetch: (ctx) =>
+          fetchBoardsPooled(ctx, "Greenhouse", ["a", "b", "c"], async () => {
+            throw new Error("404");
+          }),
+      });
+      const [r] = await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: c } });
+      expect(r.status).toBe("error");
+      expect((await state(db, "greenhouse")).cursor).toBe("0");
+      expect((await state(db, "greenhouse")).consecutiveFailures).toBe(1);
+    } finally {
+      warn.mockRestore();
     }
   });
 
@@ -469,11 +730,11 @@ describe("runCollection", () => {
         fetch: (ctx) =>
           fetchBoardsPooled(ctx, "Greenhouse", BOARDS, async (board) => {
             if (board === failing) throw new TypeError(`HTTP 503 em ${board}`);
-            return [{ id: `${board}-1` }, { id: `${board}-2` }];
+            return [{ id: `${board}:1` }, { id: `${board}:2` }];
           }),
       });
 
-    it("registra o board em source_runs.error e não conta coleta perdida para ninguém", async () => {
+    it("registra o board em source_runs.error e conta coleta perdida só no escopo lido", async () => {
       const db = await testDb();
       await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: multiBoard(null) } });
       const markSpy = vi.spyOn(expire, "markMissedRuns");
@@ -483,7 +744,7 @@ describe("runCollection", () => {
         const [r] = await runCollection({ db, sources: ["greenhouse"], now: T1, connectors: { greenhouse: multiBoard("globex") } });
         expect(r).toMatchObject({ status: "ok", fetched: 2 });
         expect(r.error).toContain("globex");
-        expect(markSpy).not.toHaveBeenCalled();
+        expect(markSpy).toHaveBeenCalledWith(expect.anything(), "greenhouse", T1, 2, null, ["acme:"]);
       } finally {
         markSpy.mockRestore();
         warn.mockRestore();
@@ -497,10 +758,10 @@ describe("runCollection", () => {
       expect(runs[1].error).not.toContain("acme");
       const srcs = await db.select().from(jobSources).orderBy(jobSources.externalId);
       expect(srcs.map((s) => [s.externalId, s.missedRuns])).toEqual([
-        ["acme-1", 0],
-        ["acme-2", 0],
-        ["globex-1", 0],
-        ["globex-2", 0],
+        ["acme:1", 0],
+        ["acme:2", 0],
+        ["globex:1", 0],
+        ["globex:2", 0],
       ]);
     });
   });

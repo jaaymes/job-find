@@ -1,11 +1,12 @@
 import "server-only";
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, asc, desc, eq, gte, inArray, lt } from "drizzle-orm";
 import { acquireLock, releaseLock } from "@/lib/server/collect/lock";
 import type { Db } from "@/lib/server/db/client";
 import { jobSources, jobs, sourceRuns, sourceState } from "@/lib/server/db/schema";
 import { computeContentHash, enrichJob } from "@/lib/server/jobs/enrich-job";
 import { expireJobs, markMissedRuns, purgeExpired } from "@/lib/server/jobs/expire";
 import { upsertJob } from "@/lib/server/jobs/upsert";
+import { AllBoardsFailedError } from "@/lib/server/sources/boards";
 import { createSafeFetch } from "@/lib/server/sources/http";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import type { Connector, NormalizedJob } from "@/lib/server/sources/types";
@@ -20,6 +21,17 @@ const LOCK_MARGIN_MS = 60_000;
 const INTERVAL_TOLERANCE_MS = 60_000;
 /** Reserva no fim do budget para expireJobs/retenção/invalidação: as fontes são cortadas antes. */
 const TAIL_MARGIN_MS = 5_000;
+/** Teto de uma fonte, da busca ao fim da gravação (D-01). */
+const SOURCE_SOFT_LIMIT_MS = 90_000;
+/**
+ * Reserva, dentro do teto da fonte e antes do abort global, para a requisição que ainda estiver em
+ * andamento no prazo (timeout de 20 s do fetch seguro) e para a gravação do que foi buscado. Com
+ * budgets curtos (testes) a reserva encolhe na proporção: 30 s é 1/8 do budget padrão de 240 s.
+ */
+const SOURCE_WRITE_RESERVE_MS = 30_000;
+const WRITE_RESERVE_BUDGET_FRACTION = 1 / 8;
+/** Janela de busca: o prazo entregue ao conector (`ctx.deadlineAt`) é no máximo isto depois do início. */
+const SOURCE_FETCH_WINDOW_MS = SOURCE_SOFT_LIMIT_MS - SOURCE_WRITE_RESERVE_MS;
 const MAX_ERROR_LENGTH = 500;
 /** Quantas falhas (boards ou vagas) entram, com detalhe, no resumo de `source_runs.error`. */
 const MAX_LISTED_FAILURES = 5;
@@ -50,6 +62,8 @@ export type RunCollectionOptions = {
   concurrency?: number;
   connectors?: Partial<Record<SourceId, Connector>>;
   invalidate?: (tag: string) => Promise<void>;
+  /** Relógio do budget e dos prazos, em epoch ms (padrão `Date.now`; testes injetam um fixo). */
+  clock?: () => number;
 };
 
 const empty = (source: SourceId, status: SourceRunResult["status"], error?: string): SourceRunResult => ({
@@ -93,6 +107,35 @@ function partialSummary(boards: string[], jobErrors: string[], errorCount: numbe
 }
 
 const BUDGET_ERROR = "budget esgotado";
+const HOUR_MS = 3_600_000;
+/**
+ * Maior intervalo entre coletas ok seguidas para considerar que uma fonte incremental revisitou o
+ * catálogo sem parar (cron horário mais uma coleta perdida de folga).
+ */
+const MAX_COVERAGE_GAP_MS = 2 * HOUR_MS;
+
+/**
+ * A fonte teve coletas ok sem buracos maiores que `MAX_COVERAGE_GAP_MS` cobrindo todo o ciclo
+ * anterior a `now`. Sem isso (ex.: volta de uma parada longa), as vagas ainda não revisitadas
+ * pareceriam fechadas e expirariam por engano enquanto o rodízio dá a volta no catálogo.
+ */
+async function coveredCycle(db: Db, source: SourceId, now: Date, cycleMs: number): Promise<boolean> {
+  const rows = await db
+    .select({ startedAt: sourceRuns.startedAt })
+    .from(sourceRuns)
+    .where(
+      and(
+        eq(sourceRuns.source, source),
+        eq(sourceRuns.status, "ok"),
+        gte(sourceRuns.startedAt, new Date(now.getTime() - cycleMs - MAX_COVERAGE_GAP_MS)),
+        lt(sourceRuns.startedAt, now),
+      ),
+    )
+    .orderBy(asc(sourceRuns.startedAt));
+  if (rows.length === 0 || rows[0].startedAt.getTime() > now.getTime() - cycleMs) return false;
+  const times = [...rows.map((r) => r.startedAt.getTime()), now.getTime()];
+  return times.every((t, i) => i === 0 || t - times[i - 1] <= MAX_COVERAGE_GAP_MS);
+}
 
 /** Itera o conector sem ficar preso: a corrida com o sinal corta até quem ignora o abort. */
 async function* withAbort<T>(iterable: AsyncIterable<T>, signal: AbortSignal): AsyncGenerator<T> {
@@ -197,12 +240,26 @@ async function processBatch(
 }
 
 async function runSource(
-  opts: { db: Db; now: Date; conn: Connector; controller: AbortController; budgetEndsAt: number },
+  opts: {
+    db: Db;
+    now: Date;
+    conn: Connector;
+    controller: AbortController;
+    budgetEndsAt: number;
+    tailMs: number;
+    reserveMs: number;
+    clock: () => number;
+  },
 ): Promise<SourceRunResult> {
-  const { db, now, conn, controller, budgetEndsAt } = opts;
+  const { db, now, conn, controller, budgetEndsAt, tailMs, reserveMs, clock } = opts;
   const source = conn.id;
   if (controller.signal.aborted) return empty(source, "skipped", `${BUDGET_ERROR} antes de iniciar`);
-  const remainingMs = Math.max(budgetEndsAt - Date.now(), 0);
+  // Último instante em que a busca pode terminar e ainda sobrar a reserva antes do abort global.
+  const lastFetchAt = budgetEndsAt - tailMs - reserveMs;
+  // Sem essa margem a fonte acabaria abortada no meio, em erro e sem gravar o cursor: nem começa.
+  // Como no "antes de iniciar", nada é gravado (sem source_run, cursor ou coleta perdida).
+  if (clock() >= lastFetchAt) return empty(source, "skipped", `${BUDGET_ERROR}: sem margem para buscar e gravar`);
+  const remainingMs = Math.max(budgetEndsAt - clock(), 0);
   if (!(await acquireLock(db, source, remainingMs + LOCK_MARGIN_MS))) return empty(source, "skipped");
 
   let runId: number | null = null;
@@ -229,12 +286,15 @@ async function runSource(
     const counts: Counts = { fetched: 0, inserted: 0, updated: 0, unchanged: 0, errors: 0 };
     const jobErrors: JobErrors = [];
     const partialBoards: string[] = [];
+    const scopePrefixes: string[] = [];
+    const deadlineAt = Math.min(lastFetchAt, clock() + SOURCE_FETCH_WINDOW_MS);
     let cursor = state?.cursor ?? null;
     let cursorChanged = false;
     try {
+      const safeFetch = createSafeFetch(conn.allowedHosts, { maxBytes: conn.maxResponseBytes });
       const ctx = {
-        fetchJson: createSafeFetch(conn.allowedHosts),
-        fetchText: createSafeFetch(conn.allowedHosts),
+        fetchJson: safeFetch,
+        fetchText: safeFetch,
         cursor,
         setCursor(c: string | null) {
           cursor = c;
@@ -244,6 +304,10 @@ async function runSource(
           partialBoards.push(`${label}: ${shortError(error)}`);
           console.warn(`[coleta] ${source}: falha parcial em ${label}: ${shortError(error)}`);
         },
+        reportScope(prefixes: readonly string[]) {
+          scopePrefixes.push(...prefixes);
+        },
+        deadlineAt,
         signal: controller.signal,
         now,
       };
@@ -274,15 +338,33 @@ async function runSource(
         .where(eq(sourceRuns.id, runId));
       await db
         .update(sourceState)
-        .set({ consecutiveFailures: (state?.consecutiveFailures ?? 0) + 1 })
+        .set({
+          consecutiveFailures: (state?.consecutiveFailures ?? 0) + 1,
+          // Janela inteira de boards falhou: avança o rodízio para não repetir a mesma janela.
+          ...(cursorChanged && e instanceof AllBoardsFailedError ? { cursor } : {}),
+        })
         .where(eq(sourceState.source, source));
       return { source, status: "error", ...counts, expired: 0, error: message };
     }
 
-    // Fonte de snapshot completo: o que não apareceu conta uma coleta perdida. Com falha parcial
-    // (ex.: um board fora do ar), o snapshot está incompleto e nada conta como perdido.
-    if (conn.fullSnapshot && partialBoards.length === 0) {
-      await markMissedRuns(db, source, now, counts.fetched, state?.lastFetchedCount ?? null);
+    // Fonte de snapshot completo: o que não apareceu conta uma coleta perdida. Com escopo (conectores
+    // em rodízio), só valem os boards lidos por completo, então falha parcial em outros boards não
+    // atrapalha e a guarda de volume anterior não se aplica. Sem escopo, uma falha parcial deixa o
+    // snapshot incompleto e nada conta como perdido.
+    if (conn.fullSnapshot) {
+      if (scopePrefixes.length > 0) {
+        await markMissedRuns(db, source, now, counts.fetched, null, scopePrefixes);
+      } else if (partialBoards.length === 0) {
+        await markMissedRuns(db, source, now, counts.fetched, state?.lastFetchedCount ?? null);
+      }
+    } else if (conn.revisitsCatalogWithinHours) {
+      // Fonte incremental que revisita o catálogo inteiro nesse ciclo: o que não foi visto desde
+      // antes dele fechou na origem e conta coleta perdida (coleta vazia não conta nada). Só vale
+      // se a fonte coletou sem parar durante o ciclo todo (ver `coveredCycle`).
+      const cycleMs = conn.revisitsCatalogWithinHours * HOUR_MS;
+      if (await coveredCycle(db, source, now, cycleMs)) {
+        await markMissedRuns(db, source, new Date(now.getTime() - cycleMs), counts.fetched, null);
+      }
     }
     const partial = partialSummary(partialBoards, jobErrors, counts.errors);
     await db
@@ -344,11 +426,13 @@ export async function runCollection(opts: RunCollectionOptions): Promise<SourceR
     concurrency = DEFAULT_CONCURRENCY,
     connectors = CONNECTORS,
     invalidate = async () => undefined,
+    clock = Date.now,
   } = opts;
 
   // Um único relógio para a execução inteira; as fontes param TAIL_MARGIN_MS antes do fim.
-  const budgetEndsAt = Date.now() + budgetMs;
+  const budgetEndsAt = clock() + budgetMs;
   const tailMs = Math.min(TAIL_MARGIN_MS, budgetMs / 10);
+  const reserveMs = Math.min(SOURCE_WRITE_RESERVE_MS, budgetMs * WRITE_RESERVE_BUDGET_FRACTION);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(new Error(BUDGET_ERROR)), budgetMs - tailMs);
 
@@ -356,7 +440,7 @@ export async function runCollection(opts: RunCollectionOptions): Promise<SourceR
     sources.map((source) => async (): Promise<SourceRunResult> => {
       const conn = connectors[source];
       if (!conn) return empty(source, "error", `conector não encontrado para a fonte ${source}`);
-      return runSource({ db, now, conn, controller, budgetEndsAt });
+      return runSource({ db, now, conn, controller, budgetEndsAt, tailMs, reserveMs, clock });
     }),
     concurrency,
   ).finally(() => clearTimeout(timer));

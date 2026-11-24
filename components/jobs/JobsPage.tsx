@@ -17,6 +17,7 @@ import { useJobsWithChance } from "@/lib/client/jobs/use-jobs-with-chance";
 import { FiltersPanel } from "./FiltersPanel";
 import { JobCard } from "./JobCard";
 import { ModeTabs } from "./ModeTabs";
+import { LinkedInSearchLink } from "./LinkedInSearchLink";
 import { SearchBar } from "./SearchBar";
 import { StackChips } from "./StackChips";
 import { formatAge, formatCollectedAt, isStale } from "./format";
@@ -125,6 +126,7 @@ export function JobsPage() {
 
       <SearchBar filters={filters} onChange={setFilters} />
       <StackChips filters={filters} onChange={setFilters} />
+      <LinkedInSearchLink filters={filters} />
 
       <div className="flex flex-wrap items-start gap-6">
         <button
@@ -182,7 +184,7 @@ export function JobsPage() {
                 <button
                   type="button"
                   onClick={() => void query.refetch()}
-                  className="min-h-11 rounded-xl bg-jf-brand px-5 font-semibold text-white outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
+                  className="min-h-11 rounded-xl bg-jf-brand px-5 font-semibold text-jf-surface outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
                 >
                   Tentar de novo
                 </button>
@@ -205,6 +207,7 @@ export function JobsPage() {
               <div className="flex flex-col items-center gap-3 rounded-2xl border border-jf-line bg-jf-surface p-8 text-center">
                 <p className="font-semibold">Nenhuma vaga encontrada</p>
                 <p className="text-sm text-jf-ink-3">Tente remover algum filtro ou buscar por outro termo.</p>
+                <LinkedInSearchLink filters={filters} />
                 {hasAnyFilter && (
                   <button
                     type="button"
@@ -256,7 +259,7 @@ export function JobsPage() {
 
       <div aria-live="polite" data-testid="undo-region" className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex justify-center">
         {undo && (
-          <div className="pointer-events-auto flex items-center gap-3 rounded-xl bg-jf-ink py-1.5 pr-1.5 pl-4 text-sm text-white shadow-lg">
+          <div className="pointer-events-auto flex items-center gap-3 rounded-xl bg-jf-ink py-1.5 pr-1.5 pl-4 text-sm text-jf-surface shadow-lg">
             <span>Vaga oculta</span>
             <button
               type="button"
@@ -264,7 +267,7 @@ export function JobsPage() {
                 setHidden(undo, false);
                 setUndo(null);
               }}
-              className="min-h-11 rounded-lg px-3 font-semibold text-white underline outline-none hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-white"
+              className="min-h-11 rounded-lg px-3 font-semibold text-jf-surface underline outline-none hover:bg-jf-surface/10 focus-visible:ring-2 focus-visible:ring-jf-surface"
             >
               Desfazer
             </button>

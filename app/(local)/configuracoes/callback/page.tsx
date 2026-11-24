@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
 import { AiError } from "@/lib/client/ai/errors";
-import { completeOpenRouterAuth } from "@/lib/client/ai/pkce";
+import { completeOpenRouterAuth, takeFreeConsentIntent } from "@/lib/client/ai/pkce";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { HardLink } from "@/components/ui/hard-link";
 
@@ -30,6 +30,8 @@ function Callback() {
     started.current = true;
     // Tira o code da URL antes de qualquer outra coisa.
     window.history.replaceState(null, "", window.location.pathname);
+    // Lido (e apagado) antes da troca, para não sobrar no sessionStorage em caso de erro.
+    const freeConsent = takeFreeConsentIntent();
     if (!code) return;
     void (async () => {
       try {
@@ -40,7 +42,13 @@ function Callback() {
           ...current,
           providers: {
             ...current.providers,
-            openrouter: { ...prev, key, addedAt: new Date().toISOString(), source: "pkce" },
+            openrouter: {
+              ...prev,
+              key,
+              addedAt: new Date().toISOString(),
+              source: "pkce",
+              ...(freeConsent ? { freeConsent: true } : {}),
+            },
           },
         });
         if (!res.ok) {

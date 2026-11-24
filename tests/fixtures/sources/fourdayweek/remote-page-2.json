@@ -1,0 +1,490 @@
+{
+ "data": [
+  {
+   "id": "01a1f9bc-da1b-74cb-9f34-a56ce1aea8b3",
+   "slug": "engineering-manager-grafana-infrastructure-at-grafana-labs-b7696b60",
+   "title": "Engineering Manager - Grafana Infrastructure",
+   "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their age",
+   "url": "https://4dayweek.io/job/engineering-manager-grafana-infrastructure-at-grafana-labs-b7696b60",
+   "category": "engineering",
+   "role": "Engineering Manager",
+   "level": "senior",
+   "schedule_type": "generous_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Spain",
+     "continent": "Europe",
+     "latitude": 40.46,
+     "longitude": -3.75,
+     "work_arrangement": "remote",
+     "is_primary": true
+    }
+   ],
+   "salary_min": 9684600,
+   "salary_max": 11621500,
+   "salary_currency": "EUR",
+   "salary_period": "year",
+   "skills": [
+    {
+     "name": "Engineering Management",
+     "slug": "engineering-management"
+    },
+    {
+     "name": "Incident Response",
+     "slug": "incident-response"
+    },
+    {
+     "name": "On-call Management",
+     "slug": "on-call-management"
+    },
+    {
+     "name": "Platform Engineering",
+     "slug": "platform-engineering"
+    },
+    {
+     "name": "Roadmap Planning",
+     "slug": "roadmap-planning"
+    },
+    {
+     "name": "Self-service Platforms",
+     "slug": "self-service-platforms"
+    },
+    {
+     "name": "Stakeholder Communication",
+     "slug": "stakeholder-communication"
+    },
+    {
+     "name": "Team Leadership",
+     "slug": "team-leadership"
+    }
+   ],
+   "stack": [
+    {
+     "name": "AWS",
+     "slug": "aws"
+    },
+    {
+     "name": "Azure",
+     "slug": "azure"
+    },
+    {
+     "name": "Google Cloud",
+     "slug": "gcp"
+    },
+    {
+     "name": "Kubernetes",
+     "slug": "kubernetes"
+    }
+   ],
+   "posted_at": "2026-11-20T16:14:26Z",
+   "company": {
+    "id": "019f6bfe-c659-7603-b74f-8be6c3efc91a",
+    "slug": "grafana-labs",
+    "name": "Grafana Labs",
+    "url": "https://4dayweek.io/company/grafana-labs",
+    "website": "https://grafana.com",
+    "logo_url": "https://media.4dayweek.io/files/1784212082969_0b47bebbf9afc48a.jpg",
+    "short_description": "The company behind Grafana — the open-source observability stack (dashboards, Loki logs, Tempo traces, Mimir metrics) used by millions.",
+    "country": "United States",
+    "employees": 1600,
+    "schedule_type": "generous_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f9bc-da0a-7257-b59c-b458b604a283",
+   "slug": "engineering-manager-grafana-infrastructure-at-grafana-labs-58ef1cf0",
+   "title": "Engineering Manager - Grafana Infrastructure",
+   "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their age",
+   "url": "https://4dayweek.io/job/engineering-manager-grafana-infrastructure-at-grafana-labs-58ef1cf0",
+   "category": "engineering",
+   "role": "Engineering Manager",
+   "level": "senior",
+   "schedule_type": "generous_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Ireland",
+     "continent": "Europe",
+     "latitude": 53.41,
+     "longitude": -8.24,
+     "work_arrangement": "remote",
+     "is_primary": true
+    }
+   ],
+   "salary_min": 12112800,
+   "salary_max": 14535400,
+   "salary_currency": "EUR",
+   "salary_period": "year",
+   "skills": [
+    {
+     "name": "Incident Response",
+     "slug": "incident-response"
+    },
+    {
+     "name": "Migration Planning",
+     "slug": "migration-planning"
+    },
+    {
+     "name": "On-call Management",
+     "slug": "on-call-management"
+    },
+    {
+     "name": "People Management",
+     "slug": "people-management"
+    },
+    {
+     "name": "Platform Engineering",
+     "slug": "platform-engineering"
+    },
+    {
+     "name": "Roadmap Planning",
+     "slug": "roadmap-planning"
+    },
+    {
+     "name": "Stakeholder Communication",
+     "slug": "stakeholder-communication"
+    }
+   ],
+   "stack": [
+    {
+     "name": "Kubernetes",
+     "slug": "kubernetes"
+    }
+   ],
+   "tools": [
+    {
+     "name": "AWS",
+     "slug": "aws"
+    },
+    {
+     "name": "Azure",
+     "slug": "azure"
+    },
+    {
+     "name": "GCP",
+     "slug": "gcp"
+    },
+    {
+     "name": "Grafana",
+     "slug": "grafana"
+    }
+   ],
+   "posted_at": "2026-11-20T16:14:26Z",
+   "company": {
+    "id": "019f6bfe-c659-7603-b74f-8be6c3efc91a",
+    "slug": "grafana-labs",
+    "name": "Grafana Labs",
+    "url": "https://4dayweek.io/company/grafana-labs",
+    "website": "https://grafana.com",
+    "logo_url": "https://media.4dayweek.io/files/1784212082969_0b47bebbf9afc48a.jpg",
+    "short_description": "The company behind Grafana — the open-source observability stack (dashboards, Loki logs, Tempo traces, Mimir metrics) used by millions.",
+    "country": "United States",
+    "employees": 1600,
+    "schedule_type": "generous_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f9bc-d9f2-74ca-b855-d038eeb7f413",
+   "slug": "engineering-manager-grafana-infrastructure-at-grafana-labs-0be72263",
+   "title": "Engineering Manager - Grafana Infrastructure",
+   "description": "Grafana Labs is the company behind Grafana Cloud, the fully managed observability platform trusted by more than 10,000 organizations to ensure reliability, resolve incidents faster, and optimize telemetry at scale. Built on open source and open standards and designed for interoperability across any stack, Grafana Cloud brings AI to observability and observability to AI, giving teams (and their age",
+   "url": "https://4dayweek.io/job/engineering-manager-grafana-infrastructure-at-grafana-labs-0be72263",
+   "category": "engineering",
+   "role": "Engineering Manager",
+   "level": "senior",
+   "schedule_type": "generous_pto",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "Canada",
+     "continent": "North America",
+     "latitude": 56.13,
+     "longitude": -106.35,
+     "work_arrangement": "remote",
+     "is_primary": true
+    }
+   ],
+   "salary_min": 19289100,
+   "salary_max": 23146900,
+   "salary_currency": "CAD",
+   "salary_period": "year",
+   "skills": [
+    {
+     "name": "Cross-team Collaboration",
+     "slug": "cross-team-collaboration"
+    },
+    {
+     "name": "Engineering Management",
+     "slug": "engineering-management"
+    },
+    {
+     "name": "Hiring",
+     "slug": "hiring"
+    },
+    {
+     "name": "Infrastructure as Code",
+     "slug": "infrastructure-as-code"
+    },
+    {
+     "name": "On-call Management",
+     "slug": "on-call-management"
+    },
+    {
+     "name": "Platform Engineering",
+     "slug": "platform-engineering"
+    },
+    {
+     "name": "Roadmap Planning",
+     "slug": "roadmap-planning"
+    },
+    {
+     "name": "Stakeholder Communication",
+     "slug": "stakeholder-communication"
+    },
+    {
+     "name": "Team Leadership",
+     "slug": "team-leadership"
+    }
+   ],
+   "stack": [
+    {
+     "name": "AWS",
+     "slug": "aws"
+    },
+    {
+     "name": "Azure",
+     "slug": "azure"
+    },
+    {
+     "name": "Google Cloud",
+     "slug": "gcp"
+    },
+    {
+     "name": "Kubernetes",
+     "slug": "kubernetes"
+    }
+   ],
+   "tools": [
+    {
+     "name": "Grafana Cloud",
+     "slug": "grafana-cloud"
+    }
+   ],
+   "posted_at": "2026-11-20T16:14:26Z",
+   "company": {
+    "id": "019f6bfe-c659-7603-b74f-8be6c3efc91a",
+    "slug": "grafana-labs",
+    "name": "Grafana Labs",
+    "url": "https://4dayweek.io/company/grafana-labs",
+    "website": "https://grafana.com",
+    "logo_url": "https://media.4dayweek.io/files/1784212082969_0b47bebbf9afc48a.jpg",
+    "short_description": "The company behind Grafana — the open-source observability stack (dashboards, Loki logs, Tempo traces, Mimir metrics) used by millions.",
+    "country": "United States",
+    "employees": 1600,
+    "schedule_type": "generous_pto",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f91d-f506-7e7b-9b2c-11a7547c9970",
+   "slug": "senior-software-data-engineer-bot-detection-at-hugging-face-a753ef44",
+   "title": "Senior Software/Data Engineer, Bot Detection",
+   "description": "At Hugging Face, we're on a journey to democratize good AI. We are building the fastest growing platform for AI builders with over 20 million users who collectively shared over 4 million models, 1 million datasets & 1.5 million apps. Our open-source libraries have more than 700,000 stars on Github.\n\n**About the Role**\n\nHugging Face hosts millions of models, datasets and Spaces, and serves a very l",
+   "url": "https://4dayweek.io/job/senior-software-data-engineer-bot-detection-at-hugging-face-a753ef44",
+   "category": "engineering",
+   "role": "Software/Data Engineer",
+   "level": "senior",
+   "schedule_type": "generous_parental_leave",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "city": "New York",
+     "state": "New York",
+     "country": "United States",
+     "continent": "North America",
+     "latitude": 40.7127753,
+     "longitude": -74.0059728,
+     "work_arrangement": "remote",
+     "is_primary": true
+    }
+   ],
+   "skills": [
+    {
+     "name": "Adversarial ML",
+     "slug": "adversarial-ml"
+    },
+    {
+     "name": "Anomaly Detection",
+     "slug": "anomaly-detection"
+    },
+    {
+     "name": "Bot detection",
+     "slug": "bot-detection"
+    },
+    {
+     "name": "Data Modeling",
+     "slug": "data-modeling"
+    },
+    {
+     "name": "Feature Engineering",
+     "slug": "feature-engineering"
+    },
+    {
+     "name": "Precision/Recall Analysis",
+     "slug": "precision-recall-analysis"
+    }
+   ],
+   "stack": [
+    {
+     "name": "Python",
+     "slug": "python"
+    },
+    {
+     "name": "SQL",
+     "slug": "sql"
+    },
+    {
+     "name": "Spark",
+     "slug": "spark"
+    }
+   ],
+   "tools": [
+    {
+     "name": "BigQuery",
+     "slug": "bigquery"
+    },
+    {
+     "name": "ClickHouse",
+     "slug": "clickhouse"
+    }
+   ],
+   "posted_at": "2026-11-20T13:20:52Z",
+   "company": {
+    "id": "019e74ae-07b9-7c51-87fb-b7dcd4094091",
+    "slug": "hugging-face",
+    "name": "Hugging Face",
+    "url": "https://4dayweek.io/company/hugging-face",
+    "website": "https://huggingface.co",
+    "logo_url": "https://media.4dayweek.io/files/1780305936020_e4dbd2a43300f67f.jpg",
+    "short_description": "Open-source AI + ML community and platform — home to over 1.5M+ models, 250K+ datasets and 750K+ spaces. 20 weeks paid family leave for ALL parents, fully gender-neutral.",
+    "country": "United States",
+    "employees": 730,
+    "schedule_type": "generous_parental_leave",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  },
+  {
+   "id": "01a1f91d-f4f5-7952-85aa-2609f501062b",
+   "slug": "senior-software-data-engineer-bot-detection-emea-at-hugging-face-35e73a29",
+   "title": "Senior Software/Data Engineer, Bot Detection (EMEA)",
+   "description": "At Hugging Face, we're on a journey to democratize good AI. We are building the fastest growing platform for AI builders with over 20 million users who collectively shared over 4 million models, 1 million datasets & 1.5 million apps. Our open-source libraries have more than 700,000 stars on Github.\n\n**About the Role**\n\nHugging Face hosts millions of models, datasets and Spaces, and serves a very l",
+   "url": "https://4dayweek.io/job/senior-software-data-engineer-bot-detection-emea-at-hugging-face-35e73a29",
+   "category": "data",
+   "role": "Software/Data Engineer",
+   "level": "senior",
+   "schedule_type": "generous_parental_leave",
+   "hours_per_week_min": 40,
+   "hours_per_week_max": 40,
+   "work_arrangement": "remote",
+   "locations": [
+    {
+     "country": "France",
+     "continent": "Europe",
+     "latitude": 46.23,
+     "longitude": 2.21,
+     "work_arrangement": "remote",
+     "is_primary": true
+    }
+   ],
+   "skills": [
+    {
+     "name": "Adversarial ML",
+     "slug": "adversarial-ml"
+    },
+    {
+     "name": "Anomaly Detection",
+     "slug": "anomaly-detection"
+    },
+    {
+     "name": "Bot detection",
+     "slug": "bot-detection"
+    },
+    {
+     "name": "Data Science",
+     "slug": "data-science"
+    },
+    {
+     "name": "Feature Engineering",
+     "slug": "feature-engineering"
+    },
+    {
+     "name": "Machine Learning",
+     "slug": "machine-learning"
+    }
+   ],
+   "stack": [
+    {
+     "name": "Python",
+     "slug": "python"
+    },
+    {
+     "name": "SQL",
+     "slug": "sql"
+    }
+   ],
+   "tools": [
+    {
+     "name": "BigQuery",
+     "slug": "bigquery"
+    },
+    {
+     "name": "ClickHouse",
+     "slug": "clickhouse"
+    },
+    {
+     "name": "Spark",
+     "slug": "spark"
+    }
+   ],
+   "posted_at": "2026-11-20T13:20:52Z",
+   "company": {
+    "id": "019e74ae-07b9-7c51-87fb-b7dcd4094091",
+    "slug": "hugging-face",
+    "name": "Hugging Face",
+    "url": "https://4dayweek.io/company/hugging-face",
+    "website": "https://huggingface.co",
+    "logo_url": "https://media.4dayweek.io/files/1780305936020_e4dbd2a43300f67f.jpg",
+    "short_description": "Open-source AI + ML community and platform — home to over 1.5M+ models, 250K+ datasets and 750K+ spaces. 20 weeks paid family leave for ALL parents, fully gender-neutral.",
+    "country": "United States",
+    "employees": 730,
+    "schedule_type": "generous_parental_leave",
+    "hours_full_time": 40,
+    "remote_level": "fully-remote",
+    "hires_worldwide": false
+   }
+  }
+ ],
+ "page": 2,
+ "limit": 5,
+ "total": 3382,
+ "has_more": true
+}

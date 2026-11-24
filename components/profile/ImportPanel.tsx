@@ -116,7 +116,7 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
             pick(e.dataTransfer.files[0]);
           }}
           className={`relative flex min-h-11 cursor-pointer flex-col items-center gap-2 rounded-[14px] border-2 border-dashed px-4 py-7 text-center focus-within:ring-2 focus-within:ring-jf-brand ${
-            dragging ? "border-jf-brand bg-jf-brand-soft" : "border-jf-line-strong bg-[#fbfaf8]"
+            dragging ? "border-jf-brand bg-jf-brand-soft" : "border-jf-line-strong bg-jf-surface-2"
           } ${disabled ? "opacity-60" : ""}`}
         >
           <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-jf-ink-2">

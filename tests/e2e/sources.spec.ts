@@ -56,7 +56,8 @@ test("Fontes lista todas as fontes com link de atribuição e rel correto", asyn
   await seedStates();
   await page.goto("/fontes");
   await expect(page.getByRole("heading", { level: 1, name: "Fontes" })).toBeVisible();
-  await expect(page.locator("main li")).toHaveCount(9);
+  // Uma linha por fonte do registro: a mesma consulta que alimenta `/api/sources/status`.
+  await expect(page.locator("main li")).toHaveCount((await listSourcesStatus(db)).length);
 
   const lever = page.getByRole("link", { name: "Lever" });
   await expect(lever).toHaveAttribute("href", "https://www.lever.co");
@@ -108,7 +109,8 @@ test("o rodapé de uma página (local) leva a Fontes sem violações de CSP", as
   await page.getByRole("contentinfo").getByRole("link", { name: "Fontes" }).click();
   await expect(page).toHaveURL(/\/fontes$/);
   await expect(page.getByRole("heading", { level: 1, name: "Fontes" })).toBeVisible();
-  await expect(page.locator("main li")).toHaveCount(9);
+  // Uma linha por fonte do registro: a mesma consulta que alimenta `/api/sources/status`.
+  await expect(page.locator("main li")).toHaveCount((await listSourcesStatus(db)).length);
 });
 
 test("Privacidade traz todas as seções e o placeholder de contato", async ({ page }) => {

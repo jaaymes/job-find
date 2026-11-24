@@ -22,6 +22,14 @@ describe("ProviderCard", () => {
     expect(h.onAdd).not.toHaveBeenCalled();
   });
 
+  it("só o OpenRouter mostra o selo 'Recomendado'", () => {
+    setup("openrouter");
+    expect(screen.getByText("Recomendado")).toBeTruthy();
+    cleanup();
+    setup("openai");
+    expect(screen.queryByText("Recomendado")).toBeNull();
+  });
+
   it("paste mostra 'Adicionar chave' e chama onAdd", () => {
     const h = setup("openai");
     fireEvent.click(screen.getByRole("button", { name: "Adicionar chave" }));

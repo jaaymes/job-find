@@ -67,7 +67,10 @@ function canonicalNumber(raw: string): { value: string; plain: boolean } {
   if (/^\d{1,3}(?:\.\d{3})+$/.test(digits) || /^\d{1,3}(?:,\d{3})+$/.test(digits)) {
     n = Number(digits.replace(/[.,]/g, "")); // separador de milhar: 1.000 / 1,000
   } else {
-    n = Number(digits.replace(",", ".").replace(/\.(?=.*\.)/g, ""));
+    // Só o último ponto é decimal. (Um lookahead `/\.(?=.*\.)/g` seria quadrático num token "1.1.1.1…" enorme.)
+    const dec = digits.replace(",", ".");
+    const last = dec.lastIndexOf(".");
+    n = Number(last < 0 ? dec : dec.slice(0, last).replaceAll(".", "") + dec.slice(last));
   }
   if (suffix) {
     const s = suffix.toLowerCase();

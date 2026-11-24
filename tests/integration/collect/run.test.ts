@@ -115,7 +115,8 @@ describe("runCollection", () => {
       invalidate: inv2,
     });
     expect(again[0]).toMatchObject({ status: "ok", inserted: 0, updated: 0 });
-    expect(inv2).not.toHaveBeenCalled();
+    expect(inv2).not.toHaveBeenCalledWith("jobs");
+    expect(inv2).toHaveBeenCalledWith("sources-status");
   });
 
   it("fonte sem conector vira erro claro", async () => {

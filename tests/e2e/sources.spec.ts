@@ -42,12 +42,14 @@ async function seedStates() {
     ('lever', 0, ${ago(10 * MINUTE)}),
     ('ashby', 0, ${ago(5 * HOUR)}),
     ('hn', 3, ${ago(10 * MINUTE)}),
-    ('jobicy', 0, NULL)`);
+    ('jobicy', 1, NULL),
+    ('wwr', 3, NULL)`);
   await db.execute(sql`INSERT INTO source_runs (source, started_at, status) VALUES
     ('lever', ${ago(10 * MINUTE)}, 'ok'),
     ('ashby', ${ago(5 * HOUR)}, 'ok'),
     ('hn', ${ago(10 * MINUTE)}, 'error'),
-    ('jobicy', ${ago(30 * MINUTE)}, 'error')`);
+    ('jobicy', ${ago(30 * MINUTE)}, 'error'),
+    ('wwr', ${ago(30 * MINUTE)}, 'error')`);
 }
 
 test("Fontes lista todas as fontes com link de atribuição e rel correto", async ({ page }) => {
@@ -68,9 +70,12 @@ test("Fontes avisa coleta parada e destaca fonte falhando", async ({ page }) => 
   await page.goto("/fontes");
   const item = (name: string) => page.locator("main li").filter({ has: page.getByRole("link", { name, exact: true }) });
 
-  // ashby: último sucesso há 5 h; jobicy: execuções sem nenhum sucesso.
+  // ashby: último sucesso há 5 h; wwr: nunca teve sucesso e já está falhando.
   await expect(item("Ashby").getByText("Coleta parada há mais de 3 h")).toBeVisible();
-  await expect(item("Jobicy").getByText("Coleta parada há mais de 3 h")).toBeVisible();
+  await expect(item("We Work Remotely").getByText("Coleta parada há mais de 3 h")).toBeVisible();
+  // jobicy: nunca teve sucesso, mas só 1 falha recente: sem aviso.
+  await expect(item("Jobicy").getByText("Coleta parada há mais de 3 h")).toHaveCount(0);
+  await expect(item("Jobicy").getByText("Falhando")).toHaveCount(0);
   // lever: em dia; GitHub: sem execuções ainda, não é "parada".
   await expect(item("Lever").getByText("Coleta parada há mais de 3 h")).toHaveCount(0);
   await expect(item("GitHub").getByText("Coleta parada há mais de 3 h")).toHaveCount(0);
@@ -85,6 +90,15 @@ test("o rodapé leva a Fontes e a Privacidade", async ({ page }) => {
   await page.getByRole("contentinfo").getByRole("link", { name: "Privacidade" }).click();
   await expect(page).toHaveURL(/\/privacidade$/);
   await expect(page.getByRole("heading", { level: 1, name: "Privacidade" })).toBeVisible();
+});
+
+test("o rodapé de uma página (local) leva a Fontes sem violações de CSP", async ({ page }) => {
+  await seedStates();
+  await page.goto("/configuracoes");
+  await page.getByRole("contentinfo").getByRole("link", { name: "Fontes" }).click();
+  await expect(page).toHaveURL(/\/fontes$/);
+  await expect(page.getByRole("heading", { level: 1, name: "Fontes" })).toBeVisible();
+  await expect(page.locator("main li")).toHaveCount(9);
 });
 
 test("Privacidade traz todas as seções e o placeholder de contato", async ({ page }) => {
@@ -103,4 +117,5 @@ test("Privacidade traz todas as seções e o placeholder de contato", async ({ p
   await expect(page.getByText("[EMAIL DE CONTATO]")).toBeVisible();
   await expect(page.getByText(/OpenRouter/)).toBeVisible();
   await expect(page.getByText(/DeepSeek/)).toBeVisible();
+  await expect(page.getByText(/não usa ferramenta de analytics nem cookies/)).toBeVisible();
 });

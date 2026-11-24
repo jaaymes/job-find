@@ -53,11 +53,11 @@ export function isStale(lastCollectedAt: string | null, now: number): boolean {
 }
 
 /**
- * Fonte com coleta parada: a última coleta com sucesso tem mais de 3 h, ou nunca houve sucesso mesmo havendo
- * execuções registradas (`hasRuns`). Fonte sem nenhuma execução ainda não é "parada".
+ * Fonte com coleta parada: a última coleta com sucesso tem mais de 3 h, ou nunca houve sucesso e a fonte já
+ * está `failing` (3 falhas seguidas). Uma primeira falha recente não conta.
  */
-export function isSourceStale(lastSuccessAt: string | null, hasRuns: boolean, now: number): boolean {
-  return lastSuccessAt === null ? hasRuns : isStale(lastSuccessAt, now);
+export function isSourceStale(lastSuccessAt: string | null, failing: boolean, now: number): boolean {
+  return lastSuccessAt === null ? failing : isStale(lastSuccessAt, now);
 }
 
 /** Horário e data de uma coleta no fuso de São Paulo, ex.: `{ time: "10:15", date: "23/11/2026" }`. */

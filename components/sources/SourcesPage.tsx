@@ -7,8 +7,9 @@ import type { SourceStatus } from "@/lib/shared/types/sources-status";
 const BADGE = "rounded-full px-2.5 py-0.5 text-xs font-semibold";
 
 function SourceRow({ source, now }: { source: SourceStatus; now: number | null }) {
-  const stale = now !== null && isSourceStale(source.lastSuccessAt, source.lastRun !== null, now);
   const failing = source.status === "failing";
+  const stale = now !== null && isSourceStale(source.lastSuccessAt, failing, now);
+  const collected = source.lastSuccessAt ? formatCollectedAt(source.lastSuccessAt) : null;
   return (
     <li className="flex flex-col gap-2 rounded-xl border border-jf-line bg-jf-surface px-4 py-3.5">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -23,8 +24,8 @@ function SourceRow({ source, now }: { source: SourceStatus; now: number | null }
         {failing && <span className={`${BADGE} bg-jf-new-bg text-jf-new-fg`}>Falhando</span>}
       </div>
       <p className="text-sm text-jf-ink-3">
-        {source.lastSuccessAt
-          ? `Última coleta com sucesso: ${formatCollectedAt(source.lastSuccessAt).time} de ${formatCollectedAt(source.lastSuccessAt).date}${now !== null ? ` (${formatAge(source.lastSuccessAt, now)})` : ""}.`
+        {source.lastSuccessAt && collected
+          ? `Última coleta com sucesso: ${collected.time} de ${collected.date}${now !== null ? ` (${formatAge(source.lastSuccessAt, now)})` : ""}.`
           : "Ainda sem coleta com sucesso."}
       </p>
       {failing && (

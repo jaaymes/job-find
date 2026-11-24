@@ -1,5 +1,6 @@
 "use client";
 
+import { Star } from "lucide-react";
 import { useId, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
 import { Button } from "@/components/ui/button";
@@ -93,11 +94,17 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
       aria-labelledby={titleId}
       className="flex flex-col gap-2.5 rounded-[14px] border border-jf-line bg-jf-surface p-[18px]"
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
         <h3 id={titleId} className="text-base font-semibold">
           {def.label}
         </h3>
-        <span className="flex shrink-0 gap-1.5">
+        <span className="flex flex-wrap gap-1.5">
+          {isOpenRouter && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-jf-brand-soft px-2.5 py-1 text-xs font-semibold text-jf-brand-dark">
+              <Star aria-hidden="true" className="size-3 fill-current" />
+              Recomendado
+            </span>
+          )}
           {isLocal && <span className="rounded-full bg-jf-new-bg px-2.5 py-1 text-xs font-semibold text-jf-new-fg">Experimental</span>}
           <span
             className={cn(

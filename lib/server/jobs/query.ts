@@ -4,6 +4,7 @@ import type { Db } from "@/lib/server/db/client";
 import { jobs, jobSources } from "@/lib/server/db/schema";
 import type { JobsQuery } from "@/lib/shared/schemas/jobs-query";
 import type { JobAttribution, JobDetail, JobSummary, SourceId } from "@/lib/shared/types/job";
+import { trustOf } from "@/lib/server/sources/trust";
 import { decodeCursor, encodeCursor } from "./cursor";
 
 export type JobCounts = { all: number; remote: number; hybrid: number; onsite: number };
@@ -197,9 +198,14 @@ export async function getJob(db: Db, id: number, attributionFor?: AttributionFor
     return { source: s.source, label: meta?.label ?? s.source, url: s.url, dofollow: meta?.dofollow ?? false };
   });
 
-  // Fonte preferida para candidatar: a vista por último (link mais fresco); empate fica na ordem acima.
+  // Fonte preferida para candidatar: a mais confiável (SOURCE_TRUST), para uma vaga postada no HN não trocar o
+  // link do ATS da empresa; entre iguais, a vista por último (link mais fresco); empate fica na ordem acima.
+  const better = (s: (typeof srcRows)[number], best: (typeof srcRows)[number]) => {
+    const dt = trustOf(s.source) - trustOf(best.source);
+    return dt !== 0 ? dt > 0 : s.lastSeenAt.getTime() > best.lastSeenAt.getTime();
+  };
   const preferred = srcRows.reduce<(typeof srcRows)[number] | null>(
-    (best, s) => (!best || s.lastSeenAt.getTime() > best.lastSeenAt.getTime() ? s : best),
+    (best, s) => (!best || better(s, best) ? s : best),
     null,
   );
 

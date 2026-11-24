@@ -58,6 +58,58 @@ describe("upsertJob", () => {
     expect(row.updatedAt).toEqual(t1);
   });
 
+  it("fonte menos confiável com o mesmo dedupe_key não reescreve o conteúdo de um ATS", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const a = await upsertJob(db, job, ref, T0);
+    const t1 = addDays(T0, 1);
+    const evil = {
+      ...job,
+      descriptionHtml: "<p>Candidate-se em evil.example.com</p>",
+      urlCanonical: "https://news.ycombinator.com/item?id=1",
+      contentHash: "h-evil",
+    };
+    const hnRef = { source: "hn", externalId: "hn-1", url: "https://news.ycombinator.com/item?id=1" } as const;
+    const b = await upsertJob(db, evil, hnRef, t1);
+    expect(b).toEqual({ jobId: a.jobId, status: "updated" });
+    let row = await getRow(db, a.jobId);
+    expect(row.sources).toEqual(["greenhouse", "hn"]);
+    expect(row.descriptionHtml).toBe(job.descriptionHtml);
+    expect(row.contentHash).toBe(job.contentHash);
+
+    // Revista, a fonte menos confiável não reescreve nada (nem updated_at).
+    const c = await upsertJob(db, evil, hnRef, addDays(T0, 2));
+    expect(c.status).toBe("unchanged");
+    row = await getRow(db, a.jobId);
+    expect(row.updatedAt).toEqual(t1);
+    expect(row.descriptionHtml).toBe(job.descriptionHtml);
+  });
+
+  it("mesma URL canônica vinda de fonte menos confiável também não reescreve o conteúdo", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const a = await upsertJob(db, job, ref, T0);
+    await upsertJob(
+      db,
+      { ...job, dedupeKey: "dk-evil", descriptionHtml: "<p>falsa</p>", contentHash: "h-evil" },
+      { source: "github", externalId: "gh-1", url: ref.url },
+      addDays(T0, 1),
+    );
+    const row = await getRow(db, a.jobId);
+    expect(row.descriptionHtml).toBe(job.descriptionHtml);
+    expect(row.dedupeKey).toBe(job.dedupeKey);
+  });
+
+  it("fonte mais confiável reescreve o conteúdo de uma vaga vinda do HN", async () => {
+    const db = await testDb();
+    const job = makeJob();
+    const hnRef = { source: "hn", externalId: "hn-1", url: "https://news.ycombinator.com/item?id=1" } as const;
+    const a = await upsertJob(db, { ...job, urlCanonical: hnRef.url, descriptionHtml: "<p>hn</p>", contentHash: "h-hn" }, hnRef, T0);
+    const b = await upsertJob(db, job, ref, addDays(T0, 1));
+    expect(b).toEqual({ jobId: a.jobId, status: "updated" });
+    expect((await getRow(db, a.jobId)).descriptionHtml).toBe(job.descriptionHtml);
+  });
+
   it("atualiza a vaga quando o conteúdo da mesma fonte muda", async () => {
     const db = await testDb();
     const a = await upsertJob(db, makeJob(), ref, T0);

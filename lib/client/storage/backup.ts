@@ -351,6 +351,38 @@ function mergeAiWithoutKeys(imported: AiSettings, current: AiSettings): AiSettin
 }
 
 /**
+ * Consentimentos de privacidade nunca vêm do arquivo (o arquivo pode ter sido preparado por outra pessoa): os
+ * aceites `privacyAccepted`/`freeConsent` ficam os locais (ausentes se o provedor não existia aqui), e
+ * `dataCollectionDeny` só pode ficar mais restritivo. Quem restaura o próprio backup aceita os avisos de novo.
+ */
+function keepLocalConsents(next: AiSettings, current: AiSettings): AiSettings {
+  const providers: AiSettings["providers"] = {};
+  for (const [id, cfg] of Object.entries(next.providers)) {
+    const { privacyAccepted: _p, freeConsent: _f, ...rest } = cfg;
+    void _p;
+    void _f;
+    const local = current.providers[id as ProviderId];
+    Object.defineProperty(providers, id, {
+      value: {
+        ...rest,
+        ...(local?.privacyAccepted !== undefined ? { privacyAccepted: local.privacyAccepted } : {}),
+        ...(local?.freeConsent !== undefined ? { freeConsent: local.freeConsent } : {}),
+      },
+      enumerable: true,
+      writable: true,
+      configurable: true,
+    });
+  }
+  const merged = AiSettings.safeParse({
+    ...next,
+    providers,
+    dataCollectionDeny: current.dataCollectionDeny || next.dataCollectionDeny,
+  });
+  if (!merged.success) throw new Error("configuração de IA inválida");
+  return merged.data;
+}
+
+/**
  * Grava cada chave inteira (sem deep merge). Exceção: a config de IA sem consentimento para chaves (`acceptKeys`
  * falso ou arquivo sem chaves) vem do arquivo, mas com as chaves de API sempre as locais (ver `mergeAiWithoutKeys`).
  * Devolve as chaves que não foram gravadas (cota cheia, localStorage indisponível ou config de IA inválida).
@@ -365,7 +397,9 @@ export function applyBackup(b: Backup, opts: { acceptKeys: boolean }): BackupKey
     const ai = d[AI] as AiSettings;
     try {
       const whole = opts.acceptKeys && Object.keys(providerKeys(ai)).length > 0;
-      put(AI, aiSettingsStore.set(whole ? ai : mergeAiWithoutKeys(ai, aiSettingsStore.get())).ok);
+      const current = aiSettingsStore.get();
+      const next = whole ? ai : mergeAiWithoutKeys(ai, current);
+      put(AI, aiSettingsStore.set(keepLocalConsents(next, current)).ok);
     } catch {
       failed.push(AI);
     }

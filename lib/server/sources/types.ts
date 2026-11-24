@@ -40,7 +40,13 @@ export type SafeResponse = {
 
 export type SafeFetch = (
   url: string,
-  init?: { headers?: Record<string, string>; signal?: AbortSignal },
+  init?: {
+    headers?: Record<string, string>;
+    signal?: AbortSignal;
+    /** Padrão GET. POST não segue redirect nem repete em 429/5xx (evita efeito duplicado). */
+    method?: "GET" | "POST";
+    body?: string;
+  },
 ) => Promise<SafeResponse>;
 
 export type ConnectorContext = {

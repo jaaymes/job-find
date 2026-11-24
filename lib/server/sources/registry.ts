@@ -13,6 +13,8 @@ import { lever } from "@/lib/server/sources/lever";
 import { remoteok } from "@/lib/server/sources/remoteok";
 import { smartrecruiters } from "@/lib/server/sources/smartrecruiters";
 import { arbeitnow } from "@/lib/server/sources/arbeitnow";
+import { gupy } from "@/lib/server/sources/gupy";
+import { linkedin } from "@/lib/server/sources/linkedin";
 import { wwr } from "@/lib/server/sources/wwr";
 
 /** Preenchido pelas Tarefas 11–14 e 38; começa vazio. */
@@ -23,10 +25,12 @@ export const CONNECTORS: Partial<Record<SourceId, Connector>> = {
   getonboard,
   github,
   greenhouse,
+  gupy,
   himalayas,
   hn,
   jobicy,
   lever,
+  linkedin,
   remoteok,
   smartrecruiters,
   wwr,

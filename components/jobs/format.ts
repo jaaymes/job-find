@@ -14,6 +14,8 @@ export const SOURCE_LABELS: Record<SourceId, string> = {
   fourdayweek: "4 Day Week",
   getonboard: "Get on Board",
   arbeitnow: "Arbeitnow",
+  gupy: "Gupy",
+  linkedin: "LinkedIn",
 };
 
 /**
@@ -35,6 +37,8 @@ export const FILTERABLE_SOURCES: readonly SourceId[] = [
   "getonboard",
   "smartrecruiters",
   "arbeitnow",
+  "gupy",
+  "linkedin",
 ];
 
 export const SENIORITY_LABELS: Record<Seniority, string> = {

@@ -2,14 +2,14 @@ import type { ConnectorContext, SafeFetch, SafeResponse } from "@/lib/server/sou
 
 export type FakeCtxOptions = {
   /** Resolve a URL pedida para o corpo JSON (ou texto) servido; `undefined` vira 404. */
-  serve: (url: URL) => unknown;
+  serve: (url: URL, init?: { method?: string; body?: string }) => unknown;
   cursor?: string | null;
   /** Prazo da fonte em epoch ms; o padrão é 60 s à frente. */
   deadlineAt?: number;
 };
 
 export type FakeCtx = ConnectorContext & {
-  requests: { url: string; headers: Record<string, string> }[];
+  requests: { url: string; headers: Record<string, string>; method?: string; body?: string }[];
   cursors: (string | null)[];
   /** Falhas parciais reportadas pelo conector via `reportPartial`. */
   partials: { label: string; error: unknown }[];
@@ -35,8 +35,8 @@ export function fakeCtx(opts: FakeCtxOptions): FakeCtx {
   const partials: FakeCtx["partials"] = [];
   const scopes: FakeCtx["scopes"] = [];
   const fetcher: SafeFetch = async (url, init) => {
-    requests.push({ url, headers: init?.headers ?? {} });
-    const body = opts.serve(new URL(url));
+    requests.push({ url, headers: init?.headers ?? {}, method: init?.method, body: init?.body });
+    const body = opts.serve(new URL(url), { method: init?.method, body: init?.body });
     return body === undefined ? response(url, 404, "") : response(url, 200, body);
   };
   return {

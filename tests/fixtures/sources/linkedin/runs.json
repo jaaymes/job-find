@@ -1,0 +1,9 @@
+{
+  "data": {
+    "total": 2,
+    "items": [
+      { "id": "runNew", "status": "SUCCEEDED", "startedAt": "2026-11-23T08:00:00.000Z", "defaultDatasetId": "dsNew" },
+      { "id": "runOld", "status": "SUCCEEDED", "startedAt": "2026-11-22T20:00:00.000Z", "defaultDatasetId": "dsOld" }
+    ]
+  }
+}

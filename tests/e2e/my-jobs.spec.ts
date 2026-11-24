@@ -70,6 +70,28 @@ async function openHome(page: Page, path = "/") {
 
 const todayBr = () => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date());
 
+test("avisa quando o navegador não deixa gravar o favorito, o status ou ocultar", async ({ page }) => {
+  await openHome(page);
+  // Cota cheia: só as gravações do estado das vagas falham.
+  await page.evaluate((key) => {
+    const set = Storage.prototype.setItem;
+    Storage.prototype.setItem = function (k: string, v: string) {
+      if (k === key) throw new DOMException("cota", "QuotaExceededError");
+      return set.call(this, k, v);
+    };
+  }, STATE_KEY);
+  const first = cards(page).first();
+  await first.getByRole("button", { name: /^Favoritar/ }).click();
+  await expect(first.getByRole("alert").filter({ hasText: "Não foi possível salvar neste navegador." })).toBeVisible();
+  await first.getByRole("combobox", { name: /^Status da candidatura/ }).selectOption({ label: "Salva" });
+  await expect(first.getByRole("alert")).toHaveCount(2);
+  await first.getByRole("button", { name: /^Ocultar/ }).click();
+  await expect(first.getByRole("alert")).toHaveCount(3);
+  // Sem gravação, a vaga continua na lista e não ganha o "Desfazer".
+  await expect(first).toBeVisible();
+  await expect(page.getByRole("button", { name: "Desfazer" })).toHaveCount(0);
+});
+
 test("favoritar na home e ver a vaga em Minhas vagas", async ({ page }) => {
   await openHome(page);
   const star = page.getByRole("button", { name: `Favoritar ${TITLE(0)}` });

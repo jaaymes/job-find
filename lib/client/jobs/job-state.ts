@@ -18,7 +18,7 @@ export const STATUS_LABELS: Record<JobStatus, string> = {
 
 /**
  * Cópia mínima da vaga, gravada na primeira interação: é o que mantém a vaga em "Minhas vagas" depois que ela sai
- * do índice público. `urlCanonical` só existe quando a vaga foi vista no detalhe (a listagem não traz esse campo).
+ * do índice público. `urlCanonical` vem da listagem e do detalhe; só é `null` em snapshots gravados antes de a listagem trazer o campo.
  */
 const Snapshot = z.object({
   id: z.number().int().positive(),

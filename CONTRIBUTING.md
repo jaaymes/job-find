@@ -46,3 +46,5 @@ Antes de abrir um PR, rode `pnpm lint && pnpm typecheck && pnpm test`. Não crie
 ## Commits e PRs
 
 Usamos mensagens no estilo Conventional Commits em português (`feat:`, `fix:`, `docs:`, `chore:`). Mantenha PRs pequenos e focados, e inclua testes junto com a mudança.
+
+Os mantenedores podem pedir uma revisão automática por IA do seu PR (segurança, veracidade e aderência ao projeto). Ela é um apoio e não substitui a revisão humana. Veja [docs/revisao-de-pr.md](docs/revisao-de-pr.md).

@@ -11,7 +11,7 @@ export const ASHBY_HOST = "api.ashbyhq.com";
 
 /** Boards curados da D-07 (nada além desta lista é consultado). */
 export const ASHBY_BOARDS = [
-  "nubank", "supabase", "openai", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
+  "nubank", "supabase", "posthog", "linear", "sanity", "replit", "vanta", "plaid", "ramp", "notion", "cohere",
 ] as const;
 
 const boardSchema = z.object({ jobs: z.array(z.unknown()) });

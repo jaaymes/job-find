@@ -3,7 +3,7 @@ import { z } from "@/lib/shared/zod";
 import { safeUrl } from "@/lib/shared/url";
 import { decodeEntities } from "@/lib/server/sources/text";
 import { countryCodeFromName } from "@/lib/server/sources/location";
-import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
+import { UNKNOWN_COMPANY, type Connector, type ConnectorContext, type NormalizedJob } from "@/lib/server/sources/types";
 
 /** Host fixo do feed (D-07): o fetch seguro só aceita URLs base definidas no código. */
 export const WWR_HOST = "weworkremotely.com";
@@ -111,7 +111,7 @@ export const wwr: Connector = {
       externalId: slug ?? url,
       url,
       title,
-      company: company || "Não informada",
+      company: company || UNKNOWN_COMPANY,
       companyLogoUrl: null,
       descriptionHtml: j.description ?? "",
       descriptionFormat: "html",

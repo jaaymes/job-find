@@ -15,7 +15,7 @@ import {
   sanitizeJobHtml,
   summarize,
 } from "@/lib/server/sanitize";
-import type { NormalizedJob } from "@/lib/server/sources/types";
+import { UNKNOWN_COMPANY, type NormalizedJob } from "@/lib/server/sources/types";
 
 /** Vaga pronta para o upsert: espelha as colunas de `jobs` (menos as controladas pelo banco). */
 export type EnrichedJob = {
@@ -96,6 +96,11 @@ export function computeContentHash(n: NormalizedJob, sanitizerVersion: number = 
  * é igual ao hash do conteúdo bruto, reaproveita o HTML já sanitizado (poupa CPU).
  * `hash` aceita o `computeContentHash(n)` já calculado por quem chama.
  */
+function isUnknownCompany(company: string): boolean {
+  const c = company.trim();
+  return c === "" || c === UNKNOWN_COMPANY;
+}
+
 export function enrichJob(
   n: NormalizedJob,
   src: { id: SourceId; brazilian: boolean; dofollow: boolean },
@@ -129,7 +134,15 @@ export function enrichJob(
   const salary = n.salary && /^[A-Z]{3}$/.test(currency) ? n.salary : null;
 
   return {
-    dedupeKey: dedupeKey({ company: n.company, title: n.title, country, city, workMode }),
+    dedupeKey: dedupeKey({
+      // Empresa desconhecida não identifica nada: vagas distintas com o mesmo título se fundiriam (RN-05).
+      // Nesse caso a chave sai da própria vaga; ela continua deduplicada pela URL canônica.
+      company: isUnknownCompany(n.company) ? `${src.id}:${n.externalId}` : n.company,
+      title: n.title,
+      country,
+      city,
+      workMode,
+    }),
     urlCanonical,
     title: n.title.trim(),
     company: n.company.trim(),

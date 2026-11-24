@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { computeContentHash, enrichJob } from "@/lib/server/jobs/enrich-job";
 import { SANITIZER_VERSION } from "@/lib/server/sanitize";
-import type { NormalizedJob } from "@/lib/server/sources/types";
+import { UNKNOWN_COMPANY, type NormalizedJob } from "@/lib/server/sources/types";
 
 const src = { id: "greenhouse", brazilian: false, dofollow: false } as const;
 
@@ -43,6 +43,15 @@ describe("enrichJob", () => {
     expect(j.dedupeKey).toMatch(/^[0-9a-f]{40}$/);
     expect(j.contentHash).toMatch(/^[0-9a-f]{40}$/);
     expect(j.publishedAt).toBeNull();
+  });
+
+  it("empresa desconhecida: a chave de dedup vem de source:externalId, não do texto genérico", () => {
+    const key = (over: Partial<NormalizedJob>) => enrichJob(norm({ company: UNKNOWN_COMPANY, ...over }), src)!.dedupeKey;
+    expect(key({ externalId: "1" })).not.toBe(key({ externalId: "2" }));
+    expect(key({ externalId: "1" })).toBe(key({ externalId: "1" }));
+    expect(key({ company: "", externalId: "1" })).not.toBe(key({ company: "", externalId: "2" }));
+    // empresa conhecida continua deduplicando por empresa + título, independentemente do externalId
+    expect(key({ company: "Acme", externalId: "1" })).toBe(key({ company: "Acme", externalId: "2" }));
   });
 
   it("devolve null para vaga que não é de tecnologia e para URL inválida", () => {

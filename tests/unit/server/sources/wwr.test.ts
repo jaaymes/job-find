@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { WWR_CATEGORY_FEEDS, WWR_HOST, parseRssItems, wwr } from "@/lib/server/sources/wwr";
+import { UNKNOWN_COMPANY } from "@/lib/server/sources/types";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
 import { collect, fakeCtx } from "./helpers";
@@ -95,7 +96,7 @@ describe("parseRssItems", () => {
     expect(wwr.normalize({ title: "Sem link" })).toBeNull();
     const job = wwr.normalize({ title: "Dev Backend", link: "https://weworkremotely.com/remote-jobs/x-y" });
     expect(job?.title).toBe("Dev Backend");
-    expect(job?.company).toBe("Não informada");
+    expect(job?.company).toBe(UNKNOWN_COMPANY);
   });
 
   it("rejeita link fora do host do We Work Remotely", () => {

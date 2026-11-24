@@ -1,6 +1,8 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { enrichJob } from "@/lib/server/jobs/enrich-job";
+import { UNKNOWN_COMPANY } from "@/lib/server/sources/types";
 import { GITHUB_HOST, GITHUB_REPOS, github } from "@/lib/server/sources/github";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import { safeUrl } from "@/lib/shared/url";
@@ -187,7 +189,7 @@ describe("conector GitHub issues", () => {
     expect(parse("[Remoto] React Native Developer (Dev Co-founder, Sênior) na Still").company).toBe("Still");
     expect(parse("[HÍBRIDO] [São Paulo] Tech Lead | Data Foundation")).toEqual({
       title: "Tech Lead | Data Foundation",
-      company: "Não informada",
+      company: UNKNOWN_COMPANY,
     });
   });
 
@@ -196,5 +198,24 @@ describe("conector GitHub issues", () => {
     for (const j of raws.map(github.normalize).filter((j) => j !== null)) {
       expect(j.company).not.toMatch(/ - |\|/);
     }
+  });
+
+  it("duas issues sem empresa e com o mesmo título continuam sendo duas vagas", () => {
+    const issue = (number: number) => ({
+      number,
+      repo: "frontendbr/vagas",
+      title: "[Remoto] Desenvolvedor Front-end Pleno",
+      html_url: `https://github.com/frontendbr/vagas/issues/${number}`,
+      body: "<p>React</p>",
+      labels: [],
+      created_at: "2026-11-01T00:00:00Z",
+    });
+    const [a, b] = [1, 2].map((n) => github.normalize(issue(n)));
+    expect(a?.company).toBe(UNKNOWN_COMPANY);
+    expect(b?.company).toBe(UNKNOWN_COMPANY);
+    const src = { id: "github", brazilian: true, dofollow: false } as const;
+    const [ja, jb] = [a!, b!].map((n) => enrichJob(n, src));
+    expect(ja && jb).toBeTruthy();
+    expect(ja!.dedupeKey).not.toBe(jb!.dedupeKey);
   });
 });

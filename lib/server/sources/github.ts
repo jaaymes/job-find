@@ -5,7 +5,7 @@ import type { Seniority } from "@/lib/shared/types/job";
 import { normalizeText } from "@/lib/server/enrich/text";
 import { fetchBoardsPooled } from "@/lib/server/sources/boards";
 import { parseLocation } from "@/lib/server/sources/location";
-import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/sources/types";
+import { UNKNOWN_COMPANY, type Connector, type ConnectorContext, type NormalizedJob } from "@/lib/server/sources/types";
 
 /** Host fixo da API (D-07): o fetch seguro só aceita URLs base definidas no código. */
 export const GITHUB_HOST = "api.github.com";
@@ -118,7 +118,7 @@ export const github: Connector = {
       externalId: `${i.repo}#${i.number}`,
       url,
       title,
-      company: company ?? "Não informada",
+      company: company ?? UNKNOWN_COMPANY,
       companyLogoUrl: null,
       descriptionHtml: i.body ?? "",
       descriptionFormat: "markdown",

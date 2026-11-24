@@ -57,10 +57,16 @@ describe("buildNonceCsp (rotas (local))", () => {
   const nonce = "dGVzdGUtbm9uY2U=";
   const csp = buildNonceCsp(AI_CSP_HOSTS, nonce);
 
-  it("script-src com nonce e strict-dynamic, sem unsafe-inline nem unsafe-eval", () => {
+  it("script-src com nonce, strict-dynamic e wasm-unsafe-eval, sem unsafe-inline nem unsafe-eval", () => {
     const script = directive(csp, "script-src").split(" ");
-    expect(script).toEqual(["script-src", "'self'", `'nonce-${nonce}'`, "'strict-dynamic'"]);
+    expect(script).toEqual(["script-src", "'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"]);
+    expect(csp).toContain("'wasm-unsafe-eval'");
     expect(csp).not.toContain("'unsafe-eval'");
+  });
+
+  it("a CSP estática das rotas públicas não tem wasm-unsafe-eval", () => {
+    expect(buildCsp(AI_CSP_HOSTS)).not.toContain("wasm-unsafe-eval");
+    expect(buildCsp(AI_CSP_HOSTS, { dev: true })).not.toContain("wasm-unsafe-eval");
   });
 
   it("só adiciona unsafe-eval em desenvolvimento", () => {
@@ -69,11 +75,20 @@ describe("buildNonceCsp (rotas (local))", () => {
   });
 
   it("mantém todas as demais diretivas iguais às da CSP estática", () => {
-    const others = (c: string) => c.split("; ").filter((d) => !d.startsWith("script-src"));
+    const others = (c: string) =>
+      c.split("; ").filter((d) => !d.startsWith("script-src") && !d.startsWith("connect-src"));
     expect(others(csp)).toEqual(others(buildCsp(AI_CSP_HOSTS)));
-    expect(directive(csp, "connect-src").split(" ")).toEqual(
-      directive(buildCsp(AI_CSP_HOSTS), "connect-src").split(" "),
-    );
+  });
+
+  it("connect-src = o da estática + data: (WASM do yoga-layout), só nas rotas (local)", () => {
+    const local = directive(csp, "connect-src").split(" ");
+    const pub = directive(buildCsp(AI_CSP_HOSTS), "connect-src").split(" ");
+    expect(local).toContain("data:");
+    expect(pub).not.toContain("data:");
+    expect(local.filter((s) => s !== "data:")).toEqual(pub);
+    expect(local).not.toContain("https:");
+    expect(local).not.toContain("*");
+    expect(directive(csp, "script-src")).not.toContain("'unsafe-inline'");
   });
 
   it("muda o nonce a cada chamada com nonces diferentes", () => {

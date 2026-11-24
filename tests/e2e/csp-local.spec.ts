@@ -32,6 +32,7 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
     expect(script).toMatch(/'nonce-[A-Za-z0-9+/=]+'/);
     expect(script).toContain("'strict-dynamic'");
     expect(script).not.toContain("'unsafe-inline'");
+    expect(script).toContain("'wasm-unsafe-eval'");
 
     await expect(page.getByRole("heading", { name: "Seu perfil" })).toBeVisible();
     // Hidratou: o React anexou suas props de evento/fibras aos nós do DOM.
@@ -40,6 +41,14 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
     );
     expect(await page.evaluate(() => (window as unknown as { __cspViolations: string[] }).__cspViolations)).toEqual([]);
     expect(problems).toEqual([]);
+
+    // O yoga-layout do @react-pdf instancia WASM: um módulo mínimo (cabeçalho vazio) tem de compilar sem violação.
+    const wasmOk = await page.evaluate(async () => {
+      await WebAssembly.instantiate(new Uint8Array([0, 0x61, 0x73, 0x6d, 1, 0, 0, 0]));
+      return true;
+    });
+    expect(wasmOk).toBe(true);
+    expect(await page.evaluate(() => (window as unknown as { __cspViolations: string[] }).__cspViolations)).toEqual([]);
   });
 
   test("o nonce muda a cada requisição e os scripts inline levam o nonce", async ({ page, request }) => {
@@ -86,6 +95,7 @@ test.describe("CSP com nonce nas rotas (local) (D-15)", () => {
     const csps = res.headersArray().filter((h) => h.name.toLowerCase() === "content-security-policy");
     expect(csps).toHaveLength(1);
     expect(scriptSrc(csps[0].value)).toContain("'unsafe-inline'");
+    expect(csps[0].value).not.toContain("wasm-unsafe-eval");
     expect(csps[0].value).not.toContain("nonce-");
   });
 });

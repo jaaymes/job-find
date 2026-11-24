@@ -51,7 +51,8 @@ describe("generateStructured", () => {
     const model = mockModel([...text(ok.slice(0, 10), ok.slice(10)), finish("stop")]);
     const onPartial = vi.fn();
     const r = await run(model, { onPartial });
-    expect(r).toEqual({ data: { name: "Ana", years: 3 }, provider: "openai", model: "m1" });
+    expect(r).toMatchObject({ data: { name: "Ana", years: 3 }, provider: "openai", model: "m1", calls: 1 });
+    expect(r.usage).toEqual({ inputTokens: 1, outputTokens: 1 });
     expect(model.doStreamCalls).toHaveLength(1);
     expect(onPartial).toHaveBeenCalled();
   });
@@ -73,6 +74,8 @@ describe("generateStructured", () => {
     );
     const r = await run(model);
     expect(r.data.years).toBe(3);
+    expect(r.calls).toBe(2);
+    expect(r.usage).toEqual({ inputTokens: 2, outputTokens: 2 });
     expect(model.doStreamCalls).toHaveLength(2);
     expect(JSON.stringify(model.doStreamCalls[1]?.prompt)).toContain("years");
   });
@@ -97,6 +100,20 @@ describe("generateStructured", () => {
     const model = mockModel([...text("{}"), finish("stop")], [...text(ok), finish("stop")]);
     const err = await run(model, { validate: () => ["x"] }).catch((e: unknown) => e);
     expect(err).toMatchObject({ code: "invalid_output" });
+    expect(model.doStreamCalls).toHaveLength(2);
+  });
+
+  it("validate recebe o contexto da tentativa: Zod falho na 1ª e violação na 2ª, que aceita com last=true", async () => {
+    const model = mockModel([...text("{}"), finish("stop")], [...text(ok), finish("stop")]);
+    const seen: { attempt: number; last: boolean }[] = [];
+    const r = await run(model, {
+      validate: (_d, ctx) => {
+        seen.push(ctx);
+        return ctx.last ? [] : ["x"];
+      },
+    });
+    expect(r.data).toEqual({ name: "Ana", years: 3 });
+    expect(seen).toEqual([{ attempt: 2, last: true }]);
     expect(model.doStreamCalls).toHaveLength(2);
   });
 

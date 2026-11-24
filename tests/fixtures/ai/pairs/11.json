@@ -1,0 +1,117 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Daniela Ficticia",
+    "headline": "Desenvolvedora Back-end Pleno",
+    "location": "Recife, PE, Brasil",
+    "seniority": "mid",
+    "englishLevel": "intermediate",
+    "summary": "Desenvolvedora back-end pleno com 3 anos de experiência em APIs com Node.js e PostgreSQL.",
+    "contact": {
+      "email": "daniela.ficticia@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Node.js",
+        "years": 3,
+        "stackId": "nodejs"
+      },
+      {
+        "name": "TypeScript",
+        "years": 3,
+        "stackId": "typescript"
+      },
+      {
+        "name": "PostgreSQL",
+        "years": 3,
+        "stackId": "postgresql"
+      },
+      {
+        "name": "Docker",
+        "years": 2,
+        "stackId": "docker"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Loja Horizonte Ficticia",
+        "title": "Desenvolvedora Back-end Pleno",
+        "startDate": "2023-02",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Construiu a API de pedidos com Node.js e PostgreSQL"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Reduziu o tempo de resposta da busca em 30% com índices no PostgreSQL"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Agência Pixel Ficticia",
+        "title": "Desenvolvedora Júnior",
+        "startDate": "2021-08",
+        "endDate": "2023-01",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Empacotou os serviços com Docker para o ambiente de testes"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Universidade Fictícia de Pernambuco",
+        "degree": "Sistemas de Informação",
+        "startYear": "2017",
+        "endYear": "2021"
+      }
+    ]
+  },
+  "job": {
+    "id": 9010,
+    "title": "Desenvolvedora Back-end Sênior",
+    "company": "Rede Atlântico Ficticia",
+    "companyLogoUrl": null,
+    "summary": "Vaga sênior de back-end com Go, Kubernetes e Datadog.",
+    "country": "BR",
+    "city": "Recife",
+    "origin": "national",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "senior",
+    "language": "pt",
+    "stacks": [
+      "go",
+      "kubernetes",
+      "nodejs",
+      "postgresql"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-12T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9010",
+    "applyUrl": "https://vagas.exemplo.test/9010/apply",
+    "descriptionHtml": "<h3>Sobre a vaga</h3><p>A Rede Atlântico Ficticia procura uma pessoa Desenvolvedora Back-end Sênior para liderar serviços de alto volume.</p><h3>Requisitos</h3><ul><li>5+ anos com back-end</li><li>Go e Node.js em produção</li><li>Kubernetes e Terraform</li><li>Observabilidade com Datadog e Grafana</li><li>PostgreSQL</li></ul><h3>Diferenciais</h3><ul><li>Experiência como Tech Lead</li><li>Certificação AWS</li></ul>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9010",
+        "dofollow": true
+      }
+    ]
+  }
+}

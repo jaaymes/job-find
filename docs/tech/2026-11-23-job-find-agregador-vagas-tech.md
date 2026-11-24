@@ -606,7 +606,7 @@ Não há feature flags: tudo entra ativo.
 | Integração | Vitest + Postgres 17 em Docker (service container no CI) | Migração 0001, upsert idempotente, janela de 30 dias, expiração (RF-07), `GET /api/jobs` com cada filtro, cursor e contadores (RF-08/09/10), `statement_timeout` |
 | Contrato | Vitest em workflow agendado diário (fora do build) | Payload real de cada fonte validado pelo Zod; slugs dos boards curados que retornam 404 ou vazio |
 | E2E | Playwright 1.65 contra `next build && next start`, com OpenRouter mockado via `page.route` | US-01/02 (ordem e filtros na URL), US-03 (PKCE mockado, colar chave, testar, remover), US-04 (fixtures PDF, DOCX e PDF escaneado), US-05 (faixas), US-06 (gerar, editar, baixar e conferir o texto do PDF com `unpdf`), US-07/08 (estados, exportação e importação), ausência de violações de CSP, headers |
-| Avaliação de IA | Script manual | 10 pares currículo/vaga a cada mudança de prompt: nenhum fato inventado, JSON válido, tempos da RNF-02 |
+| Avaliação de IA | Script manual | 11 pares currículo/vaga (10 + 1 da revisão final da Fase 3) a cada mudança de prompt: nenhum fato inventado, JSON válido, tempos da RNF-02 |
 | Manual | — | Leitores de tela nas telas principais (RNF-08), largura de 360 px (RNF-09), nota A no securityheaders.com |
 
 **CI (GitHub Actions):** `pnpm lint && pnpm typecheck && pnpm test && pnpm test:integration && pnpm build && pnpm test:e2e`, mais `pnpm audit`.
@@ -667,7 +667,7 @@ Não há feature flags: tudo entra ativo.
   - template ATS no @react-pdf com fontes;
   - pré-visualização;
   - seletor de idioma;
-  - avaliação com os 10 pares.
+  - avaliação com os 11 pares (o 11º, com perfil abaixo da senioridade da vaga, entrou na revisão final).
 - **Pronto quando:** a US-06 passar e a avaliação não encontrar nenhum fato inventado.
 - **Depende de:** Fase 2.
 

@@ -1,12 +1,12 @@
 "use client";
 
-import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import {
   probeStorage,
   STORAGE_CHANGE_EVENT,
   storageUsageBytes,
 } from "@/lib/client/storage/store";
+import { HardLink } from "@/components/ui/hard-link";
 
 /** Acima disso (cota típica do localStorage: ~5 MB) o usuário é avisado. */
 const NEAR_LIMIT_BYTES = 4 * 1024 * 1024;
@@ -56,9 +56,9 @@ export function StorageBanner() {
       className="rounded-lg border border-jf-new-fg/30 bg-jf-new-bg px-4 py-3 text-[13px] leading-snug text-jf-new-fg"
     >
       Seus dados estão perto do limite. Libere espaço no navegador apagando dados antigos do Job Find.{" "}
-      <Link href="/configuracoes" className="font-medium underline underline-offset-2">
+      <HardLink href="/configuracoes" className="font-medium underline underline-offset-2">
         Ir para Configurações
-      </Link>
+      </HardLink>
     </div>
   );
 }

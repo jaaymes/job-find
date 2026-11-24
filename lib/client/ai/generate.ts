@@ -12,6 +12,14 @@ import type { AiSettings } from "./settings";
 const MAX_CALLS = 2;
 const PARTIAL_INTERVAL_MS = 50;
 
+/** Tokens consumidos (somados nas chamadas); `undefined` quando o provedor não informa. */
+export type TokenUsage = { inputTokens?: number; outputTokens?: number };
+
+function addUsage(a: TokenUsage, b: TokenUsage): TokenUsage {
+  const sum = (x?: number, y?: number) => (x === undefined && y === undefined ? undefined : (x ?? 0) + (y ?? 0));
+  return { inputTokens: sum(a.inputTokens, b.inputTokens), outputTokens: sum(a.outputTokens, b.outputTokens) };
+}
+
 type ResolveModel = (s: AiSettings, task: AiTask) => ReturnType<typeof resolveTaskModel>;
 
 export type GenerateArgs<T> = {
@@ -24,7 +32,8 @@ export type GenerateArgs<T> = {
   temperature: number;
   signal?: AbortSignal;
   onPartial?: (p: unknown) => void;
-  validate?: (v: T) => string[];
+  /** `ctx.last`: é a última chamada permitida (a resposta não terá outra chance de ser corrigida). */
+  validate?: (v: T, ctx: { attempt: number; last: boolean }) => string[];
   /** Ponto de injeção para testes; o padrão é `resolveTaskModel`. */
   resolveModel?: ResolveModel;
 };
@@ -72,7 +81,7 @@ async function callOnce<T>(
   model: Awaited<ReturnType<ResolveModel>>,
   system: string,
   prompt: string,
-): Promise<string> {
+): Promise<{ text: string; usage: TokenUsage }> {
   const providerId: ProviderId = model.provider.id;
   let streamError: { error: unknown } | undefined;
   const result = streamText({
@@ -93,6 +102,7 @@ async function callOnce<T>(
   let lastPartial = "";
   let lastParseAt = 0;
   let finishReason: string | undefined;
+  let usage: TokenUsage = {};
   const emitPartial = async () => {
     const parsed = await parsePartialJson(acc).catch(() => undefined);
     const serialized = parsed && parsed.value !== undefined ? JSON.stringify(parsed.value) : "";
@@ -118,6 +128,7 @@ async function callOnce<T>(
         streamError ??= { error: part.error };
       } else if (part.type === "finish") {
         finishReason = part.finishReason;
+        usage = { inputTokens: part.totalUsage.inputTokens, outputTokens: part.totalUsage.outputTokens };
       } else if (part.type === "abort") {
         throw abortReason(a.signal);
       }
@@ -134,7 +145,7 @@ async function callOnce<T>(
   if (finishReason === "error" || finishReason === "interrupted" || finishReason === undefined) {
     throw new AiError("unavailable", { retryable: true, meta: { finishReason } });
   }
-  return acc;
+  return { text: acc, usage };
 }
 
 /**
@@ -143,7 +154,7 @@ async function callOnce<T>(
  */
 export async function generateStructured<T>(
   a: GenerateArgs<T>,
-): Promise<{ data: T; provider: ProviderId; model: string }> {
+): Promise<{ data: T; provider: ProviderId; model: string; calls: number; usage: TokenUsage }> {
   const resolved = await (a.resolveModel ?? resolveTaskModel)(a.settings, a.task);
   const system =
     resolved.provider.structured !== "json_schema"
@@ -151,9 +162,12 @@ export async function generateStructured<T>(
       : a.system;
 
   let prompt = a.prompt;
+  let usage: TokenUsage = {};
   let problems: { issues?: string[]; violations?: string[] } = {};
   for (let call = 1; call <= MAX_CALLS; call++) {
-    const raw = await callOnce(a, resolved, system, prompt);
+    const once = await callOnce(a, resolved, system, prompt);
+    const raw = once.text;
+    usage = addUsage(usage, once.usage);
     const parsed = parseLoose(raw);
     let feedback: string[];
     if (!parsed.ok) {
@@ -166,9 +180,9 @@ export async function generateStructured<T>(
         problems = { issues };
         feedback = issues;
       } else {
-        const violations = a.validate?.(checked.data) ?? [];
+        const violations = a.validate?.(checked.data, { attempt: call, last: call === MAX_CALLS }) ?? [];
         if (violations.length === 0) {
-          return { data: checked.data, provider: resolved.provider.id, model: resolved.modelId };
+          return { data: checked.data, provider: resolved.provider.id, model: resolved.modelId, calls: call, usage };
         }
         problems = { violations };
         feedback = violations;

@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import type { ChanceBand, PageFilters } from "@/lib/client/jobs/use-jobs";
 import type { Seniority, SourceId } from "@/lib/shared/types/job";
 import { cn } from "@/lib/utils";
 import { LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
+import { HardLink } from "@/components/ui/hard-link";
 
 type Props = {
   filters: PageFilters;
@@ -99,9 +99,9 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile 
           </label>
         ))}
         {!hasProfile && (
-          <Link href="/perfil" className="mt-1 inline-flex min-h-11 items-center text-sm text-jf-brand hover:text-jf-brand-dark">
+          <HardLink href="/perfil" className="mt-1 inline-flex min-h-11 items-center text-sm text-jf-brand hover:text-jf-brand-dark">
             Importe seu currículo
-          </Link>
+          </HardLink>
         )}
       </fieldset>
 

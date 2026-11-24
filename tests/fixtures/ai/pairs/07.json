@@ -1,0 +1,130 @@
+{
+  "profile": {
+    "schemaVersion": 1,
+    "name": "Gustavo Ejemplo",
+    "headline": "iOS Developer",
+    "location": "Porto Alegre, RS",
+    "seniority": "mid",
+    "englishLevel": "advanced",
+    "summary": "iOS developer with 5 years of experience in Swift and SwiftUI. Some exposure to Kotlin through a shared module.",
+    "contact": {
+      "email": "gustavo.ejemplo@exemplo.test",
+      "phone": null,
+      "links": []
+    },
+    "skills": [
+      {
+        "name": "Swift",
+        "years": 5,
+        "stackId": "swift"
+      },
+      {
+        "name": "SwiftUI",
+        "years": 3,
+        "stackId": "swift"
+      },
+      {
+        "name": "Objective-C",
+        "years": 2,
+        "stackId": null
+      },
+      {
+        "name": "Kotlin",
+        "years": 1,
+        "stackId": "kotlin"
+      },
+      {
+        "name": "Firebase",
+        "years": 3,
+        "stackId": "firebase"
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp_1",
+        "company": "Saúde Em Dia Demo",
+        "title": "iOS Developer",
+        "startDate": "2021-03",
+        "endDate": null,
+        "bullets": [
+          {
+            "id": "exp_1.b1",
+            "text": "Developed the appointment booking flow in SwiftUI, used by 90 thousand patients"
+          },
+          {
+            "id": "exp_1.b2",
+            "text": "Raised the App Store rating from 3.9 to 4.6"
+          },
+          {
+            "id": "exp_1.b3",
+            "text": "Wrote a Kotlin Multiplatform module shared with the Android team"
+          }
+        ]
+      },
+      {
+        "id": "exp_2",
+        "company": "Fábrica de Apps Fictícia",
+        "title": "Junior iOS Developer",
+        "startDate": "2019-02",
+        "endDate": "2021-02",
+        "bullets": [
+          {
+            "id": "exp_2.b1",
+            "text": "Shipped 6 client apps in Swift"
+          },
+          {
+            "id": "exp_2.b2",
+            "text": "Migrated 20 screens from Objective-C to Swift"
+          }
+        ]
+      }
+    ],
+    "education": [
+      {
+        "institution": "Faculdade Fictícia do Sul",
+        "degree": "Tecnologia em Sistemas para Internet",
+        "startYear": "2015",
+        "endYear": "2018"
+      }
+    ]
+  },
+  "job": {
+    "id": 9006,
+    "title": "Mobile Engineer (Android and iOS)",
+    "company": "Orbit Mobility",
+    "companyLogoUrl": null,
+    "summary": "Mobile engineer working across Android (Kotlin) and iOS (Swift).",
+    "country": "NL",
+    "city": null,
+    "origin": "international",
+    "acceptsBrazil": true,
+    "workMode": "remote",
+    "seniority": "mid",
+    "language": "en",
+    "stacks": [
+      "kotlin",
+      "swift",
+      "android",
+      "ios"
+    ],
+    "sources": [
+      "greenhouse"
+    ],
+    "salaryMin": null,
+    "salaryMax": null,
+    "salaryCurrency": null,
+    "salaryPeriod": null,
+    "publishedAt": "2026-11-10T12:00:00.000Z",
+    "urlCanonical": "https://vagas.exemplo.test/9006",
+    "applyUrl": "https://vagas.exemplo.test/9006/apply",
+    "descriptionHtml": "<h3>About Orbit</h3><p>Orbit Mobility builds a ride-sharing app used in 12 cities.</p><h3>Responsibilities</h3><p>Work on both platforms.</p><ul><li>Build features in Kotlin for Android</li><li>Build features in Swift for iOS</li><li>Share code with Kotlin Multiplatform</li><li>Improve release quality and monitoring</li></ul><h3>Requirements</h3><p>Mobile background.</p><ul><li>3+ years of mobile development</li><li>Kotlin or Swift in production</li><li>Good English</li></ul>",
+    "attribution": [
+      {
+        "source": "greenhouse",
+        "label": "Greenhouse",
+        "url": "https://vagas.exemplo.test/9006",
+        "dofollow": true
+      }
+    ]
+  }
+}

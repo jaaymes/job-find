@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AiError } from "@/lib/client/ai/errors";
-import { htmlToText, JOB_FIT_V1, projectProfile } from "@/lib/client/ai/prompts/job.fit.v1";
+import { JOB_FIT_V1 } from "@/lib/client/ai/prompts/job.fit.v1";
+import { htmlToText, projectProfile } from "@/lib/client/ai/prompts/shared";
 import { defaultAiSettings } from "@/lib/client/ai/settings";
 import { analysisStore } from "@/lib/client/jobs/analysis-store";
 import { analyzeJob } from "@/lib/client/jobs/analyze";
@@ -89,6 +90,14 @@ describe("job.fit.v1", () => {
       expect(sent).not.toContain(secret);
     }
     expect(sent).toContain("React");
+  });
+
+  it("troca o nome do usuário escrito no resumo e nos bullets por [NOME]", () => {
+    // Nome inteiro e primeiro nome viram [NOME]; sobrenome sozinho fica (pode ser palavra comum).
+    const p = { ...profile(), name: "Ana Exemplo", summary: "Ana Exemplo é dev; a Ana gosta de React." };
+    const projected = projectProfile(p);
+    expect(projected.summary).toBe("[NOME] é dev; a [NOME] gosta de React.");
+    expect(JSON.stringify(projected)).not.toMatch(/Ana Exemplo|\bAna\b/);
   });
 
   it("projeta o perfil sem `contact`", () => {

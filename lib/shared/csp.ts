@@ -5,15 +5,15 @@ type CspOptions = {
   dev?: boolean;
 };
 
-/** Diretivas comuns à CSP estática e à CSP com nonce: só o `script-src` muda. */
-function buildDirectives(aiHosts: string[], scriptSrc: string[]): string {
+/** Diretivas comuns à CSP estática e à CSP com nonce: só `script-src` e `connect-src` mudam. */
+function buildDirectives(aiHosts: string[], scriptSrc: string[], extraConnect: string[] = []): string {
   return [
     "default-src 'self'",
     `script-src ${scriptSrc.join(" ")}`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
-    `connect-src ${["'self'", ...aiHosts].join(" ")}`,
+    `connect-src ${["'self'", ...extraConnect, ...aiHosts].join(" ")}`,
     "worker-src 'self' blob:",
     "frame-src blob:",
     "object-src 'none'",
@@ -52,9 +52,13 @@ export function buildNonceCsp(
   nonce: string,
   options: CspOptions = {},
 ): string {
-  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"];
+  // 'wasm-unsafe-eval' só aqui (rotas `(local)`): o yoga-layout 3.x do @react-pdf/renderer 4.x instancia WebAssembly
+  // para gerar o PDF do CV no navegador (docs/tech, spec). Libera só WASM; não libera eval()/new Function.
+  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'", "'wasm-unsafe-eval'"];
   if (options.dev) scriptSrc.push("'unsafe-eval'");
-  return buildDirectives(aiHosts, scriptSrc);
+  // `data:` no connect-src só aqui: o yoga-layout carrega o próprio WASM via fetch("data:application/octet-stream;base64,...").
+  // Uma URL data: só devolve os bytes embutidos nela, sem abrir conexão de rede, então não serve para exfiltrar dados.
+  return buildDirectives(aiHosts, scriptSrc, ["data:"]);
 }
 
 /** Header da CSP estática (rotas públicas). */

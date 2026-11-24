@@ -18,7 +18,8 @@
     "db:test:up": "docker compose -f docker-compose.test.yml up -d --wait",
     "db:test:down": "docker compose -f docker-compose.test.yml down -v",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "eval:ai": "tsx scripts/eval-ai.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.107",
@@ -30,6 +31,7 @@
     "@base-ui/react": "^1.9.0",
     "@neondatabase/serverless": "^1.2.1",
     "@openrouter/ai-sdk-provider": "^3.1.0",
+    "@react-pdf/renderer": "^4.9.0",
     "@tanstack/react-query": "^5.108.2",
     "@vercel/functions": "^3.11.3",
     "ai": "^7.0.179",
@@ -61,11 +63,13 @@
     "@tailwindcss/turbopack": "4.3.3",
     "@testing-library/dom": "^10.4.2",
     "@testing-library/react": "^16.3.3",
+    "@types/jsdom": "^30.0.0",
     "@types/node": "^24.19.2",
     "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/sanitize-html": "^2.16.2",
+    "client-only": "^0.0.1",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.4.6",
@@ -74,6 +78,7 @@
     "pdf-lib": "^1.17.1",
     "pg": "^8.23.1",
     "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^5.1.1"
   },

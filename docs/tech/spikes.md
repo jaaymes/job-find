@@ -78,3 +78,56 @@ Pendente: executar com a chave do usuário no portão da Fase 3.
 | 11 | | | | | | |
 
 Resumo (modelo, violações persistentes, p50/p95, custo total, aprovado/reprovado): pendente.
+
+## S-3: Getro (2026-11-24)
+
+Pergunta da spec (S-3, D-07): os job boards de VCs brasileiras (Kaszek, monashees, Canary) rodam no Getro e têm API ou feed público, com termos que permitam coleta automática? Regras em jogo: RN-09 (termos checados e datados antes de ir a produção) e a regra de serviços externos só se gratuitos para o uso real do projeto.
+
+**Veredito: não viável.** Um dos três boards não usa Getro, outro saiu do ar, o terceiro não foi localizado; e a única API do Getro que alimenta boards públicos é proibida pelo `robots.txt` e pelos Termos. A API oficial é paga e sob gestão da rede (VC), sem acesso para terceiros.
+
+### Método
+
+- Poucas requisições `curl` (cerca de 40, espaçadas de 1 a 2 s), com user agent genérico (`Mozilla/5.0 (compatible; JobFindSpike/1.0)`), sem login, sem credenciais e sem contornar proteção. Resolução de DNS com `dig` contra 8.8.8.8.
+- Leitura do HTML de cada board, de `robots.txt`, dos Termos do Getro e dos Termos do Consider, mais busca web por documentação.
+- Nenhuma requisição foi feita contra `api.getro.com` (o `robots.txt` o proíbe). O formato do endpoint não oficial vem de terceiros e não foi reproduzido.
+
+### Achados por board
+
+| Board | O que foi encontrado (2026-11-24) |
+|---|---|
+| Kaszek (`jobs.kaszek.com`) | **Não é Getro: é Consider** (CNAME `boards.consider.com`, rodapé "Powered by Consider"). `GET /jobs` devolve 200 (17,8 KB) e `robots.txt` permite tudo (`User-agent: *`, `Allow: /`; só o LinkedInBot é bloqueado). O HTML embute `numJobs: 977` e `numCompanies: 82`, mas a lista de vagas é carregada por uma API interna (`POST /api-boards/search-jobs`), que respondeu **HTTP 412 `INVALID_CSRF`** sem sessão do navegador. `/sitemap.xml` devolve 404. Não há feed RSS nem JSON público |
+| monashees | `jobs.monashees.com.br` (endereço que a busca web mostra) **não resolve em DNS** hoje (sem registro A nem CNAME); `jobs.monashees.com` também não. Os slugs `monashees.getro.com` e `monashees-capital.getro.com` devolvem 404. O board parece desativado ou migrado. Não foi possível medir nada |
+| Canary | Nenhum board localizado: `jobs.canary.com.br`, `jobs.canary.vc` e `jobs.canary.com` não resolvem; `canary.getro.com` e `canary-ventures.getro.com` dão 404; o site `canary.com.br` (200) não linka para nenhum board de vagas, e a busca web não achou board nem Getro. Não foi possível medir nada |
+| Outras VCs BR/LatAm (checagem barata de DNS, 17 hosts `jobs.<vc>`: Redpoint, Valor, Astella, NXTP, Maya, Kviv, Yellow, Latitud, Dila, Mouro, Bossa Nova, Wayra, IGAH, Upload e outros) | Nenhum aponta para o Getro (IPs `18.213.60.21`/`3.94.157.207`, ou `ns01.prod.getro.com`). Lista não exaustiva |
+
+### Endpoints do Getro
+
+| Endpoint | Status / situação | Observação |
+|---|---|---|
+| `POST https://api.getro.com/api/v2/collections/{id}/search/jobs` (não oficial) | Não chamado. Descrito em terceiros ([issue 140 do Kestrelapp](https://github.com/distantsoil/Kestrelapp/issues/140), verificada pelo autor em 2026-11-03) | `id` vem de `__NEXT_DATA__` (`props.pageProps.network.id`) da página `/jobs` do board; exige `Referer` do próprio board (sem ele, 406); corpo `{"hitsPerPage":N,"page":P,"filters":{"page":P},"query":""}`; itens com `id`, `title`, `url`, `created_at` (epoch), `locations`, `organization`, `seniority`, `skills`, `work_mode`, `source`, `compensation_*`; sem descrição completa (só `has_description`). O mesmo autor fechou o pedido de suporte "como não planejado" porque o `robots.txt` do serviço proíbe acesso automatizado |
+| Getro API oficial (["Network API"](https://www.getro.com/api)) | Página de marketing (200); documentação só pelo link "API Docs" | Voltada ao administrador da rede (contatos, vagas, empresas), "acesso gerenciado", pensada para integração de backend com atualização a cada 6 h; vendida junto de plano e demonstração ("Get a Demo", página de preços). Não há chave nem plano gratuito para terceiros |
+| Feed RSS/JSON público por board | Não encontrado | O `robots.txt` do board de exemplo (`jobs.pointnine.com`, 200) só libera alguns bots e cita sitemap; não há feed |
+
+### Robots e termos (checados em 2026-11-24)
+
+- [`https://api.getro.com/robots.txt`](https://api.getro.com/robots.txt): 200, `User-agent: *` com `Disallow: /`. Todo acesso automatizado à API é vetado.
+- [`https://www.getro.com/robots.txt`](https://www.getro.com/robots.txt): 200, só `Disallow: /thank-you`. Boards individuais variam (`jobs.pointnine.com`: `Crawl-delay: 10` para alguns bots).
+- [Termos de Uso do Getro](https://www.getro.com/terms) (versão 3.1, atualizada em junho de 2025): cobrem o site, as APIs de clientes e "qualquer job board operado pelo Getro", e proíbem "crawl", "scrape" ou "spider" de qualquer página, dado ou conteúdo, "por meio manual ou automatizado". Sem permissão por escrito, a coleta violaria os termos.
+- [Termos do Consider](https://consider.com/legal/terms) (plataforma do Kaszek): proíbem "robot, spider, scraper ou outro meio automatizado" para acessar o serviço sem permissão expressa por escrito, e contornar medidas de restrição de acesso (o 412 `INVALID_CSRF` é uma delas).
+- Os termos de cada VC (Kaszek, monashees, Canary) não foram lidos: sem sentido ler, porque a plataforma já veda o acesso.
+
+### Volume e sobreposição
+
+- Kaszek: 977 vagas em 82 empresas (número do próprio HTML, todas as áreas). Não foi possível medir quantas são tech, nem quantas no Brasil ou remoto LatAm, porque a lista só sai pela API interna protegida.
+- monashees e Canary: 0 medidas (sem board acessível).
+- Referência de terceiros: um board Getro grande (Point Nine) tinha 1.414 vagas em 2026-11-03, com `url` frequentemente apontando para o ATS da empresa (exemplo citado: Ashby).
+- Estimativa de sobreposição (qualitativa, não medida): como esses boards agregam vagas dos ATS das empresas da carteira (Greenhouse, Lever, Ashby), a maior parte do que haveria de tech ficaria duplicada com as fontes que já coletamos direto. O ganho real seria só descobrir slugs de ATS de startups BR ainda fora das listas de boards curados, o que pode ser feito manualmente, sem a plataforma.
+
+### Conector proposto
+
+Nenhum. Nada a implementar: sem API pública gratuita, sem feed, e com `robots.txt` e Termos que proíbem coleta automatizada (Getro e Consider). O endpoint não oficial do Getro foi apenas registrado e não é recomendado.
+
+### Alternativas baratas
+
+- Usar os boards das VCs só como fonte de **descoberta manual** de empresas: olhar a carteira (por exemplo as 82 empresas do Kaszek), achar o slug do ATS de cada uma e acrescentar às listas de `GREENHOUSE_BOARDS`, `ASHBY_BOARDS`, `LEVER_BOARDS` ou `SMARTRECRUITERS_BOARDS` (fontes cujo acesso já está registrado em `docs/fontes.md`). Isso não envolve coletar o Getro nem o Consider.
+- Reavaliar se o Getro ou as VCs oferecerem feed público ou autorização por escrito (a decisão e a gestão dessa conversa ficam com o usuário).

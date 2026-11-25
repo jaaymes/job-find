@@ -117,6 +117,24 @@ export function HideButton({
   );
 }
 
+/** Ligações do menu "⋯" do card com o estado salvo; `feedback` é o aviso de gravação recusada. */
+export function useJobMenuActions(job: SnapshotSource, onHidden?: (job: SnapshotSource) => void) {
+  const state = useJobState(job.id);
+  const feedback = useSaveFeedback();
+  const hidden = state?.hidden ?? false;
+  return {
+    status: state?.status ?? null,
+    hidden,
+    changeStatus: (status: JobStatus) => {
+      feedback.track(setStatus(job, status));
+    },
+    toggleHidden: () => {
+      if (feedback.track(setHidden(job, !hidden)) && !hidden) onHidden?.(job);
+    },
+    feedback: feedback.message,
+  };
+}
+
 export function StatusSelect({ job, className }: { job: SnapshotSource; className?: string }) {
   const status = useJobState(job.id)?.status ?? "none";
   const feedback = useSaveFeedback();

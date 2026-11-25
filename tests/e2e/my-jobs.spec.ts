@@ -68,6 +68,19 @@ async function openHome(page: Page, path = "/") {
   await expect(cards(page).first()).toBeVisible();
 }
 
+/** Abre o menu "⋯" do card e escolhe um item (o status fica num submenu). */
+async function menuAction(page: Page, title: string, item: string, status?: string) {
+  await page.getByRole("button", { name: `Mais ações: ${title}` }).click();
+  if (status) {
+    await page.getByRole("menuitem", { name: "Mudar status" }).click();
+    await page.getByRole("menuitemradio", { name: status, exact: true }).click();
+  } else {
+    await page.getByRole("menuitem", { name: item }).click();
+  }
+  // O próximo menu só abre depois que este fecha por completo.
+  await expect(page.getByRole("menu")).toHaveCount(0);
+}
+
 const todayBr = () => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date());
 
 test("avisa quando o navegador não deixa gravar o favorito, o status ou ocultar", async ({ page }) => {
@@ -83,10 +96,12 @@ test("avisa quando o navegador não deixa gravar o favorito, o status ou ocultar
   const first = cards(page).first();
   await first.getByRole("button", { name: /^Favoritar/ }).click();
   await expect(first.getByRole("alert").filter({ hasText: "Não foi possível salvar neste navegador." })).toBeVisible();
-  await first.getByRole("combobox", { name: /^Status da candidatura/ }).selectOption({ label: "Salva" });
+  const firstTitle = (await first.getByRole("heading", { level: 3 }).textContent()) ?? "";
+  await menuAction(page, firstTitle, "", "Salva");
   await expect(first.getByRole("alert")).toHaveCount(2);
-  await first.getByRole("button", { name: /^Ocultar/ }).click();
-  await expect(first.getByRole("alert")).toHaveCount(3);
+  await menuAction(page, firstTitle, "Ocultar vaga");
+  // Status e ocultar compartilham o mesmo aviso do menu: continuam 2 avisos (estrela + menu).
+  await expect(first.getByRole("alert")).toHaveCount(2);
   // Sem gravação, a vaga continua na lista e não ganha o "Desfazer".
   await expect(first).toBeVisible();
   await expect(page.getByRole("button", { name: "Desfazer" })).toHaveCount(0);
@@ -112,7 +127,7 @@ test("favoritar na home e ver a vaga em Minhas vagas", async ({ page }) => {
 
 test("mudar o status para Aplicada registra a data e mostra o selo na listagem", async ({ page }) => {
   await openHome(page);
-  await card(page, 1).getByLabel(`Status da candidatura: ${TITLE(1)}`).selectOption("applied");
+  await menuAction(page, TITLE(1), "", "Aplicada");
   const badge = card(page, 1).getByTestId("status-badge");
   await expect(badge).toHaveText(`Aplicada em ${todayBr()}`);
 
@@ -135,7 +150,7 @@ test("mudar o status para Aplicada registra a data e mostra o selo na listagem",
 
 test("ocultar tira a vaga da home (com Desfazer) e Mostrar vagas ocultas a traz de volta", async ({ page }) => {
   await openHome(page);
-  await page.getByRole("button", { name: `Ocultar ${TITLE(2)}` }).click();
+  await menuAction(page, TITLE(2), "Ocultar vaga");
   await expect(card(page, 2)).toHaveCount(0);
   await expect(page.getByTestId("undo-region").getByText("Vaga oculta")).toBeVisible();
 
@@ -144,7 +159,7 @@ test("ocultar tira a vaga da home (com Desfazer) e Mostrar vagas ocultas a traz 
   await expect(card(page, 2)).toBeVisible();
 
   // Oculta de novo, recarrega: continua fora da lista.
-  await page.getByRole("button", { name: `Ocultar ${TITLE(2)}` }).click();
+  await menuAction(page, TITLE(2), "Ocultar vaga");
   await page.reload();
   await expect(cards(page).first()).toBeVisible();
   await expect(card(page, 2)).toHaveCount(0);

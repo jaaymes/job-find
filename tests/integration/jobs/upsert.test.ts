@@ -325,4 +325,61 @@ describe("upsertJob", () => {
     const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
     expect(active).toHaveLength(2);
   });
+
+  it("mesma vaga de ATS e de agregador vira uma linha, com dados da fonte mais confiável", async () => {
+    const db = await testDb();
+    const base: Omit<NormalizedJob, "externalId" | "company" | "title" | "url"> = {
+      descriptionHtml: "<p>Vaga de backend</p>",
+      descriptionFormat: "html",
+      companyLogoUrl: null,
+      country: "DE",
+      city: "Berlin",
+      locationText: "Berlin, Germany",
+      eligibleRegions: [],
+      workModeHint: "onsite",
+      seniorityHint: null,
+      tags: [],
+      salary: null,
+      publishedAt: addDays(T0, -2),
+    };
+    const gh: NormalizedJob = {
+      ...base,
+      externalId: "1",
+      company: "resonads GmbH",
+      title: "Backend Developer (m/w/d)",
+      url: "https://job-boards.greenhouse.io/resonads/jobs/1",
+    };
+    const an: NormalizedJob = {
+      ...base,
+      externalId: "an-1",
+      company: "resonads",
+      title: "Backend Developer",
+      url: "https://www.arbeitnow.com/jobs/companies/resonads/backend-developer-berlin-1",
+    };
+    const ghJob = enrichJob(gh, { id: "greenhouse", brazilian: false, dofollow: false });
+    const anJob = enrichJob(an, { id: "arbeitnow", brazilian: false, dofollow: false });
+    expect(ghJob).not.toBeNull();
+    expect(anJob).not.toBeNull();
+
+    const a = await upsertJob(
+      db,
+      ghJob as NonNullable<typeof ghJob>,
+      { source: "greenhouse", externalId: gh.externalId, url: gh.url },
+      T0,
+    );
+    const b = await upsertJob(
+      db,
+      anJob as NonNullable<typeof anJob>,
+      { source: "arbeitnow", externalId: an.externalId, url: an.url },
+      addDays(T0, 1),
+    );
+    expect(a.status).toBe("inserted");
+    expect(b.jobId).toBe(a.jobId);
+
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].sources).toEqual(["arbeitnow", "greenhouse"]);
+    expect(active[0].company).toBe("resonads GmbH");
+    expect(active[0].urlCanonical).toBe("https://boards.greenhouse.io/resonads/jobs/1");
+  });
 });

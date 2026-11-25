@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { enrichJob } from "@/lib/server/jobs/enrich-job";
 import type { NormalizedJob } from "@/lib/server/sources/types";
@@ -257,5 +257,229 @@ describe("upsertJob", () => {
     expect(await db.select().from(jobSources)).toHaveLength(0);
     const ok = await upsertJob(db, makeJob({ publishedAt: addDays(T0, -44) }), ref, T0);
     expect(ok.status).toBe("inserted");
+  });
+
+  it("colisão de chave na atualização funde as duas vagas", async () => {
+    const db = await testDb();
+    await upsertJob(db, makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1" }), ref, T0);
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      ref2,
+      T0,
+    );
+    const r = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://a.example/1", contentHash: "h-new" }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(r.status).toBe("updated");
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(r.jobId);
+    expect(active[0].dedupeKey).toBe("dk-b");
+    expect(active[0].urlCanonical).toBe("https://a.example/1");
+    expect(active[0].sources).toEqual(["greenhouse", "himalayas"]);
+  });
+
+  it("colisão de URL na atualização funde as duas vagas", async () => {
+    const db = await testDb();
+    await upsertJob(db, makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1" }), ref, T0);
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      ref2,
+      T0,
+    );
+    const r = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: "https://b.example/1", contentHash: "h-new" }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(r.status).toBe("updated");
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(r.jobId);
+    expect(active[0].dedupeKey).toBe("dk-a");
+    expect(active[0].urlCanonical).toBe("https://b.example/1");
+    expect(active[0].sources).toEqual(["greenhouse", "himalayas"]);
+  });
+
+  it("fonte menos confiável colidindo não funde nem lança erro", async () => {
+    const db = await testDb();
+    const ref3 = { source: "hn", externalId: "hn-1", url: "https://news.ycombinator.com/item?id=1" } as const;
+    await upsertJob(db, makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1" }), ref, T0);
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      ref3,
+      T0,
+    );
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: "https://b.example/1", contentHash: "h-new" }),
+      ref3,
+      addDays(T0, 1),
+    );
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(2);
+    const byKey = Object.fromEntries(active.map((j) => [j.dedupeKey, j]));
+    expect(byKey["dk-a"].urlCanonical).toBe("https://a.example/1");
+    expect(byKey["dk-a"].contentHash).toBe(makeJob().contentHash);
+    expect(byKey["dk-a"].sources).toEqual(["greenhouse"]);
+    expect(byKey["dk-b"].urlCanonical).toBe("https://b.example/1");
+  });
+
+  it.each([
+    ["mesmo hash", "hb"],
+    ["hash diferente", "h-new"],
+  ])("fusão em que o sobrevivente não é o alvo original (%s)", async (_nome, incomingHash) => {
+    const db = await testDb();
+    const refLever = { source: "lever", externalId: "l-1", url: "https://jobs.lever.co/acme/1" } as const;
+    // B (lever) foi vista antes; A (greenhouse) é a vaga alvo. Confiança empatada: B sobrevive.
+    const b = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      refLever,
+      addDays(T0, -1),
+    );
+    const a = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1", contentHash: "hb" }),
+      ref,
+      T0,
+    );
+    const r = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://a.example/1", contentHash: incomingHash }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(r.status).toBe("updated");
+    expect(r.jobId).toBe(b.jobId);
+    expect(r.jobId).not.toBe(a.jobId);
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(b.jobId);
+    expect(active[0].dedupeKey).toBe("dk-b");
+    expect(active[0].urlCanonical).toBe("https://a.example/1");
+    expect(active[0].sources).toEqual(["greenhouse", "lever"]);
+  });
+
+  it("mesma vaga de ATS e de agregador vira uma linha, com dados da fonte mais confiável", async () => {
+    const db = await testDb();
+    const base: Omit<NormalizedJob, "externalId" | "company" | "title" | "url"> = {
+      descriptionHtml: "<p>Vaga de backend</p>",
+      descriptionFormat: "html",
+      companyLogoUrl: null,
+      country: "DE",
+      city: "Berlin",
+      locationText: "Berlin, Germany",
+      eligibleRegions: [],
+      workModeHint: "onsite",
+      seniorityHint: null,
+      tags: [],
+      salary: null,
+      publishedAt: addDays(T0, -2),
+    };
+    const gh: NormalizedJob = {
+      ...base,
+      externalId: "1",
+      company: "resonads GmbH",
+      title: "Backend Developer (m/w/d)",
+      url: "https://job-boards.greenhouse.io/resonads/jobs/1",
+    };
+    const an: NormalizedJob = {
+      ...base,
+      externalId: "an-1",
+      company: "resonads",
+      title: "Backend Developer",
+      url: "https://www.arbeitnow.com/jobs/companies/resonads/backend-developer-berlin-1",
+    };
+    const ghJob = enrichJob(gh, { id: "greenhouse", brazilian: false, dofollow: false });
+    const anJob = enrichJob(an, { id: "arbeitnow", brazilian: false, dofollow: false });
+    expect(ghJob).not.toBeNull();
+    expect(anJob).not.toBeNull();
+
+    const a = await upsertJob(
+      db,
+      ghJob as NonNullable<typeof ghJob>,
+      { source: "greenhouse", externalId: gh.externalId, url: gh.url },
+      T0,
+    );
+    const b = await upsertJob(
+      db,
+      anJob as NonNullable<typeof anJob>,
+      { source: "arbeitnow", externalId: an.externalId, url: an.url },
+      addDays(T0, 1),
+    );
+    expect(a.status).toBe("inserted");
+    expect(b.jobId).toBe(a.jobId);
+
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].sources).toEqual(["arbeitnow", "greenhouse"]);
+    expect(active[0].company).toBe("resonads GmbH");
+    expect(active[0].urlCanonical).toBe("https://boards.greenhouse.io/resonads/jobs/1");
+  });
+
+  it("agregador primeiro e ATS depois: o ATS reescreve conteúdo e URL canônica no conflito por chave", async () => {
+    const db = await testDb();
+    const base: Omit<NormalizedJob, "externalId" | "company" | "title" | "url"> = {
+      descriptionHtml: "<p>Vaga de backend</p>",
+      descriptionFormat: "html",
+      companyLogoUrl: null,
+      country: "DE",
+      city: "Berlin",
+      locationText: "Berlin, Germany",
+      eligibleRegions: [],
+      workModeHint: "onsite",
+      seniorityHint: null,
+      tags: [],
+      salary: null,
+      publishedAt: addDays(T0, -2),
+    };
+    const an: NormalizedJob = {
+      ...base,
+      externalId: "an-1",
+      company: "resonads",
+      title: "Backend Developer",
+      url: "https://www.arbeitnow.com/jobs/companies/resonads/backend-developer-berlin-1",
+    };
+    const gh: NormalizedJob = {
+      ...base,
+      externalId: "1",
+      company: "resonads GmbH",
+      title: "Backend Developer (m/w/d)",
+      url: "https://job-boards.greenhouse.io/resonads/jobs/1",
+    };
+    const anJob = enrichJob(an, { id: "arbeitnow", brazilian: false, dofollow: false });
+    const ghJob = enrichJob(gh, { id: "greenhouse", brazilian: false, dofollow: false });
+    expect(anJob).not.toBeNull();
+    expect(ghJob).not.toBeNull();
+
+    const a = await upsertJob(
+      db,
+      anJob as NonNullable<typeof anJob>,
+      { source: "arbeitnow", externalId: an.externalId, url: an.url },
+      T0,
+    );
+    const b = await upsertJob(
+      db,
+      ghJob as NonNullable<typeof ghJob>,
+      { source: "greenhouse", externalId: gh.externalId, url: gh.url },
+      addDays(T0, 1),
+    );
+    expect(a.status).toBe("inserted");
+    expect(b.status).toBe("updated");
+    expect(b.jobId).toBe(a.jobId);
+
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].sources).toEqual(["arbeitnow", "greenhouse"]);
+    expect(active[0].company).toBe("resonads GmbH");
+    expect(active[0].urlCanonical).toBe("https://boards.greenhouse.io/resonads/jobs/1");
   });
 });

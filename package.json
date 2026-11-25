@@ -20,6 +20,7 @@
     "db:test:down": "docker compose -f docker-compose.test.yml down -v",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:rekey": "tsx scripts/rekey-jobs.ts",
     "eval:ai": "tsx scripts/eval-ai.ts"
   },
   "dependencies": {

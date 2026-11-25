@@ -1,45 +1,9 @@
+import { SOURCE_IDS, SOURCE_LABELS } from "@/lib/shared/sources";
 import type { JobSummary, Seniority, SourceId, WorkMode } from "@/lib/shared/types/job";
 
-export const SOURCE_LABELS: Record<SourceId, string> = {
-  himalayas: "Himalayas",
-  greenhouse: "Greenhouse",
-  ashby: "Ashby",
-  lever: "Lever",
-  jobicy: "Jobicy",
-  github: "GitHub",
-  wwr: "We Work Remotely",
-  remoteok: "RemoteOK",
-  hn: "Hacker News",
-  smartrecruiters: "SmartRecruiters",
-  fourdayweek: "4 Day Week",
-  getonboard: "Get on Board",
-  arbeitnow: "Arbeitnow",
-  gupy: "Gupy",
-  linkedin: "LinkedIn",
-};
-
-/**
- * Fontes com conector registrado, na ordem do filtro "Fonte" da UI. O registry de conectores é
- * server-only, então a lista fica explícita aqui; um teste confere que ela bate com o registry.
- * Ids sem conector seguem válidos no schema e na API, mas não aparecem.
- */
-export const FILTERABLE_SOURCES: readonly SourceId[] = [
-  "himalayas",
-  "greenhouse",
-  "ashby",
-  "lever",
-  "jobicy",
-  "github",
-  "wwr",
-  "remoteok",
-  "hn",
-  "fourdayweek",
-  "getonboard",
-  "smartrecruiters",
-  "arbeitnow",
-  "gupy",
-  "linkedin",
-];
+/** Rótulos e ordem do filtro "Fonte" vêm do catálogo único de fontes. */
+export { SOURCE_LABELS };
+export const FILTERABLE_SOURCES: readonly SourceId[] = SOURCE_IDS;
 
 export const SENIORITY_LABELS: Record<Seniority, string> = {
   intern: "Estágio",

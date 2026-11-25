@@ -10,6 +10,7 @@ import {
 } from "nuqs";
 import { useCallback, useMemo } from "react";
 import { buildJobsUrl } from "@/lib/shared/jobs-url";
+import { SOURCE_IDS } from "@/lib/shared/sources";
 import type { JobsQuery } from "@/lib/shared/schemas/jobs-query";
 import type { JobSummary } from "@/lib/shared/types/job";
 
@@ -43,23 +44,7 @@ const urlParsers = {
   // Só do cliente: as vagas ocultas ficam no localStorage. Na URL é `ocultas=1`.
   showHidden: parseAsFlag,
   source: parseAsArrayOf(
-    parseAsStringLiteral([
-      "himalayas",
-      "greenhouse",
-      "ashby",
-      "lever",
-      "jobicy",
-      "github",
-      "wwr",
-      "remoteok",
-      "hn",
-      "smartrecruiters",
-      "fourdayweek",
-      "getonboard",
-      "arbeitnow",
-      "gupy",
-      "linkedin",
-    ] as const),
+    parseAsStringLiteral(SOURCE_IDS),
     ",",
   ),
 };

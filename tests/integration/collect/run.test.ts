@@ -712,6 +712,64 @@ describe("runCollection", () => {
       expect(j.sanitizerVersion).toBe(SANITIZER_VERSION);
       expect(j.contentHash).toBe(enrich.computeContentHash(norm({ id: "j0" })!));
     });
+
+    it("vaga fundida: a fonte menos confiável, já ligada à vaga, entra no atalho sem o hash dela", async () => {
+      const db = await testDb();
+      await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: conn("greenhouse", { items: [{ id: "j0" }] }) } });
+      // Mesma vaga (empresa, título, país, modo) no Himalayas, com outra URL e outra descrição.
+      const himalayas = conn("himalayas", {
+        items: [{ id: "h0" }],
+        normalize(raw) {
+          const n = norm({ ...(raw as Raw), id: "j0" });
+          return n && { ...n, externalId: "h0", url: "https://boards.example.com/himalayas/h0", descriptionHtml: "<p>Outra descrição</p>" };
+        },
+      });
+      const [first] = await runCollection({ db, sources: ["himalayas"], now: T1, connectors: { himalayas } });
+      expect(first).toMatchObject({ status: "ok", inserted: 0, updated: 1 });
+      const [merged] = await db.select().from(jobs);
+      expect(merged.sources).toEqual(["greenhouse", "himalayas"]);
+      expect(merged.contentHash).toBe(enrich.computeContentHash(norm({ id: "j0" })!));
+
+      const T2 = new Date(T1.getTime() + 3_600_000);
+      const enrichSpy = vi.spyOn(enrich, "enrichJob");
+      const upsertSpy = vi.spyOn(upsert, "upsertJob");
+      try {
+        const [r] = await runCollection({ db, sources: ["himalayas"], now: T2, connectors: { himalayas } });
+        expect(r).toMatchObject({ status: "ok", fetched: 1, inserted: 0, updated: 0, unchanged: 1, errors: 0 });
+        expect(enrichSpy).not.toHaveBeenCalled();
+        expect(upsertSpy).not.toHaveBeenCalled();
+      } finally {
+        enrichSpy.mockRestore();
+        upsertSpy.mockRestore();
+      }
+      const [after] = await db.select().from(jobs);
+      expect(after.updatedAt).toEqual(merged.updatedAt);
+      expect(after.contentHash).toBe(merged.contentHash);
+      const [h] = await db.select().from(jobSources).where(eq(jobSources.source, "himalayas"));
+      expect(h).toMatchObject({ lastSeenAt: T2, missedRuns: 0 });
+    });
+
+    it("vaga fundida: empate de confiança com outro hash não entra no atalho (segue o caminho completo)", async () => {
+      const db = await testDb();
+      await runCollection({ db, sources: ["greenhouse"], now: T0, connectors: { greenhouse: conn("greenhouse", { items: [{ id: "j0" }] }) } });
+      const ashby = conn("ashby", {
+        items: [{ id: "a0" }],
+        normalize(raw) {
+          const n = norm({ ...(raw as Raw), id: "j0" });
+          return n && { ...n, externalId: "a0", url: "https://boards.example.com/ashby/a0", descriptionHtml: "<p>Outra descrição</p>" };
+        },
+      });
+      await runCollection({ db, sources: ["ashby"], now: T1, connectors: { ashby } });
+      const upsertSpy = vi.spyOn(upsert, "upsertJob");
+      try {
+        // O Ashby reescreveu o conteúdo (mesma confiança); o hash gravado agora é o dele.
+        const T2 = new Date(T1.getTime() + 3_600_000);
+        await runCollection({ db, sources: ["greenhouse"], now: T2, connectors: { greenhouse: conn("greenhouse", { items: [{ id: "j0" }] }) } });
+        expect(upsertSpy).toHaveBeenCalledTimes(1);
+      } finally {
+        upsertSpy.mockRestore();
+      }
+    });
   });
 
   describe("falha parcial de board", () => {

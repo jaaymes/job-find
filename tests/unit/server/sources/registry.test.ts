@@ -1,9 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { FILTERABLE_SOURCES } from "@/components/jobs/format";
+import { SOURCE_IDS } from "@/lib/shared/sources";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 
 describe("registry de conectores", () => {
-  it("o filtro de fonte da UI lista exatamente as fontes com conector registrado", () => {
-    expect([...FILTERABLE_SOURCES].sort()).toEqual(Object.keys(CONNECTORS).sort());
+  it("cada conector registrado tem o id da própria chave e cobre o catálogo", () => {
+    expect(Object.keys(CONNECTORS).sort()).toEqual([...SOURCE_IDS].sort());
+    for (const [key, c] of Object.entries(CONNECTORS)) expect(c.id).toBe(key);
   });
 });

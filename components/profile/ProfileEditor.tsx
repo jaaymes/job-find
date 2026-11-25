@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import type { AssistTarget, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
+import type { Finding } from "@/lib/client/profile/review";
 import { useUnsavedChangesGuard } from "@/lib/client/use-unsaved-changes-guard";
 import {
   ENGLISH_LABEL,
@@ -14,6 +15,8 @@ import {
 import { AssistantDialog } from "./assistant/AssistantDialog";
 import { AssistButton } from "./assistant/AssistButton";
 import { CertificationsEditor } from "./CertificationsEditor";
+import { ProfileReview } from "./ProfileReview";
+import { SkillSuggestions } from "./SkillSuggestions";
 import { ContactLinks } from "./ContactLinks";
 import { EducationEditor } from "./EducationEditor";
 import { ExperienceEditor } from "./ExperienceEditor";
@@ -46,6 +49,15 @@ export function ProfileEditor({ profile, onSave }: Props) {
   };
   const [assist, setAssist] = useState<{ field: TextField; open: boolean }>({ field: "headline", open: false });
   const assistTarget: AssistTarget = { kind: assist.field };
+  // "Corrigir" de um bullet reaproveita o painel (e o inserir/desfazer) do ExperienceEditor; `n` repete o mesmo alvo.
+  const [bulletFix, setBulletFix] = useState<{ expId: string; n: number } | null>(null);
+  function fix(f: Finding) {
+    if (f.where.field === "summary") setAssist({ field: "summary", open: true });
+    else if (f.where.field === "bullet") {
+      const expId = f.where.expId;
+      setBulletFix((b) => ({ expId, n: (b?.n ?? 0) + 1 }));
+    }
+  }
 
   // Só altera o rascunho (como qualquer edição): o perfil salvo só muda em "Salvar perfil".
   function insertText(field: TextField, d: Draft) {
@@ -81,6 +93,8 @@ export function ProfileEditor({ profile, onSave }: Props) {
           Perfil salvo neste navegador.
         </p>
       )}
+
+      <ProfileReview profile={draft} onFix={fix} />
 
       <div className="grid gap-3.5 sm:grid-cols-2">
         <label className={FIELD_LABEL}>
@@ -181,12 +195,14 @@ export function ProfileEditor({ profile, onSave }: Props) {
       />
 
       <SkillChips skills={draft.skills} onChange={(skills) => patch({ skills })} />
+      <SkillSuggestions profile={draft} onAdd={(skill) => patch({ skills: [...draft.skills, skill] })} />
       <ExperienceEditor
         profile={draft}
         experiences={draft.experiences}
         onChange={(experiences) => patch({ experiences })}
         highlights={draft.highlights}
         onHighlightsChange={(highlights) => patch({ highlights })}
+        assistRequest={bulletFix}
       />
 
       <ProjectsEditor projects={draft.projects} onChange={(projects) => patch({ projects })} />

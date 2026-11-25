@@ -21,6 +21,8 @@ type Props = {
   /** Ids `exp_N.bM` dos bullets destacados (estrela). */
   highlights: string[];
   onHighlightsChange: (ids: string[]) => void;
+  /** Pedido externo para abrir o assistente numa experiência (ex.: "Corrigir" da revisão); `n` distingue pedidos repetidos. */
+  assistRequest?: { expId: string; n: number } | null;
 };
 
 function period(e: Experience): string {
@@ -172,10 +174,16 @@ function Row({
   );
 }
 
-export function ExperienceEditor({ profile, experiences, onChange, highlights, onHighlightsChange }: Props) {
+export function ExperienceEditor({ profile, experiences, onChange, highlights, onHighlightsChange, assistRequest = null }: Props) {
   const [newId, setNewId] = useState<string | null>(null);
   const [assistId, setAssistId] = useState<string | null>(null);
   const [assistOpen, setAssistOpen] = useState(false);
+  const [handled, setHandled] = useState(assistRequest?.n ?? 0);
+  if (assistRequest && assistRequest.n !== handled) {
+    setHandled(assistRequest.n);
+    setAssistId(assistRequest.expId);
+    setAssistOpen(true);
+  }
   const seenBullets = useRef(new Map<string, MutableRefObject<number>>());
   const seenFor = (e: Experience) => {
     let ref = seenBullets.current.get(e.id);

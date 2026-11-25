@@ -22,12 +22,15 @@ const dataset = JSON.parse(readFileSync(resolve(dir, "dataset.json"), "utf8")) a
 
 const RUNS_PATH = `/v2/acts/${LINKEDIN_ACTOR}/runs`;
 
+const datasetOld = [{ ...dataset[0]!, id: "old-1" }];
+
 /** Serve a lista de execuções (GET), o dataset e aceita o início de execução (POST). */
 function serveWith(items: typeof runs.data.items) {
   return (url: URL, init?: { method?: string }): unknown => {
     if (url.origin !== `https://${APIFY_HOST}`) return undefined;
     if (url.pathname === RUNS_PATH) return init?.method === "POST" ? { data: { id: "started" } } : { data: { items } };
     if (url.pathname === "/v2/datasets/dsNew/items") return dataset;
+    if (url.pathname === "/v2/datasets/dsOld/items") return datasetOld;
     return undefined;
   };
 }
@@ -53,12 +56,33 @@ describe("conector LinkedIn (Apify)", () => {
 
   it("ingere o dataset da última execução bem-sucedida e grava o cursor", async () => {
     // A última execução começou há 1 h (now = 2026-11-23T12:00Z): não inicia outra.
-    const ctx = fakeCtx({ serve: serveWith(runs.data.items) });
+    const ctx = fakeCtx({ serve: serveWith(runs.data.items), cursor: "dsOld" });
     const raws = (await collect(linkedin.fetch(ctx))) as { id: string }[];
     expect(raws.map((r) => r.id)).toEqual(dataset.map((d) => d.id));
     expect(ctx.cursors).toEqual(["dsNew"]);
     expect(ctx.requests.every((r) => r.headers.Authorization === "Bearer token-de-teste")).toBe(true);
     expect(ctx.requests.some((r) => r.method === "POST")).toBe(false);
+  });
+
+  it("sem cursor, ingere todas as execuções bem-sucedidas, da mais antiga para a mais nova", async () => {
+    const ctx = fakeCtx({ serve: serveWith(runs.data.items) });
+    const raws = (await collect(linkedin.fetch(ctx))) as { id: string }[];
+    expect(raws.map((r) => r.id)).toEqual(["old-1", ...dataset.map((d) => d.id)]);
+    expect(ctx.cursors).toEqual(["dsOld", "dsNew"]);
+  });
+
+  it("com o cursor numa execução antiga, ingere só as mais novas", async () => {
+    const ctx = fakeCtx({ serve: serveWith(runs.data.items), cursor: "dsOld" });
+    const raws = (await collect(linkedin.fetch(ctx))) as { id: string }[];
+    expect(raws.map((r) => r.id)).toEqual(dataset.map((d) => d.id));
+    expect(ctx.cursors).toEqual(["dsNew"]);
+  });
+
+  it("ignora execuções que falharam no meio da lista", async () => {
+    const items = [runs.data.items[0]!, { ...runs.data.items[1]!, status: "FAILED" }];
+    const ctx = fakeCtx({ serve: serveWith(items) });
+    const raws = (await collect(linkedin.fetch(ctx))) as { id: string }[];
+    expect(raws.map((r) => r.id)).toEqual(dataset.map((d) => d.id));
   });
 
   it("não reingere um dataset já lido", async () => {

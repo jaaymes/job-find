@@ -10,8 +10,8 @@ import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/so
  * até 1.000 por execução). O plano grátis do Apify dá US$ 5 por mês e bloqueia o uso, sem cobrar,
  * quando o crédito acaba. Sem `APIFY_TOKEN` a fonte não faz nada.
  *
- * Cada coleta (cron de hora em hora; uma execução do actor a cada 2 h): lista as execuções do actor, ingere o dataset da última que
- * terminou com sucesso (uma vez só, pelo cursor) e, se a última começou há mais de
+ * Cada coleta (cron de hora em hora; uma execução do actor a cada 2 h): lista as execuções do actor, ingere os datasets das execuções
+ * bem-sucedidas mais novas que o cursor (cada uma uma vez só) e, se a última começou há mais de
  * `RUN_EVERY_HOURS`, inicia outra. Assim a coleta nunca espera o actor terminar.
  */
 export const APIFY_HOST = "api.apify.com";
@@ -94,9 +94,15 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   if (!runs.success) throw new Error("Apify: lista de execuções fora do formato esperado");
   const items = runs.data.data.items;
 
-  const done = items.find((r) => r.status === "SUCCEEDED" && r.defaultDatasetId);
-  if (done && done.defaultDatasetId !== ctx.cursor) {
-    const dsUrl = new URL(`https://${APIFY_HOST}/v2/datasets/${encodeURIComponent(done.defaultDatasetId!)}/items`);
+  // Execuções mais novas que o cursor (a lista vem da mais nova para a mais antiga); sem cursor
+  // na lista, todas. Ingeridas da mais antiga para a mais nova, com o cursor avançando a cada dataset.
+  const seen = items.findIndex((r) => r.defaultDatasetId === ctx.cursor);
+  const pending = (seen === -1 ? items : items.slice(0, seen))
+    .filter((r) => r.status === "SUCCEEDED" && r.defaultDatasetId)
+    .reverse();
+  for (const run of pending) {
+    const datasetId = run.defaultDatasetId!;
+    const dsUrl = new URL(`https://${APIFY_HOST}/v2/datasets/${encodeURIComponent(datasetId)}/items`);
     dsUrl.searchParams.set("clean", "true");
     dsUrl.searchParams.set("format", "json");
     dsUrl.searchParams.set("limit", "1000");
@@ -104,7 +110,7 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
     const data = await dsRes.json();
     if (!Array.isArray(data)) throw new Error("Apify: dataset fora do formato esperado");
     for (const raw of data) yield raw;
-    ctx.setCursor(done.defaultDatasetId!);
+    ctx.setCursor(datasetId);
   }
 
   const latest = items[0];

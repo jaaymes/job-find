@@ -27,11 +27,11 @@ function stubMatchMedia() {
   );
 }
 
-function jobState(id: number, favorite: boolean): JobState {
+function jobState(id: number, favorite: boolean, status: JobState["status"] = "none"): JobState {
   return {
     favorite,
     hidden: false,
-    status: "none",
+    status,
     statusHistory: [],
     snapshot: {
       id,
@@ -74,8 +74,15 @@ describe("MobileTabBar", () => {
     expect(within(nav).getByRole("link", { name: "Vagas" }).getAttribute("aria-current")).toBeNull();
   });
 
-  it("Minhas vagas mostra contador de vagas salvas", () => {
-    act(() => jobStateStore.set({ "1": jobState(1, true), "2": jobState(2, true), "3": jobState(3, false) }));
+  it("Minhas vagas conta só a etapa Salvas (status Salva ou favorita sem status)", () => {
+    act(() =>
+      jobStateStore.set({
+        "1": jobState(1, true),
+        "2": jobState(2, false, "saved"),
+        "3": jobState(3, false),
+        "4": jobState(4, true, "applied"),
+      }),
+    );
     renderBar();
     const link = screen.getByRole("link", { name: /Minhas vagas/ });
     expect(within(link).getByText("2")).toBeTruthy();

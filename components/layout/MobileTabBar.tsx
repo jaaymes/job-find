@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { HardLink } from "@/components/ui/hard-link";
-import { useJobStates } from "@/lib/client/jobs/job-state";
+import { isSavedStage, useJobStates } from "@/lib/client/jobs/job-state";
 import { cn } from "@/lib/utils";
 import { MoreSheet } from "./MoreSheet";
 import { isLocalRoute, MORE_NAV, navItemForPath, type NavId } from "./nav";
@@ -27,11 +27,11 @@ function currentFromPath(pathname: string): NavId | undefined {
   return navItemForPath(pathname);
 }
 
-/** Vagas guardadas: favoritas ou com alguma candidatura registrada. */
+/** Vagas da etapa "Salvas" de Minhas vagas (mesmo critério da coluna). */
 function useSavedCount(): number {
   const states = useJobStates();
   if (!states) return 0;
-  return Object.values(states).filter((s) => s.favorite || s.status !== "none").length;
+  return Object.values(states).filter(isSavedStage).length;
 }
 
 /** Barra de abas inferior do celular (abaixo de `md`). Se `current` faltar, deduz do caminho. */

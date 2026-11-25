@@ -10,7 +10,7 @@ export default function FontesPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-5 px-4 pt-6 pb-16 sm:px-6 sm:pt-7">
+      <main id="conteudo" className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-5 px-4 pt-6 pb-16 sm:px-6 sm:pt-7">
         <SourcesPage />
       </main>
       <SiteFooter />

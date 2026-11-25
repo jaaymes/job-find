@@ -278,6 +278,23 @@ test.describe("Configurações", () => {
     // Lista dos dois provedores conectados; a busca filtra (o "Automático" do topo continua).
     await expect(dialog.getByRole("option", { name: /DeepSeek V4\.1 Flash/ })).toBeVisible();
     await expect(dialog.getByRole("option", { name: /gpt-5-mini/ })).toBeVisible();
+    // Em tela baixa o diálogo (flex em coluna, com altura máxima) não estoura: a rolagem fica na lista.
+    await page.setViewportSize({ width: 1280, height: 400 });
+    await expect
+      .poll(() =>
+        dialog.evaluate((el) => {
+          const list = el.querySelector('[class*="overflow-y-auto"]');
+          const css = getComputedStyle(el);
+          return {
+            display: css.display,
+            direction: css.flexDirection,
+            fits: (el as HTMLElement).offsetHeight <= window.innerHeight,
+            listOverflowY: list ? getComputedStyle(list).overflowY : null,
+          };
+        }),
+      )
+      .toEqual({ display: "flex", direction: "column", fits: true, listOverflowY: "auto" });
+    await page.setViewportSize({ width: 1280, height: 720 });
     await search.fill("v4.1");
     const options = dialog.getByRole("option");
     await expect(options).toHaveCount(2);

@@ -73,7 +73,7 @@ export function ModelPickerDialog({ task, settings, open, onOpenChange, onSelect
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent initialFocus={inputRef} className="flex flex-col gap-3 sm:max-h-[min(90dvh,44rem)] sm:max-w-xl">
+      <DialogContent initialFocus={inputRef} className="flex flex-col gap-3 sm:flex sm:max-h-[min(90dvh,44rem)] sm:max-w-xl">
         <DialogHeader className="pr-8">
           <DialogTitle>Modelo para {copy.name}</DialogTitle>
           <DialogDescription>{copy.desc}</DialogDescription>

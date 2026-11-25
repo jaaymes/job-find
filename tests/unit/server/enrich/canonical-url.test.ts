@@ -10,6 +10,11 @@ describe("canonicalUrl", () => {
     ["https://WWW.Example.com/Jobs/ABC/", "https://example.com/Jobs/ABC"],
     ["https://example.com/", "https://example.com/"],
     ["https://example.com/j?b=2&a=1&utm_source=x#top", "https://example.com/j?a=1&b=2"],
+    ["https://example.com/j?q=a%20b", "https://example.com/j?q=a%20b"],
+    ["https://example.com/j?b=2&a=1", "https://example.com/j?a=1&b=2"],
+    ["https://example.com/j?q=a%20b&utm_source=x", "https://example.com/j?q=a%20b"],
+    ["https://example.com/j?q=a%20b&a=x%2By", "https://example.com/j?a=x%2By&q=a%20b"],
+    ["https://example.com/j?utm_source=x", "https://example.com/j"],
     ["https://example.com/jobs/1/apply", "https://example.com/jobs/1/apply"],
     ["https://jobs.smartrecruiters.com/AcmeBR/7440-Dev", "https://jobs.smartrecruiters.com/AcmeBR/7440-Dev"],
   ])("%s → %s", (raw, expected) => {

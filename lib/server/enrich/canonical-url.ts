@@ -19,6 +19,34 @@ function trimTrailingSlash(path: string): string {
   return path.length > 1 ? path.replace(/\/+$/, "") || "/" : path;
 }
 
+/** Chave decodificada de um par `chave=valor` da query (como o `URLSearchParams` a lê). */
+function pairKey(pair: string): string {
+  const raw = pair.split("=", 1)[0].replace(/\+/g, " ");
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
+/**
+ * Query sem parâmetros de rastreamento e com os pares ordenados pela chave. Cada par mantém o texto
+ * original (`%20` não vira `+`), e a query só é reconstruída quando algo foi removido ou quando há
+ * mais de um par: um parâmetro único fica exatamente como veio.
+ */
+function canonicalQuery(search: string): string {
+  const pairs = search.replace(/^\?/, "").split("&").filter((p) => p !== "");
+  const kept = pairs.filter((p) => !TRACKING_PARAM.test(pairKey(p)));
+  if (kept.length === pairs.length && pairs.length <= 1) return search;
+  // `sort` é estável: chaves repetidas mantêm a ordem original entre si.
+  kept.sort((a, b) => {
+    const ka = pairKey(a);
+    const kb = pairKey(b);
+    return ka < kb ? -1 : ka > kb ? 1 : 0;
+  });
+  return kept.length > 0 ? `?${kept.join("&")}` : "";
+}
+
 /**
  * URL canônica: https válida, sem fragmento nem parâmetros de rastreamento, com host em minúsculas
  * sem `www.`, variações de ATS unificadas, parâmetros ordenados e sem barra final (exceto na raiz).
@@ -34,10 +62,7 @@ export function canonicalUrl(raw: string): string | null {
   const host = url.hostname.toLowerCase().replace(/^www\./, "");
   url.hostname = HOST_ALIASES[host] ?? host;
 
-  for (const key of [...url.searchParams.keys()]) {
-    if (TRACKING_PARAM.test(key)) url.searchParams.delete(key);
-  }
-  url.searchParams.sort();
+  url.search = canonicalQuery(url.search);
 
   let path = trimTrailingSlash(url.pathname);
   const suffix = APPLY_SUFFIX[url.hostname];

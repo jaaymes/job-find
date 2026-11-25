@@ -1,4 +1,5 @@
 import type { CvLang } from "@/lib/client/cv/period";
+import type { StackCategory } from "@/lib/shared/stacks";
 
 export const SECTION_LABELS: Record<
   CvLang,
@@ -10,7 +11,7 @@ export const SECTION_LABELS: Record<
 };
 
 /** Rótulos das categorias de competência (template com `skillsLayout: "grouped"`). */
-export const CATEGORY_LABELS: Record<CvLang, Record<"frontend" | "backend" | "mobile" | "data" | "devops" | "qa" | "lang" | "other", string>> = {
+export const CATEGORY_LABELS: Record<CvLang, Record<StackCategory, string>> = {
   pt: { frontend: "Front-end", backend: "Back-end", mobile: "Mobile", data: "Dados", devops: "DevOps", qa: "Qualidade", lang: "Linguagens", other: "Outras" },
   en: { frontend: "Frontend", backend: "Backend", mobile: "Mobile", data: "Data", devops: "DevOps", qa: "QA", lang: "Languages", other: "Other" },
   es: { frontend: "Frontend", backend: "Backend", mobile: "Móvil", data: "Datos", devops: "DevOps", qa: "Calidad", lang: "Lenguajes", other: "Otras" },

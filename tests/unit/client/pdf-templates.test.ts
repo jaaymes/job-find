@@ -20,7 +20,7 @@ const fullCv = (over: Partial<AssembledCv> = {}): AssembledCv => ({
   headline: HEADLINE,
   summary: "Ação, São, Español – Niño: oito anos construindo interfaces acessíveis.",
   skills: ["React", "TypeScript", "Node.js", "Liderança"],
-  education: ["Ciência da Computação – USP (2012 – 2016)"],
+  education: ["Ciência da Computação – USP (2012 – 2016) – Ação, Español, Niño"],
   projects: [
     { name: "Painel Aberto", link: "github.com/ana/painel", stacks: ["React", "D3"], bullets: ["Painel público de dados de transporte."] },
     { name: "Gerador de CV", link: null, stacks: ["Next.js"], bullets: ["Gera PDFs legíveis pelo ATS."] },
@@ -91,20 +91,22 @@ describe("templates de CV", () => {
   it.each(CV_TEMPLATES)("$id: ordem legível pelo ATS", async (t) => {
     const { text } = await render(fullCv(), t.id);
     const low = text.toLowerCase();
-    const order = [
-      "ana souza",
-      HEADLINE.toLowerCase(),
-      "ana@exemplo.test",
-      ...t.sections.map((s) => SECTION_LABELS.pt[s].toLowerCase()),
-    ];
-    const idx = order.map((s) => low.indexOf(s));
+    // Nome, headline e e-mail: primeira ocorrência. Rótulos: linha própria, buscada depois do índice anterior.
+    const idx = ["ana souza", HEADLINE.toLowerCase(), "ana@exemplo.test"].map((x) => low.indexOf(x));
     for (const i of idx) expect(i).toBeGreaterThanOrEqual(0);
-    expect([...idx].sort((a, b) => a - b)).toEqual(idx);
+    let from = Math.max(...idx);
+    for (const sec of t.sections) {
+      const label = SECTION_LABELS.pt[sec].toLowerCase();
+      const m = new RegExp(`(?:^|\\n)${label}(?:\\n|$)`).exec(low.slice(from));
+      expect(m, `título "${label}" em linha própria`).not.toBeNull();
+      from += (m?.index ?? 0) + 1;
+      idx.push(from);
+    }
+    expect([...idx].sort((x, y) => x - y)).toEqual(idx);
     expect(text).toMatch(/[\w.]+@[\w.]+/);
     expect(text).toMatch(/\+55 11 91234-5678/);
     expect(text).not.toMatch(/\p{L}-\n\p{L}/u);
-    // Só os templates com seção de resumo exibem o texto acentuado do fixture.
-    if (t.sections.includes("summary")) for (const w of ["Ação", "Español", "Niño"]) expect(text).toContain(w);
+    for (const w of ["Ação", "Español", "Niño"]) expect(text).toContain(w);
   });
 
   it.each(CV_TEMPLATES)("$id: perfil mínimo sem título vazio", async (t) => {
@@ -151,7 +153,7 @@ describe("templates de CV", () => {
 
   it("compacto agrupa competências por categoria", async () => {
     const { text } = await render(fullCv(), "compacto");
-    expect(text).toMatch(/React/);
-    expect(text.toLowerCase()).toMatch(/outras|frontend/);
+    expect(text).toContain("Front-end: React");
+    expect(text).toContain("Outras: Liderança");
   });
 });

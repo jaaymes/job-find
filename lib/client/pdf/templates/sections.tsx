@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "@react-pdf/renderer";
 import type { ReactElement } from "react";
 import type { AssembledCv } from "@/lib/client/cv/assemble";
-import { normalizeSkill, STACKS } from "@/lib/shared/stacks";
+import { normalizeSkill, STACKS, type StackCategory } from "@/lib/shared/stacks";
 import { CATEGORY_LABELS, SECTION_LABELS } from "../labels";
 import type { CvSectionId, CvTemplate } from "./types";
 
@@ -22,7 +22,7 @@ export type CleanCv = {
   summary: string;
   skills: string[];
   experiences: Exp[];
-  highlights: { text: string; company: string }[];
+  highlights: { key: string; text: string; company: string }[];
   education: string[];
   projects: AssembledCv["projects"];
   certifications: string[];
@@ -39,7 +39,7 @@ export function cleanCv(cv: AssembledCv, withHighlights: boolean): CleanCv {
   const keys = new Set(cv.highlightKeys);
   const highlights: CleanCv["highlights"] = [];
   if (withHighlights) {
-    for (const x of valid) for (const b of x.bullets) if (keys.has(b.key)) highlights.push({ text: b.text.trim(), company: x.company });
+    for (const x of valid) for (const b of x.bullets) if (keys.has(b.key)) highlights.push({ key: b.key, text: b.text.trim(), company: x.company });
   }
   const experiences = valid
     .map((x) => (withHighlights ? { ...x, bullets: x.bullets.filter((b) => !keys.has(b.key)) } : x))
@@ -119,13 +119,13 @@ const STACK_CATEGORY = new Map(STACKS.map((d) => [d.id, d.category]));
 /** `"<Categoria>: a, b"`; o que não é stack conhecida vai para "Outras". */
 function groupedSkills(skills: string[], lang: AssembledCv["lang"]): string[] {
   const labels = CATEGORY_LABELS[lang];
-  const groups = new Map<keyof typeof labels, string[]>();
+  const groups = new Map<StackCategory, string[]>();
   for (const sk of skills) {
     const id = normalizeSkill(sk);
-    const cat = ((id && STACK_CATEGORY.get(id)) || "other") as keyof typeof labels;
+    const cat: StackCategory = (id && STACK_CATEGORY.get(id)) || "other";
     groups.set(cat, [...(groups.get(cat) ?? []), sk]);
   }
-  const order = Object.keys(labels) as (keyof typeof labels)[];
+  const order = Object.keys(labels) as StackCategory[];
   return order.filter((k) => groups.has(k)).map((k) => `${labels[k]}: ${groups.get(k)?.join(", ")}`);
 }
 
@@ -140,7 +140,7 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
     c.clean.highlights.length > 0 ? (
       <Section c={c} id="highlights">
         {c.clean.highlights.map((h) => (
-          <Text key={h.text} style={c.s.highlight}>
+          <Text key={h.key} style={c.s.highlight}>
             {`- ${h.text}${h.company ? ` (${h.company})` : ""}`}
           </Text>
         ))}

@@ -1,6 +1,7 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SiteHeader } from "@/components/layout/SiteHeader";
+import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
 // O botão de tema depende do ThemeProvider e tem testes próprios; aqui só interessa a navegação.
@@ -23,6 +24,19 @@ describe("SiteHeader", () => {
     ]);
     expect(within(nav).queryByRole("link", { name: "Apoie" })).toBeNull();
     expect(screen.getByRole("link", { name: "Apoie" }).getAttribute("href")).toBe("/apoie");
+  });
+
+  it("mostra o estado do setup no header: IA conectada e currículo pendente", () => {
+    localStorage.clear();
+    aiSettingsStore.set({
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "k", addedAt: "2026-01-01", source: "paste" as const } },
+    });
+    render(<SiteHeader />);
+    const status = screen.getByRole("link", { name: "IA conectada · Currículo pendente" });
+    expect(status.getAttribute("href")).toBe("/perfil");
+    expect(status.className).toContain("lg:inline-flex");
+    localStorage.clear();
   });
 
   it("destaca o item na página de apoio", () => {

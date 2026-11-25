@@ -2,12 +2,18 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderToStaticMarkup } from "react-dom/server";
+import { NuqsTestingAdapter } from "nuqs/adapters/testing";
+import { ChanceBadge } from "@/components/jobs/ChanceBadge";
 import { FiltersPanel } from "@/components/jobs/FiltersPanel";
+import { JobsPage } from "@/components/jobs/JobsPage";
+import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 import { JobDetailView } from "@/components/jobs/JobDetail";
 import { useJobsWithChance } from "@/lib/client/jobs/use-jobs-with-chance";
 import { profileStore } from "@/lib/client/profile/store";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
 import type { JobDetail, JobSummary } from "@/lib/shared/types/job";
+
+vi.mock("next/navigation", () => ({ useSearchParams: () => new URLSearchParams() }));
 
 function summary(id: number, over: Partial<JobSummary> = {}): JobSummary {
   return {
@@ -83,6 +89,35 @@ describe("JobDetailView: Sua chance", () => {
   });
 });
 
+describe("ChanceBadge", () => {
+  it("ChanceBadge com band null não renderiza", () => {
+    const { container } = render(<ChanceBadge band={null} />);
+    expect(container.textContent).toBe("");
+  });
+});
+
+describe("JobsPage sem perfil", () => {
+  it("lista sem perfil mostra exatamente 1 convite de importar", async () => {
+    aiSettingsStore.set({
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "k", addedAt: "2026-01-01", source: "paste" as const } },
+    });
+    const items = [summary(1), summary(2), summary(3)];
+    vi.stubGlobal("fetch", vi.fn(async () => Response.json({ items, nextCursor: null, lastCollectedAt: null })));
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <NuqsTestingAdapter>
+        <QueryClientProvider client={client}>
+          <JobsPage />
+        </QueryClientProvider>
+      </NuqsTestingAdapter>,
+    );
+    await waitFor(() => expect(screen.getAllByRole("article")).toHaveLength(3));
+    expect(screen.getAllByText(/importar currículo/i)).toHaveLength(1);
+    expect(screen.queryByText("Importe seu currículo para ver")).toBeNull();
+  });
+});
+
 describe("FiltersPanel: chance", () => {
   const props = {
     onClear: () => {},
@@ -91,15 +126,11 @@ describe("FiltersPanel: chance", () => {
     savedSearch: { active: false, canSave: false, error: null, onSave: () => {}, onClear: () => {} },
   };
 
-  it("sem perfil o filtro fica desabilitado e sugere importar o currículo", () => {
+  it("sem perfil o grupo Chance vira uma linha de convite, sem rádios nem link repetido", () => {
     render(<FiltersPanel {...props} filters={{}} onChange={() => {}} hasProfile={false} />);
-    expect(screen.getByRole("radio", { name: "Chance: Alta" }).matches(":disabled")).toBe(true);
-    expect(screen.getByRole("link", { name: "Importe seu currículo" }).getAttribute("href")).toBe("/perfil");
-  });
-
-  it("sem perfil o rádio de chance não aparece marcado, mesmo com chance na URL", () => {
-    render(<FiltersPanel {...props} filters={{ chance: ["alta"] }} onChange={() => {}} hasProfile={false} />);
-    expect((screen.getByRole("radio", { name: "Chance: Alta" }) as HTMLInputElement).checked).toBe(false);
+    expect(screen.queryByRole("radio", { name: "Chance: Alta" })).toBeNull();
+    expect(screen.getByText(/Filtro de chance disponível depois de importar o currículo/)).toBeTruthy();
+    expect(screen.queryByRole("link", { name: /currículo/i })).toBeNull();
   });
 
   it("com perfil escolher Alta grava chance=['alta']", () => {

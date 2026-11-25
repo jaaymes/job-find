@@ -21,6 +21,7 @@ import { LinkedInSearchLink } from "./LinkedInSearchLink";
 import { SearchBar } from "./SearchBar";
 import { StackChips } from "./StackChips";
 import { formatAge, formatCollectedAt, isStale } from "./format";
+import { SetupProgress } from "@/components/onboarding/SetupProgress";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const FILTERS_ID = "jobs-filters";
@@ -170,6 +171,7 @@ export function JobsPage() {
             panelId={panelId}
           />
           <p className="text-[13px] text-jf-ink-3">Ordenadas da mais nova para a mais antiga</p>
+          <SetupProgress variant="banner" />
 
           <div
             role="tabpanel"

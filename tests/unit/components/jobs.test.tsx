@@ -6,14 +6,8 @@ import { buildLinkedInSearchUrl } from "@/lib/client/jobs/linkedin-search";
 import { formatAge, formatCollectedAt, isSourceStale, isStale, staleAfterHours, placeLabel, SOURCE_LABELS } from "@/components/jobs/format";
 
 describe("ChanceBadge", () => {
-  it("sem faixa convida a importar o currículo", () => {
-    expect(renderToStaticMarkup(<ChanceBadge band={null} />)).toContain("Importe seu currículo para ver");
-  });
-
-  it("sem faixa o convite é um link para /perfil com alvo de toque de 44px", () => {
-    const html = renderToStaticMarkup(<ChanceBadge band={null} />);
-    expect(html).toMatch(/<a [^>]*href="\/perfil"/);
-    expect(html).toContain("min-h-11");
+  it("sem faixa não renderiza nada (o convite vive no banner da lista)", () => {
+    expect(renderToStaticMarkup(<ChanceBadge band={null} />)).toBe("");
   });
 
   it.each([

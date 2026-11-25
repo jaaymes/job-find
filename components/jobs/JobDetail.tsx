@@ -190,6 +190,11 @@ function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
             Sua chance
           </h2>
           <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
+          {!chance && (
+            <HardLink href="/perfil" className="inline-flex min-h-11 items-center text-sm text-jf-brand no-underline hover:text-jf-brand-dark hover:underline">
+              Importe seu currículo para ver
+            </HardLink>
+          )}
         </div>
         {chance && (
           <>

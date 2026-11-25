@@ -4,12 +4,11 @@ import type { ChanceBand, PageFilters } from "@/lib/client/jobs/use-jobs";
 import type { Seniority, SourceId } from "@/lib/shared/types/job";
 import { cn } from "@/lib/utils";
 import { FILTERABLE_SOURCES, LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
-import { HardLink } from "@/components/ui/hard-link";
 
 type Props = {
   filters: PageFilters;
   onChange: (patch: PageFilters) => void;
-  /** Sem perfil salvo não há score, e o filtro de chance fica desabilitado. */
+  /** Sem perfil salvo não há score, e o grupo Chance vira uma linha de convite. */
   hasProfile: boolean;
   onClear: () => void;
   /** Painel recolhido no celular; no desktop é sempre visível. */
@@ -86,26 +85,29 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile,
         </label>
       </fieldset>
 
-      <fieldset className="flex flex-col" disabled={!hasProfile}>
-        <legend className={LEGEND}>Chance</legend>
-        {CHANCES.map((c) => (
-          <label key={c.label} className={cn(OPTION, !hasProfile && "text-jf-ink-3")}>
-            <input
-              type="radio"
-              name="chance"
-              className={CONTROL}
-              checked={chance === c.value}
-              onChange={() => onChange({ chance: c.value ? [c.value] : undefined })}
-            />
-            {c.label === "Qualquer" ? c.label : `Chance: ${c.label}`}
-          </label>
-        ))}
-        {!hasProfile && (
-          <HardLink href="/perfil" className="mt-1 inline-flex min-h-11 items-center text-sm text-jf-brand hover:text-jf-brand-dark">
-            Importe seu currículo
-          </HardLink>
-        )}
-      </fieldset>
+      {hasProfile ? (
+        <fieldset className="flex flex-col">
+          <legend className={LEGEND}>Chance</legend>
+          {CHANCES.map((c) => (
+            <label key={c.label} className={OPTION}>
+              <input
+                type="radio"
+                name="chance"
+                className={CONTROL}
+                checked={chance === c.value}
+                onChange={() => onChange({ chance: c.value ? [c.value] : undefined })}
+              />
+              {c.label === "Qualquer" ? c.label : `Chance: ${c.label}`}
+            </label>
+          ))}
+        </fieldset>
+      ) : (
+        <p className="text-sm text-jf-ink-3">
+          <span className={LEGEND}>Chance</span>
+          <br />
+          Filtro de chance disponível depois de importar o currículo.
+        </p>
+      )}
 
       <fieldset className="flex flex-col">
         <legend className={LEGEND}>Senioridade</legend>

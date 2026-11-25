@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { NavLink } from "./NavLink";
 import { PRIMARY_NAV, type NavId } from "./nav";
+import { SetupStatus } from "./SetupStatus";
 import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteHeader({ current }: { current?: NavId }) {
@@ -38,6 +39,7 @@ export function SiteHeader({ current }: { current?: NavId }) {
         <NavLink href="/apoie" current={current === "apoie"} className="hidden text-sm md:inline-flex">
           Apoie
         </NavLink>
+        <SetupStatus />
         <ThemeToggle className="ml-auto md:ml-0" />
       </div>
     </header>

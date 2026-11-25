@@ -87,16 +87,15 @@ test("com perfil salvo, cada vaga da lista mostra a faixa e o percentual", async
   await expect(page.getByText("Importe seu currículo para ver")).toHaveCount(0);
 });
 
-test("sem perfil, mostra 'Importe seu currículo para ver' como link para /perfil e o filtro desabilitado", async ({ page }) => {
+test("sem perfil, a lista tem um único convite (banner) e nenhum rádio de chance", async ({ page }) => {
   await page.goto("/");
   await expect(cards(page)).toHaveCount(30);
-  const invites = page.getByRole("link", { name: "Importe seu currículo para ver" });
-  await expect(invites).toHaveCount(30);
-  await expect(invites.first()).toHaveAttribute("href", "/perfil");
-  const box = await invites.first().boundingBox();
-  expect(box!.height).toBeGreaterThanOrEqual(44);
-  await expect(page.getByRole("radio", { name: "Chance: Alta" })).toBeDisabled();
-  await expect(page.getByRole("link", { name: "Importe seu currículo", exact: true })).toBeVisible();
+  await expect(page.getByText("Importe seu currículo para ver")).toHaveCount(0);
+  const banner = page.getByRole("region", { name: "Progresso da configuração" });
+  await expect(banner).toHaveCount(1);
+  await expect(banner.getByRole("link", { name: "Conectar IA" })).toHaveAttribute("href", "/configuracoes");
+  await expect(page.getByRole("radio", { name: "Chance: Alta" })).toHaveCount(0);
+  await expect(page.getByText("Filtro de chance disponível depois de importar o currículo.")).toBeVisible();
 });
 
 test("filtro 'Chance: Alta' mostra só vagas com score >= 70, da mais nova para a mais antiga", async ({ page }) => {

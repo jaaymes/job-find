@@ -189,6 +189,8 @@ export async function upsertJob(
         targetWhere: isNull(jobs.expiredAt),
         set: {
           ...(canOverwrite ? { ...content, stacks: sql`${stacksLiteral}::text[]`, searchVector: sql`excluded.search_vector` } : {}),
+          // Seguro: a busca por URL acima garante que nenhuma vaga ativa usa esta URL canônica.
+          ...(canOverwrite ? { urlCanonical: sql`excluded.url_canonical` } : {}),
           sources: sourcesUnion,
           publishedAt: sql`LEAST(${jobs.publishedAt}, excluded.published_at)`,
           updatedAt: now,

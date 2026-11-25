@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { useJobStates, type JobState } from "@/lib/client/jobs/job-state";
 import { cn } from "@/lib/utils";
 import { Column } from "./Column";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type Tab = { id: string; label: string; empty: string; match: (s: JobState) => boolean };
 
@@ -19,8 +20,8 @@ const TABS: Tab[] = [
 
 const byNewest = (a: JobState, b: JobState) => b.snapshot.publishedAt.localeCompare(a.snapshot.publishedAt);
 
-function Skeleton() {
-  return <div role="status" aria-label="Carregando" className="h-40 animate-pulse rounded-2xl border border-jf-line bg-jf-surface" />;
+function LoadingSkeleton() {
+  return <Skeleton className="h-40 rounded-2xl border border-jf-line bg-jf-surface" />;
 }
 
 /** "Minhas vagas": uma aba por status (mais simples que um kanban no celular), com contador e sem chamar a API. */
@@ -84,7 +85,7 @@ export function Board() {
       </div>
 
       <div role="tabpanel" id="my-panel" aria-labelledby={`my-tab-${tab.id}`}>
-        {shown ? <Column jobs={shown} empty={tab.empty} /> : <Skeleton />}
+        {shown ? <Column jobs={shown} empty={tab.empty} /> : <LoadingSkeleton />}
       </div>
     </>
   );

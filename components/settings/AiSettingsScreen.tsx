@@ -11,6 +11,7 @@ import { AddKeyDialog, type KeyDraft } from "./AddKeyDialog";
 import { PrivacyConsentDialog } from "./PrivacyConsentDialog";
 import { ProviderCard } from "./ProviderCard";
 import { TaskModelRow } from "./TaskModelRow";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const TASKS: AiTask[] = ["extract", "analyze", "cv"];
 const MUST = PROVIDER_IDS.filter((id) => PROVIDERS[id].tier === "must");
@@ -57,7 +58,7 @@ export function AiSettingsScreen() {
   }, []);
 
   if (!settings) {
-    return <div aria-busy="true" aria-label="Carregando configurações" className="h-96 animate-pulse rounded-2xl bg-jf-chip" />;
+    return <Skeleton label="Carregando configurações" className="h-96 rounded-2xl bg-jf-chip" />;
   }
 
   function update(fn: (s: AiSettings) => AiSettings): boolean {

@@ -55,7 +55,7 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile,
         <button
           type="button"
           onClick={onClear}
-          className="py-2 text-sm text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
+          className="inline-flex min-h-11 items-center text-sm text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
         >
           Limpar
         </button>

@@ -26,6 +26,7 @@ import { PdfPreview } from "./PdfPreview";
 import { ReviewBanner } from "./ReviewBanner";
 import { type EditorTab, TailoredEditor } from "./TailoredEditor";
 import { HardLink } from "@/components/ui/hard-link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 /** Teto da chamada: o critério de aceite é 60 s; a folga cobre modelos lentos antes de desistir. */
 const GENERATE_TIMEOUT_MS = 120_000;
@@ -292,7 +293,7 @@ function Generator({ job }: { job: JobDetail }) {
       </header>
 
       {settings === null ? (
-        <div role="status" aria-label="Carregando" className={`${CARD} h-40 animate-pulse`} />
+        <Skeleton className={`${CARD} h-40`} />
       ) : !profile ? (
         <section className={`${CARD} flex flex-col items-start gap-3 p-6`}>
           <p className="text-[15px] text-jf-ink-2">
@@ -438,7 +439,7 @@ function NotFound({ id }: { id: number | null }) {
   const states = useJobStates();
   const snapshot = id === null ? undefined : states?.[String(id)]?.snapshot;
   // Antes da hidratação o estado ainda não foi lido: evita piscar "Vaga não encontrada".
-  if (states === null && id !== null) return <div role="status" aria-label="Carregando" className={`${CARD} h-40 animate-pulse`} />;
+  if (states === null && id !== null) return <Skeleton className={`${CARD} h-40`} />;
   // Vaga que o usuário marcou e que saiu do índice: sem a descrição não há o que adaptar ao CV.
   if (snapshot) {
     const source = safeExternalUrl(snapshot.urlCanonical);
@@ -487,6 +488,6 @@ export function GeneratorScreen({ jobId }: { jobId: string }) {
       </section>
     );
   }
-  if (isPending || !data) return <div role="status" aria-label="Carregando a vaga" className={`${CARD} h-56 animate-pulse`} />;
+  if (isPending || !data) return <Skeleton label="Carregando a vaga" className={`${CARD} h-56`} />;
   return <Generator key={data.id} job={data} />;
 }

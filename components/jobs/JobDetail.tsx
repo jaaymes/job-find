@@ -24,6 +24,7 @@ import {
   placeLabel,
 } from "./format";
 import { HardLink } from "@/components/ui/hard-link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
@@ -98,13 +99,13 @@ function Logo({ job }: { job: JobDetailData }) {
   );
 }
 
-function Skeleton() {
+function LoadingSkeleton() {
   return (
-    <div role="status" aria-label="Carregando a vaga" className="flex flex-col gap-5">
+    <Skeleton label="Carregando a vaga" className="flex flex-col gap-5">
       <div className="h-11" />
-      <div className={`${CARD} h-56 animate-pulse`} />
-      <div className={`${CARD} h-80 animate-pulse`} />
-    </div>
+      <div className={`${CARD} h-56`} />
+      <div className={`${CARD} h-80`} />
+    </Skeleton>
   );
 }
 
@@ -312,6 +313,6 @@ export function JobDetail({ id: rawId }: { id: string }) {
 
   if (id === null || error instanceof JobNotFoundError) return <NotFound />;
   if (error) return <LoadError onRetry={() => void refetch()} />;
-  if (isPending || !data) return <Skeleton />;
+  if (isPending || !data) return <LoadingSkeleton />;
   return <JobDetailView job={data} />;
 }

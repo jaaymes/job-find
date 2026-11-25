@@ -21,6 +21,7 @@ import { LinkedInSearchLink } from "./LinkedInSearchLink";
 import { SearchBar } from "./SearchBar";
 import { StackChips } from "./StackChips";
 import { formatAge, formatCollectedAt, isStale } from "./format";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const FILTERS_ID = "jobs-filters";
 const SIDEBAR_KEYS = ["origin", "acceptsBrazil", "chance", "seniority", "lang", "source", "showHidden"] as const;
@@ -29,12 +30,12 @@ const SAVE_ERROR = "Não foi possível salvar a busca padrão: o navegador não 
 
 function JobCardSkeleton() {
   return (
-    <div className="flex animate-pulse flex-col gap-3 rounded-2xl border border-jf-line bg-jf-surface p-5">
+    <Skeleton className="flex flex-col gap-3 rounded-2xl border border-jf-line bg-jf-surface p-5">
       <div className="h-3 w-32 rounded bg-jf-chip" />
       <div className="h-5 w-3/4 rounded bg-jf-chip" />
       <div className="h-4 w-1/2 rounded bg-jf-chip" />
       <div className="h-6 w-2/3 rounded bg-jf-chip" />
-    </div>
+    </Skeleton>
   );
 }
 

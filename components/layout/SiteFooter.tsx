@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide";
 
-const LINK = "text-jf-brand underline-offset-2 hover:text-jf-brand-dark hover:underline";
+const LINK = "inline-flex min-h-11 items-center text-jf-brand underline-offset-2 hover:text-jf-brand-dark hover:underline";
 
 export function SiteFooter() {
   return (

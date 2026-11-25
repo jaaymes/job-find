@@ -56,10 +56,16 @@ async function openList(page: Page, path: string) {
   await expect(cards(page).first()).toBeVisible();
 }
 
-/** Ao voltar, a lista reaparece com os mesmos filtros na URL. */
+const restoredNotice = (page: Page) => page.getByRole("status").filter({ hasText: "Busca da última visita restaurada" });
+
+/**
+ * Ao voltar, a lista reaparece com os mesmos filtros na URL. Sem o aviso de restauração: a última busca também
+ * está no localStorage e repõe os filtros se o "Voltar" cair em `/`; o aviso ausente prova que a URL veio do link.
+ */
 async function expectBackOnList(page: Page) {
   await expect(page).toHaveURL(FILTERS_URL);
   await expect(cards(page).first()).toBeVisible();
+  await expect(restoredNotice(page)).toHaveCount(0);
 }
 
 test("abrir uma vaga e clicar em 'Voltar para as vagas' mantém filtros e o primeiro card", async ({ page }) => {
@@ -83,6 +89,7 @@ test("'Carregar mais' e voltar de uma vaga da 2ª página mantém o número de c
   await page.getByRole("link", { name: /Voltar para as vagas/ }).filter({ visible: true }).click();
   await expect(page).toHaveURL(/since=30d/);
   await expect(cards(page)).toHaveCount(40);
+  await expect(restoredNotice(page)).toHaveCount(0);
 });
 
 test("de /perfil, o link 'Vagas' do header volta à lista com os filtros", async ({ page }) => {

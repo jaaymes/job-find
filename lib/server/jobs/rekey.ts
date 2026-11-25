@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, inArray, isNull, ne, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import type { Db } from "@/lib/server/db/client";
 import { jobs } from "@/lib/server/db/schema";
 import { canonicalUrl } from "@/lib/server/enrich/canonical-url";
@@ -43,14 +43,39 @@ export async function loadRekeyRows(db: Db): Promise<RekeyRow[]> {
 }
 
 /**
+ * `url_canonical` das vagas ativas que ficam fora do recálculo (empresa vazia ou desconhecida).
+ * Elas continuam ativas, então nenhuma vaga recalculada pode passar a usar uma dessas URLs.
+ */
+export async function loadReservedUrls(db: Db): Promise<Set<string>> {
+  const rows = await db
+    .select({ urlCanonical: jobs.urlCanonical })
+    .from(jobs)
+    .where(and(isNull(jobs.expiredAt), or(eq(jobs.company, ""), eq(jobs.company, UNKNOWN_COMPANY))));
+  return new Set(rows.map((r) => r.urlCanonical));
+}
+
+/** URL a gravar: a canônica, salvo quando `canonicalUrl` a rejeita ou ela já pertence a uma vaga excluída. */
+function nextUrl(row: RekeyRow, reservedUrls: ReadonlySet<string>): { url: string; conflict: boolean } {
+  const canonical = canonicalUrl(row.urlCanonical) ?? row.urlCanonical;
+  const conflict = canonical !== row.urlCanonical && reservedUrls.has(canonical);
+  return { url: conflict ? row.urlCanonical : canonical, conflict };
+}
+
+/** Ids das linhas cuja URL nova colide com a de uma vaga excluída e, por isso, mantêm a URL gravada. */
+export function findReservedConflicts(rows: RekeyRow[], reservedUrls: ReadonlySet<string>): number[] {
+  return rows.filter((r) => nextUrl(r, reservedUrls).conflict).map((r) => r.id);
+}
+
+/**
  * Calcula a chave e a URL novas de cada linha e agrupa por união transitiva (mesma chave nova ou
  * mesma URL nova). Devolve os grupos com mais de uma vaga e os de uma vaga só cuja chave ou URL mudou,
- * com os ids em ordem crescente. URL gravada que `canonicalUrl` rejeita é mantida como está.
+ * com os ids em ordem crescente. URL gravada que `canonicalUrl` rejeita é mantida como está, e também
+ * a que colidiria com `reservedUrls` (o agrupamento usa então a URL mantida).
  */
-export function planRekey(rows: RekeyRow[]): RekeyGroup[] {
+export function planRekey(rows: RekeyRow[], reservedUrls: ReadonlySet<string> = new Set()): RekeyGroup[] {
   const next = rows.map((r) => ({
     dedupeKey: dedupeKey(r),
-    urlCanonical: canonicalUrl(r.urlCanonical) ?? r.urlCanonical,
+    urlCanonical: nextUrl(r, reservedUrls).url,
   }));
 
   // União-busca sobre os índices de `rows`.
@@ -104,8 +129,8 @@ export function planRekey(rows: RekeyRow[]): RekeyGroup[] {
 /**
  * Aplica o plano de `planRekey`. Primeiro grava valores provisórios (`'rekey:' || id`) em todas as
  * vagas de todos os grupos, para que nenhuma troca de chave ou URL entre vagas viole os índices
- * únicos das ativas no meio do caminho; depois funde cada grupo e grava a chave e a URL novas na
- * sobrevivente. `merged` conta as perdedoras; `rekeyed`, as sobreviventes gravadas.
+ * únicos das ativas no meio do caminho; depois funde cada grupo e grava a chave e a URL novas de
+ * cada vaga (as perdedoras, já expiradas, também recebem as suas). `merged` conta as perdedoras; `rekeyed`, as sobreviventes gravadas.
  * Não abre transação: quem chama decide (o script passa um handle de transação).
  */
 export async function applyRekey(
@@ -123,6 +148,11 @@ export async function applyRekey(
   let rekeyed = 0;
   for (const group of groups) {
     const survivor = group.ids.length > 1 ? await mergeJobs(db, group.ids, now) : group.ids[0];
+    // Sobrevivente por último; as perdedoras já estão expiradas (fora dos índices parciais) e não
+    // devem ficar com o valor provisório, que seria exibido como URL.
+    for (const id of group.ids) {
+      if (id !== survivor) await db.update(jobs).set(group.next[id]).where(eq(jobs.id, id));
+    }
     await db.update(jobs).set(group.next[survivor]).where(eq(jobs.id, survivor));
     merged += group.ids.length - 1;
     rekeyed += 1;

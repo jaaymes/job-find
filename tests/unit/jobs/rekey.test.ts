@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dedupeKey } from "@/lib/server/enrich/dedupe";
-import { planRekey, type RekeyRow } from "@/lib/server/jobs/rekey";
+import { findReservedConflicts, planRekey, type RekeyRow } from "@/lib/server/jobs/rekey";
 
 /** Linha em Berlin/DE presencial, com uma chave antiga qualquer e URL já canônica por padrão. */
 function row(id: number, company: string, title: string, url = `https://example.com/jobs/${id}`): RekeyRow {
@@ -61,5 +61,38 @@ describe("planRekey", () => {
 
   it("URL gravada que não é mais válida fica como está", () => {
     expect(planRekey([current(1, "Acme", "Backend Developer", "não é url")])).toEqual([]);
+  });
+
+  describe("URLs reservadas por vagas sem empresa", () => {
+    const reserved = new Set(["https://boards.greenhouse.io/x/1"]);
+    const oldUrl = "https://job-boards.greenhouse.io/x/1";
+
+    it("mantém a URL gravada quando a nova já é de uma vaga excluída", () => {
+      expect(planRekey([current(1, "Acme", "Backend Developer", oldUrl)], reserved)).toEqual([]);
+      const r = row(1, "Acme GmbH", "Backend Developer", oldUrl);
+      expect(planRekey([r], reserved)).toEqual([
+        { ids: [1], next: { 1: { dedupeKey: dedupeKey(r), urlCanonical: oldUrl } } },
+      ]);
+    });
+
+    it("não agrupa pela URL reservada", () => {
+      const groups = planRekey(
+        [
+          current(1, "Acme", "Backend Developer", oldUrl),
+          current(2, "Outra", "Frontend Developer", "https://www.boards.greenhouse.io/x/1"),
+        ],
+        reserved,
+      );
+      expect(groups).toEqual([]);
+    });
+
+    it("findReservedConflicts devolve só as linhas cuja URL foi mantida", () => {
+      const rows = [
+        current(1, "Acme", "Backend Developer", oldUrl),
+        current(2, "Acme", "Frontend Developer", "https://boards.greenhouse.io/x/2"),
+        current(3, "Acme", "QA", "https://job-boards.greenhouse.io/x/3"),
+      ];
+      expect(findReservedConflicts(rows, reserved)).toEqual([1]);
+    });
   });
 });

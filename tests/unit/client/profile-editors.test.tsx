@@ -85,7 +85,7 @@ function Exp({ initial = [] as string[] }) {
   const [exps, setExps] = useState(experiences());
   return (
     <>
-      <ExperienceEditor experiences={exps} onChange={setExps} highlights={hl} onHighlightsChange={setHl} />
+      <ExperienceEditor profile={emptyProfile()} experiences={exps} onChange={setExps} highlights={hl} onHighlightsChange={setHl} />
       <output data-testid="hl">{hl.join(",")}</output>
     </>
   );
@@ -127,6 +127,7 @@ describe("estrela de destaque", () => {
       const [exps, setExps] = useState(experiences());
       return (
         <ExperienceEditor
+          profile={emptyProfile()}
           experiences={exps}
           onChange={(x) => (spy(x), setExps(x))}
           highlights={[]}

@@ -26,7 +26,7 @@ export function resolveTemplateId(
   recordTemplateId: string | null | undefined,
   prefs: CvPrefs,
   profile: Profile,
-  job: JobDetail,
+  job: JobDetail | null,
 ): CvTemplateId {
   return validId(recordTemplateId) ?? validId(prefs.templateId) ?? recommendTemplate(profile, job);
 }

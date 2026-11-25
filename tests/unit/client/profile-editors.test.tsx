@@ -1,0 +1,145 @@
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useState } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { BaseCvDownload } from "@/components/profile/BaseCvDownload";
+import { CertificationsEditor } from "@/components/profile/CertificationsEditor";
+import { ExperienceEditor } from "@/components/profile/ExperienceEditor";
+import { LanguagesEditor } from "@/components/profile/LanguagesEditor";
+import { ProjectsEditor } from "@/components/profile/ProjectsEditor";
+import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
+
+const mocks = vi.hoisted(() => ({ renderCvPdf: vi.fn() }));
+vi.mock("@/lib/client/pdf/render", () => ({ renderCvPdf: mocks.renderCvPdf }));
+
+afterEach(cleanup);
+
+function Projects({ initial = [] as Profile["projects"], spy = vi.fn() }) {
+  const [v, setV] = useState(initial);
+  return <ProjectsEditor projects={v} onChange={(x) => (spy(x), setV(x))} />;
+}
+
+describe("ProjectsEditor", () => {
+  it("cria proj_1, depois proj_2, e mostra a ajuda de idioma", () => {
+    const spy = vi.fn();
+    render(<Projects spy={spy} />);
+    expect(screen.getByText(/Escreva os projetos no idioma em que vai se candidatar/)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar projeto" }));
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar projeto" }));
+    const last = spy.mock.calls.at(-1)![0] as Profile["projects"];
+    expect(last.map((p) => p.id)).toEqual(["proj_1", "proj_2"]);
+  });
+
+  it("'Adicionar bullet' cria proj_1.b1", () => {
+    const spy = vi.fn();
+    render(<Projects spy={spy} />);
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar projeto" }));
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar bullet" }));
+    const last = spy.mock.calls.at(-1)![0] as Profile["projects"];
+    expect(last[0].bullets).toEqual([{ id: "proj_1.b1", text: "" }]);
+  });
+
+  it("tecnologias viram lista e link vazio vira null", () => {
+    const spy = vi.fn();
+    render(<Projects spy={spy} />);
+    fireEvent.click(screen.getByRole("button", { name: "Adicionar projeto" }));
+    fireEvent.change(screen.getByLabelText(/^Tecnologias/), { target: { value: "React, Node" } });
+    fireEvent.change(screen.getByLabelText(/^Link/), { target: { value: " " } });
+    const last = (spy.mock.calls.at(-1)![0] as Profile["projects"])[0];
+    expect(last.stacks).toEqual(["React", "Node"]);
+    expect(last.link).toBeNull();
+  });
+});
+
+describe("LanguagesEditor", () => {
+  it("o select de nível tem as 5 opções em português", () => {
+    render(<LanguagesEditor languages={[{ name: "Inglês", level: "fluent" }]} onChange={() => {}} />);
+    const opts = [...screen.getByLabelText("Nível do idioma 1").querySelectorAll("option")].map((o) => o.textContent);
+    expect(opts).toEqual(["Básico", "Intermediário", "Avançado", "Fluente", "Nativo"]);
+  });
+});
+
+describe("CertificationsEditor", () => {
+  it("emissor e ano vazios gravam null", () => {
+    const onChange = vi.fn();
+    render(<CertificationsEditor certifications={[{ name: "AWS SAA", issuer: "AWS", year: "2024" }]} onChange={onChange} />);
+    fireEvent.change(screen.getByLabelText("Emissor da certificação 1"), { target: { value: "" } });
+    expect(onChange).toHaveBeenLastCalledWith([{ name: "AWS SAA", issuer: null, year: "2024" }]);
+    fireEvent.change(screen.getByLabelText("Ano da certificação 1"), { target: { value: " " } });
+    expect(onChange).toHaveBeenLastCalledWith([{ name: "AWS SAA", issuer: "AWS", year: null }]);
+  });
+});
+
+const experiences = (): Profile["experiences"] => [
+  {
+    id: "exp_1",
+    company: "Acme",
+    title: "Dev",
+    startDate: null,
+    endDate: null,
+    bullets: [1, 2, 3, 4].map((n) => ({ id: `exp_1.b${n}`, text: `Bullet ${n}` })),
+  },
+];
+
+function Exp({ initial = [] as string[] }) {
+  const [hl, setHl] = useState(initial);
+  const [exps, setExps] = useState(experiences());
+  return (
+    <>
+      <ExperienceEditor experiences={exps} onChange={setExps} highlights={hl} onHighlightsChange={setHl} />
+      <output data-testid="hl">{hl.join(",")}</output>
+    </>
+  );
+}
+
+describe("estrela de destaque", () => {
+  const open = () => fireEvent.click(screen.getByRole("button", { name: /^Editar experiência/ }));
+  const stars = () => screen.getAllByRole("button", { name: "Destacar no CV" });
+
+  it("alterna o id em highlights com aria-pressed", () => {
+    render(<Exp />);
+    open();
+    expect(stars()[0].getAttribute("aria-pressed")).toBe("false");
+    fireEvent.click(stars()[0]);
+    expect(stars()[0].getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByTestId("hl").textContent).toBe("exp_1.b1");
+    fireEvent.click(stars()[0]);
+    expect(screen.getByTestId("hl").textContent).toBe("");
+  });
+
+  it("com 3 destaques, as outras estrelas ficam desabilitadas e aparece o aviso", () => {
+    render(<Exp initial={["exp_1.b1", "exp_1.b2", "exp_1.b3"]} />);
+    open();
+    const s = stars();
+    expect(s.map((b) => (b as HTMLButtonElement).disabled)).toEqual([false, false, false, true]);
+    expect(screen.getByText("Máximo de 3 destaques")).toBeTruthy();
+  });
+
+  it("apagar um bullet destacado remove o id de highlights", () => {
+    render(<Exp initial={["exp_1.b2"]} />);
+    open();
+    fireEvent.click(screen.getByRole("button", { name: "Remover realização 2" }));
+    expect(screen.getByTestId("hl").textContent).toBe("");
+  });
+});
+
+describe("BaseCvDownload", () => {
+  beforeEach(() => {
+    mocks.renderCvPdf.mockReset();
+    mocks.renderCvPdf.mockResolvedValue({ blob: new Blob(["x"]), pages: 1 });
+    URL.createObjectURL = vi.fn(() => "blob:x");
+    URL.revokeObjectURL = vi.fn();
+  });
+
+  it("'Baixar CV base' chama renderCvPdf com o template escolhido", async () => {
+    const profile = { ...emptyProfile(), name: "Ana", experiences: experiences() };
+    render(<BaseCvDownload profile={profile} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Modelo do CV:/ }));
+    fireEvent.click(await screen.findByRole("radio", { name: /Harvard/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Usar este modelo" }));
+    fireEvent.click(screen.getByRole("button", { name: "Baixar CV base" }));
+    await waitFor(() => expect(mocks.renderCvPdf).toHaveBeenCalledTimes(1));
+    const [cv, templateId] = mocks.renderCvPdf.mock.calls[0];
+    expect(templateId).toBe("harvard");
+    expect(cv.name).toBe("Ana");
+  });
+});

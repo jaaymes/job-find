@@ -1,12 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import type { Profile } from "@/lib/shared/schemas/profile";
+import { MAX_HIGHLIGHTS, type Profile } from "@/lib/shared/schemas/profile";
 import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 
 type Experience = Profile["experiences"][number];
 
-type Props = { experiences: Experience[]; onChange: (experiences: Experience[]) => void };
+type Props = {
+  experiences: Experience[];
+  onChange: (experiences: Experience[]) => void;
+  /** Ids `exp_N.bM` dos bullets destacados (estrela). */
+  highlights: string[];
+  onHighlightsChange: (ids: string[]) => void;
+};
 
 function period(e: Experience): string {
   const start = e.startDate ?? "?";
@@ -18,14 +24,19 @@ function Row({
   onChange,
   onRemove,
   startOpen,
+  highlights,
+  onHighlightsChange,
 }: {
   exp: Experience;
   onChange: (e: Experience) => void;
   onRemove: () => void;
   startOpen: boolean;
+  highlights: string[];
+  onHighlightsChange: (ids: string[]) => void;
 }) {
   const [open, setOpen] = useState(startOpen);
   const set = (patch: Partial<Experience>) => onChange({ ...exp, ...patch });
+  const atMax = highlights.length >= MAX_HIGHLIGHTS;
   const title = [exp.title, exp.company].filter(Boolean).join(" · ") || "Nova experiência";
 
   return (
@@ -80,9 +91,27 @@ function Row({
                 />
                 <button
                   type="button"
+                  aria-pressed={highlights.includes(b.id)}
+                  aria-label="Destacar no CV"
+                  title={atMax && !highlights.includes(b.id) ? `Máximo de ${MAX_HIGHLIGHTS} destaques` : "Destacar no CV"}
+                  disabled={atMax && !highlights.includes(b.id)}
+                  className={`${BTN_OUTLINE} min-w-11 aria-pressed:border-jf-brand aria-pressed:bg-jf-chip aria-pressed:text-jf-brand-dark`}
+                  onClick={() =>
+                    onHighlightsChange(
+                      highlights.includes(b.id) ? highlights.filter((h) => h !== b.id) : [...highlights, b.id],
+                    )
+                  }
+                >
+                  <span aria-hidden="true">{highlights.includes(b.id) ? "★" : "☆"}</span>
+                </button>
+                <button
+                  type="button"
                   className={`${BTN_OUTLINE} min-w-11`}
                   aria-label={`Remover realização ${i + 1}`}
-                  onClick={() => set({ bullets: exp.bullets.filter((x) => x.id !== b.id) })}
+                  onClick={() => {
+                    set({ bullets: exp.bullets.filter((x) => x.id !== b.id) });
+                    if (highlights.includes(b.id)) onHighlightsChange(highlights.filter((h) => h !== b.id));
+                  }}
                 >
                   <span aria-hidden="true">×</span>
                 </button>
@@ -123,7 +152,7 @@ function Row({
   );
 }
 
-export function ExperienceEditor({ experiences, onChange }: Props) {
+export function ExperienceEditor({ experiences, onChange, highlights, onHighlightsChange }: Props) {
   const [newId, setNewId] = useState<string | null>(null);
 
   function add() {
@@ -142,14 +171,25 @@ export function ExperienceEditor({ experiences, onChange }: Props) {
           + Experiência
         </button>
       </div>
+      {highlights.length >= MAX_HIGHLIGHTS && (
+        <p role="status" className="text-sm text-jf-ink-3">
+          Máximo de {MAX_HIGHLIGHTS} destaques
+        </p>
+      )}
       <ul className="flex flex-col gap-3">
         {experiences.map((e) => (
           <Row
             key={e.id}
             exp={e}
             startOpen={e.id === newId}
+            highlights={highlights}
+            onHighlightsChange={onHighlightsChange}
             onChange={(x) => onChange(experiences.map((y) => (y.id === e.id ? x : y)))}
-            onRemove={() => onChange(experiences.filter((y) => y.id !== e.id))}
+            onRemove={() => {
+              onChange(experiences.filter((y) => y.id !== e.id));
+              const gone = e.bullets.map((b) => b.id);
+              if (highlights.some((h) => gone.includes(h))) onHighlightsChange(highlights.filter((h) => !gone.includes(h)));
+            }}
           />
         ))}
       </ul>

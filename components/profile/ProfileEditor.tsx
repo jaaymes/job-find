@@ -9,9 +9,12 @@ import {
   SENIORITY_LABEL,
   type Profile,
 } from "@/lib/shared/schemas/profile";
+import { CertificationsEditor } from "./CertificationsEditor";
 import { ContactLinks } from "./ContactLinks";
 import { EducationEditor } from "./EducationEditor";
 import { ExperienceEditor } from "./ExperienceEditor";
+import { LanguagesEditor } from "./LanguagesEditor";
+import { ProjectsEditor } from "./ProjectsEditor";
 import { SkillChips } from "./SkillChips";
 import { CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 
@@ -144,9 +147,23 @@ export function ProfileEditor({ profile, onSave }: Props) {
       </label>
 
       <SkillChips skills={draft.skills} onChange={(skills) => patch({ skills })} />
-      <ExperienceEditor experiences={draft.experiences} onChange={(experiences) => patch({ experiences })} />
+      <ExperienceEditor
+        experiences={draft.experiences}
+        onChange={(experiences) => patch({ experiences })}
+        highlights={draft.highlights}
+        onHighlightsChange={(highlights) => patch({ highlights })}
+      />
+
+      <ProjectsEditor projects={draft.projects} onChange={(projects) => patch({ projects })} />
 
       <EducationEditor education={draft.education} onChange={(education) => patch({ education })} />
+
+      <CertificationsEditor
+        certifications={draft.certifications}
+        onChange={(certifications) => patch({ certifications })}
+      />
+
+      <LanguagesEditor languages={draft.languages} onChange={(languages) => patch({ languages })} />
     </section>
   );
 }

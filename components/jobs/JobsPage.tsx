@@ -258,7 +258,7 @@ export function JobsPage() {
         </section>
       </div>
 
-      <div aria-live="polite" data-testid="undo-region" className="pointer-events-none fixed inset-x-4 bottom-4 z-50 flex justify-center">
+      <div aria-live="polite" data-testid="undo-region" className="pointer-events-none fixed inset-x-4 bottom-[calc(80px+env(safe-area-inset-bottom))] z-50 md:bottom-4 flex justify-center">
         {undo && (
           <div className="pointer-events-auto flex items-center gap-3 rounded-xl bg-jf-ink py-1.5 pr-1.5 pl-4 text-sm text-jf-surface shadow-lg">
             <span>Vaga oculta</span>

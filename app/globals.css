@@ -214,3 +214,10 @@
     text-wrap: pretty;
   }
 }
+/* Espaço para a barra de abas inferior (só abaixo de md); no desktop volta ao respiro padrão. */
+@utility pb-tabbar {
+  padding-bottom: 4rem;
+  @media (width < 48rem) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+}

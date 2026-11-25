@@ -119,6 +119,15 @@ describe("ActiveFilterChips", () => {
     expect(onClearAll).toHaveBeenCalledOnce();
   });
 
+  it("alvos de toque dos chips têm 44px (min-h-11 e min-w-11) abaixo de md", () => {
+    const chips = buildActiveChips({ origin: "national" }, () => {}, true);
+    render(<ActiveFilterChips chips={chips} onClearAll={() => {}} />);
+    const remove = screen.getByRole("button", { name: "Remover filtro: Nacional" });
+    expect(remove.className).toContain("min-h-11");
+    expect(remove.className).toContain("min-w-11");
+    expect(screen.getByRole("button", { name: "Limpar tudo" }).className).toContain("min-h-11");
+  });
+
   it("sem chips não renderiza nada", () => {
     const { container } = render(<ActiveFilterChips chips={[]} onClearAll={() => {}} />);
     expect(container.textContent).toBe("");

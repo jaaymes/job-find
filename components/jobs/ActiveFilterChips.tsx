@@ -40,16 +40,18 @@ export function ActiveFilterChips({ chips, onClearAll }: Props) {
       {chips.map((chip) => (
         <li
           key={chip.key}
-          className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-jf-line-strong bg-jf-surface py-0.5 pr-1 pl-2.5 text-[13px] text-jf-ink-2"
+          className="inline-flex items-center rounded-full border border-jf-line-strong bg-jf-surface pl-2.5 text-[13px] text-jf-ink-2 md:min-h-8 md:py-0.5 md:pr-1"
         >
           {chip.label}
           <button
             type="button"
             onClick={chip.onRemove}
             aria-label={`Remover filtro: ${chip.label}`}
-            className="inline-flex size-6 items-center justify-center rounded-full bg-jf-chip text-jf-ink-2 outline-none hover:text-jf-ink focus-visible:ring-2 focus-visible:ring-jf-brand"
+            className="group inline-flex min-h-11 min-w-11 items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-jf-brand md:min-h-6 md:min-w-6"
           >
-            <X aria-hidden="true" className="size-3.5" />
+            <span className="inline-flex size-6 items-center justify-center rounded-full bg-jf-chip text-jf-ink-2 group-hover:text-jf-ink">
+              <X aria-hidden="true" className="size-3.5" />
+            </span>
           </button>
         </li>
       ))}
@@ -57,7 +59,7 @@ export function ActiveFilterChips({ chips, onClearAll }: Props) {
         <button
           type="button"
           onClick={onClearAll}
-          className="inline-flex min-h-8 items-center rounded-md px-1 text-[13px] font-semibold text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
+          className="inline-flex min-h-11 items-center rounded-md px-1 md:min-h-8 text-[13px] font-semibold text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
         >
           Limpar tudo
         </button>

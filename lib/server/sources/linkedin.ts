@@ -10,7 +10,7 @@ import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/so
  * até 1.000 por execução). O plano grátis do Apify dá US$ 5 por mês e bloqueia o uso, sem cobrar,
  * quando o crédito acaba. Sem `APIFY_TOKEN` a fonte não faz nada.
  *
- * Cada coleta (cron de hora em hora): lista as execuções do actor, ingere o dataset da última que
+ * Cada coleta (cron de hora em hora; uma execução do actor a cada 2 h): lista as execuções do actor, ingere o dataset da última que
  * terminou com sucesso (uma vez só, pelo cursor) e, se a última começou há mais de
  * `RUN_EVERY_HOURS`, inicia outra. Assim a coleta nunca espera o actor terminar.
  */
@@ -18,12 +18,12 @@ export const APIFY_HOST = "api.apify.com";
 export const LINKEDIN_ACTOR = "valig~linkedin-jobs-scraper";
 const ACTOR_URL = `https://${APIFY_HOST}/v2/acts/${LINKEDIN_ACTOR}`;
 
-/** Duas execuções por dia. */
-export const RUN_EVERY_HOURS = 12;
-/** Vagas por execução: 2 × 30 × 200 = 12.000 vagas/mês, cerca de US$ 4,80 dos US$ 5 grátis. */
-export const RESULTS_PER_RUN = 200;
-/** Teto de gasto por execução, cobrado pelo Apify mesmo que o actor traga mais itens. */
-export const MAX_CHARGE_PER_RUN_USD = 0.08;
+/** Doze execuções por dia; com 8 buscas em rodízio, cada palavra-chave volta a cada 16 h (< 24 h da janela). */
+export const RUN_EVERY_HOURS = 2;
+/** Vagas por execução: 12 × 31 × 32 = 11.904 vagas/mês. */
+export const RESULTS_PER_RUN = 32;
+/** Teto de gasto por execução: 12 × 31 × US$ 0,013 = US$ 4,84 dos US$ 5 grátis, mesmo que o actor traga mais itens. */
+export const MAX_CHARGE_PER_RUN_USD = 0.013;
 
 /** Buscas em rodízio, uma por execução; o filtro RN-01 descarta o que não for de tecnologia. */
 export const LINKEDIN_KEYWORDS = [

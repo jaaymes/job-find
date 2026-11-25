@@ -7,6 +7,7 @@ import {
   LINKEDIN_KEYWORDS,
   MAX_CHARGE_PER_RUN_USD,
   RESULTS_PER_RUN,
+  RUN_EVERY_HOURS,
   keywordFor,
   linkedin,
 } from "@/lib/server/sources/linkedin";
@@ -51,7 +52,7 @@ describe("conector LinkedIn (Apify)", () => {
   });
 
   it("ingere o dataset da última execução bem-sucedida e grava o cursor", async () => {
-    // A última execução começou há 4 h (now = 2026-11-23T12:00Z): não inicia outra.
+    // A última execução começou há 1 h (now = 2026-11-23T12:00Z): não inicia outra.
     const ctx = fakeCtx({ serve: serveWith(runs.data.items) });
     const raws = (await collect(linkedin.fetch(ctx))) as { id: string }[];
     expect(raws.map((r) => r.id)).toEqual(dataset.map((d) => d.id));
@@ -67,8 +68,8 @@ describe("conector LinkedIn (Apify)", () => {
     expect(ctx.cursors).toEqual([]);
   });
 
-  it("inicia nova execução quando a última começou há 12 h ou mais, com teto de gasto", async () => {
-    const old = runs.data.items.map((r) => ({ ...r, startedAt: "2026-11-22T23:00:00.000Z" }));
+  it("inicia nova execução quando a última começou há 2 h ou mais, com teto de gasto", async () => {
+    const old = runs.data.items.map((r) => ({ ...r, startedAt: "2026-11-23T09:00:00.000Z" }));
     const ctx = fakeCtx({ serve: serveWith(old), cursor: "dsNew" });
     await collect(linkedin.fetch(ctx));
     const post = ctx.requests.find((r) => r.method === "POST");
@@ -85,6 +86,31 @@ describe("conector LinkedIn (Apify)", () => {
     });
   });
 
+  it("orçamento cabe nos US$ 5 com execução a cada 2 h", () => {
+    expect(RUN_EVERY_HOURS).toBe(2);
+    expect(RESULTS_PER_RUN).toBe(32);
+    expect(MAX_CHARGE_PER_RUN_USD).toBe(0.013);
+    expect(31 * (24 / RUN_EVERY_HOURS) * MAX_CHARGE_PER_RUN_USD).toBeLessThanOrEqual(5);
+  });
+
+  it("cada palavra-chave volta antes de a janela de 24 h fechar", () => {
+    expect(LINKEDIN_KEYWORDS.length * RUN_EVERY_HOURS).toBeLessThanOrEqual(24);
+  });
+
+  it("não inicia outra se a última começou há menos de 2 h", async () => {
+    const recent = runs.data.items.map((r, i) => ({ ...r, startedAt: i === 0 ? "2026-11-23T10:30:00.000Z" : r.startedAt }));
+    const ctx = fakeCtx({ serve: serveWith(recent), cursor: "dsNew" });
+    await collect(linkedin.fetch(ctx));
+    expect(ctx.requests.some((r) => r.method === "POST")).toBe(false);
+  });
+
+  it("inicia outra quando a última começou há 2 h", async () => {
+    const due = runs.data.items.map((r, i) => ({ ...r, startedAt: i === 0 ? "2026-11-23T10:00:00.000Z" : r.startedAt }));
+    const ctx = fakeCtx({ serve: serveWith(due), cursor: "dsNew" });
+    await collect(linkedin.fetch(ctx));
+    expect(ctx.requests.filter((r) => r.method === "POST")).toHaveLength(1);
+  });
+
   it("não inicia outra enquanto há execução em andamento", async () => {
     const running = [{ ...runs.data.items[0]!, status: "RUNNING", startedAt: "2026-11-21T00:00:00.000Z" }];
     const ctx = fakeCtx({ serve: serveWith(running) });
@@ -98,9 +124,9 @@ describe("conector LinkedIn (Apify)", () => {
     expect(ctx.requests.filter((r) => r.method === "POST")).toHaveLength(1);
   });
 
-  it("rodízio de buscas muda a cada 12 h", () => {
+  it("rodízio de buscas muda a cada 2 h", () => {
     const a = keywordFor(new Date("2026-11-23T01:00:00Z"));
-    const b = keywordFor(new Date("2026-11-23T13:00:00Z"));
+    const b = keywordFor(new Date("2026-11-23T03:00:00Z"));
     expect(LINKEDIN_KEYWORDS).toContain(a);
     expect(a).not.toBe(b);
   });

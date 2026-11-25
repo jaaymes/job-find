@@ -26,7 +26,14 @@ export type AssembledCv = {
      * `key` (`bulletKey`) é o id estável do trecho, atrelado ao texto. `flagged`: violação RN-07 ainda não aprovada
      * (destacar, contar e deixar fora do PDF). `violations`: os motivos. Ver `flagBullets`.
      */
-    bullets: { key: string; text: string; /** `sourceBulletIds` do bullet (ids `exp_N.bM` do perfil). */ sources: string[]; flagged: boolean; violations: Violation[] }[];
+    bullets: {
+      key: string;
+      text: string;
+      /** `sourceBulletIds` do bullet (ids `exp_N.bM` do perfil). */
+      sources: string[];
+      flagged: boolean;
+      violations: Violation[];
+    }[];
   }[];
   /** Estado de revisão de headline, summary e skills (mesma semântica de `bullets[].flagged`). */
   flags: { headline: ItemFlag; summary: ItemFlag; skills: ItemFlag[] };
@@ -106,7 +113,9 @@ export function assembleCv(
       .map((p) => ({ name: p.name, link: p.link, stacks: p.stacks, bullets: p.bullets.map((b) => b.text).filter((t) => t.trim() !== "") }))
       .filter((p) => p.name.trim() !== ""),
     certifications: profile.certifications.map(certificationLine).filter((l) => l.trim() !== ""),
-    languages: profile.languages.map((l) => `${l.name} – ${LANGUAGE_LEVEL_LABEL[lang][l.level]}`),
+    languages: profile.languages
+      .filter((l) => l.name.trim() !== "")
+      .map((l) => `${l.name} – ${LANGUAGE_LEVEL_LABEL[lang][l.level]}`),
     highlightKeys: [],
     lang,
   };

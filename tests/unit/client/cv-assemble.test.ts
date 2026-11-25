@@ -151,6 +151,15 @@ describe("assembleCv dados do perfil v2", () => {
     expect(assembleCv(p, docs(), "en").languages).toEqual(["Inglês – Fluent"]);
   });
 
+  it("idioma sem nome é descartado", () => {
+    const p = profile();
+    p.languages = [
+      { name: "  ", level: "basic" },
+      { name: "Inglês", level: "fluent" },
+    ];
+    expect(assembleCv(p, docs(), "pt").languages).toEqual(["Inglês – Fluente"]);
+  });
+
   it("projetos copiam o perfil e descartam bullets vazios", () => {
     const p = profile();
     p.projects = [
@@ -192,6 +201,17 @@ describe("assembleCv dados do perfil v2", () => {
       { text: "Outro B", sourceBulletIds: ["exp_1.b2"] },
     );
     expect(assembleCv(p, d, "pt").highlightKeys).toHaveLength(3);
+  });
+
+  it("ocorrência repetida de um expId não entra em highlightKeys", () => {
+    const p = profile();
+    p.highlights = ["exp_1.b1"];
+    const d = docs();
+    d.cv.experiences = [
+      { expId: "exp_1", bullets: [{ text: "Primeira", sourceBulletIds: ["exp_1.b2"] }] },
+      { expId: "exp_1", bullets: [{ text: "Repetida", sourceBulletIds: ["exp_1.b1"] }] },
+    ];
+    expect(assembleCv(p, d, "pt").highlightKeys).toEqual([]);
   });
 
   it("highlightKeys vazio com destaque órfão", () => {

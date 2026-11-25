@@ -36,6 +36,7 @@ Antes de abrir um PR, rode `pnpm lint && pnpm typecheck && pnpm test`. Não crie
 4. Implemente o conector em `lib/server/sources/<id>.ts`, seguindo a interface `Connector` de `lib/server/sources/types.ts`; `jobicy.ts` é um exemplo simples.
 5. Registre o conector em `lib/server/sources/registry.ts` (o TypeScript acusa se faltar).
 6. Adicione fixtures com respostas reais (anonimizadas, se preciso) em `tests/fixtures/sources/<id>/` e escreva um teste unitário que use essas fixtures, sem chamar a rede.
+   Se a fonte pagina ou faz várias requisições, adicione (opcional) uma entrada em `BOUNDS` de `tests/contract/sources.contract.test.ts` para que o teste de contrato só busque a primeira página.
 7. Abra o PR usando o modelo e marque "Nova fonte de vagas".
 
 A deduplicação entre fontes é automática: o conector só precisa entregar empresa, título e URL corretos.

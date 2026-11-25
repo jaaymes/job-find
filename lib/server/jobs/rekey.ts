@@ -3,7 +3,7 @@ import { and, eq, inArray, isNull, ne, or, sql } from "drizzle-orm";
 import type { Db } from "@/lib/server/db/client";
 import { jobs } from "@/lib/server/db/schema";
 import { canonicalUrl } from "@/lib/server/enrich/canonical-url";
-import { dedupeKey } from "@/lib/server/enrich/dedupe";
+import { dedupeKey, normalizeTitle } from "@/lib/server/enrich/dedupe";
 import { mergeJobs } from "@/lib/server/jobs/merge";
 import { UNKNOWN_COMPANY } from "@/lib/server/sources/types";
 import type { WorkMode } from "@/lib/shared/types/job";
@@ -124,6 +124,16 @@ export function planRekey(rows: RekeyRow[], reservedUrls: ReadonlySet<string> = 
     });
   }
   return groups.sort((a, b) => a.ids[0] - b.ids[0]);
+}
+
+/**
+ * Grupos a fundir (mais de uma vaga) cujos membros têm títulos normalizados (`normalizeTitle`)
+ * diferentes: juntados pela URL ou por uma chave que mudou de fórmula, são os candidatos a falso
+ * positivo, para conferir antes do `--apply`.
+ */
+export function findMixedTitleGroups(groups: RekeyGroup[], rows: RekeyRow[]): RekeyGroup[] {
+  const titleById = new Map(rows.map((r) => [r.id, normalizeTitle(r.title)]));
+  return groups.filter((g) => g.ids.length > 1 && new Set(g.ids.map((id) => titleById.get(id))).size > 1);
 }
 
 /**

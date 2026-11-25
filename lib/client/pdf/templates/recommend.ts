@@ -7,9 +7,10 @@ import type { CvTemplateId } from "./types";
 /** Alguma palavra do título ou dos bullets da experiência é uma stack do dicionário? */
 function mentionsStack(exp: Profile["experiences"][number]): boolean {
   const text = [exp.title, ...exp.bullets.map((b) => b.text)].join(" ");
-  return text
-    .split(/[^\p{L}\p{N}+#.]+/u)
-    .some((w) => w !== "" && (normalizeSkill(w) ?? normalizeSkill(w.replace(/[.]+$/, ""))) !== null);
+  const words = text.split(/[^\p{L}\p{N}+#.]+/u).filter((w) => w !== "");
+  const known = (w: string) => (normalizeSkill(w) ?? normalizeSkill(w.replace(/[.]+$/, ""))) !== null;
+  // Palavras soltas e pares adjacentes ("Spring Boot", "C Sharp").
+  return words.some((w, i) => known(w) || (i + 1 < words.length && known(`${w} ${words[i + 1]}`)));
 }
 
 /**

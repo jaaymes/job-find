@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { generatedStore } from "@/lib/client/cv/generated-store";
 import { cvPrefsStore, resolveTemplateId, type CvPrefs } from "@/lib/client/pdf/templates/prefs";
 import { recommendTemplate } from "@/lib/client/pdf/templates/recommend";
+import { normalizeSkill } from "@/lib/shared/stacks";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 import type { JobDetail } from "@/lib/shared/types/job";
 
@@ -64,6 +65,29 @@ describe("recommendTemplate", () => {
   it("projeto e experiência sem stack -> transicao", () => {
     const p = profile({
       projects: [{ id: "proj_1", name: "App", link: null, stacks: ["react"], bullets: [] }],
+      experiences: [exp("Professora de matemática")],
+    });
+    expect(recommendTemplate(p, job())).toBe("transicao");
+  });
+  it("stack de duas palavras num bullet conta como stack", () => {
+    // "c sharp" só resolve como par: as palavras soltas não são stacks.
+    expect(normalizeSkill("c")).toBeNull();
+    expect(normalizeSkill("sharp")).toBeNull();
+    expect(normalizeSkill("c sharp")).not.toBeNull();
+    const p = profile({
+      seniority: "senior",
+      projects: [{ id: "proj_1", name: "App", link: null, stacks: [], bullets: [] }],
+      experiences: [exp("Analista", "Sistemas internos em C Sharp")],
+    });
+    expect(recommendTemplate(p, job())).toBe("resultados");
+  });
+  it("precedência: vaga em inglês vence lead", () => {
+    expect(recommendTemplate(profile({ seniority: "lead" }), job({ language: "en" }))).toBe("internacional");
+  });
+  it("precedência: transição vence senior", () => {
+    const p = profile({
+      seniority: "senior",
+      projects: [{ id: "proj_1", name: "App", link: null, stacks: [], bullets: [] }],
       experiences: [exp("Professora de matemática")],
     });
     expect(recommendTemplate(p, job())).toBe("transicao");

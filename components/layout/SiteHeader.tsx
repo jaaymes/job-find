@@ -1,3 +1,4 @@
+import { Radar } from "lucide-react";
 import Link from "next/link";
 import { NavLink } from "./NavLink";
 import { PRIMARY_NAV, type NavId } from "./nav";
@@ -40,7 +41,17 @@ export function SiteHeader({ current }: { current?: NavId }) {
           Apoie
         </NavLink>
         <SetupStatus />
-        <ThemeToggle className="ml-auto md:ml-0" />
+        <Link
+          href="/fontes"
+          aria-current={current === "fontes" ? "page" : undefined}
+          className={`-mr-3 ml-auto inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold no-underline outline-none focus-visible:ring-2 focus-visible:ring-jf-brand md:hidden ${
+            current === "fontes" ? "text-jf-brand" : "text-jf-ink-2"
+          }`}
+        >
+          <Radar aria-hidden="true" className="size-[18px]" />
+          Fontes
+        </Link>
+        <ThemeToggle className="md:ml-0" />
       </div>
     </header>
   );

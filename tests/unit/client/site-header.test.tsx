@@ -18,12 +18,27 @@ describe("SiteHeader", () => {
     const nav = screen.getByRole("navigation", { name: "Principal" });
     expect(within(nav).getAllByRole("link").map((link) => link.textContent)).toEqual([
       "Vagas",
+      "Fontes",
       "Minhas vagas",
       "Perfil",
       "Configurações",
     ]);
     expect(within(nav).queryByRole("link", { name: "Apoie" })).toBeNull();
     expect(screen.getByRole("link", { name: "Apoie" }).getAttribute("href")).toBe("/apoie");
+  });
+
+  it("mostra Fontes no header do celular, fora do menu principal", () => {
+    render(<SiteHeader />);
+    const nav = screen.getByRole("navigation", { name: "Principal" });
+    const mobile = screen.getAllByRole("link", { name: "Fontes" }).find((l) => !nav.contains(l))!;
+    expect(mobile.getAttribute("href")).toBe("/fontes");
+    expect(mobile.className).toContain("md:hidden");
+    expect(mobile.className).toContain("min-h-11");
+  });
+
+  it("destaca Fontes na página de fontes", () => {
+    render(<SiteHeader current="fontes" />);
+    for (const link of screen.getAllByRole("link", { name: "Fontes" })) expect(link.getAttribute("aria-current")).toBe("page");
   });
 
   it("mostra o estado do setup no header: IA conectada e currículo pendente", () => {
@@ -47,8 +62,9 @@ describe("SiteHeader", () => {
   it("links do rodapé têm min-h-11", () => {
     render(<SiteFooter />);
     const footer = screen.getByRole("contentinfo");
-    for (const name of ["Fontes", "Privacidade", "Apoie o projeto", "Código no GitHub"]) {
+    for (const name of ["Privacidade", "Apoie o projeto", "Código no GitHub"]) {
       expect(within(footer).getByRole("link", { name }).className).toContain("min-h-11");
     }
+    expect(within(footer).queryByRole("link", { name: "Fontes" })).toBeNull();
   });
 });

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { BTN_OUTLINE } from "@/components/ui/styles";
+import { BTN_OUTLINE, BTN_PRIMARY } from "@/components/ui/styles";
 import { CV_TEMPLATES, getTemplate } from "@/lib/client/pdf/templates/registry";
 import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 
@@ -19,13 +19,22 @@ export function TemplatePicker({ value, recommended, onChange, showDefaultOption
   const [open, setOpen] = useState(false);
   const [makeDefault, setMakeDefault] = useState(false);
   const current = getTemplate(value);
-  const choose = (id: CvTemplateId) => {
-    onChange(id, showDefaultOption && makeDefault);
+  const [selected, setSelected] = useState<CvTemplateId>(value);
+  // A seleção é local: setas do teclado só movem o foco entre os modelos; quem confirma é o botão.
+  const onOpenChange = (next: boolean) => {
+    if (next) {
+      setSelected(value);
+      setMakeDefault(false);
+    }
+    setOpen(next);
+  };
+  const confirm = () => {
+    onChange(selected, showDefaultOption && makeDefault);
     setOpen(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger render={<button type="button" className={BTN_OUTLINE} />}>
         {`Modelo do CV: ${current.name}`}
       </DialogTrigger>
@@ -47,10 +56,8 @@ export function TemplatePicker({ value, recommended, onChange, showDefaultOption
                 type="radio"
                 name="cv-template"
                 className="mt-0.5 size-5 flex-none accent-[var(--color-jf-brand)]"
-                checked={t.id === value}
-                onChange={() => choose(t.id)}
-                // Escolher de novo o modelo atual não dispara `onChange`; serve para torná-lo o padrão.
-                onClick={t.id === value ? () => choose(t.id) : undefined}
+                checked={t.id === selected}
+                onChange={() => setSelected(t.id)}
               />
               <span className="flex min-w-0 flex-col gap-0.5">
                 <span className="font-semibold">
@@ -78,6 +85,9 @@ export function TemplatePicker({ value, recommended, onChange, showDefaultOption
             Usar como padrão nos próximos CVs
           </label>
         )}
+        <button type="button" className={BTN_PRIMARY} onClick={confirm}>
+          Usar este modelo
+        </button>
       </DialogContent>
     </Dialog>
   );

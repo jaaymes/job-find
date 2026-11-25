@@ -637,6 +637,7 @@ test("trocar o modelo do CV refaz só o PDF (sem nova chamada à IA) e a escolha
   await expect(dialog.getByRole("radio")).toHaveCount(10);
   await expect(dialog.getByText("Recomendado para você")).toHaveCount(1);
   await dialog.getByRole("radio", { name: /Harvard/ }).check();
+  await dialog.getByRole("button", { name: "Usar este modelo" }).click();
 
   await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
   expect(mock.bodies).toHaveLength(calls);

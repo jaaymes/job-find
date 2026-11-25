@@ -37,17 +37,36 @@ describe("TemplatePicker", () => {
     expect(moderno.closest("label")?.textContent).toContain("Recomendado para você");
   });
 
-  it("escolher Harvard com 'Usar como padrão' marcado chama onChange('harvard', true)", async () => {
+  it("trocar o radio (ou usar as setas) não chama onChange e o dialog continua aberto", async () => {
+    const { onChange } = await open();
+    const harvard = screen.getByRole("radio", { name: /Harvard/ });
+    fireEvent.keyDown(screen.getByRole("radio", { name: /Clássico/ }), { key: "ArrowDown" });
+    fireEvent.click(harvard);
+    expect((harvard as HTMLInputElement).checked).toBe(true);
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByRole("dialog")).toBeTruthy();
+  });
+
+  it("escolher Harvard com 'Usar como padrão' marcado e confirmar chama onChange('harvard', true)", async () => {
     const { onChange, dialog } = await open();
     fireEvent.click(within(dialog).getByRole("checkbox", { name: "Usar como padrão nos próximos CVs" }));
     fireEvent.click(within(dialog).getByRole("radio", { name: /Harvard/ }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Usar este modelo" }));
     expect(onChange).toHaveBeenCalledWith("harvard", true);
   });
 
-  it("sem marcar a caixa, chama onChange(id, false)", async () => {
+  it("escolher Harvard e confirmar sem a caixa chama onChange('harvard', false)", async () => {
     const { onChange, dialog } = await open();
     fireEvent.click(within(dialog).getByRole("radio", { name: /Harvard/ }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Usar este modelo" }));
     expect(onChange).toHaveBeenCalledWith("harvard", false);
+  });
+
+  it("manter o modelo atual, marcar a caixa e confirmar chama onChange(atual, true)", async () => {
+    const { onChange, dialog } = await open();
+    fireEvent.click(within(dialog).getByRole("checkbox", { name: "Usar como padrão nos próximos CVs" }));
+    fireEvent.click(within(dialog).getByRole("button", { name: "Usar este modelo" }));
+    expect(onChange).toHaveBeenCalledWith("classico", true);
   });
 
   it("showDefaultOption=false esconde a caixa de padrão", async () => {

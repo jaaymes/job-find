@@ -138,6 +138,15 @@ test("coleta atrasada mostra o aviso com o horário em America/Sao_Paulo", async
   const banner = page.getByRole("status");
   await expect(banner).toContainText("coleta");
   await expect(banner).toContainText(time);
+  await expect(page.getByRole("link", { name: "por quê?" })).toHaveAttribute("href", "/fontes");
+});
+
+test("RF-01: o primeiro card começa acima de y=600 no desktop 1440x900", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await open(page);
+  const box = await cards(page).first().boundingBox();
+  expect(box).not.toBeNull();
+  expect(box!.y).toBeLessThan(600);
 });
 
 test("erro da API mostra mensagem e permite tentar de novo", async ({ page }) => {

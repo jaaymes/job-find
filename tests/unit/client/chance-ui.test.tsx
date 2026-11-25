@@ -121,7 +121,6 @@ describe("JobsPage sem perfil", () => {
 describe("FiltersPanel: chance", () => {
   const props = {
     onClear: () => {},
-    open: true,
     id: "f",
     savedSearch: { active: false, canSave: false, error: null, onSave: () => {}, onClear: () => {} },
   };
@@ -144,7 +143,6 @@ describe("FiltersPanel: chance", () => {
 describe("FiltersPanel: fonte", () => {
   const props = {
     onClear: () => {},
-    open: true,
     id: "f",
     savedSearch: { active: false, canSave: false, error: null, onSave: () => {}, onClear: () => {} },
   };

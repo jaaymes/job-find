@@ -155,3 +155,15 @@ export function formatSalary(
   }
   return `${text}${period}`;
 }
+
+/** "1.284 vagas", "1 vaga": contagem em pt-BR com o substantivo no número certo. */
+export function formatCount(n: number, one: string, many: string): string {
+  return `${n.toLocaleString("pt-BR")} ${n === 1 ? one : many}`;
+}
+
+export const SINCE_OPTIONS = [
+  { value: "", label: "Qualquer período" },
+  { value: "24h", label: "Últimas 24 h" },
+  { value: "7d", label: "Últimos 7 dias" },
+  { value: "30d", label: "Últimos 30 dias" },
+] as const;

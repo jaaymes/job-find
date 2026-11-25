@@ -1,9 +1,9 @@
 "use client";
 
-import type { ChanceBand, PageFilters } from "@/lib/client/jobs/use-jobs";
+import type { ChanceBand, JobsFilters, PageFilters } from "@/lib/client/jobs/use-jobs";
 import type { Seniority, SourceId } from "@/lib/shared/types/job";
 import { cn } from "@/lib/utils";
-import { FILTERABLE_SOURCES, LANGUAGE_LABELS, SENIORITY_LABELS, SOURCE_LABELS } from "./format";
+import { FILTERABLE_SOURCES, LANGUAGE_LABELS, SENIORITY_LABELS, SINCE_OPTIONS, SOURCE_LABELS } from "./format";
 
 type Props = {
   filters: PageFilters;
@@ -11,9 +11,13 @@ type Props = {
   /** Sem perfil salvo não há score, e o grupo Chance vira uma linha de convite. */
   hasProfile: boolean;
   onClear: () => void;
-  /** Painel recolhido no celular; no desktop é sempre visível. */
-  open: boolean;
   id: string;
+  /**
+   * Só no modo sheet (abaixo de `lg`): o período sai da barra de busca e entra aqui. Com `onPeriodChange` o painel
+   * vira conteúdo do sheet, sem moldura nem título (o sheet tem os dele e o rodapé com "Limpar").
+   */
+  period?: string;
+  onPeriodChange?: (since: JobsFilters["since"]) => void;
   /** Busca padrão (RF-22): salva os filtros atuais e os aplica ao abrir a home sem filtros. */
   savedSearch: { active: boolean; canSave: boolean; error: string | null; onSave: () => void; onClear: () => void };
 };
@@ -24,7 +28,7 @@ const ORIGINS = [
   { value: "international", label: "Internacional" },
 ] as const;
 
-const FIELD = "rounded-lg border border-jf-line-strong bg-jf-surface p-2.5 text-[15px] font-normal outline-none focus-visible:ring-2 focus-visible:ring-jf-brand";
+const FIELD = "min-h-11 rounded-lg border border-jf-field-border bg-jf-surface p-2.5 text-base font-normal lg:text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-jf-brand";
 const LEGEND = "mb-2 text-[13px] font-semibold text-jf-ink-2";
 const OPTION = "flex min-h-11 items-center gap-2";
 const CONTROL = "size-4 accent-jf-brand";
@@ -36,29 +40,34 @@ const CHANCES: { value: ChanceBand | undefined; label: string }[] = [
   { value: "baixa", label: "Baixa" },
 ];
 
-export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile, savedSearch }: Props) {
+export function FiltersPanel({ filters, onChange, onClear, id, hasProfile, savedSearch, period, onPeriodChange }: Props) {
   const seniority = filters.seniority ?? [];
   const chance = hasProfile ? filters.chance?.[0] : undefined;
 
+  const sheet = onPeriodChange !== undefined;
+  const Root = sheet ? "div" : "aside";
+
   return (
-    <aside
+    <Root
       id={id}
       aria-label="Filtros"
       className={cn(
-        "flex-col gap-5 rounded-2xl border border-jf-line bg-jf-surface p-5 lg:max-w-[300px] lg:flex-[1_1_260px]",
-        open ? "flex" : "hidden lg:flex",
+        "flex flex-col gap-5",
+        !sheet && "rounded-2xl border border-jf-line bg-jf-surface p-5 lg:max-w-[300px] lg:flex-[1_1_260px]",
       )}
     >
-      <div className="flex items-center justify-between">
-        <h2 className="text-base font-semibold">Filtros</h2>
-        <button
-          type="button"
-          onClick={onClear}
-          className="inline-flex min-h-11 items-center text-sm text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
-        >
-          Limpar
-        </button>
-      </div>
+      {!sheet && (
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold">Filtros</h2>
+          <button
+            type="button"
+            onClick={onClear}
+            className="inline-flex min-h-11 items-center text-sm text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
+          >
+            Limpar
+          </button>
+        </div>
+      )}
 
       <fieldset className="flex flex-col">
         <legend className={LEGEND}>Origem</legend>
@@ -125,6 +134,23 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile,
           </label>
         ))}
       </fieldset>
+
+      {sheet && (
+        <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-jf-ink-2">
+          Publicadas
+          <select
+            className={FIELD}
+            value={period ?? ""}
+            onChange={(e) => onPeriodChange((e.target.value || undefined) as JobsFilters["since"])}
+          >
+            {SINCE_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <label className="flex flex-col gap-1.5 text-[13px] font-semibold text-jf-ink-2">
         Idioma da vaga
@@ -197,6 +223,6 @@ export function FiltersPanel({ filters, onChange, onClear, open, id, hasProfile,
           </p>
         )}
       </div>
-    </aside>
+    </Root>
   );
 }

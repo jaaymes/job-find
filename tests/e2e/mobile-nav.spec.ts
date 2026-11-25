@@ -67,3 +67,20 @@ test("primeiro card visível sem rolar (RF-01)", async ({ page }) => {
   expect(box).not.toBeNull();
   expect(box!.y + 120).toBeLessThan(844);
 });
+
+test("filtros em sheet: aplica origem, mostra Ver N vagas sem a barra de abas por cima e fecha", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("article").first()).toBeVisible();
+  await page.getByRole("button", { name: "Filtros", exact: true }).click();
+  const dialog = page.getByRole("dialog", { name: "Filtros" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole("radio", { name: "Nacional", exact: true }).check();
+  await expect(page).toHaveURL(/origin=national/);
+  const apply = dialog.getByRole("button", { name: /^Ver \d+ vagas?$/ });
+  await expect(apply).toBeVisible();
+  // O botão recebe o clique (nada, como a barra de abas, fica por cima dele).
+  await apply.click();
+  await expect(dialog).toBeHidden();
+  await expect(page.getByRole("button", { name: "Filtros (1)" })).toBeVisible();
+  await expect(page.getByRole("list", { name: "Filtros ativos" })).toContainText("Nacional");
+});

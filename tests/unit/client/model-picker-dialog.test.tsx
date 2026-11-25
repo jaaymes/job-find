@@ -134,6 +134,21 @@ describe("ModelPickerDialog", () => {
     expect(screen.getByRole("button", { name: "Só gratuitos" }).getAttribute("aria-pressed")).toBe("true");
   });
 
+  it("'Só gratuitos' com o cache frio mantém o modelo salvo ':free' e o roteador grátis do OpenRouter", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ data: [] }), { status: 200 })),
+    );
+    setup(openRouterSettings("acme/livre:free"), { cache: false });
+    expect(screen.getByRole("button", { name: "Só gratuitos" }).getAttribute("aria-pressed")).toBe("true");
+    await waitFor(() => expect(screen.queryByText(/Carregando modelos/)).toBeNull());
+    const rows = modelRows().map((o) => o.textContent ?? "");
+    expect(rows.some((t) => t.includes("acme/livre:free") && t.includes("Atual"))).toBe(true);
+    expect(rows.some((t) => t.includes("openrouter/free"))).toBe(true);
+    expect(rows.some((t) => t.includes("deepseek"))).toBe(false);
+    expect(screen.queryByText("Nenhum modelo encontrado")).toBeNull();
+  });
+
   it("modelo salvo que a API não devolve aparece com o selo 'Atual' e sem preço", () => {
     setup(openRouterSettings("meu/modelo-antigo"));
     const row = modelRows().find((o) => o.textContent?.includes("meu/modelo-antigo"));

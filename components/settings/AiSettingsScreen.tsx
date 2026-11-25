@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FREE_MODELS_NOTE, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
 import { startOAuth, type OAuthIntent } from "@/lib/client/ai/oauth";
 import { isConnected } from "@/lib/client/ai/model";
@@ -39,6 +39,14 @@ export function AiSettingsScreen() {
   const [keyTarget, setKeyTarget] = useState<KeyTarget | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [oauthError, setOAuthError] = useState<OAuthError | null>(null);
+  // Remover desmonta a linha (e o botão focado) e pode reordenar as seções: o foco vai para o título "Provedores".
+  const providersHeadingRef = useRef<HTMLHeadingElement>(null);
+  const focusProvidersHeading = useRef(false);
+  useEffect(() => {
+    if (!focusProvidersHeading.current) return;
+    focusProvidersHeading.current = false;
+    providersHeadingRef.current?.focus();
+  });
 
   if (!settings) {
     return <div aria-busy="true" aria-label="Carregando configurações" className="h-96 animate-pulse rounded-2xl bg-jf-chip" />;
@@ -75,7 +83,7 @@ export function AiSettingsScreen() {
   }
 
   function remove(id: ProviderId) {
-    update((s) => {
+    focusProvidersHeading.current = update((s) => {
       const rest = { ...s.providers };
       delete rest[id];
       const tasks = { ...s.tasks };
@@ -144,7 +152,7 @@ export function AiSettingsScreen() {
   const providers = (
     <section key="prov" aria-labelledby="prov-t" className="flex flex-col gap-4">
       <div>
-        <h2 id="prov-t" className="text-xl font-semibold">
+        <h2 id="prov-t" ref={providersHeadingRef} tabIndex={-1} className="text-xl font-semibold outline-none">
           Provedores
         </h2>
         {!hasConnected && (
@@ -160,6 +168,7 @@ export function AiSettingsScreen() {
             Conectados
           </p>
           <ul
+            role="list"
             aria-label="Provedores conectados"
             className="divide-y divide-jf-line rounded-[14px] border border-jf-line bg-jf-surface"
           >
@@ -176,7 +185,7 @@ export function AiSettingsScreen() {
               Conectar outro provedor
             </p>
           )}
-          <ul aria-label="Provedores para conectar" className={GRID}>
+          <ul role="list" aria-label="Provedores para conectar" className={GRID}>
             {mustOpen.map((id) => (
               <li key={id} className="flex flex-col [&>article]:flex-1">
                 {card(id)}
@@ -190,7 +199,7 @@ export function AiSettingsScreen() {
           <summary className="flex min-h-11 cursor-pointer items-center font-semibold">
             Mais provedores ({shouldOpen.length})
           </summary>
-          <ul aria-label="Mais provedores para conectar" className={`mt-3 ${GRID}`}>
+          <ul role="list" aria-label="Mais provedores para conectar" className={`mt-3 ${GRID}`}>
             {shouldOpen.map((id) => (
               <li key={id} className="flex flex-col [&>article]:flex-1">
                 {card(id)}
@@ -233,7 +242,10 @@ export function AiSettingsScreen() {
           Use a IA que preferir com a sua própria chave. As chaves ficam só neste navegador, e as chamadas vão direto do
           seu navegador para o provedor, sem passar pelos nossos servidores.
         </p>
-        <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-jf-chip px-3 py-1 text-sm font-semibold text-jf-ink-2">
+        <p
+          role="status"
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-jf-chip px-3 py-1 text-sm font-semibold text-jf-ink-2"
+        >
           <span
             aria-hidden="true"
             className={`size-2 shrink-0 rounded-full ${hasConnected ? "bg-jf-alta" : "bg-jf-ink-3"}`}

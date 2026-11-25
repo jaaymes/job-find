@@ -31,6 +31,14 @@ type Props = {
 const AUTO = "__auto" as const;
 type PickerItem = ModelOption | typeof AUTO;
 
+/**
+ * Grátis pelo preço ou, com o cache frio (sem preço ainda), pelo id: `:free` e o roteador grátis do OpenRouter. Cobre
+ * também o modelo salvo grátis, que entra na lista sem preço antes de o `/models` responder.
+ */
+function isFreeOption(task: AiTask, o: ModelOption): boolean {
+  return operationCost(task, o) === 0 || (o.provider === "openrouter" && isFreeModel(o.id));
+}
+
 const itemKey = (item: PickerItem) => (item === AUTO ? AUTO : optionKey(item));
 const itemLabel = (item: PickerItem) => (item === AUTO ? "Automático" : item.label);
 const sameItem = (a: PickerItem, b: PickerItem) => itemKey(a) === itemKey(b);
@@ -118,7 +126,7 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
       sorted.filter(
         (o) =>
           (providerFilter === null || o.provider === providerFilter) &&
-          (!freeOnly || operationCost(task, o) === 0) &&
+          (!freeOnly || isFreeOption(task, o)) &&
           matchesModel(o, deferredQuery, PROVIDERS[o.provider].label),
       ),
     [sorted, providerFilter, freeOnly, task, deferredQuery],
@@ -229,7 +237,7 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
 function ModelRow({ task, item, current }: { task: AiTask; item: ModelOption; current: boolean }) {
   const price = priceLabel(task, item);
   const recommended = item.id === PROVIDERS[item.provider].defaultModels[task];
-  const free = operationCost(task, item) === 0;
+  const free = isFreeOption(task, item);
   return (
     <ComboboxPrimitive.Item value={item} className={ROW}>
       <span className="min-w-0 flex-1">

@@ -86,6 +86,9 @@ const stored = (page: Page): Promise<Stored | null> =>
   }, STORE_KEY);
 
 const card = (page: Page, name: string) => page.getByRole("article", { name, exact: true });
+/** Linha compacta do provedor na lista "Provedores conectados" (só existe depois de conectar). */
+const connectedRow = (page: Page, name: string) =>
+  page.getByRole("list", { name: "Provedores conectados" }).getByRole("article", { name, exact: true });
 
 const pendingOAuth = (page: Page): Promise<string | null> =>
   page.evaluate(() => window.sessionStorage.getItem("jobfind:oauth:pending"));
@@ -136,9 +139,12 @@ test.describe("Configurações de IA", () => {
     await dialog.getByRole("button", { name: "Testar e salvar" }).click();
     await expect(dialog).toBeHidden();
 
+    // Conectado: sai da grade e vira uma linha da lista "Provedores conectados".
     // A chave completa nunca aparece na tela; só os 4 últimos caracteres.
-    await expect(openai.getByText("Conectado", { exact: true })).toBeVisible();
-    await expect(openai.getByText("1234")).toBeVisible();
+    await expect(connectedRow(page, "OpenAI")).toBeVisible();
+    await expect(openai.getByText("Chave colada", { exact: true })).toBeVisible();
+    await expect(openai.getByText("· termina em 1234")).toBeVisible();
+    await expect(page.getByRole("status").filter({ hasText: "1 provedor conectado" })).toBeVisible();
     await expect(page.getByText(OPENAI_KEY)).toHaveCount(0);
     expect((await stored(page))?.providers.openai?.key).toBe(OPENAI_KEY);
 
@@ -160,10 +166,10 @@ test.describe("Configurações de IA", () => {
     // Retorno do provedor na mesma aba (o pending está no sessionStorage); o state volta na query.
     await page.goto(`/configuracoes/callback?code=x&state=${encodeURIComponent(state)}`);
     await page.waitForURL("**/configuracoes");
-    const openrouter = card(page, "OpenRouter");
-    await expect(openrouter.getByText("Conectado", { exact: true })).toBeVisible();
-    await expect(openrouter.getByText("9999")).toBeVisible();
-    await expect(openrouter.getByText(/Conectado pelo login do OpenRouter em/)).toBeVisible();
+    const openrouter = connectedRow(page, "OpenRouter");
+    await expect(openrouter).toBeVisible();
+    await expect(openrouter.getByText("· termina em 9999")).toBeVisible();
+    await expect(openrouter.getByText("Conectado com OAuth", { exact: true })).toBeVisible();
     expect((await stored(page))?.providers.openrouter?.source).toBe("oauth");
     expect((await stored(page))?.providers.openrouter?.freeConsent).toBe(true);
   });
@@ -199,7 +205,7 @@ test.describe("Configurações de IA", () => {
     const state = await startOpenRouterLogin(page);
     await page.goto(`/configuracoes/callback?state=${encodeURIComponent(state)}?code=x`);
     await page.waitForURL("**/configuracoes");
-    await expect(card(page, "OpenRouter").getByText("9999")).toBeVisible();
+    await expect(connectedRow(page, "OpenRouter").getByText("· termina em 9999")).toBeVisible();
     expect((await stored(page))?.providers.openrouter?.source).toBe("oauth");
   });
 
@@ -241,48 +247,108 @@ test.describe("Configurações de IA", () => {
     // Registro legado (`source: "pkce"`): continua lido como login do OpenRouter.
     await seed(page, { providers: { openrouter: { ...openrouterProvider, source: "pkce" } } });
     await page.goto("/configuracoes");
-    const openrouter = card(page, "OpenRouter");
-    await expect(openrouter.getByText(/Conectado pelo login do OpenRouter em/)).toBeVisible();
+    const openrouter = connectedRow(page, "OpenRouter");
+    await expect(openrouter.getByText("Conectado com OAuth", { exact: true })).toBeVisible();
     await openrouter.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" }).click();
     await page.getByRole("dialog", { name: /Aviso dos modelos gratuitos/ }).getByRole("button", { name: "Entendi e aceito" }).click();
     await expect.poll(async () => (await stored(page))?.providers.openrouter?.freeConsent).toBe(true);
     await expect(openrouter.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" })).toBeHidden();
   });
 
-  test("modelo por tarefa: provedor e modelo de Gerar CV e carta persistem após recarregar", async ({ page }) => {
+  test("modelo por tarefa: o modelo escolhido no modal para Gerar CV e carta persiste após recarregar", async ({ page }) => {
     await seed(page, { providers: { openai: openaiProvider, openrouter: openrouterProvider } });
     await page.goto("/configuracoes");
     const row = page.getByRole("group", { name: "Gerar CV e carta" });
-    await row.getByLabel("Provedor").selectOption("openrouter");
-    const model = row.getByRole("combobox", { name: "Modelo" });
-    // Campo pesquisável: digitar filtra a lista (popup em portal, fora do grupo).
-    await model.fill("v4.1");
-    await expect(page.getByRole("listbox").getByRole("option")).toHaveCount(1);
-    await page.getByRole("option", { name: /DeepSeek V4\.1 Flash/ }).click();
-    await expect(model).toHaveValue("DeepSeek V4.1 Flash");
-    // Custo estimado a partir dos preços do listModels.
-    await expect(row.getByText(/≈ US\$ [\d,]+ por CV/)).toBeVisible();
+    await expect(row.getByText("Automático", { exact: true })).toBeVisible();
+    await row.getByRole("button", { name: "Trocar modelo" }).click();
 
+    // O modal fica em portal, fora do grupo.
+    const dialog = page.getByRole("dialog", { name: "Modelo para Gerar CV e carta" });
+    const search = dialog.getByLabel("Buscar modelo");
+    await expect(search).toBeFocused();
+    // Lista dos dois provedores conectados; a busca filtra (o "Automático" do topo continua).
+    await expect(dialog.getByRole("option", { name: /DeepSeek V4\.1 Flash/ })).toBeVisible();
+    await expect(dialog.getByRole("option", { name: /gpt-5-mini/ })).toBeVisible();
+    await search.fill("v4.1");
+    const options = dialog.getByRole("option");
+    await expect(options).toHaveCount(2);
+    await expect(options.first()).toContainText("Automático");
+    await dialog.getByRole("option", { name: /DeepSeek V4\.1 Flash/ }).click();
+    await expect(dialog).toBeHidden();
+
+    // Resumo da linha com o nome do modelo, o provedor e o custo estimado a partir dos preços do listModels.
+    await expect(row.getByText("DeepSeek V4.1 Flash · OpenRouter", { exact: true })).toBeVisible();
+    await expect(row.getByText(/≈ US\$ [\d,]+ por CV/)).toBeVisible();
     await expect.poll(async () => (await stored(page))?.tasks.cv).toEqual({
       provider: "openrouter",
       model: "deepseek/deepseek-v4.1-flash",
     });
+
     await page.reload();
     const again = page.getByRole("group", { name: "Gerar CV e carta" });
-    await expect(again.getByLabel("Provedor")).toHaveValue("openrouter");
-    await expect(again.getByRole("combobox", { name: "Modelo" })).toHaveValue("DeepSeek V4.1 Flash");
+    // Após recarregar, a linha só lê o cache (vazio até abrir o modal): mostra o id salvo, sem custo.
+    await expect(again.getByText("deepseek/deepseek-v4.1-flash · OpenRouter", { exact: true })).toBeVisible();
+    await again.getByRole("button", { name: "Trocar modelo" }).click();
+    const reopened = page.getByRole("dialog", { name: "Modelo para Gerar CV e carta" });
+    await expect(reopened.getByRole("option", { name: /DeepSeek V4\.1 Flash/ })).toContainText("Atual");
+    await reopened.getByRole("button", { name: "Cancelar" }).click();
+    await expect(reopened).toBeHidden();
+    await expect(again.getByText("DeepSeek V4.1 Flash · OpenRouter", { exact: true })).toBeVisible();
     // As outras tarefas continuam no padrão automático.
-    await expect(page.getByRole("group", { name: "Analisar vaga" }).getByLabel("Provedor")).toHaveValue("");
+    await expect(page.getByRole("group", { name: "Analisar vaga" }).getByText("Automático", { exact: true })).toBeVisible();
+    expect((await stored(page))?.tasks.analyze).toBeNull();
   });
 
   test("modelo gratuito (:free) do OpenRouter mostra um aviso", async ({ page }) => {
     await seed(page, { providers: { openrouter: openrouterProvider } });
     await page.goto("/configuracoes");
     const row = page.getByRole("group", { name: "Analisar vaga" });
-    await row.getByLabel("Provedor").selectOption("openrouter");
-    await row.getByRole("button", { name: "Abrir lista de modelos" }).click();
-    await page.getByRole("option", { name: /Modelo grátis/ }).click();
-    await expect(row.getByText(/modelos gratuitos/i)).toBeVisible();
+    await expect(row.getByRole("note")).toHaveCount(0);
+    await row.getByRole("button", { name: "Trocar modelo" }).click();
+    const dialog = page.getByRole("dialog", { name: "Modelo para Analisar vaga" });
+    const free = dialog.getByRole("option", { name: /Modelo grátis/ });
+    await expect(free).toContainText("Grátis");
+    await free.click();
+    await expect(dialog).toBeHidden();
+    await expect(row.getByRole("note")).toContainText(/modelos gratuitos/i);
+    await expect.poll(async () => (await stored(page))?.tasks.analyze).toEqual({
+      provider: "openrouter",
+      model: "acme/modelo-gratis:free",
+    });
+  });
+
+  test("o modal lista do mais barato ao mais caro e o modelo sem preço no fim, sem texto de preço", async ({ page }) => {
+    // Registrada depois do mockProviders: tem precedência sobre a rota genérica do OpenRouter.
+    await page.route("**/api/v1/models?**", (route) =>
+      fulfillJson(route, 200, {
+        data: [
+          { id: "acme/caro", name: "Modelo Caro", pricing: { prompt: "0.00001", completion: "0.00003" } },
+          { id: "acme/misterioso", name: "Modelo Misterioso" },
+          { id: "acme/barato", name: "Modelo Barato", pricing: { prompt: "0.0000001", completion: "0.0000002" } },
+          { id: "openrouter/free", name: "Free Models Router", pricing: { prompt: "0", completion: "0" } },
+          { id: "acme/medio", name: "Modelo Médio", pricing: { prompt: "0.000001", completion: "0.000002" } },
+        ],
+      }),
+    );
+    await seed(page, { providers: { openrouter: openrouterProvider } });
+    await page.goto("/configuracoes");
+    await page.getByRole("group", { name: "Ler currículo" }).getByRole("button", { name: "Trocar modelo" }).click();
+    const dialog = page.getByRole("dialog", { name: "Modelo para Ler currículo" });
+    const options = dialog.getByRole("option");
+    await expect(options).toHaveText([
+      /^Automático/,
+      /Free Models Router/,
+      /Modelo Barato/,
+      /Modelo Médio/,
+      /Modelo Caro/,
+      /Modelo Misterioso/,
+    ]);
+    await expect(options.nth(1)).toContainText("grátis");
+    for (const i of [2, 3, 4]) await expect(options.nth(i)).toContainText(/≈ US\$ [\d,]+ por currículo/);
+    const last = options.nth(5);
+    await expect(last).not.toContainText("US$");
+    await expect(last).not.toContainText(/grátis/i);
+    await expect(last).not.toContainText(/sem preço/i);
   });
 
   test("Gemini abre o aviso de privacidade; confirmar libera o campo da chave e grava o aceite", async ({ page }) => {
@@ -343,9 +409,12 @@ test.describe("Configurações de IA", () => {
     await seed(page, { providers: { openai: openaiProvider } });
     await page.goto("/configuracoes");
     const openai = card(page, "OpenAI");
-    await expect(openai.getByText("Conectado", { exact: true })).toBeVisible();
+    await expect(connectedRow(page, "OpenAI")).toBeVisible();
     await openai.getByRole("button", { name: "Remover chave" }).click();
     await expect(openai.getByText("Não conectado")).toBeVisible();
+    await expect(page.getByRole("list", { name: "Provedores conectados" })).toHaveCount(0);
+    // A linha removida (e o botão focado) some e a seção sobe: o foco vai para o título "Provedores".
+    await expect(page.getByRole("heading", { name: "Provedores", level: 2, exact: true })).toBeFocused();
     const data = await stored(page);
     expect(data?.providers.openai).toBeUndefined();
     expect(JSON.stringify(data)).not.toContain(OPENAI_KEY);

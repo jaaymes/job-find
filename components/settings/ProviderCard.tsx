@@ -118,7 +118,21 @@ export function ProviderCard({
     </p>
   );
 
+  const guideButton = (
+    <Button
+      variant="outline"
+      className="min-h-11 border-jf-line-strong px-3 text-sm"
+      aria-expanded={showGuide}
+      onClick={() => setShowGuide((v) => !v)}
+    >
+      Ver guia
+    </Button>
+  );
+
   if (variant === "compact") {
+    // Na linha compacta o guia só aparece quando o teste falha: é quando ele ajuda (CORS, servidor desligado).
+    // Depois de aberto, fica até ser fechado (não some enquanto um novo teste roda).
+    const showGuideButton = isLocal && (test.state === "error" || showGuide);
     const how = isLocal
       ? `Servidor em ${entry?.baseURL ?? def.baseURL}`
       : entry?.source === "oauth"
@@ -139,7 +153,11 @@ export function ProviderCard({
           </div>
           <div className="flex flex-wrap gap-2">
             {needsReview && (
-              <Button variant="ghost" className="min-h-11 px-3 text-sm text-jf-warn-fg-strong" onClick={onReviewPrivacy}>
+              <Button
+                variant="outline"
+                className="min-h-11 border-jf-line-strong px-3 text-sm text-jf-warn-fg-strong"
+                onClick={onReviewPrivacy}
+              >
                 {reviewLabel}
               </Button>
             )}
@@ -154,10 +172,12 @@ export function ProviderCard({
             <Button variant="ghost" className="min-h-11 px-3 text-sm text-jf-ink-2" onClick={remove}>
               {removeLabel}
             </Button>
+            {showGuideButton && guideButton}
           </div>
         </div>
         {testStatus}
         {oauthAlert}
+        {showGuideButton && showGuide && <LocalAiGuide />}
       </article>
     );
   }
@@ -233,16 +253,7 @@ export function ProviderCard({
             )}
           </>
         )}
-        {isLocal && (
-          <Button
-            variant="outline"
-            className="min-h-11 border-jf-line-strong px-3 text-sm"
-            aria-expanded={showGuide}
-            onClick={() => setShowGuide((v) => !v)}
-          >
-            Ver guia
-          </Button>
-        )}
+        {isLocal && guideButton}
       </div>
       {testStatus}
       {oauthAlert}

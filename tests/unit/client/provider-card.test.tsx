@@ -1,10 +1,13 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ProviderCard } from "@/components/settings/ProviderCard";
 import { PROVIDERS } from "@/lib/client/ai/providers";
 import type { AiSettings } from "@/lib/client/ai/settings";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 type Entry = AiSettings["providers"]["openrouter"];
 
@@ -87,6 +90,36 @@ describe("ProviderCard compact", () => {
     const h = setup("openrouter", { ...OAUTH, freeConsent: undefined }, { variant: "compact" });
     fireEvent.click(screen.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" }));
     expect(h.onReviewPrivacy).toHaveBeenCalledOnce();
+  });
+
+  it("IA local mostra 'Servidor em …' e não mostra 'termina em'", () => {
+    const entry: Entry = { addedAt: "2026-11-20T12:00:00.000Z", source: "paste", baseURL: "http://127.0.0.1:1234/v1" };
+    setup("local", entry, { variant: "compact" });
+    expect(screen.getByText("Servidor em http://127.0.0.1:1234/v1")).toBeTruthy();
+    expect(screen.queryByText(/termina em/)).toBeNull();
+  });
+
+  it("IA local: com o teste de conexão falhando, mostra 'Ver guia' e abre o guia", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        throw new TypeError("Failed to fetch");
+      }),
+    );
+    setup("local", { addedAt: "2026-11-20T12:00:00.000Z", source: "paste" }, { variant: "compact" });
+    expect(screen.queryByRole("button", { name: "Ver guia" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Testar conexão" }));
+    const guide = await screen.findByRole("button", { name: "Ver guia" });
+    expect(guide.getAttribute("aria-expanded")).toBe("false");
+    fireEvent.click(guide);
+    await waitFor(() => expect(guide.getAttribute("aria-expanded")).toBe("true"));
+  });
+
+  it("'Revisar aviso' é um botão com contorno (variant outline)", () => {
+    setup("openrouter", { ...OAUTH, freeConsent: undefined }, { variant: "compact" });
+    const btn = screen.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" });
+    // Classe exclusiva do `variant="outline"` do Button (o ghost não tem fundo nem borda).
+    expect(btn.classList.contains("bg-background")).toBe(true);
   });
 
   it("mostra o erro de OAuth", () => {

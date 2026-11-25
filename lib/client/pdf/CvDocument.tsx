@@ -5,10 +5,13 @@ import type { AssembledCv } from "@/lib/client/cv/assemble";
 import type { CvLang } from "@/lib/client/cv/period";
 import { PDF_FONT } from "./fonts";
 
-export const SECTION_LABELS: Record<CvLang, { summary: string; experience: string; skills: string; education: string }> = {
-  pt: { summary: "Resumo", experience: "Experiência", skills: "Competências", education: "Formação" },
-  en: { summary: "Summary", experience: "Experience", skills: "Skills", education: "Education" },
-  es: { summary: "Resumen", experience: "Experiencia", skills: "Habilidades", education: "Educación" },
+export const SECTION_LABELS: Record<
+  CvLang,
+  { summary: string; experience: string; skills: string; education: string; projects: string; certifications: string; languages: string; highlights: string }
+> = {
+  pt: { summary: "Resumo", experience: "Experiência", skills: "Competências", education: "Formação", projects: "Projetos", certifications: "Certificações", languages: "Idiomas", highlights: "Destaques" },
+  en: { summary: "Summary", experience: "Experience", skills: "Skills", education: "Education", projects: "Projects", certifications: "Certifications", languages: "Languages", highlights: "Key achievements" },
+  es: { summary: "Resumen", experience: "Experiencia", skills: "Habilidades", education: "Educación", projects: "Proyectos", certifications: "Certificaciones", languages: "Idiomas", highlights: "Logros destacados" },
 };
 
 export const styles = StyleSheet.create({

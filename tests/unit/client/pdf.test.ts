@@ -17,7 +17,11 @@ const cvFixture = (over: Partial<AssembledCv> = {}): AssembledCv => ({
   summary: "Oito anos construindo interfaces acessíveis e rápidas.",
   skills: ["React", "TypeScript", "Segredoskill"],
   education: ["Ciência da Computação – USP (2012 – 2016)"],
+  location: "",
+  projects: [],
   certifications: [],
+  languages: [],
+  highlightKeys: [],
   lang: "pt",
   experiences: [
     {
@@ -27,8 +31,8 @@ const cvFixture = (over: Partial<AssembledCv> = {}): AssembledCv => ({
       role: "Frontend Sênior",
       period: "jan 2021 – atual",
       bullets: [
-        { key: "b1", text: "Liderou a migração para Next.js em São Paulo.", flagged: false, violations: [] },
-        { key: "b2", text: FLAGGED, flagged: true, violations: [] },
+        { key: "b1", text: "Liderou a migração para Next.js em São Paulo.", sources: [], flagged: false, violations: [] },
+        { key: "b2", text: FLAGGED, sources: [], flagged: true, violations: [] },
       ],
     },
   ],
@@ -70,7 +74,7 @@ describe("renderCvPdf", () => {
       skills: ["React", "  ", "TypeScript"],
       flags: { headline: OK_FLAG, summary: OK_FLAG, skills: [OK_FLAG, OK_FLAG, OK_FLAG] },
       experiences: [
-        { ...base.experiences[0], bullets: [{ key: "b1", text: "Liderou a migração.", flagged: false, violations: [] }, { key: "b3", text: "   ", flagged: false, violations: [] }] },
+        { ...base.experiences[0], bullets: [{ key: "b1", text: "Liderou a migração.", sources: [], flagged: false, violations: [] }, { key: "b3", text: "   ", sources: [], flagged: false, violations: [] }] },
       ],
     });
     const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
@@ -86,8 +90,8 @@ describe("renderCvPdf", () => {
     const cv = cvFixture({
       experiences: [
         { ...base, bullets: [base.bullets[0]] },
-        { ...base, occurrence: 1, bullets: [{ key: "r1", text: "Bullet da repetição", flagged: false, violations: [] }] },
-        { ...base, expId: "exp_2", company: "Outra Repetida", bullets: [{ key: "x1", text: "Bullet inválido", flagged: false, violations: [expViolation] }] },
+        { ...base, occurrence: 1, bullets: [{ key: "r1", text: "Bullet da repetição", sources: [], flagged: false, violations: [] }] },
+        { ...base, expId: "exp_2", company: "Outra Repetida", bullets: [{ key: "x1", text: "Bullet inválido", sources: [], flagged: false, violations: [expViolation] }] },
       ],
     });
     const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
@@ -107,7 +111,7 @@ describe("renderCvPdf", () => {
   });
 
   it("conta as páginas quando o CV é longo", async () => {
-    const bullets = Array.from({ length: 60 }, (_, i) => ({ key: `b${i}`, text: `Entrega número ${i} com impacto mensurável no produto.`, flagged: false, violations: [] }));
+    const bullets = Array.from({ length: 60 }, (_, i) => ({ key: `b${i}`, text: `Entrega número ${i} com impacto mensurável no produto.`, sources: [] as string[], flagged: false, violations: [] }));
     const base = cvFixture();
     const cv = cvFixture({ experiences: [{ ...base.experiences[0], bullets }] });
     expect((await renderCvPdf(cv, FONTS)).pages).toBeGreaterThanOrEqual(2);

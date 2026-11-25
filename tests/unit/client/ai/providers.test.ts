@@ -1,9 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AI_CSP_HOSTS } from "@/lib/shared/ai-hosts";
-import { isFreeModel, PROVIDERS, PROVIDER_IDS } from "@/lib/client/ai/providers";
+import { isFreeModel, isTextModelId, PROVIDERS, PROVIDER_IDS } from "@/lib/client/ai/providers";
 import { AiSettings, defaultAiSettings } from "@/lib/client/ai/settings";
 
 afterEach(() => vi.unstubAllGlobals());
+
+const OPENROUTER_TEXT_URL =
+  "https://openrouter.ai/api/v1/models?output_modalities=text&endpoints=/api/v1/chat/completions";
 
 const withLocal = (baseURL: string) => ({
   ...defaultAiSettings(),
@@ -109,9 +112,56 @@ describe("listModels (fetch mockado)", () => {
       { id: "deepseek/deepseek-v4.1-flash", label: "DeepSeek V4.1 Flash", priceIn: 0.2, priceOut: 0.8 },
     ]);
     const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("https://openrouter.ai/api/v1/models");
+    expect(url).toBe(OPENROUTER_TEXT_URL);
     expect(url).not.toContain("sk-or-x");
     expect((init.headers as Record<string, string>).Authorization).toBe("Bearer sk-or-x");
+  });
+
+  it("OpenRouter pede só modelos de texto servidos por chat/completions", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ data: [] }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    await PROVIDERS.openrouter.listModels({ apiKey: "k" });
+    expect(String((fetchMock.mock.calls[0] as unknown as [string])[0])).toBe(OPENROUTER_TEXT_URL);
+  });
+
+  it("OpenRouter: resposta vazia com os filtros cai para a lista sem filtros, sem as variantes :batch", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ data: [] }), { status: 200 }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ data: [{ id: "a/x" }, { id: "a/x:batch" }] }), { status: 200 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    const models = await PROVIDERS.openrouter.listModels({ apiKey: "k" });
+    expect(models.map((m) => m.id)).toEqual(["a/x"]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[1][0])).toBe("https://openrouter.ai/api/v1/models");
+  });
+
+  it("OpenRouter: se a lista sem filtros também vier vazia, devolve []", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ data: [] }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    expect(await PROVIDERS.openrouter.listModels({ apiKey: "k" })).toEqual([]);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    "text-embedding-3-small", "whisper-1", "tts-1-hd", "gpt-4o-transcribe", "dall-e-3", "gpt-image-1",
+    "omni-moderation-latest", "gpt-4o-audio-preview", "gpt-4o-realtime-preview", "llama-guard-4", "rerank-v3",
+  ])("isTextModelId(%s) é false", (id) => expect(isTextModelId(id)).toBe(false));
+
+  it.each(["gpt-5-mini", "llama-3.3-70b-versatile", "mistral-large-latest", "grok-4", "deepseek-chat"])(
+    "isTextModelId(%s) é true",
+    (id) => expect(isTextModelId(id)).toBe(true),
+  );
+
+  it("listOpenAIStyle descarta modelos que não são de chat", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ data: [{ id: "gpt-5-mini" }, { id: "whisper-1" }] }), { status: 200 })),
+    );
+    const models = await PROVIDERS.openai.listModels({ apiKey: "k" });
+    expect(models.map((m) => m.id)).toEqual(["gpt-5-mini"]);
   });
 
   it("Google lista modelos sem a chave na URL", async () => {

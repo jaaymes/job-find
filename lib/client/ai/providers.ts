@@ -203,32 +203,49 @@ async function listVercelGateway(cfg: ProviderCfg): Promise<ModelInfo[]> {
   });
 }
 
+const NON_CHAT_MODEL = /(embed|whisper|tts|transcribe|dall-e|gpt-image|moderation|rerank|-audio|realtime|guard)/i;
+
+/** Modelo de texto/chat: descarta embeddings, voz, imagem, moderação, rerank e afins. */
+export function isTextModelId(id: string): boolean {
+  return !NON_CHAT_MODEL.test(id);
+}
+
 function listOpenAIStyle(baseURL: string) {
   return async (cfg: ProviderCfg): Promise<ModelInfo[]> => {
     const body = OpenAIList.safeParse(await getJson(`${cfg.baseURL ?? baseURL}/models`, bearer(cfg)));
     if (!body.success) return [];
     return body.data.data.flatMap((e) => {
       const m = Entry.safeParse(e);
-      return m.success ? [{ id: m.data.id, label: m.data.id }] : [];
+      return m.success && isTextModelId(m.data.id) ? [{ id: m.data.id, label: m.data.id }] : [];
     });
   };
 }
 
 async function listOpenRouter(cfg: ProviderCfg): Promise<ModelInfo[]> {
-  const body = OpenAIList.safeParse(await getJson(`${PROVIDERS_BASE.openrouter}/models`, bearer(cfg)));
-  if (!body.success) return [];
-  return body.data.data.flatMap((e) => {
-    const m = OpenRouterEntry.safeParse(e);
-    if (!m.success) return [];
-    return [
-      {
-        id: m.data.id,
-        label: m.data.name ?? m.data.id,
-        priceIn: perMillion(m.data.pricing?.prompt),
-        priceOut: perMillion(m.data.pricing?.completion),
-      },
-    ];
-  });
+  const parse = (json: unknown, dropBatch: boolean): ModelInfo[] => {
+    const body = OpenAIList.safeParse(json);
+    if (!body.success) return [];
+    return body.data.data.flatMap((e) => {
+      const m = OpenRouterEntry.safeParse(e);
+      if (!m.success || (dropBatch && m.data.id.endsWith(":batch"))) return [];
+      return [
+        {
+          id: m.data.id,
+          label: m.data.name ?? m.data.id,
+          priceIn: perMillion(m.data.pricing?.prompt),
+          priceOut: perMillion(m.data.pricing?.completion),
+        },
+      ];
+    });
+  };
+  const url = `${PROVIDERS_BASE.openrouter}/models`;
+  const filtered = parse(
+    await getJson(`${url}?output_modalities=text&endpoints=/api/v1/chat/completions`, bearer(cfg)),
+    false,
+  );
+  if (filtered.length > 0) return filtered;
+  // Os filtros podem não ser aceitos: uma única repetição sem query, sem as variantes :batch.
+  return parse(await getJson(url, bearer(cfg)), true);
 }
 
 async function listAnthropic(cfg: ProviderCfg): Promise<ModelInfo[]> {

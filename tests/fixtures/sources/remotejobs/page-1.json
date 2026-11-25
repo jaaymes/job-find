@@ -1,0 +1,361 @@
+{
+ "data": [
+  {
+   "id": "3d6ec43c-236d-47dd-b4c0-e642e5f5d22e",
+   "title": "Business Operations Manager, Governance",
+   "url": "https://remotejobs.org/remote-jobs/business-operations-manager-governance-quartile",
+   "apply_url": "https://remotejobs.org/remote-jobs/business-operations-manager-governance-quartile",
+   "company": {
+    "name": "Quartile",
+    "logo_url": "https://assets.remotejobs.org/company-logos/scraped/c4fd710278093bb89c118ec5affbe64e9aded7a4e87e5037db29be64a8ce2a43.jpeg",
+    "website": "https://quartile.com",
+    "url": "https://remotejobs.org/companies/quartile"
+   },
+   "category": {
+    "name": "General",
+    "slug": "general"
+   },
+   "location": "Brazil",
+   "location_normalization": {
+    "raw": "Brazil",
+    "input": {},
+    "scope": "restricted",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [
+     "BR"
+    ],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "known",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": "manager",
+    "role_family": null,
+    "required_skills": [
+     "sql"
+    ],
+    "mentioned_skills": [],
+    "preferred_skills": [],
+    "experience_requirements": []
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": "year",
+   "type": "Contract",
+   "employment_types": [
+    "CONTRACTOR"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p><strong><strong>WHO WE ARE:</strong></strong></p>\n<p>Quartile, the world's largest retail media optimization platform, is a trusted partner for multichannel e-commerce success. Through unmatched expertise and patented AI technology, we fuel growth for 5,300+ brands and sellers worldwide and manage an annual ad spend exceeding $2 billion. The award-winning platform covers major marketplaces and ad channels for optimal reach. The result is unprecedented granularity, smarter budgeting, and bespoke solutions for retailers.</p>\n<p>Quartile is proud to be an equal opportunity employer with employees stemming from a wide range of backgrounds and experiences. As a business, we value the enrichment that diversity brings to our organization and are committed to a culture that creates a sense of inclusion and belonging. We welcome new perspectives and affirm that all employment decisions are made without regard to race, color, ancestry, religion, national origin, age, familial or marital status, sex, sexual orientation, pregnancy, gender identity or expression, disability, genetic information, veteran status, or any other classification protected by federal, state, or local law.</p>\n<p><strong><strong>OVERVIEW:</strong></strong><br>\nWe're looking for an Operations Manager, Governance, to keep the data, processes, and approvals of Customer Strategy under control. You coordinate the migration of Salesforce tools to a new platform for BizOps and CS, and you coordinate the Quartile HUB with the dashboard and internal control needs of all teams. You are also the bridge between the Tech team, Sciene, and Operations.</p>\n<p>This role is for someone who brings structure to a fast-moving organization. You keep things documented, owned, and on schedule, and you make sure decisions are traceable.</p>\n<p><strong><strong>REQUIREMENTS:</strong></strong></p>\n<ul>\n<li>2+ years in a business operations, project management, or data governance role</li>\n<li>Experience leading a system or tool migration, from requirements through cutover and adoption</li>\n<li>Strong project management: running cadences, tracking status, and managing priorities across multi-stakeholder programs</li>\n<li>Process and control mindset: documented approvals, audit trails, and clear ownership</li>\n<li>Strong communicator who translates between technical and business audiences</li>\n<li>Strong stakeholder discovery skills, with the ability to independently conduct interviews, surveys, and feedback sessions to identify operational pain points and improvement opportunities.</li>\n<li>Analytical and problem-solving mindset: able to translate qualitative and quantitative feedback into hypotheses, actionable improvement plans, and implementation roadmaps.</li>\n<li>Comfortable with data: reads dashboards and SQL outputs, and checks numbers before they are used</li>\n<li>Stakeholder management with Directors, managers, and CSMs; holds priority under pressure</li>\n<li>Fluent in Portuguese and English, both written and spoken</li>\n</ul>\n<p><strong><strong>WHAT YOU’LL DO:</strong></strong></p>\n<p><strong><strong>Salesforce Tools Migration</strong></strong></p>\n<ul>\n<li>Coordinate the migration of Salesforce tools to a new platform for BizOps and CS: scope, sequencing, data mapping, testing, and cutover</li>\n<li>Ensure business processes and approvals are preserved or improved during the migration, and that teams are trained and adopting the new platform</li>\n</ul>\n<p><strong><strong>Quartile HUB &#x26; Internal Controls</strong></strong></p>\n<ul>\n<li>Coordinate the Quartile HUB with the dashboard and internal control needs of all teams, and prioritize requests against a single backlog</li>\n<li>Define and maintain internal controls for dashboards and data, including ownership, access, and change management</li>\n</ul>\n<p><strong><strong>Database &#x26; Information Control</strong></strong></p>\n<ul>\n<li>Own the CS database and the CS and channel solution information in the system: accuracy, completeness, and definitions</li>\n<li>Set and enforce data entry standards with CS and channel teams</li>\n</ul>\n<p><strong><strong>Project Cadence &#x26; Portfolio Management</strong></strong></p>\n<ul>\n<li>Run the cadence across all CS and BizOps projects: intake, prioritization, status, and sponsor alignment</li>\n<li>Maintain a single source of truth for the project portfolio, kept live and visible to leadership</li>\n</ul>\n<p><strong><strong>Bridge Between Tech, Sciene &#x26; Operations</strong></strong></p>\n<ul>\n<li>Translate operational needs into clear requirements for the Tech team and Sciene</li>\n<li>Align data definitions across teams before anything is built</li>\n<li>Coordinate the execution of AI projects from scoping through rollout, removing blockers as they come up</li>\n</ul>\n<p><strong><strong>CS Team Discounts &#x26; Approvals</strong></strong></p>\n<ul>\n<li>Own the approval process for CS team discounts: request, review, approval, and record</li>\n<li>Maintain the approval policy and audit trail, and flag exceptions and pattern risks to leadership</li>\n<li>Keep decisions separate from data preparation: the Technical Operations Manager supplies the data, and this role makes and records the approval decisions</li>\n</ul>\n<p><strong><strong>Continuous Improvement &#x26; Stakeholder Discovery</strong></strong></p>\n<ul>\n<li>Proactively conduct stakeholder interviews, surveys, and feedback sessions across CS, BizOps, and other teams to identify gaps, challenges, and opportunities for improvement.</li>\n<li>Analyze feedback and operational data to develop hypotheses, validate root causes, and propose practical solutions.</li>\n<li>Translate findings into structured action plans, defining priorities, owners, timelines, and success metrics.</li>\n<li>Coordinate the implementation of improvements across the Quartile HUB, dashboards, reports, and operational processes, partnering with Tech, Sciene, and business stakeholders.</li>\n<li>Establish feedback loops to measure adoption, assess the impact of implemented changes, and drive continuous optimization.</li>\n</ul>\n<p><strong><strong>PREFERRED QUALIFICATIONS:</strong></strong></p>\n<ul>\n<li>Experience in CS, RevOps, BizOps, or ad-tech / SaaS environments</li>\n<li>Experience coordinating AI or technology projects</li>\n<li>Experience with discount, pricing, or approval governance</li>\n<li>Familiarity with Salesforce and BI tools</li>\n<li>Comfort with AI tools (e.g. Claude) and willingness to use them in daily work</li>\n</ul>\n<p><strong><strong>WHO YOU ARE:</strong></strong></p>\n<ul>\n<li>Ownership: you keep items moving from intake to closure</li>\n<li>Structured: you document decisions and keep them traceable</li>\n<li>Diplomatic: you align people without losing the thread</li>\n<li>Detail-oriented: you notice the gap in a process before it becomes a problem</li>\n</ul>\n<h2>This is a PJ contract based in Brazil.</h2>\n<p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/business-operations-manager-governance-quartile</p>",
+   "posted_at": "2026-11-24T12:38:16+00:00",
+   "is_translated": false,
+   "original_language": null
+  },
+  {
+   "id": "d343b253-a539-49ae-b89d-02a42d185dee",
+   "title": "Analista de Qualidade (QA) - Sênior",
+   "url": "https://remotejobs.org/remote-jobs/analista-de-qualidade-qa-snior-fcamara",
+   "apply_url": "https://remotejobs.org/remote-jobs/analista-de-qualidade-qa-snior-fcamara",
+   "company": {
+    "name": "Johnson &amp; Johnson",
+    "logo_url": null,
+    "website": "https://fcamara.com",
+    "url": "https://remotejobs.org/companies/fcamara"
+   },
+   "category": {
+    "name": "Quality Assurance",
+    "slug": "quality-assurance"
+   },
+   "location": "Brazil",
+   "location_normalization": {
+    "raw": "Brazil",
+    "input": {},
+    "scope": "restricted",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [
+     "BR"
+    ],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "known",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": null,
+    "required_skills": [],
+    "mentioned_skills": [
+     "java",
+     "javascript",
+     "python",
+     "sql",
+     "typescript"
+    ],
+    "preferred_skills": [],
+    "experience_requirements": []
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": "year",
+   "type": "Contract",
+   "employment_types": [
+    "CONTRACTOR"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p>Estamos em busca de um Analista de Qualidade (QA)<strong>Sênior</strong>para compor um time altamente técnico, com foco em desenvolvimento. Você atuará em projetos estratégicos.</p>\n<p>Sua missão é garantir que cada entrega chegue à produção com qualidade e previsibilidade. Isso significa estruturar e evoluir a automação de testes, reduzir regressões e ser referência técnica de qualidade para o time.</p>\n<ul>\n<li>Desenhar, implementar e manter suítes de testes automatizados de UI, API e regressão.</li>\n<li>Definir a estratégia de testes da squad, equilibrando a pirâmide de testes (unit, integration, E2E).</li>\n<li>Integrar os testes ao pipeline de CI/CD, com execução automática a cada Pull Request e deploy.</li>\n<li>Analisar requisitos e histórias com PO e devs, definindo critérios de aceite testáveis (BDD/Gherkin quando fizer sentido).</li>\n<li>Validar correções e melhorias em ambiente de sustentação, com foco em evitar regressões em produção.</li>\n<li>Investigar incidentes junto ao time, reproduzir bugs e documentá-los com evidências claras.</li>\n<li>Acompanhar indicadores de qualidade (cobertura automatizada, taxa de defeitos escapados, flaky tests, tempo de execução).</li>\n<li>Atuar como referência técnica: revisar código de testes, orientar QAs menos experientes e disseminar boas práticas.</li>\n</ul>\n<ul>\n<li>\n<h2>Requisitos Obrigatórios</h2>\n</li>\n<li>Experiência sólida em Quality Assurance, com atuação comprovada em nível sênior.</li>\n<li>Vivência prática em automação de testes Web com pelo menos um framework de mercado: Cypress, Playwright ou Selenium WebDriver.</li>\n<li>Automação de testes de API REST (Postman/Newman, REST Assured, Karate ou similar).</li>\n<li>Programação para automação em JavaScript/TypeScript, Java ou Python.</li>\n<li>Integração de testes em pipelines de CI/CD (GitHub Actions, Azure DevOps, GitLab CI ou Jenkins).</li>\n<li>Domínio de Git e fluxo de trabalho com Pull Requests.</li>\n<li>Conhecimento de técnicas de teste (particionamento, valor-limite, testes exploratórios, regressão) e da pirâmide de testes.</li>\n<li>Experiência em times ágeis (Scrum ou Kanban).</li>\n<li>SQL para validação e preparação de massa de dados.</li>\n</ul>\n<h2>Diferenciais</h2>\n<ul>\n<li>Testes de performance e carga (k6, JMeter ou Gatling).</li>\n<li>Automação de testes mobile (Appium, Detox ou Maestro).</li>\n<li>Contract testing (Pact) e testes em arquiteturas de microsserviços.</li>\n<li>Experiência em times de sustentação, com SLA e gestão de incidentes.</li>\n<li>Observabilidade aplicada a qualidade (logs, Datadog, Grafana, New Relic).</li>\n<li>Uso de IA aplicada a testes (geração de casos, self-healing de seletores, análise de falhas).</li>\n<li>Noções de testes de segurança (OWASP) e acessibilidade (WCAG).</li>\n<li>Certificações como ISTQB/CTFL ou CTAL.</li>\n</ul>\n<h2>Competências comportamentais</h2>\n<ul>\n<li><strong>Senso de dono da qualidade:</strong> atua na prevenção de defeitos, não só na detecção.</li>\n<li><strong>Comunicação clara:</strong> traduz riscos técnicos para PO, devs e cliente.</li>\n<li><strong>Priorização sob pressão:</strong> sabe decidir o que testar primeiro em demandas urgentes de sustentação.</li>\n<li><strong>Colaboração:</strong> trabalha lado a lado com o time e compartilha conhecimento.</li>\n<li><strong>Aprendizado contínuo:</strong> acompanha novas ferramentas e práticas de qualidade.</li>\n</ul>\n<p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/analista-de-qualidade-qa-snior-fcamara</p>",
+   "posted_at": "2026-11-24T12:29:35+00:00",
+   "is_translated": false,
+   "original_language": null
+  },
+  {
+   "id": "982b3b3c-3534-4adb-b60c-1cdabe29af9b",
+   "title": "Traveller Support Agent - Trilingual French, English and Spanish Speaker Brazil",
+   "url": "https://remotejobs.org/remote-jobs/traveller-support-agent-trilingual-french-english-and-spanish-speaker-brazil-onspot-travel-solutions",
+   "apply_url": "https://remotejobs.org/remote-jobs/traveller-support-agent-trilingual-french-english-and-spanish-speaker-brazil-onspot-travel-solutions",
+   "company": {
+    "name": "OnSpot Travel Solutions",
+    "logo_url": "https://assets.remotejobs.org/company-logos/scraped/dde9c6ae752190d0b24c02293e310978386bfef03843468d0983fc3073f19876.webp",
+    "website": null,
+    "url": "https://remotejobs.org/companies/onspot-travel-solutions"
+   },
+   "category": {
+    "name": "Customer Support",
+    "slug": "customer-support"
+   },
+   "location": "Brazil",
+   "location_normalization": {
+    "raw": "Brazil",
+    "input": {},
+    "scope": "restricted",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [
+     "BR"
+    ],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "known",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": null,
+    "required_skills": [],
+    "mentioned_skills": [
+     "r"
+    ],
+    "preferred_skills": [],
+    "experience_requirements": []
+   },
+   "location_eligibility": "known",
+   "salary_min": 60000,
+   "salary_max": 90000,
+   "salary_text": "BRL 5,000–6,000/month",
+   "salary_source_text": "BRL 5000 - 6000",
+   "salary_currency": "USD",
+   "salary_period": "year",
+   "type": "Contract",
+   "employment_types": [
+    "CONTRACTOR"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p>Passionate about travel and customer experience? Join our team!<br>We’re looking for a Traveller Support Agent to assist an international clientele and help deliver smooth, high-quality travel experiences.</p><h2>Your role:</h2><p>Support travellers in real time, manage requests and unexpected situations, and ensure excellent service throughout their journey.</p><h2>What we’re looking for:</h2><ul>\n<li>3+ years in customer support or hospitality in the travel industry</li>\n<li><strong>Job opening only for residents of Brazil.</strong></li>\n<li>\n<strong>Fluent French, English and Spanish required.</strong><br>\n</li>\n<li>Passion for travel and global destinations<br>\n</li>\n<li>Empathy, adaptability, and strong communication skills<br>\n</li>\n<li>Comfortable multitasking in a fast-paced environment<br>\n</li>\n<li>Autonomous, organized, and quick to learn</li>\n<li>Flexible working hours<br>\n</li>\n<li>Organized, adaptable, and comfortable multitasking under pressure</li>\n<li>Confident using CRM and operational tools</li>\n<li>Passion for travel and customer experience</li>\n</ul><h2>What we offer:</h2><ul>\n<li>Fully remote position<br>\n</li>\n<li>Independent Contractor agreement(PJ or MEI)<br>\n</li>\n<li>International and dynamic environment<br>\n</li>\n</ul><p>If you enjoy helping people and thrive in travel-related environments, we’d love to hear from you!</p><p>\nSalary: R$5,000 – R$6,000 / month</p><p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/traveller-support-agent-trilingual-french-english-and-spanish-speaker-brazil-onspot-travel-solutions</p>",
+   "posted_at": "2026-11-24T12:17:55+00:00",
+   "is_translated": false,
+   "original_language": null
+  },
+  {
+   "id": "d32be438-4327-428a-83de-28e428bc6e3d",
+   "title": "Advogado(a) Pleno/Sênior Contencioso Cível e Direito Digital",
+   "url": "https://remotejobs.org/remote-jobs/advogadoa-plenosnior-contencioso-cvel-e-direito-digital-lbca-lee-brock-camargo-advogados",
+   "apply_url": "https://remotejobs.org/remote-jobs/advogadoa-plenosnior-contencioso-cvel-e-direito-digital-lbca-lee-brock-camargo-advogados",
+   "company": {
+    "name": "LBCA - Lee, Brock, Camargo Advogados",
+    "logo_url": null,
+    "website": null,
+    "url": "https://remotejobs.org/companies/lbca-lee-brock-camargo-advogados"
+   },
+   "category": {
+    "name": "General",
+    "slug": "general"
+   },
+   "location": "Brazil",
+   "location_normalization": {
+    "raw": "Brazil",
+    "input": {},
+    "scope": "worldwide",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "unknown",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": null,
+    "required_skills": [],
+    "mentioned_skills": [],
+    "preferred_skills": [],
+    "experience_requirements": []
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": "year",
+   "type": "Full-time",
+   "employment_types": [
+    "FULL_TIME"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p>A LBCA é um escritório full service, formado por profissionais com atuação multidisciplinar, presente nas mais diversas áreas de atividade jurídica empresarial no Brasil.</p>\n<p>Você já pensou em fazer parte de uma equipe que conta com uma plataforma de tecnologia pioneira desenvolvida pela própria banca, que auxilia na administração de carteiras jurídicas e de todos os tipos de dados e documentos das empresas, possibilitando a avaliação de riscos, a tomada de decisões e a gestão estratégica de negócios?</p>\n<p>Se respondeu sim para todas estas perguntas, saiba que esta é a LBCA!</p>\n<p>Essa Oportunidade é exclusiva para vaga de<strong><em>Advogado(a) Pleno/Sênior Contencioso Cível e Direito Digital.</em></strong></p>\n<p>Lembre-se de candidatar-se a esta vaga e manter os dados do seu currículo sempre atualizados.</p>\n<p>Caso não seja seu perfil, temos outros bancos de talentos em nossa página de carreiras:</p>\n<h2>#VEMSERLBCA</h2>\n<ul>\n<li>Análise e triagem inicial de demandas judiciais e administrativas (Procon), com identificação de pedidos, riscos, prazos, urgências e particularidades dos casos, além do direcionamento às equipes responsáveis;</li>\n<li>Análise jurídica dos casos, definição de estratégias e elaboração de pareceres e comunicações ao cliente, em português e inglês, incluindo resumos, recomendações e solicitação de subsídios às áreas responsáveis, quando necessário;</li>\n<li>Acompanhamento dos casos em andamento e envio de atualizações ao cliente;</li>\n<li>Organização, atualização e controle de informações em planilhas e ferramentas de gestão, garantindo a qualidade dos registros e o acompanhamento das demandas;</li>\n<li>Participação na revisão e melhoria contínua dos fluxos operacionais, com identificação de oportunidades de padronização, simplificação e otimização das rotinas de trabalho;</li>\n<li>Interesse por tecnologia e inovação, com perfil entusiasta e abertura para explorar ferramentas de inteligência artificial e novas soluções que contribuam para a otimização das atividades jurídicas.</li>\n</ul>\n<ul>\n<li>Graduação em Direito e OAB ativa;</li>\n<li>Inglês avançado/nível fluente;</li>\n<li>Conhecimento avançado em Microsoft Office e Google Workspace;</li>\n<li>Excelente comunicação escrita e verbal, com capacidade de elaborar textos jurídicos claros, objetivos e bem estruturados;</li>\n<li>Raciocínio lógico-jurídico, capacidade analítica e atenção aos detalhes, especialmente na identificação de riscos, urgências e particularidades dos casos;</li>\n<li>Perfil organizado, proativo, colaborativo e resolutivo, com autonomia para conduzir demandas e propor soluções;</li>\n<li>Capacidade de priorização e facilidade para lidar com alto volume de casos, e-mails, informações e prazos simultaneamente;</li>\n<li>Interesse por Tecnologia, Direito Digital, Direito do Consumidor e Direito Processual Civil, com disposição para pesquisar e acompanhar atualizações sobre produtos e serviços digitais;</li>\n<li>Perfil inovador, curioso e aberto à utilização de novas tecnologias, especialmente ferramentas de inteligência artificial, com iniciativa para explorar soluções que contribuam para a otimização das atividades jurídicas e melhoria dos processos de trabalho;</li>\n<li>Visão de melhoria contínua, com iniciativa para identificar oportunidades de aprimoramento de processos, fluxos e controles internos;</li>\n<li>Facilidade de adaptação a mudanças de fluxos e procedimentos, com senso de responsabilidade e comprometimento com a qualidade das entregas.</li>\n</ul>\n<h2>Informações adicionais</h2>\n<ul>\n<li>VR;</li>\n<li>Auxílio Remoto (atuando de forma remota);</li>\n<li>Assistência Médica (coparticipativa);</li>\n<li>Auxílio Creche.</li>\n<li>OAB.</li>\n</ul>\n<p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/advogadoa-plenosnior-contencioso-cvel-e-direito-digital-lbca-lee-brock-camargo-advogados</p>",
+   "posted_at": "2026-11-24T11:24:34+00:00",
+   "is_translated": false,
+   "original_language": null
+  },
+  {
+   "id": "4ab3eb1b-9bbf-47c2-ae98-e17fb1c3b5c7",
+   "title": "Consultor(a) SAP CO Sênior",
+   "url": "https://remotejobs.org/remote-jobs/consultora-sap-co-snior-vetta-tecnologia",
+   "apply_url": "https://remotejobs.org/remote-jobs/consultora-sap-co-snior-vetta-tecnologia",
+   "company": {
+    "name": "Vetta Tecnologia",
+    "logo_url": null,
+    "website": null,
+    "url": "https://remotejobs.org/companies/vetta-tecnologia"
+   },
+   "category": {
+    "name": "General",
+    "slug": "general"
+   },
+   "location": "Brazil",
+   "location_normalization": {
+    "raw": "Brazil",
+    "input": {},
+    "scope": "restricted",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [
+     "BR"
+    ],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "known",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": null,
+    "required_skills": [],
+    "mentioned_skills": [
+     "r"
+    ],
+    "preferred_skills": [],
+    "experience_requirements": []
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": "year",
+   "type": "Full-time",
+   "employment_types": [
+    "FULL_TIME"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p><strong>Estamos buscando um(a) Consultor(a) SAP CO Sênior para o Time Vetta!</strong></p><p>Você fará parte do time de uma empresa líder na produção e comercialização de aços, que produz soluções para os principais desafios industriais do país.</p><h2>VOCÊ JÁ CONHECE A VETTA?</h2><p>Na Vetta, acreditamos que a tecnologia e a inovação são essenciais para criar um futuro mais sustentável e eficiente para todos. Como uma empresa líder em digitalização industrial, nossas soluções estão ajudando clientes em todo o mundo a reduzir o consumo de energia, a melhorar a eficiência operacional e apoiar a transição energética através da descarbonização.</p><p>Ao se juntar à nossa equipe, você terá a oportunidade de trabalhar em<strong>projetos emocionantes e desafiadores com alguns dos maiores especialistas da indústria</strong>. Além disso, você fará parte de uma equipe dedicada em gerar um impacto positivo no mundo e em ajudar nossos clientes a alcançar seus objetivos de negócios. O Time Vetta sabe a importância do trabalho em equipe e da colaboração para alcançar resultados que atingem todo o globo – ao mesmo tempo que<strong>a carreira de cada um é transformada.</strong></p><p><strong>Se você quer compartilhar a sua perspectiva para um mundo mais sustentável, venha ser parte do Time Vetta!</strong>💙</p><h2>Nesse time, você terá a oportunidade de:</h2><ul>\n<li>Levantar Requisitos: Trabalhar com as áreas de negócio para entender e documentar os requisitos;</li>\n<li>Atuar com Consultor CO em projetos de sustentação e melhorias.</li>\n</ul><h2>O que esperamos de você para essa vaga:</h2><ul>\n<li>Experiência comprovada em implantação e suporte no módulo SAP CO do ECC versão 6.07.</li>\n<li>Conhecimento sólido em processos, configurações e customizações de CO-OM (Centros de Custo/Ordens), CO-PC (Cálculo de Custo de Produto), CO-PA (Análise de Lucratividade), CO-PCA (Contabilidade de Centros de Lucro).</li>\n<li>Experiência com a integração entre FI, MM, PP e PM.</li>\n<li>Facilidade de comunicação com usuários de negócios, experiência em treinamento e suporte técnico.</li>\n<li>Bom conhecimento de ABAP para criação de especificação e análise de objetos Z, LSMW, SAP Query, Report Painter.</li>\n<li>Bom conhecimento de utilização de debug de programas Z e interpretação de código ABAP (com ênfase em especificação técnica).</li>\n</ul><h2>Informações adicionais</h2><h2>NOSSOS BENEFÍCIOS:</h2><p>Sendo uma empresa voltada para pessoas, buscamos sempre valorizar a nossa equipe. Ao entrar para o Time Vetta, oferecemos:</p><ul>\n<li>\n<strong>Cartão Vale Alimentação e Refeição de R$32,00/dia</strong>, para ser utilizado em vários estabelecimentos de alimentação e de refeição de acordo com as suas necessidades.</li>\n<li>\n<strong>Auxílio home office de R$100,00/mês</strong>, além de <strong>flexibilidade no horário</strong> de trabalho.</li>\n<li>Caso trabalhe no escritório da Vetta, em Belo Horizonte, oferecemos <strong>Vale transporte</strong>.</li>\n<li>Pensando no cuidado, oferecemos<strong>Plano de saúde e Plano odontológico</strong>, com a possibilidade de inclusão dos seus dependentes.</li>\n<li>\n<strong>Total Pass e Vittude</strong> para que você possa cuidar, integralmente, da sua saúde ao praticar atividades físicas e ter contato com profissionais de diferentes áreas da saúde.</li>\n<li>\n<strong>Clube de Descontos Online – Swile Shop,</strong>com descontos em diversas redes de produtos e de serviços.</li>\n<li>\n<strong>Licença maternidade e paternidade estendida,</strong> para os pais e mães viverem essa fase com tranquilidade.</li>\n<li>\n<strong>PLR -</strong> conforme tabela do sindicato.</li>\n</ul><h2>E TEM MAIS...</h2><ul>\n<li><strong>Day-Off de Aniversário.</strong></li>\n<li>\n<strong>No Dress Code.</strong>Vista-se com o que te deixa confortável!</li>\n<li>\n<strong>Programa de Incentivo à Formação Contínua e Capacitação</strong>, para que você possa continuar aprendendo e compartilhando experiências.</li>\n<li>Quer indicar alguém para a Vetta? Temos <strong>Programa de Indicação de Talentos.</strong>\n</li>\n</ul><p><strong>Se interessou em fazer parte do time? Cadastre-se agora! Ficaremos felizes em ter você conosco. 💙</strong></p><p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/consultora-sap-co-snior-vetta-tecnologia</p>",
+   "posted_at": "2026-11-24T11:20:01+00:00",
+   "is_translated": false,
+   "original_language": null
+  }
+ ],
+ "pagination": {
+  "total": 8,
+  "limit": 5,
+  "offset": 0,
+  "has_more": true
+ },
+ "meta": {
+  "powered_by": "RemoteJobs.org",
+  "url": "https://remotejobs.org",
+  "docs": "https://remotejobs.org/developers/api",
+  "search": {
+   "mode": "lexical",
+   "document_version": "public-search-index/1|job-search-serving/1|applicant-location/1|job-location/1|iso-3166@4.4.0|job-search-enrichment/1|description-presentation/1|description-sanitizer/1|job-description-markdown/3|job-search/1|description-presentation/1|description-sanitizer/1|technical-tokens/1|job-search-enrichment/1|description-presentation/1|description-sanitizer/1|meilisearch-public-analysis/1",
+   "ranking_version": "meilisearch-public-ranking/2",
+   "request_version": "job-search-request/1",
+   "active_generation": "beb0c54b-d9ce-4117-882b-f6514572ea02",
+   "fallback_reason": null,
+   "sort": "recent",
+   "eligibility": "known",
+   "salary_scope": null,
+   "engine": "meilisearch",
+   "consistency": "index_read",
+   "index_read": {
+    "generation": "beb0c54b-d9ce-4117-882b-f6514572ea02",
+    "requested_at": "2026-11-25T13:06:18.879Z",
+    "freshness": {
+     "kind": "not_observed"
+    }
+   },
+   "source_validation": "returned_hits"
+  }
+ }
+}

@@ -24,6 +24,7 @@ export const SOURCES = [
   { id: "arbeitnow", label: "Arbeitnow", trust: 2 },
   { id: "gupy", label: "Gupy", trust: 3 },
   { id: "linkedin", label: "LinkedIn", trust: 2 },
+  { id: "remotejobs", label: "RemoteJobs.org", trust: 2 },
 ] as const;
 
 export type SourceId = (typeof SOURCES)[number]["id"];

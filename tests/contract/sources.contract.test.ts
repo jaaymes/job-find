@@ -23,6 +23,7 @@ import { jobSchema as himalayasJob } from "@/lib/server/sources/himalayas";
 import { commentSchema as hnComment } from "@/lib/server/sources/hn";
 import { GUPY_TERMS, jobSchema as gupyJob } from "@/lib/server/sources/gupy";
 import { jobSchema as jobicyJob } from "@/lib/server/sources/jobicy";
+import { jobSchema as remotejobsJob } from "@/lib/server/sources/remotejobs";
 import { LEVER_BOARDS, jobSchema as leverJob } from "@/lib/server/sources/lever";
 import { jobSchema as remoteokJob } from "@/lib/server/sources/remoteok";
 import { SMARTRECRUITERS_BOARDS, jobSchema as smartrecruitersJob } from "@/lib/server/sources/smartrecruiters";
@@ -200,6 +201,10 @@ describe("contrato das fontes (APIs reais)", () => {
 
   it("gupy: payload real bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {
     await expectSource("gupy", gupyJob);
+  });
+
+  it("remotejobs: payload real bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {
+    await expectSource("remotejobs", remotejobsJob);
   });
 
   it("jobicy: payload real bate com o schema do conector", { timeout: TEST_TIMEOUT_MS }, async () => {

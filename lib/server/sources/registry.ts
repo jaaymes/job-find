@@ -10,6 +10,7 @@ import { himalayas } from "@/lib/server/sources/himalayas";
 import { hn } from "@/lib/server/sources/hn";
 import { jobicy } from "@/lib/server/sources/jobicy";
 import { lever } from "@/lib/server/sources/lever";
+import { remotejobs } from "@/lib/server/sources/remotejobs";
 import { remoteok } from "@/lib/server/sources/remoteok";
 import { smartrecruiters } from "@/lib/server/sources/smartrecruiters";
 import { arbeitnow } from "@/lib/server/sources/arbeitnow";
@@ -31,6 +32,7 @@ export const CONNECTORS: Record<SourceId, Connector> = {
   jobicy,
   lever,
   linkedin,
+  remotejobs,
   remoteok,
   smartrecruiters,
   wwr,

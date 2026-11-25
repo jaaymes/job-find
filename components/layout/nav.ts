@@ -2,9 +2,10 @@ import type { LocalRoute } from "@/components/ui/hard-link";
 
 export type NavId = "vagas" | "minhas-vagas" | "perfil" | "configuracoes" | "apoie" | "fontes" | "privacidade";
 
-/** Itens do menu principal (header do desktop e barra de abas do celular). */
+/** Itens do menu principal (header do desktop; o celular tem a barra de abas própria). */
 export const PRIMARY_NAV: readonly { id: NavId; label: string; href: string }[] = [
   { id: "vagas", label: "Vagas", href: "/" },
+  { id: "fontes", label: "Fontes", href: "/fontes" },
   { id: "minhas-vagas", label: "Minhas vagas", href: "/minhas-vagas" },
   { id: "perfil", label: "Perfil", href: "/perfil" },
   { id: "configuracoes", label: "Configurações", href: "/configuracoes" },

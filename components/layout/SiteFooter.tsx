@@ -9,9 +9,6 @@ export function SiteFooter() {
       <div className="mx-auto flex w-full max-w-[1280px] flex-wrap gap-x-6 gap-y-2 px-4 py-5 text-[13px] text-jf-ink-3 sm:px-6">
         <span>Projeto open-source para quem procura emprego em tecnologia.</span>
         <OnboardingGuide triggerClassName={`${LINK} cursor-pointer`} />
-        <Link href="/fontes" className={LINK}>
-          Fontes
-        </Link>
         <Link href="/privacidade" className={LINK}>
           Privacidade
         </Link>

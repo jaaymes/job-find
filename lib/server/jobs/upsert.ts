@@ -149,7 +149,8 @@ export async function upsertJob(
     const incomingTrust = trustOf(ref.source);
     const canMerge =
       canOverwrite && colliding.every((o) => o.sources.every((s) => trustOf(s) <= incomingTrust));
-    if (canMerge && colliding.length > 0) {
+    const merged = canMerge && colliding.length > 0;
+    if (merged) {
       // O sobrevivente pode ser outra vaga que não a original; a atualização segue nele.
       targetId = await mergeJobs(db, [targetId, ...colliding.map((o) => o.id)], now);
     }
@@ -165,7 +166,7 @@ export async function upsertJob(
         publishedAt: sql`LEAST(${jobs.publishedAt}, ${published.toISOString()}::timestamptz)`,
         updatedAt: now,
       })
-      .where(and(eq(jobs.id, targetId), isNull(jobs.expiredAt), sql`(${changed})`))
+      .where(and(eq(jobs.id, targetId), isNull(jobs.expiredAt), merged ? sql`true` : sql`(${changed})`))
       .returning({ id: jobs.id });
     jobId = targetId;
     status = rows.length > 0 ? "updated" : "unchanged";

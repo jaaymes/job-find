@@ -301,6 +301,7 @@ describe("upsertJob", () => {
     expect(r.status).toBe("updated");
     const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
     expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(r.jobId);
     expect(active[0].dedupeKey).toBe("dk-a");
     expect(active[0].urlCanonical).toBe("https://b.example/1");
     expect(active[0].sources).toEqual(["greenhouse", "himalayas"]);
@@ -324,5 +325,46 @@ describe("upsertJob", () => {
     );
     const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
     expect(active).toHaveLength(2);
+    const byKey = Object.fromEntries(active.map((j) => [j.dedupeKey, j]));
+    expect(byKey["dk-a"].urlCanonical).toBe("https://a.example/1");
+    expect(byKey["dk-a"].contentHash).toBe(makeJob().contentHash);
+    expect(byKey["dk-a"].sources).toEqual(["greenhouse"]);
+    expect(byKey["dk-b"].urlCanonical).toBe("https://b.example/1");
+  });
+
+  it.each([
+    ["mesmo hash", "hb"],
+    ["hash diferente", "h-new"],
+  ])("fusão em que o sobrevivente não é o alvo original (%s)", async (_nome, incomingHash) => {
+    const db = await testDb();
+    const refLever = { source: "lever", externalId: "l-1", url: "https://jobs.lever.co/acme/1" } as const;
+    // B (lever) foi vista antes; A (greenhouse) é a vaga alvo. Confiança empatada: B sobrevive.
+    const b = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      refLever,
+      addDays(T0, -1),
+    );
+    const a = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1", contentHash: "hb" }),
+      ref,
+      T0,
+    );
+    const r = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://a.example/1", contentHash: incomingHash }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(r.status).toBe("updated");
+    expect(r.jobId).toBe(b.jobId);
+    expect(r.jobId).not.toBe(a.jobId);
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(b.jobId);
+    expect(active[0].dedupeKey).toBe("dk-b");
+    expect(active[0].urlCanonical).toBe("https://a.example/1");
+    expect(active[0].sources).toEqual(["greenhouse", "lever"]);
   });
 });

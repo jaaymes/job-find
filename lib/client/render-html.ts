@@ -24,14 +24,27 @@ function installHook(): void {
   hookInstalled = true;
 }
 
+const BLOCK_START = /^<(p|ul|ol|li|h[1-6]|blockquote|pre|div|table)[\s>]/i;
+
+/** Texto corrido sem `<p>`: cada trecho separado por linha em branco vira um parágrafo. */
+function wrapParagraphs(html: string): string {
+  if (!/\n\s*\n/.test(html)) return html;
+  return html
+    .split(/\n\s*\n/)
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .map((chunk) => (BLOCK_START.test(chunk) ? chunk : `<p>${chunk}</p>`))
+    .join("");
+}
+
 /**
  * Segunda camada de sanitização (SEC-02): roda no navegador antes de renderizar,
  * com a mesma allowlist do servidor (lib/shared/sanitize-policy.ts).
  */
-export function toSafeHtml(html: string, opts: { dofollow?: boolean } = {}): string {
+export function toSafeHtml(html: string, opts: { dofollow?: boolean; paragraphs?: boolean } = {}): string {
   installHook();
   currentRel = opts.dofollow ? REL_DOFOLLOW : REL_NOFOLLOW;
-  return DOMPurify.sanitize(html, {
+  return DOMPurify.sanitize(opts.paragraphs ? wrapParagraphs(html) : html, {
     ALLOWED_TAGS: [...ALLOWED_TAGS],
     ALLOWED_ATTR: [...ALLOWED_ATTRIBUTES],
     ALLOWED_URI_REGEXP: ALLOWED_HREF,

@@ -132,7 +132,7 @@ test("o detalhe da vaga mostra 'Sua chance' com o breakdown", async ({ page }) =
   await seedProfile(page);
   await page.goto("/");
   await cards(page).nth(1).getByRole("link", { name: "Vaga 01 Desenvolvedor" }).click();
-  const section = page.getByRole("region", { name: "Sua chance" });
+  const section = page.getByRole("region", { name: "Sua aderência" });
   await expect(section.getByText("Média · 45%")).toBeVisible();
   const items = section.getByRole("list", { name: "Detalhes da nota" }).getByRole("listitem");
   await expect(items).toHaveCount(5);
@@ -142,9 +142,9 @@ test("o detalhe da vaga mostra 'Sua chance' com o breakdown", async ({ page }) =
   await expect(section.getByText("Faltam no seu perfil: Vue.")).toBeVisible();
 });
 
-test("o detalhe sem perfil convida a importar o currículo", async ({ page }) => {
+test("o detalhe sem perfil mostra o convite único de setup", async ({ page }) => {
   await page.goto("/vagas/1");
-  const section = page.getByRole("region", { name: "Sua chance" });
-  await expect(section.getByRole("link", { name: "Importe seu currículo para ver" })).toHaveAttribute("href", "/perfil");
+  const section = page.getByRole("region", { name: "Sua aderência" });
+  await expect(section.getByRole("link", { name: "Conectar IA" })).toHaveAttribute("href", "/configuracoes?voltar=%2Fvagas%2F1");
   await expect(section.getByRole("list")).toHaveCount(0);
 });

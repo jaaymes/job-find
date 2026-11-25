@@ -3,18 +3,22 @@
 
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useState } from "react";
+import { ChevronLeft } from "lucide-react";
 import { syncSnapshots } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { profileStore } from "@/lib/client/profile/store";
 import { toSafeHtml } from "@/lib/client/render-html";
-import { indexProfile, scoreJob, type Criterion } from "@/lib/client/score/score";
+import { indexProfile, scoreJob, type Criterion, type ScoreResult } from "@/lib/client/score/score";
 import { useStore } from "@/lib/client/storage/store";
 import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/types/job";
 import { AiAnalysis } from "./AiAnalysis";
 import { ChanceBadge } from "./ChanceBadge";
-import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobState } from "./JobActions";
+import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobMenuActions, useJobState } from "./JobActions";
+import { JobCardMenu } from "./JobCardMenu";
+import { JobDetailActionBar } from "./JobDetailActionBar";
+import { SetupProgress } from "@/components/onboarding/SetupProgress";
 import {
   LANGUAGE_LABELS,
   SENIORITY_LABELS,
@@ -25,15 +29,16 @@ import {
 } from "./format";
 import { HardLink } from "@/components/ui/hard-link";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
 const CARD = "rounded-2xl border border-jf-line bg-jf-surface";
 const LINK = "text-jf-brand hover:text-jf-brand-dark underline-offset-2 hover:underline";
 
-function BackLink() {
+function BackLink({ className }: { className?: string }) {
   return (
-    <Link href="/" className={`${LINK} inline-flex min-h-11 items-center gap-1.5 self-start text-sm no-underline`}>
+    <Link href="/" className={cn(LINK, "inline-flex min-h-11 items-center gap-1.5 self-start text-sm no-underline", className)}>
       <span aria-hidden="true">←</span> Voltar para as vagas
     </Link>
   );
@@ -152,12 +157,12 @@ function Description({ job }: { job: JobDetailData }) {
   // Descrição já sanitizada no servidor; renderiza só depois da segunda camada (SEC-02).
   // Links da descrição são sempre nofollow: numa vaga com várias fontes, o texto pode ter vindo de uma fonte
   // nofollow (HN, GitHub). O dofollow devido à fonte fica no link de atribuição.
-  const html = useMemo(() => toSafeHtml(job.descriptionHtml), [job.descriptionHtml]);
+  const html = useMemo(() => toSafeHtml(job.descriptionHtml, { paragraphs: true }), [job.descriptionHtml]);
   return (
-    <article className={`${CARD} min-w-0 flex-[999_1_560px] p-5 leading-relaxed sm:p-7`}>
+    <article className={`${CARD} min-w-0 p-5 leading-relaxed sm:p-7`}>
       <h2 className="mb-3 text-xl font-semibold">Sobre a vaga</h2>
       <div
-        className="text-jf-ink [&_a]:text-jf-brand [&_a]:underline [&_h1]:mt-5 [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-semibold [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:font-semibold [&_li]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3.5 [&_ul]:list-disc [&_ul]:pl-5 break-words"
+        className="max-w-[70ch] text-jf-ink [&_a]:text-jf-brand [&_a]:underline [&_h1]:mt-5 [&_h1]:mb-2 [&_h1]:text-lg [&_h1]:font-semibold [&_h2]:mt-5 [&_h2]:mb-2 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mt-5 [&_h3]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h4]:mt-4 [&_h4]:mb-2 [&_h4]:font-semibold [&_li]:my-1 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-3.5 [&_ul]:list-disc [&_ul]:pl-5 break-words"
         dangerouslySetInnerHTML={{ __html: html }}
       />
       <p className="mt-6 border-t border-jf-line pt-4 text-[13px] text-jf-ink-3">
@@ -175,34 +180,83 @@ const CRITERION_LABEL: Record<Criterion, string> = {
   recency: "Recência",
 };
 
-/** O score depende do localStorage: só aparece depois da hidratação (antes, `useStore` devolve null). */
-function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
-  const profile = useStore(profileStore);
-  const chance = useMemo(
-    () => (profile ? scoreJob(indexProfile(profile), job, new Date(now)) : null),
-    [profile, job, now],
-  );
+/** Coluna fixa do desktop: candidatar-se, salvar, status, gerar CV e ocultar. No celular, a barra de ação faz esse papel. */
+function ActionsCard({
+  job,
+  applyUrl,
+  sourceName,
+  canGenerate,
+}: {
+  job: JobDetailData;
+  applyUrl: string | null;
+  sourceName: string;
+  canGenerate: boolean;
+}) {
+  const state = useJobState(job.id);
   return (
-    <aside className="flex max-w-none flex-1 basis-[360px] flex-col gap-4 lg:max-w-[440px]">
-      <section aria-labelledby="chance-t" className={`${CARD} flex flex-col gap-3.5 p-5 sm:p-6`}>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="chance-t" className="text-lg font-semibold">
-            Sua chance
-          </h2>
-          <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
-          {!chance && (
-            <HardLink href="/perfil" className="inline-flex min-h-11 items-center text-sm text-jf-brand no-underline hover:text-jf-brand-dark hover:underline">
-              Importe seu currículo para ver
-            </HardLink>
-          )}
-        </div>
-        {chance && (
-          <>
-            <p className="text-[13px] text-jf-ink-3">Por que essa nota, critério a critério:</p>
-            <ul aria-label="Detalhes da nota" className="flex flex-col gap-3">
-              {chance.breakdown.map((b) => {
-                const total = chance.breakdown.reduce((n, x) => n + (x.available ? x.weight : 0), 0);
-                return (
+    <section aria-label="Ações da vaga" className={`${CARD} hidden flex-col gap-2.5 p-5 md:flex`}>
+      {applyUrl && (
+        <a
+          href={applyUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-jf-brand px-4 text-center font-semibold whitespace-nowrap text-jf-on-brand no-underline hover:bg-jf-brand-dark"
+        >
+          Candidatar-se na {sourceName} <span aria-hidden="true">↗</span>
+          <NewTabHint />
+        </a>
+      )}
+      <div className="flex items-center gap-2" role="group" aria-label="Organizar vaga">
+        <FavoriteButton job={job} />
+        <StatusSelect job={job} className="min-w-0 flex-1" />
+      </div>
+      <StatusBadge state={state} />
+      {canGenerate ? (
+        <HardLink
+          href={`/gerador/${job.id}`}
+          className="flex min-h-11 items-center justify-center rounded-xl border border-jf-field-border bg-jf-surface px-4 text-center text-sm font-semibold text-jf-ink no-underline hover:bg-jf-chip"
+        >
+          Gerar CV + carta
+        </HardLink>
+      ) : (
+        <button
+          type="button"
+          disabled
+          className="min-h-11 cursor-not-allowed rounded-xl border border-dashed border-jf-field-border bg-jf-chip px-4 py-2 text-center text-sm font-medium text-jf-ink-3"
+        >
+          Gerar CV + carta · precisa do currículo
+        </button>
+      )}
+      <HideButton job={job} className="w-full border-transparent bg-transparent text-jf-ink-2" />
+    </section>
+  );
+}
+
+/** O score depende do localStorage: só aparece depois da hidratação (antes, `useStore` devolve null). */
+function Aderencia({ job, chance }: { job: JobDetailData; chance: ScoreResult | null }) {
+  return (
+    <section aria-labelledby="chance-t" className={chance ? `${CARD} flex flex-col gap-3.5 p-5 sm:p-6` : "flex flex-col gap-3"}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 id="chance-t" className="text-lg font-semibold">
+          Sua aderência
+        </h2>
+        <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
+      </div>
+      {!chance && (
+        <>
+          <p className="text-sm text-jf-ink-2">
+            Compare seu perfil com esta vaga e veja o que falta. Tudo roda no seu navegador.
+          </p>
+          <SetupProgress variant="card" returnTo={`/vagas/${job.id}`} />
+        </>
+      )}
+      {chance && (
+        <>
+          <p className="text-[13px] text-jf-ink-3">Por que essa nota, critério a critério:</p>
+          <ul aria-label="Detalhes da nota" className="flex flex-col gap-3">
+            {chance.breakdown.map((b) => {
+              const total = chance.breakdown.reduce((n, x) => n + (x.available ? x.weight : 0), 0);
+              return (
                 <li key={b.criterion} className="flex flex-col gap-1" data-criterion={b.criterion}>
                   <div className="flex items-baseline justify-between gap-3 text-sm">
                     <span className="font-semibold">{CRITERION_LABEL[b.criterion]}</span>
@@ -215,30 +269,95 @@ function Sidebar({ job, now }: { job: JobDetailData; now: number }) {
                   </div>
                   <p className="text-[13px] text-jf-ink-3">{b.reason}</p>
                 </li>
-                );
-              })}
-            </ul>
-          </>
-        )}
-        <p className="text-[13px] text-jf-ink-3">
-          {chance
-            ? "Estimativa de aderência entre o seu perfil e esta vaga, calculada no seu navegador. Não é a probabilidade real de contratação."
-            : "Com o currículo importado, mostramos aqui uma estimativa de aderência entre o seu perfil e esta vaga. Não é a probabilidade real de contratação."}
-        </p>
-      </section>
-      <AiAnalysis key={job.id} job={job} />
-    </aside>
+              );
+            })}
+          </ul>
+          <p className="text-[13px] text-jf-ink-3">
+            Estimativa de aderência entre o seu perfil e esta vaga, calculada no seu navegador. Não é a probabilidade real
+            de contratação.
+          </p>
+        </>
+      )}
+    </section>
+  );
+}
+
+type Tab = "about" | "ai";
+const TABS: readonly { id: Tab; label: string }[] = [
+  { id: "about", label: "Sobre a vaga" },
+  { id: "ai", label: "Análise com IA" },
+];
+
+/** Abas do celular; no desktop os dois painéis aparecem juntos e a lista de abas some. */
+function MobileTabs({ tab, onChange }: { tab: Tab; onChange: (t: Tab) => void }) {
+  return (
+    <div role="tablist" aria-label="Seções da vaga" className="flex border-b border-jf-line md:hidden">
+      {TABS.map(({ id, label }) => {
+        const selected = tab === id;
+        return (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            id={`tab-${id}`}
+            aria-selected={selected}
+            aria-controls={`painel-${id}`}
+            onClick={() => onChange(id)}
+            className={cn(
+              "-mb-px min-h-11 flex-1 border-b-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-inset",
+              selected ? "border-jf-brand font-semibold text-jf-ink" : "border-transparent font-medium text-jf-ink-2",
+            )}
+          >
+            {label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Cabeçalho do celular: voltar, empresa e o menu de ações. */
+function MobileTopBar({ job }: { job: JobDetailData }) {
+  const actions = useJobMenuActions(job);
+  return (
+    <div className="-mx-4 -mt-4 flex h-14 items-center gap-1 border-b border-jf-line bg-jf-surface px-1 sm:-mx-6 sm:px-3 md:hidden">
+      <Link
+        href="/"
+        aria-label="Voltar para as vagas"
+        className="inline-flex size-11 items-center justify-center rounded-lg text-jf-ink outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand"
+      >
+        <ChevronLeft aria-hidden="true" className="size-6" />
+      </Link>
+      <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{job.company}</span>
+      <JobCardMenu
+        jobId={job.id}
+        title={job.title}
+        jobUrl={`/vagas/${job.id}`}
+        status={actions.status}
+        hidden={actions.hidden}
+        onHide={actions.toggleHidden}
+        onStatusChange={actions.changeStatus}
+      />
+      {actions.feedback}
+    </div>
   );
 }
 
 export function JobDetailView({ job }: { job: JobDetailData }) {
   // Calculado uma vez por vaga carregada: os dados só existem no cliente.
   const [now] = useState(() => Date.now());
+  const [tab, setTab] = useState<Tab>("about");
+  const profile = useStore(profileStore);
+  const chance = useMemo(
+    () => (profile ? scoreJob(indexProfile(profile), job, new Date(now)) : null),
+    [profile, job, now],
+  );
   const salary = formatSalary(job);
   // URL bruta da fonte, sem tirar parâmetros (D-07); `urlCanonical` serve só à deduplicação.
   const applyUrl = job.applyUrl ? safeExternalUrl(job.applyUrl) : null;
+  const sourceName = job.attribution[0]?.label ?? "página da vaga";
+  const canGenerate = profile !== null;
   const stacks = job.stacks;
-  const state = useJobState(job.id);
   // Vaga já favoritada/marcada: a cópia de "Minhas vagas" ganha o link da fonte e os dados novos.
   useEffect(() => {
     syncSnapshots([job]);
@@ -246,14 +365,15 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
 
   return (
     <>
-      <BackLink />
-      <section className={`${CARD} flex flex-wrap items-start gap-x-6 gap-y-5 p-5 sm:p-7`}>
+      <MobileTopBar job={job} />
+      <BackLink className="hidden md:inline-flex" />
+      <section className={`${CARD} flex items-start gap-x-6 gap-y-5 p-5 sm:p-7`}>
         <Logo job={job} />
-        <div className="flex min-w-0 flex-[999_1_320px] flex-col gap-2.5 sm:basis-[420px]">
+        <div className="flex min-w-0 flex-1 flex-col gap-2.5">
           <p className="text-[13px] text-jf-ink-3">
             Publicada {formatAge(job.publishedAt, now)} · coletada de <Attribution items={job.attribution} />
           </p>
-          <h1 className="font-display text-[26px] leading-[1.15] font-bold tracking-[-0.01em] break-words sm:text-[32px]">
+          <h1 className="font-display text-[24px] leading-[1.15] font-bold tracking-[-0.01em] break-words sm:text-[32px]">
             {job.title}
           </h1>
           <p className="text-base text-jf-ink-2 sm:text-[17px]">
@@ -278,36 +398,34 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
             ))}
           </div>
         </div>
-        <div className="flex flex-1 basis-full flex-col gap-2.5 sm:basis-[260px]">
-          {applyUrl && (
-            <a
-              href={applyUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex min-h-12 items-center justify-center rounded-xl bg-jf-brand px-4 text-center font-semibold text-jf-on-brand no-underline hover:bg-jf-brand-dark"
-            >
-              Candidatar na página da vaga <span aria-hidden="true">↗</span>
-              <NewTabHint />
-            </a>
-          )}
-          <HardLink
-            href={`/gerador/${job.id}`}
-            className="flex min-h-12 items-center justify-center rounded-xl border border-jf-line-strong bg-jf-surface px-4 text-center font-semibold text-jf-ink no-underline hover:bg-jf-chip"
-          >
-            Gerar CV + carta
-          </HardLink>
-          <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Organizar vaga">
-            <FavoriteButton job={job} />
-            <StatusSelect job={job} className="flex-1" />
-            <HideButton job={job} />
-          </div>
-          <StatusBadge state={state} />
-        </div>
       </section>
-      <div className="flex flex-wrap items-start gap-6">
-        <Description job={job} />
-        <Sidebar job={job} now={now} />
+      <div className="flex flex-col gap-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] md:items-start md:gap-x-6">
+        <aside aria-label="Ações e aderência" className="flex flex-col gap-4 md:sticky md:top-4 md:col-start-2 md:row-start-1">
+          <ActionsCard job={job} applyUrl={applyUrl} sourceName={sourceName} canGenerate={canGenerate} />
+          <Aderencia job={job} chance={chance} />
+          <MobileTabs tab={tab} onChange={setTab} />
+        </aside>
+        <div className="flex min-w-0 flex-col gap-5 md:col-start-1 md:row-start-1">
+          <div
+            role="tabpanel"
+            id="painel-about"
+            aria-labelledby="tab-about"
+            className={cn(tab !== "about" && "max-md:hidden")}
+          >
+            <Description job={job} />
+          </div>
+          <div role="tabpanel" id="painel-ai" aria-labelledby="tab-ai" className={cn(tab !== "ai" && "max-md:hidden")}>
+            <AiAnalysis key={job.id} job={job} />
+          </div>
+        </div>
       </div>
+      <JobDetailActionBar
+        jobId={job.id}
+        job={job}
+        applyUrl={applyUrl ?? ""}
+        sourceName={sourceName}
+        canGenerate={canGenerate}
+      />
     </>
   );
 }

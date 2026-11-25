@@ -14,7 +14,7 @@ export function generateStaticParams(): { id: string }[] {
 export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (
-    <AppShell current="vagas" className="pt-4 sm:pt-6">
+    <AppShell current="vagas" tabBar={false} className="pt-4 sm:pt-6 pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-16">
       <JobDetail id={id} />
     </AppShell>
   );

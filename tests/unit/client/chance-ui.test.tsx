@@ -67,7 +67,7 @@ describe("JobDetailView: Sua chance", () => {
   it("no pré-render (sem hidratação) mostra o estado neutro, sem score", () => {
     withProfile();
     const html = renderToStaticMarkup(<JobDetailView job={detail()} />);
-    expect(html).toContain("Importe seu currículo para ver");
+    expect(html).toContain("Sua aderência");
     expect(html).not.toContain("Detalhes da nota");
   });
 
@@ -83,9 +83,15 @@ describe("JobDetailView: Sua chance", () => {
     expect(list.textContent).not.toMatch(/peso \d+(?!%)\b(?!%)\s*$/);
   });
 
-  it("sem perfil o convite leva para /perfil", () => {
+  it("sem perfil o convite único leva para /perfil com retorno à vaga", () => {
+    aiSettingsStore.set({
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "k", addedAt: "2026-01-01", source: "paste" as const } },
+    });
     render(<JobDetailView job={detail()} />);
-    expect(screen.getByRole("link", { name: "Importe seu currículo para ver" }).getAttribute("href")).toBe("/perfil");
+    expect(screen.getByRole("link", { name: "Importar currículo" }).getAttribute("href")).toBe(
+      `/perfil?voltar=%2Fvagas%2F${detail().id}`,
+    );
   });
 });
 

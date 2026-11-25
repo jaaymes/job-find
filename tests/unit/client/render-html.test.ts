@@ -68,3 +68,16 @@ describe("toSafeHtml (jsdom)", () => {
     expect(toSafeHtml(a, { dofollow: true })).toBe('<a href="https://x.com" rel="noopener noreferrer">x</a>');
   });
 });
+
+describe("toSafeHtml com paragraphs", () => {
+  it("toSafeHtml com paragraphs transforma \\n\\n em <p>", () => {
+    expect(toSafeHtml("Primeiro trecho.\n\nSegundo trecho.", { paragraphs: true })).toBe(
+      "<p>Primeiro trecho.</p><p>Segundo trecho.</p>",
+    );
+  });
+
+  it("mantém blocos que já são HTML e não mexe no texto sem a opção", () => {
+    expect(toSafeHtml("<p>a</p>\n\n<ul><li>b</li></ul>", { paragraphs: true })).toBe("<p>a</p><ul><li>b</li></ul>");
+    expect(toSafeHtml("a\n\nb")).toBe("a\n\nb");
+  });
+});

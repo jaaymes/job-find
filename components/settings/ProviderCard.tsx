@@ -8,7 +8,6 @@ import { AiError } from "@/lib/client/ai/errors";
 import { type ProviderDef, type ProviderId } from "@/lib/client/ai/providers";
 import type { AiSettings } from "@/lib/client/ai/settings";
 import { testConnection } from "@/lib/client/ai/test-connection";
-import { BTN_PRIMARY } from "@/components/ui/styles";
 import { cn } from "@/lib/utils";
 import { LocalAiGuide } from "./LocalAiGuide";
 
@@ -233,10 +232,10 @@ export function ProviderCard({
           <>
             {/* Só o OpenRouter (recomendado) tem o botão primário; os demais usam contorno. */}
             <Button
-              variant={isOpenRouter ? "default" : "outline"}
+              variant={isOpenRouter ? "primary" : "outline"}
               className={
                 isOpenRouter
-                  ? cn(BTN_PRIMARY, "h-auto rounded-lg px-3.5")
+                  ? "h-auto rounded-lg px-3.5"
                   : "min-h-11 border-jf-line-strong px-3 text-sm"
               }
               onClick={def.auth.kind === "oauth" ? onConnectOAuth : onAdd}

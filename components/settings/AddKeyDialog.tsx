@@ -156,7 +156,7 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
             <Button
               type="button"
               variant="outline"
-              size="icon" className="size-11"
+              size="icon" className="size-11 md:size-11"
               aria-label={reveal ? "Ocultar chave" : "Mostrar chave"}
               aria-pressed={reveal}
               onClick={() => setReveal((v) => !v)}

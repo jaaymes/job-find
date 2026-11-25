@@ -9,6 +9,7 @@ import { upsertJob } from "@/lib/server/jobs/upsert";
 import { AllBoardsFailedError } from "@/lib/server/sources/boards";
 import { createSafeFetch } from "@/lib/server/sources/http";
 import { CONNECTORS } from "@/lib/server/sources/registry";
+import { trustOf } from "@/lib/server/sources/trust";
 import type { Connector, NormalizedJob } from "@/lib/server/sources/types";
 import type { SourceId } from "@/lib/shared/types/job";
 
@@ -177,11 +178,12 @@ async function processBatch(
   const src = { id: conn.id, brazilian: conn.brazilian, dofollow: conn.attribution.dofollow };
 
   await db.transaction(async (tx) => {
-    // Uma consulta por lote: hash, HTML já sanitizado e URL da fonte, para decidir o atalho.
+    // Uma consulta por lote: hash, HTML já sanitizado, URL da fonte e fontes da vaga, para decidir o atalho.
     const prevRows = await tx
       .select({
         externalId: jobSources.externalId,
         url: jobSources.url,
+        sources: jobs.sources,
         contentHash: jobs.contentHash,
         descriptionHtml: jobs.descriptionHtml,
         expiredAt: jobs.expiredAt,
@@ -199,14 +201,23 @@ async function processBatch(
       );
     const prevByExternal = new Map(prevRows.map((r) => [r.externalId, r]));
 
-    // Atalho: mesma publicação, ativa, com o mesmo hash (que inclui a versão do sanitizador) e a
-    // mesma URL na fonte. Nada a enriquecer nem regravar: só renova a presença, num UPDATE por lote.
+    // Atalho: mesma publicação, ativa e com a mesma URL na fonte, e com o mesmo hash (que inclui a
+    // versão do sanitizador) ou já ligada a uma fonte mais confiável que esta. Nada a enriquecer nem
+    // regravar: só renova a presença, num UPDATE por lote.
+    const incomingTrust = trustOf(conn.id);
     const unchangedIds: string[] = [];
     for (const n of normalized) {
       try {
         const hash = computeContentHash(n);
         const prev = prevByExternal.get(n.externalId) ?? null;
-        if (prev && prev.expiredAt === null && prev.contentHash === hash && prev.url === n.url) {
+        // Numa vaga fundida, o hash gravado é o da fonte que escreveu o conteúdo. Se a vaga já tem esta
+        // fonte e outra mais confiável, o upsert não gravaria nada (não pode sobrescrever, a fonte não é
+        // nova e não há fusão), então o hash diferente não importa. Empate de confiança fica de fora.
+        const outranked =
+          prev !== null &&
+          prev.sources.includes(conn.id) &&
+          prev.sources.some((s) => trustOf(s) > incomingTrust);
+        if (prev && prev.expiredAt === null && prev.url === n.url && (prev.contentHash === hash || outranked)) {
           unchangedIds.push(n.externalId);
           continue;
         }

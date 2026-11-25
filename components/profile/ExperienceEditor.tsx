@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { MAX_HIGHLIGHTS, type Profile } from "@/lib/shared/schemas/profile";
 import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
+import { maxSeq, nextSeq } from "./ids";
 
 type Experience = Profile["experiences"][number];
 
@@ -25,6 +26,7 @@ function Row({
   onRemove,
   startOpen,
   highlights,
+  activeCount,
   onHighlightsChange,
 }: {
   exp: Experience;
@@ -32,11 +34,14 @@ function Row({
   onRemove: () => void;
   startOpen: boolean;
   highlights: string[];
+  /** Destaques que apontam para realizações existentes (em todas as experiências). */
+  activeCount: number;
   onHighlightsChange: (ids: string[]) => void;
 }) {
   const [open, setOpen] = useState(startOpen);
   const set = (patch: Partial<Experience>) => onChange({ ...exp, ...patch });
-  const atMax = highlights.length >= MAX_HIGHLIGHTS;
+  const seenBullet = useRef(maxSeq(exp.bullets.map((b) => b.id), /\.b(\d+)$/));
+  const atMax = activeCount >= MAX_HIGHLIGHTS;
   const title = [exp.title, exp.company].filter(Boolean).join(" · ") || "Nova experiência";
 
   return (
@@ -121,8 +126,8 @@ function Row({
               type="button"
               className={`${BTN_OUTLINE} w-fit`}
               onClick={() => {
-                const max = exp.bullets.reduce((m, b) => Math.max(m, Number(/\.b(\d+)$/.exec(b.id)?.[1] ?? 0)), 0);
-                set({ bullets: [...exp.bullets, { id: `${exp.id}.b${max + 1}`, text: "" }] });
+                const n = nextSeq(seenBullet, exp.bullets.map((b) => b.id), /\.b(\d+)$/);
+                set({ bullets: [...exp.bullets, { id: `${exp.id}.b${n}`, text: "" }] });
               }}
             >
               + Realização
@@ -154,11 +159,13 @@ function Row({
 
 export function ExperienceEditor({ experiences, onChange, highlights, onHighlightsChange }: Props) {
   const [newId, setNewId] = useState<string | null>(null);
+  const seenExp = useRef(maxSeq(experiences.map((e) => e.id), /^exp_(\d+)$/));
+  const existingIds = new Set(experiences.flatMap((e) => e.bullets.map((b) => b.id)));
+  const activeHighlights = highlights.filter((h) => existingIds.has(h));
 
   function add() {
     // Ids já usados nunca são reaproveitados (análises e CVs antigos referenciam `exp_N`).
-    const max = experiences.reduce((m, e) => Math.max(m, Number(/^exp_(\d+)$/.exec(e.id)?.[1] ?? 0)), 0);
-    const id = `exp_${max + 1}`;
+    const id = `exp_${nextSeq(seenExp, experiences.map((e) => e.id), /^exp_(\d+)$/)}`;
     setNewId(id);
     onChange([...experiences, { id, company: "", title: "", startDate: null, endDate: null, bullets: [] }]);
   }
@@ -171,7 +178,7 @@ export function ExperienceEditor({ experiences, onChange, highlights, onHighligh
           + Experiência
         </button>
       </div>
-      {highlights.length >= MAX_HIGHLIGHTS && (
+      {activeHighlights.length >= MAX_HIGHLIGHTS && (
         <p role="status" className="text-sm text-jf-ink-3">
           Máximo de {MAX_HIGHLIGHTS} destaques
         </p>
@@ -183,6 +190,7 @@ export function ExperienceEditor({ experiences, onChange, highlights, onHighligh
             exp={e}
             startOpen={e.id === newId}
             highlights={highlights}
+            activeCount={activeHighlights.length}
             onHighlightsChange={onHighlightsChange}
             onChange={(x) => onChange(experiences.map((y) => (y.id === e.id ? x : y)))}
             onRemove={() => {

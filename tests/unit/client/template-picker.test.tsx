@@ -13,6 +13,12 @@ async function open(props: Partial<React.ComponentProps<typeof TemplatePicker>> 
 }
 
 describe("TemplatePicker", () => {
+  it("com disabled, o botão do modelo fica desabilitado", () => {
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} disabled />);
+    expect((screen.getByRole("button", { name: "Modelo do CV: Clássico" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+
   it("o botão tem o nome acessível com o modelo atual", () => {
     render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} />);
     expect(screen.getByRole("button", { name: "Modelo do CV: Clássico" })).toBeTruthy();

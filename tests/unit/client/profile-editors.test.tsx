@@ -29,11 +29,11 @@ describe("ProjectsEditor", () => {
     expect(last.map((p) => p.id)).toEqual(["proj_1", "proj_2"]);
   });
 
-  it("'Adicionar bullet' cria proj_1.b1", () => {
+  it("'+ Realização' cria proj_1.b1", () => {
     const spy = vi.fn();
     render(<Projects spy={spy} />);
     fireEvent.click(screen.getByRole("button", { name: "Adicionar projeto" }));
-    fireEvent.click(screen.getByRole("button", { name: "Adicionar bullet" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Realização" }));
     const last = spy.mock.calls.at(-1)![0] as Profile["projects"];
     expect(last[0].bullets).toEqual([{ id: "proj_1.b1", text: "" }]);
   });
@@ -112,6 +112,37 @@ describe("estrela de destaque", () => {
     const s = stars();
     expect(s.map((b) => (b as HTMLButtonElement).disabled)).toEqual([false, false, false, true]);
     expect(screen.getByText("Máximo de 3 destaques")).toBeTruthy();
+  });
+
+  it("ids órfãos em highlights não travam as estrelas", () => {
+    render(<Exp initial={["exp_9.b1", "exp_9.b2", "exp_9.b3"]} />);
+    open();
+    expect(stars().map((b) => (b as HTMLButtonElement).disabled)).toEqual([false, false, false, false]);
+    expect(screen.queryByText("Máximo de 3 destaques")).toBeNull();
+  });
+
+  it("apagar o último bullet e adicionar outro não reaproveita o id", () => {
+    const spy = vi.fn();
+    function Wrapper() {
+      const [exps, setExps] = useState(experiences());
+      return (
+        <ExperienceEditor
+          experiences={exps}
+          onChange={(x) => (spy(x), setExps(x))}
+          highlights={[]}
+          onHighlightsChange={() => {}}
+        />
+      );
+    }
+    render(<Wrapper />);
+    open();
+    const ids = () => (spy.mock.calls.at(-1)![0] as Profile["experiences"])[0].bullets.map((b) => b.id);
+    fireEvent.click(screen.getByRole("button", { name: "Remover realização 4" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Realização" }));
+    expect(ids()).toEqual(["exp_1.b1", "exp_1.b2", "exp_1.b3", "exp_1.b5"]);
+    fireEvent.click(screen.getByRole("button", { name: "Remover realização 4" }));
+    fireEvent.click(screen.getByRole("button", { name: "+ Realização" }));
+    expect(ids()).toEqual(["exp_1.b1", "exp_1.b2", "exp_1.b3", "exp_1.b6"]);
   });
 
   it("apagar um bullet destacado remove o id de highlights", () => {

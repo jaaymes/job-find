@@ -648,3 +648,16 @@ test("trocar o modelo do CV refaz só o PDF (sem nova chamada à IA) e a escolha
   await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
   expect(mock.bodies).toHaveLength(calls);
 });
+
+test("'Usar como padrão' aplica o modelo escolhido a outra vaga", async ({ page }) => {
+  await generate(page);
+  await page.getByRole("button", { name: /^Modelo do CV: / }).click();
+  const dialog = page.getByRole("dialog");
+  await dialog.getByRole("radio", { name: /Harvard/ }).check();
+  await dialog.getByLabel("Usar como padrão nos próximos CVs").check();
+  await dialog.getByRole("button", { name: "Usar este modelo" }).click();
+  await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
+
+  await page.goto("/gerador/2");
+  await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible(FIRST);
+});

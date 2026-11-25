@@ -57,6 +57,7 @@ function educationLine(e: Profile["education"][number]): string {
 }
 
 function certificationLine(c: Profile["certifications"][number]): string {
+  if (!c.name.trim()) return "";
   const base = [c.name, c.issuer].filter(Boolean).join(" – ");
   return c.year ? `${base} (${c.year})` : base;
 }

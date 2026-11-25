@@ -2,7 +2,7 @@ import "client-only";
 
 import { Font } from "@react-pdf/renderer";
 
-export type PdfFamily = "Inter" | "Source Serif 4" | "Source Sans 3" | "IBM Plex Sans";
+export type PdfFamily = "Inter" | "Source Serif 4" | "JF Sans" | "JF Grotesk";
 
 /** Arquivos TTF (regular 400 e bold 700) e licença OFL de cada família, em `public/fonts`. */
 export const PDF_FAMILIES: Record<PdfFamily, { regular: string; bold: string; license: string }> = {
@@ -12,14 +12,14 @@ export const PDF_FAMILIES: Record<PdfFamily, { regular: string; bold: string; li
     bold: "SourceSerif4-Bold.ttf",
     license: "LICENSE-SourceSerif4.txt",
   },
-  "Source Sans 3": {
-    regular: "SourceSans3-Regular.ttf",
-    bold: "SourceSans3-Bold.ttf",
+  "JF Sans": {
+    regular: "JFSans-Regular.ttf",
+    bold: "JFSans-Bold.ttf",
     license: "LICENSE-SourceSans3.txt",
   },
-  "IBM Plex Sans": {
-    regular: "IBMPlexSans-Regular.ttf",
-    bold: "IBMPlexSans-Bold.ttf",
+  "JF Grotesk": {
+    regular: "JFGrotesk-Regular.ttf",
+    bold: "JFGrotesk-Bold.ttf",
     license: "LICENSE-IBMPlexSans.txt",
   },
 };

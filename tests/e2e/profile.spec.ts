@@ -362,7 +362,7 @@ test("projeto, certificação e idioma são editáveis e continuam lá depois do
 
   await page.getByRole("button", { name: "Adicionar projeto" }).click();
   await page.getByLabel("Nome do projeto").fill("Job Find");
-  await page.getByRole("button", { name: "Adicionar bullet" }).click();
+  await page.getByRole("button", { name: "+ Realização" }).click();
   await page.getByLabel("Realização do projeto 1", { exact: true }).fill("Buscador de vagas que roda no navegador");
 
   await page.getByRole("button", { name: "Adicionar certificação" }).click();

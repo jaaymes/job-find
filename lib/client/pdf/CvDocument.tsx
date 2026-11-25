@@ -2,6 +2,7 @@ import "client-only";
 
 import { Document, Page, StyleSheet, Text, View } from "@react-pdf/renderer";
 import type { AssembledCv } from "@/lib/client/cv/assemble";
+import { toNfc } from "@/lib/client/cv/nfc";
 import { PDF_FONT } from "./fonts";
 import { getTemplate } from "./templates/registry";
 import { buildStyles, cleanCv, locationLine, renderSection } from "./templates/sections";
@@ -22,7 +23,9 @@ export const styles = StyleSheet.create({
  * seção vazia não aparece. Trechos vazios (só espaços) também ficam de fora, e a experiência repetida não vira
  * um cabeçalho duplicado.
  */
-export function CvDocument({ cv, templateId }: { cv: AssembledCv; templateId: CvTemplateId }) {
+export function CvDocument({ cv: rawCv, templateId }: { cv: AssembledCv; templateId: CvTemplateId }) {
+  // NFC uma vez, na entrada: as fontes embutidas não têm marcas combinantes soltas e o ATS compara texto composto.
+  const cv = toNfc(rawCv);
   const t = getTemplate(templateId);
   const s = buildStyles(t);
   const clean = cleanCv(cv, t.sections.includes("highlights"));

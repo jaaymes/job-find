@@ -140,6 +140,7 @@ describe("assembleCv dados do perfil v2", () => {
     p.certifications = [
       { name: "AWS SAA", issuer: "Amazon", year: "2023" },
       { name: "Scrum", issuer: null, year: null },
+      { name: " ", issuer: "Amazon", year: "2023" },
     ];
     expect(assembleCv(p, docs(), "pt").certifications).toEqual(["AWS SAA – Amazon (2023)", "Scrum"]);
   });

@@ -109,6 +109,24 @@ describe("templates de CV", () => {
     for (const w of ["Ação", "Español", "Niño"]) expect(text).toContain(w);
   });
 
+  it.each(CV_TEMPLATES)("$id: seta no bullet e texto NFD saem como NFC no PDF", async (t) => {
+    const nfd = "Ação".normalize("NFD");
+    expect(nfd).not.toBe("Ação");
+    const base = fullCv();
+    const cv = fullCv({
+      summary: `${nfd} em equipe.`,
+      education: [`${nfd} – USP`],
+      experiences: base.experiences.map((x, i) =>
+        i === 0 ? { ...x, bullets: [{ ...x.bullets[0], text: `Migrou legado → Next.js ≥ 14 ✓ ${nfd}.` }, ...x.bullets.slice(1)] } : x,
+      ),
+    });
+    const { text } = await render(cv, t.id);
+    expect(text).toContain("→");
+    expect(text).toContain("≥");
+    expect(text).toContain("Ação");
+    expect(text).not.toContain(nfd);
+  });
+
   it.each(CV_TEMPLATES)("$id: perfil mínimo sem título vazio", async (t) => {
     const cv = fullCv({
       contactLine: "",

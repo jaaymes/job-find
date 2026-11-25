@@ -139,8 +139,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
   highlights: (c) =>
     c.clean.highlights.length > 0 ? (
       <Section c={c} id="highlights">
-        {c.clean.highlights.map((h) => (
-          <Text key={h.key} style={c.s.highlight}>
+        {c.clean.highlights.map((h, i) => (
+          <Text key={`${h.key}-${i}`} style={c.s.highlight}>
             {`- ${h.text}${h.company ? ` (${h.company})` : ""}`}
           </Text>
         ))}
@@ -152,8 +152,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
       <Section c={c} id="skills">
         {c.t.skillsLayout === "grouped" ? (
           <View>
-            {groupedSkills(c.clean.skills, c.cv.lang).map((line) => (
-              <Text key={line}>{line}</Text>
+            {groupedSkills(c.clean.skills, c.cv.lang).map((line, i) => (
+              <Text key={`${line}-${i}`}>{line}</Text>
             ))}
           </View>
         ) : (
@@ -169,8 +169,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
           <View key={`${x.expId}@${x.occurrence}-${i}`} style={c.s.job}>
             <Text style={c.s.jobTitle}>{[x.role, x.company].filter(Boolean).join(" – ")}</Text>
             {x.period ? <Text style={c.s.jobMeta}>{x.period}</Text> : null}
-            {x.bullets.map((b) => (
-              <Text key={b.key} style={c.s.bullet}>
+            {x.bullets.map((b, bi) => (
+              <Text key={`${b.key}-${bi}`} style={c.s.bullet}>
                 {`- ${b.text}`}
               </Text>
             ))}
@@ -190,8 +190,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
               <Text style={own ? c.s.projectName : c.s.jobTitle}>{title}</Text>
               {own && stacks ? <Text style={c.s.jobMeta}>{stacks}</Text> : null}
               {p.link ? <Text style={c.s.jobMeta}>{p.link}</Text> : null}
-              {p.bullets.map((b) => (
-                <Text key={b} style={c.s.bullet}>
+              {p.bullets.map((b, bi) => (
+                <Text key={`${b}-${bi}`} style={c.s.bullet}>
                   {`- ${b}`}
                 </Text>
               ))}
@@ -203,8 +203,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
   education: (c) =>
     c.clean.education.length > 0 ? (
       <Section c={c} id="education">
-        {c.clean.education.map((e) => (
-          <Text key={e} style={c.s.paragraph}>
+        {c.clean.education.map((e, i) => (
+          <Text key={`${e}-${i}`} style={c.s.paragraph}>
             {e}
           </Text>
         ))}
@@ -213,8 +213,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
   certifications: (c) =>
     c.clean.certifications.length > 0 ? (
       <Section c={c} id="certifications">
-        {c.clean.certifications.map((e) => (
-          <Text key={e} style={c.s.paragraph}>
+        {c.clean.certifications.map((e, i) => (
+          <Text key={`${e}-${i}`} style={c.s.paragraph}>
             {e}
           </Text>
         ))}
@@ -223,8 +223,8 @@ const SECTIONS: Record<CvSectionId, SectionFn> = {
   languages: (c) =>
     c.clean.languages.length > 0 ? (
       <Section c={c} id="languages">
-        {c.clean.languages.map((e) => (
-          <Text key={e} style={c.s.paragraph}>
+        {c.clean.languages.map((e, i) => (
+          <Text key={`${e}-${i}`} style={c.s.paragraph}>
             {e}
           </Text>
         ))}

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { Profile } from "@/lib/shared/schemas/profile";
 import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
+import { maxSeq, nextSeq } from "./ids";
 
 type Project = Profile["projects"][number];
 
@@ -22,6 +23,7 @@ function Row({
   startOpen: boolean;
 }) {
   const [open, setOpen] = useState(startOpen);
+  const seenBullet = useRef(maxSeq(item.bullets.map((b) => b.id), /\.b(\d+)$/));
   // Texto cru das tecnologias: separar por vírgula a cada tecla apagaria vírgulas e espaços digitados.
   const [stacksText, setStacksText] = useState(item.stacks.join(", "));
   const set = (patch: Partial<Project>) => onChange({ ...item, ...patch });
@@ -101,11 +103,11 @@ function Row({
               className={`${BTN_OUTLINE} w-fit`}
               onClick={() => {
                 // Ids já usados nunca são reaproveitados.
-                const max = item.bullets.reduce((m, b) => Math.max(m, Number(/\.b(\d+)$/.exec(b.id)?.[1] ?? 0)), 0);
-                set({ bullets: [...item.bullets, { id: `${item.id}.b${max + 1}`, text: "" }] });
+                const n = nextSeq(seenBullet, item.bullets.map((b) => b.id), /\.b(\d+)$/);
+                set({ bullets: [...item.bullets, { id: `${item.id}.b${n}`, text: "" }] });
               }}
             >
-              Adicionar bullet
+              + Realização
             </button>
           </fieldset>
         </div>
@@ -134,11 +136,11 @@ function Row({
 
 export function ProjectsEditor({ projects, onChange }: Props) {
   const [newId, setNewId] = useState<string | null>(null);
+  const seenProj = useRef(maxSeq(projects.map((p) => p.id), /^proj_(\d+)$/));
 
   function add() {
     // Ids já usados nunca são reaproveitados (CVs antigos referenciam `proj_N`).
-    const max = projects.reduce((m, p) => Math.max(m, Number(/^proj_(\d+)$/.exec(p.id)?.[1] ?? 0)), 0);
-    const id = `proj_${max + 1}`;
+    const id = `proj_${nextSeq(seenProj, projects.map((p) => p.id), /^proj_(\d+)$/)}`;
     setNewId(id);
     onChange([...projects, { id, name: "", link: null, stacks: [], bullets: [] }]);
   }

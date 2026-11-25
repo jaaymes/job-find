@@ -12,10 +12,12 @@ export type TemplatePickerProps = {
   onChange: (id: CvTemplateId, makeDefault: boolean) => void;
   /** Mostra a caixa "Usar como padrão nos próximos CVs". */
   showDefaultOption?: boolean;
+  /** Desabilita o botão (ex.: durante a geração, para a escolha não se perder). */
+  disabled?: boolean;
 };
 
 /** Escolha do modelo do CV: botão com o modelo atual que abre um diálogo com os 10 modelos (todos de coluna única, legíveis por ATS). */
-export function TemplatePicker({ value, recommended, onChange, showDefaultOption = true }: TemplatePickerProps) {
+export function TemplatePicker({ value, recommended, onChange, showDefaultOption = true, disabled = false }: TemplatePickerProps) {
   const [open, setOpen] = useState(false);
   const [makeDefault, setMakeDefault] = useState(false);
   const current = getTemplate(value);
@@ -35,7 +37,7 @@ export function TemplatePicker({ value, recommended, onChange, showDefaultOption
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger render={<button type="button" className={BTN_OUTLINE} />}>
+      <DialogTrigger render={<button type="button" className={BTN_OUTLINE} disabled={disabled} />}>
         {`Modelo do CV: ${current.name}`}
       </DialogTrigger>
       <DialogContent mobile="sheet" className="sm:max-w-lg">

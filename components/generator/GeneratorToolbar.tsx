@@ -52,7 +52,7 @@ export function GeneratorToolbar(p: ToolbarProps) {
           ))}
         </select>
       </label>
-      <TemplatePicker value={p.templateId} recommended={p.recommendedTemplate} onChange={p.onTemplate} />
+      <TemplatePicker value={p.templateId} recommended={p.recommendedTemplate} onChange={p.onTemplate} disabled={p.running} />
       <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm font-medium">
         <input
           type="checkbox"

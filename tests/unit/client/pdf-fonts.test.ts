@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { PDF_FAMILIES, PDF_FONT } from "@/lib/client/pdf/fonts";
 
 const FONTS = resolve(import.meta.dirname, "../../../public/fonts");
-const NEW_FAMILIES = ["Source Serif 4", "Source Sans 3", "IBM Plex Sans"] as const;
+const NEW_FAMILIES = ["Source Serif 4", "JF Sans", "JF Grotesk"] as const;
 
 describe("fontes do PDF", () => {
   it("mantém a Inter como fonte padrão", () => {

@@ -275,7 +275,7 @@ function Generator({ job }: { job: JobDetail }) {
       if (abortRef.current || !profile || !settings) return;
       flush();
       // Gerar de novo mantém o modelo já escolhido para esta vaga.
-      const keepTemplate = draftTemplate ?? generatedStore.get()[String(job.id)]?.templateId ?? null;
+      const keepTemplate = draftTemplate ?? record?.templateId ?? null;
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       setRunning(args);
@@ -322,7 +322,7 @@ function Generator({ job }: { job: JobDetail }) {
         }
       }
     },
-    [job, profile, settings, flush, draftTemplate],
+    [job, profile, settings, flush, draftTemplate, record],
   );
 
   // Trabalho do usuário que uma nova geração descarta: edições e aprovações ("Aprovar mesmo assim").

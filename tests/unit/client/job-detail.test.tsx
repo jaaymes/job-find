@@ -105,4 +105,12 @@ describe("JobDetailView: aderência e barra de ação", () => {
     for (const a of ctas) expect(a.className).toContain("whitespace-nowrap");
     expect(ctas[0]!.textContent).toContain("Candidatar-se na Himalayas");
   });
+
+  it("a coluna sticky tem altura máxima da viewport e rola por dentro", () => {
+    rtlRender(<JobDetailView job={job()} />);
+    const aside = screen.getByLabelText("Ações e aderência");
+    for (const c of ["md:sticky", "md:top-4", "md:max-h-[calc(100dvh-2rem)]", "md:overflow-y-auto", "md:overscroll-contain"]) {
+      expect(aside.className).toContain(c);
+    }
+  });
 });

@@ -400,7 +400,7 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
         </div>
       </section>
       <div className="flex flex-col gap-5 md:grid md:grid-cols-[minmax(0,1fr)_minmax(320px,380px)] md:items-start md:gap-x-6">
-        <aside aria-label="Ações e aderência" className="flex flex-col gap-4 md:sticky md:top-4 md:col-start-2 md:row-start-1">
+        <aside aria-label="Ações e aderência" className="flex flex-col gap-4 md:sticky md:top-4 md:col-start-2 md:row-start-1 md:max-h-[calc(100dvh-2rem)] md:overflow-y-auto md:overscroll-contain">
           <ActionsCard job={job} applyUrl={applyUrl} sourceName={sourceName} canGenerate={canGenerate} />
           <Aderencia job={job} chance={chance} />
           <MobileTabs tab={tab} onChange={setTab} />

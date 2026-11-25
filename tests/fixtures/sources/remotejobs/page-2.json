@@ -1,0 +1,237 @@
+{
+ "data": [
+  {
+   "id": "4ab3eb1b-9bbf-47c2-ae98-e17fb1c3b5c7",
+   "title": "Consultor(a) SAP CO Sênior",
+   "url": "https://remotejobs.org/remote-jobs/consultora-sap-co-snior-vetta-tecnologia",
+   "apply_url": "https://remotejobs.org/remote-jobs/consultora-sap-co-snior-vetta-tecnologia",
+   "company": {
+    "name": "Vetta Tecnologia",
+    "logo_url": null,
+    "website": null,
+    "url": "https://remotejobs.org/companies/vetta-tecnologia"
+   },
+   "category": {
+    "name": "General",
+    "slug": "general"
+   },
+   "location": "Brazil",
+   "location_normalization": {
+    "raw": "Brazil",
+    "input": {},
+    "scope": "restricted",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [
+     "BR"
+    ],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "known",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": null,
+    "required_skills": [],
+    "mentioned_skills": [
+     "r"
+    ],
+    "preferred_skills": [],
+    "experience_requirements": []
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": "year",
+   "type": "Full-time",
+   "employment_types": [
+    "FULL_TIME"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p><strong>Estamos buscando um(a) Consultor(a) SAP CO Sênior para o Time Vetta!</strong></p><p>Você fará parte do time de uma empresa líder na produção e comercialização de aços, que produz soluções para os principais desafios industriais do país.</p><h2>VOCÊ JÁ CONHECE A VETTA?</h2><p>Na Vetta, acreditamos que a tecnologia e a inovação são essenciais para criar um futuro mais sustentável e eficiente para todos. Como uma empresa líder em digitalização industrial, nossas soluções estão ajudando clientes em todo o mundo a reduzir o consumo de energia, a melhorar a eficiência operacional e apoiar a transição energética através da descarbonização.</p><p>Ao se juntar à nossa equipe, você terá a oportunidade de trabalhar em<strong>projetos emocionantes e desafiadores com alguns dos maiores especialistas da indústria</strong>. Além disso, você fará parte de uma equipe dedicada em gerar um impacto positivo no mundo e em ajudar nossos clientes a alcançar seus objetivos de negócios. O Time Vetta sabe a importância do trabalho em equipe e da colaboração para alcançar resultados que atingem todo o globo – ao mesmo tempo que<strong>a carreira de cada um é transformada.</strong></p><p><strong>Se você quer compartilhar a sua perspectiva para um mundo mais sustentável, venha ser parte do Time Vetta!</strong>💙</p><h2>Nesse time, você terá a oportunidade de:</h2><ul>\n<li>Levantar Requisitos: Trabalhar com as áreas de negócio para entender e documentar os requisitos;</li>\n<li>Atuar com Consultor CO em projetos de sustentação e melhorias.</li>\n</ul><h2>O que esperamos de você para essa vaga:</h2><ul>\n<li>Experiência comprovada em implantação e suporte no módulo SAP CO do ECC versão 6.07.</li>\n<li>Conhecimento sólido em processos, configurações e customizações de CO-OM (Centros de Custo/Ordens), CO-PC (Cálculo de Custo de Produto), CO-PA (Análise de Lucratividade), CO-PCA (Contabilidade de Centros de Lucro).</li>\n<li>Experiência com a integração entre FI, MM, PP e PM.</li>\n<li>Facilidade de comunicação com usuários de negócios, experiência em treinamento e suporte técnico.</li>\n<li>Bom conhecimento de ABAP para criação de especificação e análise de objetos Z, LSMW, SAP Query, Report Painter.</li>\n<li>Bom conhecimento de utilização de debug de programas Z e interpretação de código ABAP (com ênfase em especificação técnica).</li>\n</ul><h2>Informações adicionais</h2><h2>NOSSOS BENEFÍCIOS:</h2><p>Sendo uma empresa voltada para pessoas, buscamos sempre valorizar a nossa equipe. Ao entrar para o Time Vetta, oferecemos:</p><ul>\n<li>\n<strong>Cartão Vale Alimentação e Refeição de R$32,00/dia</strong>, para ser utilizado em vários estabelecimentos de alimentação e de refeição de acordo com as suas necessidades.</li>\n<li>\n<strong>Auxílio home office de R$100,00/mês</strong>, além de <strong>flexibilidade no horário</strong> de trabalho.</li>\n<li>Caso trabalhe no escritório da Vetta, em Belo Horizonte, oferecemos <strong>Vale transporte</strong>.</li>\n<li>Pensando no cuidado, oferecemos<strong>Plano de saúde e Plano odontológico</strong>, com a possibilidade de inclusão dos seus dependentes.</li>\n<li>\n<strong>Total Pass e Vittude</strong> para que você possa cuidar, integralmente, da sua saúde ao praticar atividades físicas e ter contato com profissionais de diferentes áreas da saúde.</li>\n<li>\n<strong>Clube de Descontos Online – Swile Shop,</strong>com descontos em diversas redes de produtos e de serviços.</li>\n<li>\n<strong>Licença maternidade e paternidade estendida,</strong> para os pais e mães viverem essa fase com tranquilidade.</li>\n<li>\n<strong>PLR -</strong> conforme tabela do sindicato.</li>\n</ul><h2>E TEM MAIS...</h2><ul>\n<li><strong>Day-Off de Aniversário.</strong></li>\n<li>\n<strong>No Dress Code.</strong>Vista-se com o que te deixa confortável!</li>\n<li>\n<strong>Programa de Incentivo à Formação Contínua e Capacitação</strong>, para que você possa continuar aprendendo e compartilhando experiências.</li>\n<li>Quer indicar alguém para a Vetta? Temos <strong>Programa de Indicação de Talentos.</strong>\n</li>\n</ul><p><strong>Se interessou em fazer parte do time? Cadastre-se agora! Ficaremos felizes em ter você conosco. 💙</strong></p><p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/consultora-sap-co-snior-vetta-tecnologia</p>",
+   "posted_at": "2026-11-24T11:20:01+00:00",
+   "is_translated": false,
+   "original_language": null
+  },
+  {
+   "id": "8de8335d-7f55-4b7a-8457-879dbff1c916",
+   "title": "Email & CRM Marketing Specialist",
+   "url": "https://remotejobs.org/remote-jobs/email-crm-marketing-specialist-jobgether",
+   "apply_url": "https://remotejobs.org/remote-jobs/email-crm-marketing-specialist-jobgether",
+   "company": {
+    "name": "Jobgether",
+    "logo_url": "https://we-work-remotely.imgix.net/logos/0171/5852/logo.gif",
+    "website": "https://we-work-remotely.imgix.net",
+    "url": "https://remotejobs.org/companies/jobgether"
+   },
+   "category": {
+    "name": "Customer Support",
+    "slug": "customer-support"
+   },
+   "location": "Anywhere in the World",
+   "location_normalization": {
+    "raw": "Anywhere in the World",
+    "input": {},
+    "scope": "worldwide",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "known",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": "marketing",
+    "required_skills": [],
+    "mentioned_skills": [],
+    "preferred_skills": [],
+    "experience_requirements": [
+     {
+      "text": "3 years of professional experience as a CRM Manager, Email Marketing Manager, or in a similar B2C CRM marketing position",
+      "maximum_years": null,
+      "minimum_years": 3,
+      "classification": "required"
+     }
+    ]
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": null,
+   "type": "Full-time",
+   "employment_types": [
+    "FULL_TIME"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p><strong>Headquarters:</strong> Estonia<br>\n<strong>URL:</strong> <a href=\"http://jobgether.com\">http://jobgether.com</a></p>\n<p><strong>This position is listed on behalf of a partner company, which manages all applications and next steps. Our partner is looking for an Email &#x26; CRM Marketing Specialist based in Estonia.</strong></p>\n<p>As an Email &#x26; CRM Marketing Specialist, you will take ownership of outbound and lifecycle marketing communications, helping drive customer engagement, retention, and long-term loyalty across B2C audiences. You will manage and optimize multi-channel campaigns using Customer.io, including email, SMS, push notifications, and in-app messaging. Working with customer behavior data, you will develop targeted segmentation strategies and personalized communication journeys adapted to different markets. You will continuously experiment with messaging, creative formats, and delivery channels to improve campaign performance and customer experience. Collaborating with marketing, design, and content teams, you will turn customer insights into effective communication strategies. This is an exciting opportunity to join an international, collaborative, and autonomous CRM team where experimentation, innovation, and professional growth are encouraged.</p>\n<h3>Accountabilities:</h3>\n<ul>\n<li>Campaign Management: Plan, build, execute, and optimize multi-channel CRM campaigns across email, SMS, push notifications, and in-app messaging to strengthen customer engagement, activation, and retention.</li>\n<li>Lifecycle Marketing: Develop and manage communication strategies for existing customers, creating relevant touchpoints throughout the customer journey.</li>\n<li>Customer Segmentation and Personalization: Analyze customer behavior and segment databases to deliver targeted, personalized communications based on user preferences, activity, and engagement patterns across different markets.</li>\n<li>Testing and Optimization: Continuously conduct A/B tests and experiments involving messaging, copywriting, design, audience segments, timing, and communication channels to improve campaign effectiveness.</li>\n<li>Performance Monitoring and Reporting: Track and analyze key marketing performance indicators, including open rates, click-through rates, engagement, and retention metrics. Prepare regular performance reports and recommend actionable improvements.</li>\n<li>Deliverability Management: Monitor email deliverability, maintain sender reputation, and implement best practices to ensure successful campaign delivery.</li>\n<li>CRM Platform Management: Use Customer.io and other customer engagement technologies to manage automated workflows, campaign execution, audience segmentation, and lifecycle communications.</li>\n<li>Cross-Functional Collaboration: Work closely with marketing, design, and content teams to develop consistent messaging and deliver coordinated CRM initiatives.</li>\n<li>Continuous Improvement: Stay informed about digital marketing trends, emerging technologies, and AI-powered marketing solutions to identify opportunities for innovation and improved campaign performance.</li>\n</ul>\n<h2>Requirements:</h2>\n<ul>\n<li>At least 3 years of professional experience as a CRM Manager, Email Marketing Manager, or in a similar B2C CRM marketing position.</li>\n<li>Previous experience in the iGaming industry is considered a strong advantage.</li>\n<li>Strong understanding of marketing performance metrics and customer engagement indicators across the entire customer lifecycle.</li>\n<li>Hands-on experience with customer engagement platforms, preferably Customer.io, and the ability to manage automated campaigns and communication workflows.</li>\n<li>Good understanding of customer segmentation, audience targeting, logical operators, and personalized communication strategies.</li>\n<li>Strong technical knowledge of HTML and APIs, with the ability to support CRM integrations and campaign implementation.</li>\n<li>Experience planning, executing, and optimizing multi-channel campaigns across email, SMS, push notifications, and in-app messaging.</li>\n<li>Ability to analyze campaign performance data, identify improvement opportunities, and translate insights into effective marketing actions.</li>\n<li>Knowledge of email deliverability best practices and sender reputation management.</li>\n<li>A customer-centric and results-oriented mindset, with a strong focus on engagement, retention, and continuous optimization.</li>\n<li>Excellent analytical, organizational, and problem-solving skills, combined with attention to detail.</li>\n<li>Strong communication and collaboration skills, with the ability to work effectively in an international team.</li>\n<li>Upper-intermediate English proficiency or higher.</li>\n<li>Familiarity with AI-powered marketing tools and technologies is a significant advantage.</li>\n<li>Curiosity about emerging digital marketing trends and a proactive approach to learning and professional development.</li>\n</ul>\n<h2>Benefits:</h2>\n<ul>\n<li>Competitive Compensation: Attractive salary package aligned with experience and expertise.</li>\n<li>Remote Work: Flexibility to work remotely, offering greater freedom over your working environment.</li>\n<li>Flexible Working Hours: Adaptable working arrangements that support autonomy and work-life balance.</li>\n<li>Generous Time Off: Comprehensive vacation and sick leave policies.</li>\n<li>Health Insurance: Health coverage designed to support employee well-being.</li>\n<li>Professional Development: Financial assistance for professional development and access to educational allowances.</li>\n<li>Career Growth: Regular career development reviews and opportunities to expand your skills and responsibilities.</li>\n<li>Personal Activity Allowance: Monthly financial support for personal interests, hobbies, and activities outside work.</li>\n<li>Referral Program: Rewards for recommending talented professionals to join the team.</li>\n<li>Positive Work Environment: A collaborative, supportive, and international workplace that encourages initiative, independence, and open communication.</li>\n<li>Team Activities: Opportunities to participate in team-building events and corporate celebrations.</li>\n</ul>\n<p><strong>How Jobgether works:</strong></p>\n<p>We use an <strong>AI-powered matching process</strong> to ensure your application is reviewed quickly, objectively, and fairly against the role's core requirements. Our system identifies the top-fitting candidates, and this shortlist is then shared directly with the hiring company. The final decision and next steps (interviews, assessments) are managed by their internal team.</p>\n<p>We appreciate your interest and wish you the best!</p>\n<p><a href=\"https://jobgether.com/how-jobgether-works\"> Why Apply Through Jobgether?</a> </p>\n<p><strong>Data Privacy Notice:</strong> By submitting your application, you acknowledge that Jobgether will process your personal data to evaluate your candidacy and share relevant information with the hiring employer. This processing is based on legitimate interest and pre-contractual measures under applicable data protection laws (including GDPR). You may exercise your rights (access, rectification, erasure, objection) at any time.</p>\n<p>#LI-CL1</p>\n<p>We may use artificial intelligence (AI) tools to support parts of the hiring process, such as reviewing applications, analyzing resumes, or assessing responses and identifying potential inconsistencies or verification signals in application materials based on available information. These tools assist our recruitment team but do not replace human judgment. Final hiring decisions are ultimately made by humans. If you would like more information about how your data is processed, please contact us.</p>\n<p><strong>To apply:</strong> https://weworkremotely.com/remote-jobs/jobgether-email-crm-marketing-specialist</p><p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/email-crm-marketing-specialist-jobgether</p>",
+   "posted_at": "2026-11-23T15:46:33+00:00",
+   "is_translated": false,
+   "original_language": null
+  },
+  {
+   "id": "65212b5b-07a7-48a2-a34d-612f12162b47",
+   "title": "Senior OR Staff Product Designer",
+   "url": "https://remotejobs.org/remote-jobs/senior-or-staff-product-designer-elation-health",
+   "apply_url": "https://remotejobs.org/remote-jobs/senior-or-staff-product-designer-elation-health",
+   "company": {
+    "name": "Elation Health",
+    "logo_url": "https://assets.remotejobs.org/company-logos/scraped/794de3a5015c51c07b5e2ca1de649a23cf23049d2886e244cfd561ec78b4ed7f.jpeg",
+    "website": "https://elationhealth.com",
+    "url": "https://remotejobs.org/companies/elation-health"
+   },
+   "category": {
+    "name": "Design",
+    "slug": "design"
+   },
+   "location": "Anywhere in the World",
+   "location_normalization": {
+    "raw": "Anywhere in the World",
+    "input": {},
+    "scope": "worldwide",
+    "status": "known",
+    "regions": [],
+    "version": "job-location/1",
+    "timezones": [],
+    "unresolved": [],
+    "work_arrangement": "unknown",
+    "allowed_countries": [],
+    "reference_version": "iso-3166@4.4.0",
+    "excluded_countries": [],
+    "allowed_subdivisions": [],
+    "excluded_subdivisions": []
+   },
+   "applicant_location_requirements": null,
+   "search_facts": {
+    "status": "partial",
+    "version": "job-search-enrichment/1|description-presentation/1|description-sanitizer/1",
+    "seniority": null,
+    "role_family": "design",
+    "required_skills": [],
+    "mentioned_skills": [],
+    "preferred_skills": [],
+    "experience_requirements": [
+     {
+      "text": "8+ years of experience",
+      "maximum_years": null,
+      "minimum_years": 8,
+      "classification": "mentioned"
+     }
+    ]
+   },
+   "location_eligibility": "known",
+   "salary_min": null,
+   "salary_max": null,
+   "salary_text": null,
+   "salary_source_text": null,
+   "salary_currency": null,
+   "salary_period": null,
+   "type": "Full-time",
+   "employment_types": [
+    "FULL_TIME"
+   ],
+   "employer_job_id": null,
+   "direct_apply": null,
+   "description": "<p><strong>Headquarters:</strong> US or Canada - Remote</p>\n<p>Our team is committed to enhancing physician and patient quality of life through Elation, a SaaS cloud-based clinical platform. We’ve built a product that users love, and we plan to keep it that way by continuing to empathize with users and help them overcome their most significant challenges. Designing at Elation is humbling, challenging, and rewarding. Our users do work that affects human lives, and our tools can make or break that work.</p>\n<p><strong>The Role</strong></p>\n<p>As a Senior/Staff Product Designer, you'll lead the design for how primary care clinicians work. You’ll develop a deep understanding of their workflows to inspire an AI-native experience while keeping the team grounded in day-to-day clinical practice.</p>\n<p>This role is for someone who creates and champions compelling UX strategy and experience visions while guiding work across multiple squads. You'll shape interaction patterns and contribute to visual language development — all while modeling the craft, curiosity, and collaborative ways of working that raise the bar for designers around you.</p>\n<p>Clinicians have repeatedly awarded Elation \"Best in KLAS\" in our category, a recognition that reflects our clinician-first approach to everything we build. Reporting up through our Chief Product Officer, you'll work autonomously within your team while remaining connected to a centralized design group that is deeply collaborative and curious. You'll also find enthusiastic partners in our on-staff physicians, our users, and teams across the organization.</p>\n<p>If you want to do complex, meaningful work at the place where design and healthcare intersect, we'd love to hear from you!</p>\n<p><strong>What You'll Do (Role and Responsibilities)</strong></p>\n<ul>\n<li>Deeply understand our users — their problems, workflows, and jobs-to-be-done — to ensure we are always solving for the right thing.</li>\n<li>Own and lead the design process from discovery to delivery, making key decisions on solution direction and details.</li>\n<li>Drive the strategic direction of your domain in partnership with Product and Engineering, forecasting the impact of your solutions on users.</li>\n<li>Collaborate cross-functionally to deliver a clear, consistent, and high-quality user experience.</li>\n<li>As an AI-native design leader, you will balance cutting-edge technology with patient safety and accuracy across user-facing and backend experiences. </li>\n<li>Define and own the user satisfaction and usability metrics for your solutions, ensuring the team is aligned on how to measure success.</li>\n<li>Be a leader on the design team by mentoring other designers, leading design critiques, and driving initiatives that improve our culture, tools, and processes.</li>\n</ul>\n<p><strong>What We're Looking For (Experience and Skills)</strong></p>\n<ul>\n<li>8+ years of experience designing and shipping complex, web-based products in a cross-functional team.</li>\n<li>A strong portfolio demonstrating your ability to navigate ambiguous problem spaces, from research and strategy through to polished, human-centered user experiences. Your portfolio should showcase your strengths in UX, UI, and visual design.</li>\n<li>Proven experience in leading and executing a variety of user research methods.</li>\n<li>Excellent communication and collaboration skills, with a track record of building strong partnerships with Product and Engineering.</li>\n<li>Experience in designing for complex workflows is a must; experience in healthcare or with AI-powered experiences is a strong plus.</li>\n</ul>\n<p><strong>SALARY RANGE: $145,000 - 185,000 USD</strong></p>\n<hr>\n<p>Elation welcomes individuals from all backgrounds and walks of life. Elation is proud to be an Equal Opportunity Employer and is dedicated to creating and maintaining a diverse and inclusive work environment.</p>\n<p>We are committed to equal opportunity for all employees and applicants, and value individuals with diverse perspectives including, but not limited to: race, color, religion, sex, sexual orientation, socioeconomic status, age, gender identity or gender expression, national origin, disability or veteran status.</p>\n<p>Elation also complies with all applicable national, state and local laws governing nondiscrimination in employment as well as work authorization and employment eligibility verification requirements of the Immigration and Nationality Act and IRCA. We firmly believe a strong culture that supports a diverse and inclusive workforce allows us to achieve Elation’s mission of helping independent primary care thrive.</p>\n<p><strong>To apply:</strong> https://weworkremotely.com/remote-jobs/elation-health-senior-or-staff-product-designer</p><p>Apply directly on <a href=\"https://remotejobs.org\">RemoteJobs.org</a>: https://remotejobs.org/remote-jobs/senior-or-staff-product-designer-elation-health</p>",
+   "posted_at": "2026-11-23T06:01:56+00:00",
+   "is_translated": false,
+   "original_language": null
+  }
+ ],
+ "pagination": {
+  "total": 8,
+  "limit": 5,
+  "offset": 5,
+  "has_more": false
+ },
+ "meta": {
+  "powered_by": "RemoteJobs.org",
+  "url": "https://remotejobs.org",
+  "docs": "https://remotejobs.org/developers/api",
+  "search": {
+   "mode": "lexical",
+   "document_version": "public-search-index/1|job-search-serving/1|applicant-location/1|job-location/1|iso-3166@4.4.0|job-search-enrichment/1|description-presentation/1|description-sanitizer/1|job-description-markdown/3|job-search/1|description-presentation/1|description-sanitizer/1|technical-tokens/1|job-search-enrichment/1|description-presentation/1|description-sanitizer/1|meilisearch-public-analysis/1",
+   "ranking_version": "meilisearch-public-ranking/2",
+   "request_version": "job-search-request/1",
+   "active_generation": "beb0c54b-d9ce-4117-882b-f6514572ea02",
+   "fallback_reason": null,
+   "sort": "recent",
+   "eligibility": "known",
+   "salary_scope": null,
+   "engine": "meilisearch",
+   "consistency": "index_read",
+   "index_read": {
+    "generation": "beb0c54b-d9ce-4117-882b-f6514572ea02",
+    "requested_at": "2026-11-25T13:06:24.629Z",
+    "freshness": {
+     "kind": "not_observed"
+    }
+   },
+   "source_validation": "returned_hits"
+  }
+ }
+}

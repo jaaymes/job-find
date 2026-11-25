@@ -9,6 +9,6 @@ describe("catálogo de fontes", () => {
     expect(SOURCE_LABELS.wwr).toBe("We Work Remotely");
     expect(SOURCE_TRUST.greenhouse).toBe(3);
     expect(SOURCE_TRUST.hn).toBe(1);
-    expect(SOURCE_IDS.length).toBe(15);
+    expect(SOURCE_IDS.length).toBe(16);
   });
 });

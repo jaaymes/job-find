@@ -5,7 +5,7 @@
 - **Specs relacionadas:**
   - [2026-11-23-job-find-agregador-vagas-tech.md](2026-11-23-job-find-agregador-vagas-tech.md) (RN-05, modelo de dados, upsert)
   - [2026-11-25-auditoria-insercao-e-limpeza-de-vagas.md](2026-11-25-auditoria-insercao-e-limpeza-de-vagas.md) (achado A-04 e decisão D-04, que adiou a duplicata entre fontes para uma spec própria: esta)
-- **Status:** proposta
+- **Status:** implementada (Tarefas 1–7); rollout em produção pendente
 
 ## 1. Requisitos (premissas)
 
@@ -113,6 +113,7 @@
   - Antes de gravar, o script pega o lock de **todas** as fontes com `acquireLock` ([lock.ts:12](../../lib/server/collect/lock.ts), TTL de 5 min). Se alguma estiver ocupada por uma coleta, libera as que pegou e aborta. No fim, libera todas com `releaseLock`.
   - O upsert passa a chamar `mergeJobs` quando a atualização de uma vaga colide com a chave ou a URL de outra vaga ativa, no lugar de manter a chave antiga. Isso fecha a colisão silenciosa daqui para frente.
 - **Consequências:** a simulação já serve de medição (Fase 0). As perdedoras expiram e somem da listagem em 30 dias pela retenção normal. Links salvos para elas passam a dar 404, o mesmo efeito já aceito no A-06; a quantidade é pequena e aparece na simulação.
+- **Nota (janela da RN-05):** a fusão no caminho de atualização do upsert e o script de recálculo não aplicam a janela de 30 dias da RN-05: juntam vagas ativas com a mesma chave ou URL, qualquer que seja o `first_seen_at`. Efeito aceito: uma vaga republicada pode herdar o `published_at` antigo (`LEAST`) da vaga com que foi fundida; isso se corrige sozinho quando ela expira pela validade.
 
 ### D-06: Catálogo único de fontes em `lib/shared`
 
@@ -183,7 +184,8 @@ APIs e contratos públicos (o formato de `/api/jobs` não muda; `source` aceita 
 | Script em paralelo com a coleta | Baixa | Médio (colisão no índice, transação abortada) | O script pega o lock de todas as fontes antes de gravar e aborta se alguma estiver coletando; transação única; pode rodar de novo, porque é idempotente. |
 | Link salvo de vaga perdedora vira 404 | Baixa | Baixo | Quantidade aparece na simulação; mesmo efeito já aceito no A-06. |
 | Mudança na `url_canonical` quebra o link exibido | Baixa | Médio | Só transformações que mantêm a página; caixa do caminho preservada; testes com URLs reais dos fixtures. |
-| Upsert mais lento com a fusão | Baixa | Baixo | A fusão só acontece em colisão, que é rara; o atalho por hash não muda. |
+| Upsert mais lento com a fusão | Baixa | Baixo | A fusão só acontece em colisão, que é rara. O atalho por hash vale também para a fonte menos confiável de uma vaga fundida (a vaga já tem fonte mais confiável, então o upsert não gravaria nada). |
+| Vaga fundida com fontes de mesma confiança perde o atalho | Média | Baixo (mais tempo de coleta) | O `content_hash` é o da última fonte que escreveu: no empate, cada fonte vê o hash da outra, segue o caminho completo e reescreve o conteúdo, que alterna entre as duas. Follow-up: hash por fonte em `job_sources` (exige migração). Medir a duração por fonte em `source_runs` na Fase 0/2. |
 
 ## 7. Perguntas em aberto
 

@@ -8,6 +8,7 @@ import { profileStore } from "@/lib/client/profile/store";
 import { generatedStore } from "@/lib/client/cv/generated-store";
 import { analysisStore } from "@/lib/client/jobs/analysis-store";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
+import { cvPrefsStore } from "@/lib/client/pdf/templates/prefs";
 
 const AI = "jobfind:v1:ai";
 const ORIGINAL_KEY = "sk-original-9999";
@@ -399,6 +400,7 @@ describe("round-trip", () => {
           includeLetter: false,
           edits: null,
           approvedFlags: [],
+          templateId: null,
         },
       },
     };
@@ -433,5 +435,45 @@ describe("stripMarkup", () => {
   it("mantém texto simples, &, < solto e acentos", () => {
     expect(stripMarkup("R&D em São Paulo")).toBe("R&D em São Paulo");
     expect(stripMarkup("a < b")).toBe("a < b");
+  });
+});
+
+describe("cvPrefs e templateId no backup", () => {
+  const envelope = (data: Record<string, unknown>) =>
+    new File([JSON.stringify({ format: "jobfind-backup", v: 1, exportedAt: "2026-11-25T00:00:00.000Z", data })], "b.json");
+
+  it("exporta e importa jobfind:v1:cvPrefs", async () => {
+    cvPrefsStore.set({ templateId: "moderno" });
+    const file = new File([await exportBackup({ includeKeys: false }).text()], "b.json");
+    localStorage.clear();
+    const r = await parsed(file);
+    expect(r.keys).toContain("jobfind:v1:cvPrefs");
+    expect(applyBackup(r.backup, { acceptKeys: false })).toEqual([]);
+    expect(cvPrefsStore.get()).toEqual({ templateId: "moderno" });
+  });
+
+  it("importa generatedDocs sem templateId (backup antigo)", async () => {
+    const rec = {
+      cv: { headline: "h", summary: "s", skills: [], experiences: [] },
+      coverLetter: null,
+      provider: "openai",
+      model: "m",
+      promptVersion: 1,
+      createdAt: "x",
+      lang: "pt",
+      includeLetter: false,
+      edits: null,
+      approvedFlags: [],
+    };
+    const r = await parsed(envelope({ "jobfind:v1:generatedDocs": { "7": rec } }));
+    expect(r.skipped).toEqual([]);
+    expect(r.keys).toEqual(["jobfind:v1:generatedDocs"]);
+    expect(applyBackup(r.backup, { acceptKeys: false })).toEqual([]);
+    expect(generatedStore.get()["7"].templateId).toBeNull();
+  });
+
+  it("cvPrefs com campo extra vai para skipped", async () => {
+    const r = await parsed(envelope({ "jobfind:v1:cvPrefs": { templateId: null, extra: 1 }, "jobfind:v1:lastVisit": null }));
+    expect(r.skipped).toEqual(["jobfind:v1:cvPrefs"]);
   });
 });

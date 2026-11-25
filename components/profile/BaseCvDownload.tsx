@@ -1,0 +1,93 @@
+"use client";
+
+import { useState } from "react";
+import { TemplatePicker } from "@/components/generator/TemplatePicker";
+import { BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
+import { assembleBaseCv } from "@/lib/client/cv/assemble";
+import type { CvLang } from "@/lib/client/cv/period";
+import { cvFileName } from "@/lib/client/pdf/filename";
+import { cvPrefsStore, resolveTemplateId } from "@/lib/client/pdf/templates/prefs";
+import { recommendTemplate } from "@/lib/client/pdf/templates/recommend";
+import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
+import { useStore } from "@/lib/client/storage/store";
+import type { Profile } from "@/lib/shared/schemas/profile";
+
+const LANGS: { id: CvLang; label: string }[] = [
+  { id: "pt", label: "Português" },
+  { id: "en", label: "English" },
+  { id: "es", label: "Español" },
+];
+
+function saveBlob(blob: Blob, name: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+}
+
+/** CV base (RF-37): monta o PDF só com o perfil salvo, sem vaga e sem IA. */
+export function BaseCvDownload({ profile }: { profile: Profile }) {
+  const prefs = useStore(cvPrefsStore);
+  const [chosen, setChosen] = useState<CvTemplateId | null>(null);
+  const [lang, setLang] = useState<CvLang>("pt");
+  const [busy, setBusy] = useState(false);
+  const [failed, setFailed] = useState(false);
+
+  const templateId = resolveTemplateId(chosen, prefs ?? { templateId: null }, profile, null);
+
+  async function download() {
+    setBusy(true);
+    setFailed(false);
+    try {
+      const render = await import("@/lib/client/pdf/render");
+      const { blob } = await render.renderCvPdf(assembleBaseCv(profile, lang), templateId);
+      saveBlob(blob, cvFileName(profile.name ?? "", "", ""));
+    } catch {
+      setFailed(true);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="base-cv-t" className={`${CARD} mt-6 flex flex-col gap-3 p-4 sm:p-6`}>
+      <h2 id="base-cv-t" className="text-lg font-semibold">
+        Baixar CV base
+      </h2>
+      <p className="text-sm text-jf-ink-3">
+        Gera um PDF só com os dados do perfil salvo, sem vaga e sem IA. Salve o perfil antes para incluir as últimas
+        edições.
+      </p>
+      <div className="flex flex-wrap items-end gap-3">
+        <TemplatePicker
+          value={templateId}
+          recommended={recommendTemplate(profile, null)}
+          onChange={(id) => setChosen(id)}
+          showDefaultOption={false}
+        />
+        <label className={FIELD_LABEL}>
+          Idioma dos rótulos do CV
+          <select className={`${FIELD} sm:w-auto`} value={lang} onChange={(e) => setLang(e.target.value as CvLang)}>
+            {LANGS.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <button type="button" className={BTN_PRIMARY} disabled={busy} onClick={() => void download()}>
+          {busy ? "Gerando PDF…" : "Baixar CV base"}
+        </button>
+      </div>
+      {failed && (
+        <p role="alert" className="text-sm text-jf-danger-fg">
+          Não foi possível gerar o PDF. Tente de novo.
+        </p>
+      )}
+    </section>
+  );
+}

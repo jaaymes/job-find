@@ -1,6 +1,6 @@
 {
   "profile": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "name": "Ana Exemplo",
     "headline": "Desenvolvedora Frontend Júnior",
     "location": "Recife, PE",
@@ -86,7 +86,11 @@
         "startYear": "2020",
         "endYear": "2024"
       }
-    ]
+    ],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "highlights": []
   },
   "job": {
     "id": 9000,

@@ -6,6 +6,7 @@ import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
 import { CoverLetterDocument } from "./CoverLetterDocument";
 import { CvDocument } from "./CvDocument";
 import { registerPdfFonts } from "./fonts";
+import type { CvTemplateId } from "./templates/types";
 
 export type PdfResult = { blob: Blob; pages: number };
 
@@ -18,9 +19,9 @@ async function toResult(instance: ReturnType<typeof pdf>): Promise<PdfResult> {
 }
 
 /** `fontsDir` só existe para o teste em node (caminho do sistema de arquivos); no navegador usa `/fonts`. */
-export async function renderCvPdf(cv: AssembledCv, fontsDir?: string): Promise<PdfResult> {
+export async function renderCvPdf(cv: AssembledCv, templateId: CvTemplateId, fontsDir?: string): Promise<PdfResult> {
   registerPdfFonts(fontsDir);
-  return toResult(pdf(<CvDocument cv={cv} />));
+  return toResult(pdf(<CvDocument cv={cv} templateId={templateId} />));
 }
 
 export async function renderLetterPdf(

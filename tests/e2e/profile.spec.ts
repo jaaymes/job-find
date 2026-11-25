@@ -19,7 +19,7 @@ const cors = (route: Route): Record<string, string> => ({
 
 function modelProfile(name: string) {
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     name,
     headline: "Desenvolvedora Full Stack",
     location: "São Paulo, BR",
@@ -42,6 +42,10 @@ function modelProfile(name: string) {
       },
     ],
     education: [],
+    projects: [],
+    certifications: [],
+    languages: [],
+    highlights: [],
   };
 }
 
@@ -350,4 +354,37 @@ test("depois de salvar o perfil, sair não mostra aviso", async ({ page }) => {
   await page.getByRole("link", { name: "Minhas vagas" }).first().click();
   await expect(page).toHaveURL(/\/minhas-vagas$/);
   expect(abriu).toBe(false);
+});
+
+test("projeto, certificação e idioma são editáveis e continuam lá depois do reload (RF-34)", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByRole("button", { name: "Preencher manualmente" }).click();
+
+  await page.getByRole("button", { name: "Adicionar projeto" }).click();
+  await page.getByLabel("Nome do projeto").fill("Job Find");
+  await page.getByRole("button", { name: "+ Realização" }).click();
+  await page.getByLabel("Realização do projeto 1", { exact: true }).fill("Buscador de vagas que roda no navegador");
+
+  await page.getByRole("button", { name: "Adicionar certificação" }).click();
+  await page.getByLabel("Nome da certificação 1").fill("AWS SAA");
+
+  await page.getByRole("button", { name: "Adicionar idioma" }).click();
+  await page.getByLabel("Nome do idioma 1").fill("Inglês");
+  await page.getByLabel("Nível do idioma 1").selectOption({ label: "Fluente" });
+
+  await page.getByRole("button", { name: "Salvar perfil" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Perfil salvo" })).toBeVisible();
+
+  await page.reload();
+  await expect(page.locator("strong", { hasText: "Job Find" })).toBeVisible();
+  await expect(page.getByLabel("Nome da certificação 1")).toHaveValue("AWS SAA");
+  await expect(page.getByLabel("Nome do idioma 1")).toHaveValue("Inglês");
+  await expect(page.getByLabel("Nível do idioma 1")).toHaveValue("fluent");
+
+  const saved = await storedProfile(page);
+  expect((saved?.projects as { id: string; bullets: { id: string }[] }[])[0].id).toBe("proj_1");
+  expect(saved?.certifications).toEqual([{ name: "AWS SAA", issuer: null, year: null }]);
+  expect(saved?.languages).toEqual([{ name: "Inglês", level: "fluent" }]);
+  // Com perfil salvo, o card do CV base aparece.
+  await expect(page.getByRole("button", { name: "Baixar CV base" })).toBeVisible();
 });

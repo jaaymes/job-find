@@ -1,6 +1,6 @@
 {
   "profile": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "name": "Bruno Teste",
     "headline": "Senior Backend Engineer",
     "location": "Curitiba, PR",
@@ -91,7 +91,11 @@
         "startYear": "2012",
         "endYear": "2016"
       }
-    ]
+    ],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "highlights": []
   },
   "job": {
     "id": 9001,

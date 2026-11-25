@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CV_TAILOR_V1, pickLanguage } from "@/lib/client/ai/prompts/cv.tailor.v1";
-import { assembleCv } from "@/lib/client/cv/assemble";
+import { assembleBaseCv, assembleCv } from "@/lib/client/cv/assemble";
 import { formatPeriod } from "@/lib/client/cv/period";
 import { TailoredDocs } from "@/lib/shared/schemas/tailored";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
@@ -104,7 +104,7 @@ describe("assembleCv", () => {
       company: "Outra SA",
       role: "Dev",
       period: "2018 – dez 2020",
-      bullets: [{ key: expect.stringMatching(/^exp_2@0#0:/), text: "APIs em Node.js", flagged: false, violations: [] }],
+      bullets: [{ key: expect.stringMatching(/^exp_2@0#0:/), text: "APIs em Node.js", sources: ["exp_2.b1"], flagged: false, violations: [] }],
     });
     expect(cv.experiences[1].company).toBe("Empresa Ficticia");
     expect(cv.experiences[1].period).toBe("jan 2021 – atual");
@@ -116,6 +116,10 @@ describe("assembleCv", () => {
     expect(cv.skills).toEqual(["React", "Node.js"]);
     expect(cv.education).toEqual(["Ciência da Computação – USP (2014 – 2017)"]);
     expect(cv.certifications).toEqual([]);
+    expect(cv.projects).toEqual([]);
+    expect(cv.languages).toEqual([]);
+    expect(cv.highlightKeys).toEqual([]);
+    expect(cv.location).toBe("São Paulo, SP, Brasil");
     expect(cv.lang).toBe("pt");
   });
 
@@ -127,6 +131,130 @@ describe("assembleCv", () => {
 
   it("usa o idioma informado no período", () => {
     expect(assembleCv(profile(), docs(), "en").experiences[1].period).toBe("Jan 2021 – Present");
+  });
+});
+
+describe("assembleCv dados do perfil v2", () => {
+  it("certificações: nome, emissor e ano; sem eles, só o nome", () => {
+    const p = profile();
+    p.certifications = [
+      { name: "AWS SAA", issuer: "Amazon", year: "2023" },
+      { name: "Scrum", issuer: null, year: null },
+      { name: " ", issuer: "Amazon", year: "2023" },
+    ];
+    expect(assembleCv(p, docs(), "pt").certifications).toEqual(["AWS SAA – Amazon (2023)", "Scrum"]);
+  });
+
+  it("idiomas: nível rotulado no idioma do CV, nome como no perfil", () => {
+    const p = profile();
+    p.languages = [{ name: "Inglês", level: "fluent" }];
+    expect(assembleCv(p, docs(), "pt").languages).toEqual(["Inglês – Fluente"]);
+    expect(assembleCv(p, docs(), "en").languages).toEqual(["Inglês – Fluent"]);
+  });
+
+  it("idioma sem nome é descartado", () => {
+    const p = profile();
+    p.languages = [
+      { name: "  ", level: "basic" },
+      { name: "Inglês", level: "fluent" },
+    ];
+    expect(assembleCv(p, docs(), "pt").languages).toEqual(["Inglês – Fluente"]);
+  });
+
+  it("projetos copiam o perfil e descartam bullets vazios", () => {
+    const p = profile();
+    p.projects = [
+      {
+        id: "proj_1",
+        name: "Job Find",
+        link: "https://github.com/ana/job-find",
+        stacks: ["react"],
+        bullets: [
+          { id: "proj_1.b1", text: "Criou o app" },
+          { id: "proj_1.b2", text: "   " },
+        ],
+      },
+    ];
+    expect(assembleCv(p, docs(), "pt").projects).toEqual([
+      { name: "Job Find", link: "https://github.com/ana/job-find", stacks: ["react"], bullets: ["Criou o app"] },
+    ]);
+  });
+
+  it("localização vazia quando o perfil não tem", () => {
+    const p = { ...profile(), location: null };
+    expect(assembleCv(p, docs(), "pt").location).toBe("");
+  });
+
+  it("highlightKeys: bullets cujo sources cruzam com os destaques, na ordem do CV, até 3", () => {
+    const p = profile();
+    p.highlights = ["exp_1.b1", "exp_2.b1"];
+    const cv = assembleCv(p, docs(), "pt");
+    // Ordem do CV: exp_2 vem antes de exp_1.
+    expect(cv.highlightKeys).toEqual([cv.experiences[0].bullets[0].key, cv.experiences[1].bullets[0].key]);
+  });
+
+  it("highlightKeys limita a 3", () => {
+    const p = profile();
+    p.highlights = ["exp_1.b1", "exp_1.b2", "exp_2.b1", "exp_9.b1"];
+    const d = docs();
+    d.cv.experiences[1].bullets.push(
+      { text: "Outro A", sourceBulletIds: ["exp_1.b2"] },
+      { text: "Outro B", sourceBulletIds: ["exp_1.b2"] },
+    );
+    expect(assembleCv(p, d, "pt").highlightKeys).toHaveLength(3);
+  });
+
+  it("ocorrência repetida de um expId não entra em highlightKeys", () => {
+    const p = profile();
+    p.highlights = ["exp_1.b1"];
+    const d = docs();
+    d.cv.experiences = [
+      { expId: "exp_1", bullets: [{ text: "Primeira", sourceBulletIds: ["exp_1.b2"] }] },
+      { expId: "exp_1", bullets: [{ text: "Repetida", sourceBulletIds: ["exp_1.b1"] }] },
+    ];
+    expect(assembleCv(p, d, "pt").highlightKeys).toEqual([]);
+  });
+
+  it("highlightKeys vazio com destaque órfão", () => {
+    const p = profile();
+    p.highlights = ["exp_9.b1"];
+    expect(assembleCv(p, docs(), "pt").highlightKeys).toEqual([]);
+  });
+
+  it("bullet sinalizado não entra em highlightKeys", () => {
+    const p = profile();
+    p.highlights = ["exp_2.b1", "exp_1.b1"];
+    const base = assembleCv(p, docs(), "pt");
+    const badKey = base.experiences[0].bullets[0].key;
+    const cv = assembleCv(p, docs(), "pt", {
+      violations: [{ kind: "unknown_number", text: "40%", where: { expId: "exp_2", bulletIndex: 0, part: "cv" }, key: badKey }],
+    });
+    expect(cv.experiences[0].bullets[0].flagged).toBe(true);
+    expect(cv.highlightKeys).toEqual([cv.experiences[1].bullets[0].key]);
+  });
+});
+
+describe("assembleBaseCv", () => {
+  it("monta o CV pelo perfil, sem IA e sem sinalizações", () => {
+    const p = profile();
+    const cv = assembleBaseCv(p, "pt");
+    expect(cv.headline).toBe("Dev full stack");
+    expect(cv.summary).toBe(p.summary);
+    expect(cv.skills).toEqual(["React", "Node.js"]);
+    expect(cv.experiences.map((x) => x.expId)).toEqual(["exp_1", "exp_2"]);
+    expect(cv.experiences[0].bullets.map((b) => [b.text, b.sources])).toEqual([
+      ["Liderou a migração para React", ["exp_1.b1"]],
+      [`Escreveu docs. Contato ${EMAIL}`, ["exp_1.b2"]],
+    ]);
+    const flags = [cv.flags.headline, cv.flags.summary, ...cv.flags.skills, ...cv.experiences.flatMap((x) => x.bullets)];
+    expect(flags.every((f) => f.flagged === false)).toBe(true);
+    expect(cv.lang).toBe("pt");
+  });
+
+  it("headline e resumo ausentes viram texto vazio", () => {
+    const cv = assembleBaseCv({ ...profile(), headline: null, summary: null }, "en");
+    expect(cv.headline).toBe("");
+    expect(cv.summary).toBe("");
   });
 });
 

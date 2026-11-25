@@ -17,6 +17,7 @@ import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { profileStore } from "@/lib/client/profile/store";
 import { useStore } from "@/lib/client/storage/store";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
+import { BaseCvDownload } from "./BaseCvDownload";
 import { ImportPanel, type ImportMeta } from "./ImportPanel";
 import { ProfileEditor } from "./ProfileEditor";
 import { CARD } from "@/components/ui/styles";
@@ -100,6 +101,7 @@ export function ProfileScreen() {
               Ainda não há perfil. Importe um currículo ou preencha manualmente para ver as suas chances nas vagas.
             </div>
           )}
+          {profile && <BaseCvDownload profile={profile} />}
         </div>
       </div>
 

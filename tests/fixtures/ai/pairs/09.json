@@ -1,6 +1,6 @@
 {
   "profile": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "name": "Igor Fictício",
     "headline": "Desenvolvedor Full Stack Pleno",
     "location": "Florianópolis, SC",
@@ -86,7 +86,11 @@
         "startYear": "2015",
         "endYear": "2019"
       }
-    ]
+    ],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "highlights": []
   },
   "job": {
     "id": 9008,

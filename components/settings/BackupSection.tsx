@@ -24,6 +24,7 @@ const KEY_LABELS: Record<BackupKey, string> = {
   "jobfind:v1:generatedDocs": "CVs e cartas gerados",
   "jobfind:v1:savedFilters": "Busca padrão da home",
   "jobfind:v1:lastVisit": "Data da última visita (selo \"Nova\")",
+  "jobfind:v1:cvPrefs": "Modelo padrão do CV",
 };
 
 const REASONS = {

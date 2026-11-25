@@ -20,7 +20,8 @@ export const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
 export const BACKUP_FORMAT = "jobfind-backup";
 export const BACKUP_VERSION = 1;
 
-/** Chaves com store: todas as de `StorageKey`, menos `jobfind:v1:onboarding` (só marca que o guia inicial foi visto). */
+/** Chaves com store: todas as de `StorageKey`, menos `jobfind:v1:onboarding` (só marca que o guia inicial foi visto) e `jobfind:v1:lastFilters` (estado
+ * efêmero de navegação, vale 7 dias). */
 const AI = "jobfind:v1:ai" satisfies StorageKey;
 const PROFILE = "jobfind:v1:profile" satisfies StorageKey;
 const JOB_STATE = "jobfind:v1:jobState" satisfies StorageKey;

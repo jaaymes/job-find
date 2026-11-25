@@ -116,10 +116,10 @@ test("o rodapé leva a Fontes e a Privacidade", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1, name: "Privacidade" })).toBeVisible();
 });
 
-test("o rodapé de uma página (local) leva a Fontes sem violações de CSP", async ({ page }) => {
+test("o menu do header de uma página (local) leva a Fontes sem violações de CSP", async ({ page }) => {
   await seedStates();
   await page.goto("/configuracoes");
-  await page.getByRole("contentinfo").getByRole("link", { name: "Fontes" }).click();
+  await page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Fontes", exact: true }).click();
   await expect(page).toHaveURL(/\/fontes$/);
   await expect(page.getByRole("heading", { level: 1, name: "Fontes" })).toBeVisible();
   // Uma linha por fonte do registro: a mesma consulta que alimenta `/api/sources/status`.

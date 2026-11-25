@@ -1,10 +1,13 @@
 import { cleanup, render as rtlRender, screen } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { JobDetailView } from "@/components/jobs/JobDetail";
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 import { resetStorageProbeForTests } from "@/lib/client/storage/store";
 import type { JobDetail } from "@/lib/shared/types/job";
+
+// O "Voltar" usa o roteador para voltar pelo histórico.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ back: vi.fn() }) }));
 
 const HIMALAYAS_APPLY = "https://himalayas.app/companies/acme/jobs/dev?utm_source=api";
 
@@ -67,6 +70,23 @@ describe("JobDetailView", () => {
     }
     const glyph = [...applyLink(host)!.querySelectorAll("span")].find((s) => s.textContent === "↗");
     expect(glyph?.getAttribute("aria-hidden")).toBe("true");
+  });
+});
+
+describe("JobDetailView: Glassdoor", () => {
+  it("mostra o link da empresa no Glassdoor, em nova aba e com nofollow", () => {
+    const host = render(job({ company: "Nubank" }));
+    const a = [...host.querySelectorAll("a")].find((l) => /Ver Nubank no Glassdoor/.test(l.getAttribute("aria-label") ?? ""));
+    expect(a?.getAttribute("href")).toBe("https://www.glassdoor.com.br/Search/results.htm?keyword=Nubank");
+    expect(a?.getAttribute("target")).toBe("_blank");
+    expect(a?.getAttribute("rel")).toContain("nofollow");
+    expect(a?.getAttribute("aria-label")).toContain("(abre em nova aba)");
+    expect(a?.textContent).toContain("Glassdoor");
+  });
+
+  it("empresa confidencial não mostra o link", () => {
+    const host = render(job({ company: "Confidencial" }));
+    expect(host.innerHTML).not.toContain("glassdoor");
   });
 });
 

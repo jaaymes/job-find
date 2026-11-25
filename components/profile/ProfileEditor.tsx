@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useUnsavedChangesGuard } from "@/lib/client/use-unsaved-changes-guard";
 import {
   ENGLISH_LABEL,
   ENGLISH_LEVELS,
@@ -26,9 +27,12 @@ const orNull = (v: string): string | null => (v.trim() === "" ? null : v);
 export function ProfileEditor({ profile, onSave }: Props) {
   const [draft, setDraft] = useState(profile);
   const [saved, setSaved] = useState<"idle" | "ok">("idle");
+  const [dirty, setDirty] = useState(false);
+  useUnsavedChangesGuard(dirty, "Você tem alterações não salvas no perfil. Sair mesmo assim?");
   const patch = (p: Partial<Profile>) => {
     setDraft((d) => ({ ...d, ...p }));
     setSaved("idle");
+    setDirty(true);
   };
 
   return (
@@ -40,7 +44,11 @@ export function ProfileEditor({ profile, onSave }: Props) {
         <button
           type="button"
           className="inline-flex min-h-11 items-center rounded-[10px] bg-jf-ink px-[18px] text-sm font-semibold text-jf-surface outline-none hover:bg-jf-ink-2 focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
-          onClick={() => setSaved(onSave(draft) ? "ok" : "idle")}
+          onClick={() => {
+            const ok = onSave(draft);
+            setSaved(ok ? "ok" : "idle");
+            if (ok) setDirty(false);
+          }}
         >
           Salvar perfil
         </button>

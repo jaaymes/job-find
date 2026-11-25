@@ -314,3 +314,40 @@ test("formação é editável: adicionar, salvar e continuar lá depois do reloa
   await page.reload();
   await expect(page.getByRole("button", { name: /^Editar formação/ })).toHaveCount(0);
 });
+
+test("avisa antes de sair do perfil com alterações não salvas", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByRole("button", { name: "Preencher manualmente" }).click();
+  await page.getByLabel("Nome", { exact: true }).fill("Ana Alterada");
+  const minhasVagas = page.getByRole("link", { name: "Minhas vagas" }).first();
+
+  let mensagem = "";
+  page.once("dialog", (d) => {
+    mensagem = d.message();
+    void d.dismiss();
+  });
+  await minhasVagas.click();
+  expect(mensagem).toBe("Você tem alterações não salvas no perfil. Sair mesmo assim?");
+  await expect(page).toHaveURL(/\/perfil$/);
+
+  page.once("dialog", (d) => void d.accept());
+  await minhasVagas.click();
+  await expect(page).toHaveURL(/\/minhas-vagas$/);
+});
+
+test("depois de salvar o perfil, sair não mostra aviso", async ({ page }) => {
+  await page.goto("/perfil");
+  await page.getByRole("button", { name: "Preencher manualmente" }).click();
+  await page.getByLabel("Nome", { exact: true }).fill("Ana Salva");
+  await page.getByRole("button", { name: "Salvar perfil" }).click();
+  await expect(page.getByRole("status").filter({ hasText: "Perfil salvo" })).toBeVisible();
+
+  let abriu = false;
+  page.on("dialog", (d) => {
+    abriu = true;
+    void d.dismiss();
+  });
+  await page.getByRole("link", { name: "Minhas vagas" }).first().click();
+  await expect(page).toHaveURL(/\/minhas-vagas$/);
+  expect(abriu).toBe(false);
+});

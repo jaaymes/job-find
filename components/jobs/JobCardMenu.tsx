@@ -18,6 +18,7 @@ export function JobCardMenu({
   jobUrl,
   status,
   hidden = false,
+  glassdoorUrl,
   onHide,
   onStatusChange,
   className,
@@ -30,6 +31,8 @@ export function JobCardMenu({
   status: JobStatus | null;
   /** Vaga já oculta: o item vira "Mostrar de novo" e `onHide` desfaz. */
   hidden?: boolean;
+  /** Busca da empresa no Glassdoor; sem ela (nome genérico) o item não aparece. */
+  glassdoorUrl?: string | null;
   onHide: () => void;
   onStatusChange?: (status: JobStatus) => void;
   className?: string;
@@ -83,6 +86,17 @@ export function JobCardMenu({
                 </Menu.Positioner>
               </Menu.Portal>
             </Menu.SubmenuRoot>
+            {glassdoorUrl && (
+              <Menu.LinkItem
+                className={ITEM}
+                href={glassdoorUrl}
+                target="_blank"
+                rel="noopener noreferrer nofollow"
+              >
+                Ver empresa no Glassdoor
+                <span className="sr-only"> (abre em nova aba)</span>
+              </Menu.LinkItem>
+            )}
             <Menu.Item className={ITEM} onClick={onHide}>
               {hidden ? "Mostrar de novo" : "Ocultar vaga"}
             </Menu.Item>

@@ -13,7 +13,7 @@ import { profileStore } from "@/lib/client/profile/store";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
 import type { JobDetail, JobSummary } from "@/lib/shared/types/job";
 
-vi.mock("next/navigation", () => ({ useSearchParams: () => new URLSearchParams() }));
+vi.mock("next/navigation", () => ({ useSearchParams: () => new URLSearchParams(), useRouter: () => ({ back: vi.fn() }) }));
 
 function summary(id: number, over: Partial<JobSummary> = {}): JobSummary {
   return {

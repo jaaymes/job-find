@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element -- logos vêm direto da origem (img-src https:), sem proxy nem otimização. */
 "use client";
 
-import Link from "next/link";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ExternalLink as ExternalLinkIcon } from "lucide-react";
+import { bindListReturn, consumeListReturn } from "@/lib/client/jobs/list-href";
+import { buildGlassdoorUrl } from "@/lib/client/jobs/glassdoor";
 import { syncSnapshots } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { profileStore } from "@/lib/client/profile/store";
@@ -16,7 +17,9 @@ import type { JobAttribution, JobDetail as JobDetailData } from "@/lib/shared/ty
 import { AiAnalysis } from "./AiAnalysis";
 import { ChanceBadge } from "./ChanceBadge";
 import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobMenuActions, useJobState } from "./JobActions";
+import { BackToJobsLink } from "./BackToJobsLink";
 import { JobCardMenu } from "./JobCardMenu";
+import { JobsListLink } from "./JobsListLink";
 import { JobDetailActionBar } from "./JobDetailActionBar";
 import { SetupProgress } from "@/components/onboarding/SetupProgress";
 import {
@@ -36,11 +39,20 @@ const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
 const CARD = "rounded-2xl border border-jf-line bg-jf-surface";
 const LINK = "text-jf-brand hover:text-jf-brand-dark underline-offset-2 hover:underline";
 
-function BackLink({ className }: { className?: string }) {
-  return (
-    <Link href="/" className={cn(LINK, "inline-flex min-h-11 items-center gap-1.5 self-start text-sm no-underline", className)}>
+/** Sem `jobId` (vaga não carregada), é só um link para a lista com a última busca. */
+function BackLink({ className, jobId }: { className?: string; jobId?: number }) {
+  const cls = cn(LINK, "inline-flex min-h-11 items-center gap-1.5 self-start text-sm no-underline", className);
+  const content = (
+    <>
       <span aria-hidden="true">←</span> Voltar para as vagas
-    </Link>
+    </>
+  );
+  return jobId === undefined ? (
+    <JobsListLink className={cls}>{content}</JobsListLink>
+  ) : (
+    <BackToJobsLink jobId={jobId} className={cls}>
+      {content}
+    </BackToJobsLink>
   );
 }
 
@@ -123,12 +135,9 @@ function NotFound() {
         <p className="text-[15px] text-jf-ink-2">
           Ela pode ter sido encerrada ou o endereço está incorreto. Veja as vagas mais recentes na lista.
         </p>
-        <Link
-          href="/"
-          className="inline-flex min-h-11 items-center rounded-xl bg-jf-brand px-5 font-semibold text-jf-on-brand no-underline hover:bg-jf-brand-dark"
-        >
+        <JobsListLink className="inline-flex min-h-11 items-center rounded-xl bg-jf-brand px-5 font-semibold text-jf-on-brand no-underline hover:bg-jf-brand-dark">
           Ver todas as vagas
-        </Link>
+        </JobsListLink>
       </section>
     </div>
   );
@@ -214,6 +223,7 @@ function ActionsCard({
       {canGenerate ? (
         <HardLink
           href={`/gerador/${job.id}`}
+          onClick={() => consumeListReturn(job.id)}
           className="flex min-h-11 items-center justify-center rounded-xl border border-jf-field-border bg-jf-surface px-4 text-center text-sm font-semibold text-jf-ink no-underline hover:bg-jf-chip"
         >
           Gerar CV + carta
@@ -321,13 +331,13 @@ function MobileTopBar({ job }: { job: JobDetailData }) {
   const actions = useJobMenuActions(job);
   return (
     <div className="-mx-4 -mt-4 flex h-14 items-center gap-1 border-b border-jf-line bg-jf-surface px-1 sm:-mx-6 sm:px-3 md:hidden">
-      <Link
-        href="/"
+      <BackToJobsLink
+        jobId={job.id}
         aria-label="Voltar para as vagas"
         className="inline-flex size-11 items-center justify-center rounded-lg text-jf-ink outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand"
       >
         <ChevronLeft aria-hidden="true" className="size-6" />
-      </Link>
+      </BackToJobsLink>
       <span className="min-w-0 flex-1 truncate text-[15px] font-semibold">{job.company}</span>
       <JobCardMenu
         jobId={job.id}
@@ -335,6 +345,7 @@ function MobileTopBar({ job }: { job: JobDetailData }) {
         jobUrl={`/vagas/${job.id}`}
         status={actions.status}
         hidden={actions.hidden}
+        glassdoorUrl={buildGlassdoorUrl(job.company, job.origin)}
         onHide={actions.toggleHidden}
         onStatusChange={actions.changeStatus}
       />
@@ -353,6 +364,7 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
     [profile, job, now],
   );
   const salary = formatSalary(job);
+  const glassdoorUrl = buildGlassdoorUrl(job.company, job.origin);
   // URL bruta da fonte, sem tirar parâmetros (D-07); `urlCanonical` serve só à deduplicação.
   const applyUrl = job.applyUrl ? safeExternalUrl(job.applyUrl) : null;
   const sourceName = job.attribution[0]?.label ?? "página da vaga";
@@ -366,7 +378,7 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
   return (
     <>
       <MobileTopBar job={job} />
-      <BackLink className="hidden md:inline-flex" />
+      <BackLink jobId={job.id} className="hidden md:inline-flex" />
       <section className={`${CARD} flex items-start gap-x-6 gap-y-5 p-5 sm:p-7`}>
         <Logo job={job} />
         <div className="flex min-w-0 flex-1 flex-col gap-2.5">
@@ -377,7 +389,25 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
             {job.title}
           </h1>
           <p className="text-base text-jf-ink-2 sm:text-[17px]">
-            {job.company} · {placeLabel(job)}
+            {job.company}
+            {glassdoorUrl && (
+              <>
+                {" "}
+                <a
+                  href={glassdoorUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  aria-label={`Ver ${job.company} no Glassdoor (abre em nova aba)`}
+                  className={cn(LINK, "inline-flex min-h-11 items-center gap-1")}
+                >
+                  <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
+                  Glassdoor
+                  <span className="sr-only"> (abre em nova aba)</span>
+                </a>
+              </>
+            )}
+            {" · "}
+            {placeLabel(job)}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {job.workMode !== "unknown" && <span className={PILL}>{WORK_MODE_LABELS[job.workMode]}</span>}
@@ -433,6 +463,10 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
 export function JobDetail({ id: rawId }: { id: string }) {
   const id = parseJobId(rawId);
   const { data, error, isPending, refetch } = useJob(id);
+  // Prende a marca "veio da lista" a esta entrada do histórico já na montagem, antes de a vaga carregar (RF-12).
+  useEffect(() => {
+    if (id !== null) bindListReturn(id);
+  }, [id]);
 
   if (id === null || error instanceof JobNotFoundError) return <NotFound />;
   if (error) return <LoadError onRetry={() => void refetch()} />;

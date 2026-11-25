@@ -84,7 +84,7 @@ test.afterEach(() => {
 test("mostra título, empresa, chips, descrição e atribuição com links para a fonte", async ({ page }) => {
   await page.goto("/vagas/1");
   await expect(page.getByRole("heading", { level: 1, name: "Vaga 00 Desenvolvedor" })).toBeVisible();
-  await expect(page.getByText("Empresa 00 · São Paulo, BR")).toBeVisible();
+  await expect(page.getByText(/^Empresa 00 .*· São Paulo, BR$/)).toBeVisible();
   for (const chip of ["Remoto", "Sênior", "Português", "React", "TypeScript"]) {
     await expect(page.getByText(chip, { exact: true }).first()).toBeVisible();
   }
@@ -106,6 +106,15 @@ test("mostra título, empresa, chips, descrição e atribuição com links para 
   await expect(page.getByRole("heading", { level: 2, name: "Sua aderência" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Análise com IA" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Voltar para as vagas/ })).toHaveAttribute("href", "/");
+});
+
+test("link do Glassdoor aponta para a busca da empresa e abre em nova aba", async ({ page }) => {
+  await page.goto("/vagas/1");
+  const link = page.getByRole("link", { name: /Ver .+ no Glassdoor \(abre em nova aba\)/ }).first();
+  await expect(link).toHaveAttribute("href", /^https:\/\/www\.glassdoor\.com/);
+  await expect(link).toHaveAttribute("target", "_blank");
+  await expect(link).toHaveAttribute("rel", /noopener/);
+  await expect(link).toHaveAttribute("rel", /nofollow/);
 });
 
 test("o botão Candidatar mantém a URL da fonte intacta, com utm_source (Himalayas, D-07)", async ({ page }) => {

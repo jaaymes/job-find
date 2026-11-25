@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { useMediaQuery } from "@/lib/client/use-media-query";
 import { HardLink } from "@/components/ui/hard-link";
+import { useJobsListHref } from "@/lib/client/jobs/list-href";
 import { isSavedStage, useJobStates } from "@/lib/client/jobs/job-state";
 import { cn } from "@/lib/utils";
 import { HIDE_ON_TEXT_FOCUS } from "./hide-on-text-focus";
@@ -41,6 +42,7 @@ export function MobileTabBar({ current }: { current?: NavId }) {
   const pathname = usePathname();
   const active = current ?? currentFromPath(pathname);
   const saved = useSavedCount();
+  const listHref = useJobsListHref();
   const [moreOpen, setMoreOpen] = useState(false);
   // Ao cruzar md (girar o celular) a folha some; fecha o estado junto (mesmo padrão dos filtros).
   const md = useMediaQuery("(min-width: 768px)");
@@ -59,7 +61,7 @@ export function MobileTabBar({ current }: { current?: NavId }) {
           return (
             <Comp
               key={id}
-              href={href as never}
+              href={(id === "vagas" ? listHref : href) as never}
               aria-current={isActive ? "page" : undefined}
               aria-label={id === "minhas-vagas" && saved > 0 ? `${label}, ${saved} salvas` : undefined}
               className={cn(TAB, FOCUS, "no-underline", isActive ? "text-jf-brand" : "text-jf-ink-3")}

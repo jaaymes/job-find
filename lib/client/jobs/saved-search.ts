@@ -66,22 +66,83 @@ export function readSavedSearch(): SavedFilters | null {
   return saved ? toSavedFilters(saved) : null;
 }
 
+/** Quanto tempo a última busca vale (RN-15): depois disso, vale a busca padrão. */
+export const LAST_FILTERS_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
+const LastFilters = z.object({ filters: SavedFilters, savedAt: z.iso.datetime() });
+
 /**
- * Ao abrir a home sem nenhum filtro na URL, aplica a busca padrão trocando a URL (replace): a URL continua sendo a
- * fonte da verdade e pode ser compartilhada. Só na montagem: limpar os filtros depois não os traz de volta.
- * Devolve `ready`: falso até a decisão estar tomada (e a URL já refletir a busca aplicada), para a consulta de
- * vagas não sair antes sem filtros.
+ * Última busca feita (RF-10), gravada a cada mudança de filtro. Efêmera: fica fora do backup. `null` = nenhuma
+ * (ou o usuário zerou os filtros); objeto fora do schema é descartado na leitura.
  */
-export function useApplySavedSearch(filters: PageFilters, setFilters: (patch: PageFilters) => void): boolean {
+export const lastFiltersStore: Store<{ filters: SavedFilters; savedAt: string } | null> = createStore(
+  "jobfind:v1:lastFilters",
+  LastFilters.nullable(),
+  { version: 1, initial: null },
+);
+
+function isFresh(savedAt: string, now: number): boolean {
+  const age = now - Date.parse(savedAt);
+  return age <= LAST_FILTERS_TTL_MS;
+}
+
+/** A última busca, se ainda estiver dentro do prazo e não vazia; do contrário `null`. */
+export function readLastFilters(now: number = Date.now()): SavedFilters | null {
+  const last = lastFiltersStore.get();
+  if (!last || !isFresh(last.savedAt, now)) return null;
+  return toSavedFilters(last.filters);
+}
+
+/**
+ * Grava a última busca quando `ready` e os filtros mudam. Antes de `ready` os filtros ainda são `{}` (a restauração
+ * não aconteceu), e gravar aí apagaria a última busca. Não regrava (e não renova `savedAt`) se nada mudou.
+ */
+export function useRememberFilters(filters: PageFilters, ready: boolean): void {
+  const serialized = JSON.stringify(toSavedFilters(filters));
+  useEffect(() => {
+    if (!ready) return;
+    const next: SavedFilters | null = JSON.parse(serialized);
+    const current = lastFiltersStore.get();
+    if (next === null) {
+      if (current !== null) lastFiltersStore.set(null);
+      return;
+    }
+    const unchanged =
+      current !== null &&
+      JSON.stringify(toSavedFilters(current.filters)) === serialized &&
+      isFresh(current.savedAt, Date.now());
+    if (!unchanged) lastFiltersStore.set({ filters: next, savedAt: new Date().toISOString() });
+  }, [ready, serialized]);
+}
+
+type Restored = { filters: SavedFilters; source: "last" | "saved" };
+
+/**
+ * Ao abrir a home sem nenhum filtro na URL, aplica a última busca (até 7 dias) ou, na falta dela, a busca padrão,
+ * trocando a URL (replace): a URL continua sendo a fonte da verdade e pode ser compartilhada. Precedência: URL >
+ * última busca > busca padrão. Só na montagem: limpar os filtros depois não os traz de volta.
+ * Devolve `ready` (falso até a decisão estar tomada e a URL já refletir a busca aplicada, para a consulta de vagas
+ * não sair antes sem filtros) e `restored` (qual busca foi aplicada, ou `null`).
+ */
+export function useRestoreFilters(
+  filters: PageFilters,
+  setFilters: (patch: PageFilters) => void,
+): { ready: boolean; restored: "last" | "saved" | null } {
   const params = useSearchParams();
   // A home nunca é pré-renderizada (useSearchParams a deixa para o cliente), então ler a store aqui não diverge.
-  const [pending] = useState(() => (hasFilterParams(params) ? null : readSavedSearch()));
+  const [pending] = useState<Restored | null>(() => {
+    if (hasFilterParams(params)) return null;
+    const last = readLastFilters();
+    if (last) return { filters: last, source: "last" };
+    const saved = readSavedSearch();
+    return saved ? { filters: saved, source: "saved" } : null;
+  });
   const [ready, setReady] = useState(pending === null);
   if (!ready && Object.keys(filters).length > 0) setReady(true);
   useEffect(() => {
-    if (pending) setFilters(pending);
+    if (pending) setFilters(pending.filters);
     // Só na montagem: `setFilters` muda a cada navegação de filtro.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return ready;
+  return { ready, restored: pending?.source ?? null };
 }

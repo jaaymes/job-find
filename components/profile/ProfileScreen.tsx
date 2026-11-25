@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { ReturnToJobLink } from "@/components/onboarding/SetupProgress";
 import { NoProviderCta } from "@/components/settings/NoProviderCta";
 import { Button } from "@/components/ui/button";
 import {
@@ -67,6 +68,9 @@ export function ProfileScreen() {
           É a base para calcular suas chances e gerar currículos. Fica salvo só neste navegador e nunca é enviado aos
           nossos servidores.
         </p>
+        <div className="mt-3 empty:hidden">
+          <ReturnToJobLink />
+        </div>
       </div>
       <NoProviderCta task="extract" />
       {saveError && (

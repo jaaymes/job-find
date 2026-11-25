@@ -6,6 +6,7 @@ import { startOAuth, type OAuthIntent } from "@/lib/client/ai/oauth";
 import { isConnected } from "@/lib/client/ai/model";
 import { aiSettingsStore, type AiSettings } from "@/lib/client/ai/settings";
 import { useStore } from "@/lib/client/storage/store";
+import { ReturnToJobLink } from "@/components/onboarding/SetupProgress";
 import { BackupSection } from "./BackupSection";
 import { AddKeyDialog, type KeyDraft } from "./AddKeyDialog";
 import { PrivacyConsentDialog } from "./PrivacyConsentDialog";
@@ -264,6 +265,9 @@ export function AiSettingsScreen() {
           />
           {statusText(connected.length)}
         </p>
+        <div className="mt-3 empty:hidden">
+          <ReturnToJobLink />
+        </div>
       </div>
 
       {saveError && (

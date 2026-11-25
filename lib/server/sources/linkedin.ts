@@ -63,7 +63,16 @@ export const jobSchema = z.object({
   postedDate: z.string().nullish(),
 });
 
-const ACTIVE_STATUSES = new Set(["READY", "RUNNING"]);
+const ACTIVE_STATUSES = new Set(["READY", "RUNNING", "TIMING-OUT", "ABORTING"]);
+
+/**
+ * Tolerância da checagem "está na hora": `ctx.now` é o início da coleta, mas o `startedAt` da execução
+ * anterior é quando o POST de fato aconteceu, às vezes minutos depois (o LinkedIn é um dos últimos
+ * conectores da fila). Sem folga, duas coletas depois `agora - startedAt` fica um pouco abaixo de 2 h e
+ * a execução escorrega para 3 h. Com o cron de hora em hora (minuto 17), qualquer tolerância abaixo de
+ * 1 h nunca inicia execuções em horas seguidas, então o orçamento de US$ 5 continua seguro.
+ */
+const DUE_TOLERANCE_MS = 30 * 60_000;
 
 const SENIORITY: Record<string, Seniority> = {
   internship: "intern",
@@ -118,7 +127,7 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   const due =
     !latest ||
     (!ACTIVE_STATUSES.has(latest.status) &&
-      (Number.isNaN(startedAt) || ctx.now.getTime() - startedAt >= RUN_EVERY_HOURS * 3_600_000 - 60_000));
+      (Number.isNaN(startedAt) || ctx.now.getTime() - startedAt >= RUN_EVERY_HOURS * 3_600_000 - DUE_TOLERANCE_MS));
   if (!due) return;
 
   const startUrl = new URL(`${ACTOR_URL}/runs`);

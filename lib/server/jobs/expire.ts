@@ -99,7 +99,8 @@ export async function expireJobs(db: Db, now: Date): Promise<number> {
   return rows.length;
 }
 
-export type PurgeResult = { jobs: number; sourceRuns: number };
+/** `complete` é false quando a limpeza parou por tempo e ainda sobrou coisa para apagar. */
+export type PurgeResult = { jobs: number; sourceRuns: number; complete: boolean };
 
 /**
  * Retenção diária, em lotes: apaga (com as `job_sources`, em cascata) vagas publicadas há mais de
@@ -121,8 +122,13 @@ export async function purgeOld(
   const cutoffExpired = new Date(now.getTime() - RETENTION_DAYS * DAY_MS);
   const cutoffRuns = new Date(now.getTime() - SOURCE_RUNS_RETENTION_DAYS * DAY_MS);
 
+  let complete = true;
   let deletedJobs = 0;
-  while (!outOfTime()) {
+  while (true) {
+    if (outOfTime()) {
+      complete = false;
+      break;
+    }
     const rows = await db
       .delete(jobs)
       .where(
@@ -141,7 +147,11 @@ export async function purgeOld(
   }
 
   let deletedRuns = 0;
-  while (!outOfTime()) {
+  while (true) {
+    if (outOfTime()) {
+      complete = false;
+      break;
+    }
     const rows = await db
       .delete(sourceRuns)
       .where(
@@ -155,5 +165,5 @@ export async function purgeOld(
     if (rows.length < batchSize) break;
   }
 
-  return { jobs: deletedJobs, sourceRuns: deletedRuns };
+  return { jobs: deletedJobs, sourceRuns: deletedRuns, complete };
 }

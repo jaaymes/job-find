@@ -15,7 +15,10 @@ async function handler(req: Request): Promise<Response> {
   try {
     db = getPoolDb();
     const result = await purgeOld(db, new Date());
-    console.log(`[cron/purge] jobs=${result.jobs} sourceRuns=${result.sourceRuns}`);
+    console.log(`[cron/purge] jobs=${result.jobs} sourceRuns=${result.sourceRuns} complete=${result.complete}`);
+    if (!result.complete) {
+      console.warn("[cron/purge] limite de tempo atingido; o restante será apagado na execução do dia seguinte");
+    }
     return Response.json(result, { status: 200, headers: NO_STORE });
   } catch (e) {
     console.error("[cron/purge] limpeza falhou:", e instanceof Error ? e.message : String(e));

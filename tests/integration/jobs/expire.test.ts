@@ -103,7 +103,7 @@ describe("purgeOld", () => {
     const old = await insertJobRaw(db, { published_at: addDays(T0, -61) });
     const keep = await insertJobRaw(db, { published_at: addDays(T0, -59) });
     await addSource(db, old.id, "greenhouse", "x", T0);
-    expect(await purgeOld(db, T0)).toEqual({ jobs: 1, sourceRuns: 0 });
+    expect(await purgeOld(db, T0)).toEqual({ jobs: 1, sourceRuns: 0, complete: true });
     expect((await db.select({ id: jobs.id }).from(jobs)).map((r) => Number(r.id))).toEqual([Number(keep.id)]);
     expect(await db.select().from(jobSources).where(eq(jobSources.externalId, "x"))).toHaveLength(0);
   });
@@ -123,7 +123,7 @@ describe("purgeOld", () => {
       { source: "greenhouse", startedAt: addDays(T0, -31), status: "ok" },
       { source: "greenhouse", startedAt: addDays(T0, -29), status: "ok" },
     ]);
-    expect(await purgeOld(db, T0)).toEqual({ jobs: 0, sourceRuns: 2 });
+    expect(await purgeOld(db, T0)).toEqual({ jobs: 0, sourceRuns: 2, complete: true });
     expect(await db.select().from(sourceRuns)).toHaveLength(1);
   });
 
@@ -141,6 +141,7 @@ describe("purgeOld", () => {
     const clock = () => (t += 1000); // cada leitura avança 1 s
     const r = await purgeOld(db, T0, { batchSize: 2, clock, timeLimitMs: 1500 });
     expect(r.jobs).toBe(2);
+    expect(r.complete).toBe(false);
     expect(await db.select().from(jobs)).toHaveLength(3);
   });
 });

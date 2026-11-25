@@ -3,7 +3,7 @@
 - **Data:** 2026-11-25
 - **Origem:** pedido direto (sem PRD). Requisitos registrados como premissas abaixo.
 - **Spec base:** [docs/tech/2026-11-23-job-find-agregador-vagas-tech.md](2026-11-23-job-find-agregador-vagas-tech.md) (D-04: modelo de dados, deduplicação, expiração e retenção)
-- **Status:** proposta, aguardando aprovação
+- **Status:** implementada na branch fix/limpeza-vagas-linkedin (2026-11-25)
 
 ## 1. Requisitos (premissas)
 
@@ -199,6 +199,7 @@ A coleta horária (minuto 17) chama o conector, que: (1) lista as 10 últimas ex
   - `RUN_EVERY_HOURS = 2` → 12 execuções/dia, ~372/mês.
   - `RESULTS_PER_RUN = 32` e `MAX_CHARGE_PER_RUN_USD = 0.013`. Teto do mês: 372 × US$ 0,013 = **US$ 4,84**, mesmo que o actor cobre um evento de início (o `maxTotalChargeUsd` limita tudo o que a execução cobra).
   - O rodízio de 8 palavras passa a repetir cada uma a cada 16 h, dentro da janela de 24 h: **nenhum dia fica sem cobertura** (resolve L-02).
+- A checagem "está na hora" aceita 30 min de tolerância (`DUE_TOLERANCE_MS`): o `startedAt` da execução anterior é o instante do POST, minutos depois do início da coleta, e sem folga a cadência escorregaria para 3 h. Com cron de hora em hora, qualquer tolerância abaixo de 1 h nunca inicia execuções em horas seguidas.
 - **Consequência honesta:** o volume total continua ~400 vagas/dia (é o que US$ 5 compram). O ganho é cobertura de todas as buscas todo dia e vagas mais frescas (entram até ~3 h depois de publicadas, contra até 4 dias hoje).
 - **Descartado:** reduzir a janela para 2 h (`f_TPR=r7200`): com o rodízio, cada palavra só seria vista em 1/8 das janelas.
 

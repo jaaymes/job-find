@@ -7,7 +7,8 @@
 -- Anote os números na spec: docs/tech/2026-11-25-auditoria-insercao-e-limpeza-de-vagas.md
 
 -- 5.1 Tamanho por tabela (dados + índices + TOAST)
--- Espere: jobs e job_sources menores depois da limpeza; source_runs parado de crescer.
+-- Espere: depois da limpeza, n_live_tup de jobs, job_sources e source_runs cai e n_dead_tup sobe até o autovacuum limpar;
+-- o tamanho total para de crescer (o espaço é reaproveitado, não devolvido ao disco).
 SELECT relname, n_live_tup, n_dead_tup,
        pg_size_pretty(pg_total_relation_size(relid)) AS total
 FROM pg_stat_user_tables ORDER BY pg_total_relation_size(relid) DESC;
@@ -38,12 +39,13 @@ SELECT
   (SELECT count(*) FROM jobs WHERE expired_at IS NULL AND published_at < now() - interval '45 days') AS ativa_vencida;
 
 -- 5.5 Log de coletas
--- Espere: linhas limitadas a cerca de 30 dias depois da limpeza; presas em 0.
+-- Espere: linhas limitadas a cerca de 30 dias depois da limpeza; presas em 0 só entre as com mais de 30 dias (apagadas).
+-- Uma execução recente presa ainda aparece aqui e é o sinal para investigar.
 SELECT count(*) AS linhas, min(started_at) AS mais_antiga,
        count(*) FILTER (WHERE status = 'running' AND started_at < now() - interval '1 hour') AS presas
 FROM source_runs;
 
--- 9.1a Últimas coletas do LinkedIn: espere fetched_count > 0 a cada 2 h depois da mudança
+-- 9.1a Últimas coletas do LinkedIn depois da mudança
 -- Espere: uma linha a cada 2 h com fetched_count > 0. Status 'error' ou 'running' antigo pedem olhar o campo error.
 SELECT started_at, status, fetched_count, new_count, updated_count, error
 FROM source_runs WHERE source = 'linkedin' ORDER BY started_at DESC LIMIT 30;

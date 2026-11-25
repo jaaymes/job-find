@@ -147,8 +147,22 @@ describe("conector LinkedIn (Apify)", () => {
   });
 
   it("não inicia outra se a última começou há menos de 2 h", async () => {
-    const recent = runs.data.items.map((r, i) => ({ ...r, startedAt: i === 0 ? "2026-11-23T10:30:00.000Z" : r.startedAt }));
+    const recent = runs.data.items.map((r, i) => ({ ...r, startedAt: i === 0 ? "2026-11-23T11:00:00.000Z" : r.startedAt }));
     const ctx = fakeCtx({ serve: serveWith(recent), cursor: "dsNew" });
+    await collect(linkedin.fetch(ctx));
+    expect(ctx.requests.some((r) => r.method === "POST")).toBe(false);
+  });
+
+  it("inicia outra quando a última começou um pouco depois da hora cheia (atraso do POST dentro da tolerância)", async () => {
+    const due = runs.data.items.map((r, i) => ({ ...r, startedAt: i === 0 ? "2026-11-23T10:02:00.000Z" : r.startedAt }));
+    const ctx = fakeCtx({ serve: serveWith(due), cursor: "dsNew" });
+    await collect(linkedin.fetch(ctx));
+    expect(ctx.requests.filter((r) => r.method === "POST")).toHaveLength(1);
+  });
+
+  it("não inicia outra enquanto a execução está em estado transitório (TIMING-OUT)", async () => {
+    const timingOut = [{ ...runs.data.items[0]!, status: "TIMING-OUT", startedAt: "2026-11-23T07:00:00.000Z" }];
+    const ctx = fakeCtx({ serve: serveWith(timingOut) });
     await collect(linkedin.fetch(ctx));
     expect(ctx.requests.some((r) => r.method === "POST")).toBe(false);
   });

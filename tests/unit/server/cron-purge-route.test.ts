@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const m = vi.hoisted(() => ({
-  purgeOld: vi.fn<(db: unknown, now: Date) => Promise<{ jobs: number; sourceRuns: number }>>(),
+  purgeOld: vi.fn<(db: unknown, now: Date) => Promise<{ jobs: number; sourceRuns: number; complete: boolean }>>(),
   end: vi.fn(async () => undefined),
   getPoolDb: vi.fn(),
 }));
@@ -21,6 +21,7 @@ describe("/api/cron/purge", () => {
     vi.stubEnv("CRON_SECRET", "s3cr3t");
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     vi.spyOn(console, "log").mockImplementation(() => undefined);
+    vi.spyOn(console, "warn").mockImplementation(() => undefined);
   });
   afterEach(() => {
     vi.unstubAllEnvs();
@@ -39,12 +40,22 @@ describe("/api/cron/purge", () => {
   });
 
   it("200 com as contagens e fecha o pool", async () => {
-    m.purgeOld.mockResolvedValue({ jobs: 3, sourceRuns: 7 });
+    m.purgeOld.mockResolvedValue({ jobs: 3, sourceRuns: 7, complete: true });
     const res = await GET(req("Bearer s3cr3t"));
     expect(res.status).toBe(200);
     expect(res.headers.get("cache-control")).toBe("no-store");
-    expect(await res.json()).toEqual({ jobs: 3, sourceRuns: 7 });
+    expect(await res.json()).toEqual({ jobs: 3, sourceRuns: 7, complete: true });
+    expect(console.log).toHaveBeenCalledWith("[cron/purge] jobs=3 sourceRuns=7 complete=true");
+    expect(console.warn).not.toHaveBeenCalled();
     expect(m.end).toHaveBeenCalledTimes(1);
+  });
+
+  it("avisa no log quando a limpeza parou por tempo", async () => {
+    m.purgeOld.mockResolvedValue({ jobs: 1, sourceRuns: 0, complete: false });
+    const res = await GET(req("Bearer s3cr3t"));
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ jobs: 1, sourceRuns: 0, complete: false });
+    expect(console.warn).toHaveBeenCalledTimes(1);
   });
 
   it("500 quando a limpeza falha, registra o erro e fecha o pool", async () => {

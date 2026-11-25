@@ -173,4 +173,18 @@ describe("BaseCvDownload", () => {
     expect(templateId).toBe("harvard");
     expect(cv.name).toBe("Ana");
   });
+
+  it("é a seção 'Modelos de CV' e a escolha vira o modelo padrão dos próximos CVs", async () => {
+    window.localStorage.clear();
+    const profile = { ...emptyProfile(), name: "Ana", experiences: experiences() };
+    render(<BaseCvDownload profile={profile} />);
+    expect(screen.getByRole("heading", { level: 2, name: "Modelos de CV" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /^Modelo do CV:/ }));
+    fireEvent.click(await screen.findByRole("radio", { name: /Minimalista/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Usar este modelo" }));
+    expect(JSON.parse(window.localStorage.getItem("jobfind:v1:cvPrefs") ?? "{}").data).toEqual({
+      templateId: "minimalista",
+    });
+    window.localStorage.clear();
+  });
 });

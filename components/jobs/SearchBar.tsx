@@ -61,7 +61,7 @@ export function SearchBar({ filters, onChange }: Props) {
       </label>
       <button
         type="submit"
-        className="min-h-12 rounded-xl bg-jf-brand px-6 font-semibold text-jf-surface outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2 sm:min-h-[52px]"
+        className="min-h-12 rounded-xl bg-jf-brand px-6 font-semibold text-jf-on-brand outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2 sm:min-h-[52px]"
       >
         Buscar
       </button>

@@ -119,7 +119,7 @@ function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-flex min-h-11 items-center rounded-xl bg-jf-brand px-5 font-semibold text-jf-surface no-underline hover:bg-jf-brand-dark"
+          className="inline-flex min-h-11 items-center rounded-xl bg-jf-brand px-5 font-semibold text-jf-on-brand no-underline hover:bg-jf-brand-dark"
         >
           Ver todas as vagas
         </Link>
@@ -278,7 +278,7 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
               href={applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex min-h-12 items-center justify-center rounded-xl bg-jf-brand px-4 text-center font-semibold text-jf-surface no-underline hover:bg-jf-brand-dark"
+              className="flex min-h-12 items-center justify-center rounded-xl bg-jf-brand px-4 text-center font-semibold text-jf-on-brand no-underline hover:bg-jf-brand-dark"
             >
               Candidatar na página da vaga <span aria-hidden="true">↗</span>
               <NewTabHint />

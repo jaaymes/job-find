@@ -44,8 +44,9 @@ const PAIRS: [string, string][] = [
   ["danger-fg", "danger-bg"],
   // Combinações usadas nos componentes além das do plano.
   ["ink-3", "bg"],
-  ["surface", "brand"], // botões primários: texto `text-jf-surface` sobre `bg-jf-brand`
-  ["surface", "brand-dark"], // hover dos botões primários
+  ["on-brand", "brand"], // botões primários: texto `text-jf-on-brand` sobre `bg-jf-brand`
+  ["on-brand", "brand-dark"], // hover dos botões primários
+  ["fav", "surface"], // estrela de favorito
   ["surface", "ink"], // logo, toast e botões escuros
   ["surface", "alta"], // badge de chance alta
   ["alta", "surface"], // texto de sucesso
@@ -64,6 +65,19 @@ describe.each([":root", ".dark"])("paleta %s", (selector) => {
     expect(vars[bg], `--jf-${bg} ausente em ${selector}`).toBeDefined();
     expect(contrast(vars[fg], vars[bg])).toBeGreaterThanOrEqual(4.5);
   });
+});
+
+const NON_TEXT: [string, string][] = [["field-border", "surface"], ["field-border", "bg"], ["brand", "surface"]];
+describe.each([":root", ".dark"])("controles %s", (selector) => {
+  const vars = jfVars(selector);
+  it.each(NON_TEXT)("%s sobre %s tem contraste >= 3:1", (fg, bg) => {
+    expect(contrast(vars[fg], vars[bg])).toBeGreaterThanOrEqual(3);
+  });
+});
+
+it("tokens shadcn apontam para a paleta jf", () => {
+  for (const [shadcn, jf] of [["primary","brand"],["primary-foreground","on-brand"],["ring","brand"],["input","field-border"],["border","line"],["popover","surface"],["card","surface"],["background","surface"],["muted","chip"],["muted-foreground","ink-3"],["destructive","danger-fg"]])
+    expect(css).toMatch(new RegExp(`--${shadcn}:\\s*var\\(--jf-${jf}\\)`));
 });
 
 describe("tokens da paleta", () => {

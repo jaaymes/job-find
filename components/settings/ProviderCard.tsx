@@ -231,7 +231,7 @@ export function ProviderCard({
         ) : (
           <>
             <Button
-              className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-brand-dark"
+              className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-on-brand hover:bg-jf-brand-dark"
               onClick={def.auth.kind === "oauth" ? onConnectOAuth : onAdd}
             >
               {def.auth.kind === "oauth"

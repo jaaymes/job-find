@@ -77,7 +77,7 @@ export function FavoriteButton({ job, className }: { job: SnapshotSource; classN
         onClick={() => feedback.track(setFavorite(job, !favorite))}
         className={cn(
           "inline-flex size-11 items-center justify-center rounded-lg border border-jf-line-strong bg-jf-surface outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand",
-          favorite ? "text-amber-500" : "text-jf-ink-2",
+          favorite ? "text-jf-fav" : "text-jf-ink-2",
           className,
         )}
       >

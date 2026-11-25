@@ -184,7 +184,7 @@ export function JobsPage() {
                 <button
                   type="button"
                   onClick={() => void query.refetch()}
-                  className="min-h-11 rounded-xl bg-jf-brand px-5 font-semibold text-jf-surface outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
+                  className="min-h-11 rounded-xl bg-jf-brand px-5 font-semibold text-jf-on-brand outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2"
                 >
                   Tentar de novo
                 </button>

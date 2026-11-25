@@ -23,7 +23,7 @@ type Step = {
 };
 
 const CTA =
-  "inline-flex min-h-11 w-fit items-center rounded-lg bg-jf-brand px-4 text-sm font-semibold text-jf-surface no-underline outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2";
+  "inline-flex min-h-11 w-fit items-center rounded-lg bg-jf-brand px-4 text-sm font-semibold text-jf-on-brand no-underline outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2";
 
 /**
  * Guia de primeira visita: explica a privacidade (tudo fica no localStorage) e leva a pessoa a conectar

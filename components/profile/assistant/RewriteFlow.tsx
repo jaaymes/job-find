@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BTN_OUTLINE, BTN_PRIMARY, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import type { AssistLang, AssistTarget, AssistTone, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import type { AiSettings } from "@/lib/client/ai/settings";
@@ -31,6 +31,7 @@ export function RewriteFlow({ profile, target, settings, current, gen, onInsert 
   const [tone, setTone] = useState<ToneKey>("default");
   const [lang, setLang] = useState<AssistLang>("en");
   const [suggestion, setSuggestion] = useState<Draft | null>(null);
+  const regenRef = useRef<HTMLButtonElement>(null);
 
   const generate = async (t: ToneKey = tone, l: AssistLang = lang) => {
     const toneArg: AssistTone = t === "translate" ? { tone: "translate", lang: l } : { tone: t };
@@ -77,6 +78,7 @@ export function RewriteFlow({ profile, target, settings, current, gen, onInsert 
         <div className="flex sm:items-end">
           <button
             type="button"
+            ref={regenRef}
             className={`${BTN_OUTLINE} min-h-11 w-full px-4 text-sm sm:w-auto`}
             disabled={busy}
             onClick={() => void generate()}
@@ -102,7 +104,12 @@ export function RewriteFlow({ profile, target, settings, current, gen, onInsert 
           {busy ? (
             <div className="flex flex-col items-start gap-3">
               <p className="text-sm text-jf-ink-3">Escrevendo a sugestão...</p>
-              <button type="button" ref={focusOnMount} className={`${BTN_OUTLINE} min-h-11 px-4 text-sm`} onClick={cancel}>
+              <button type="button" ref={focusOnMount} className={`${BTN_OUTLINE} min-h-11 px-4 text-sm`} onClick={() => {
+                  cancel();
+                  // Sem sugestão anterior o foco iria para o body: devolve ao "Gerar de novo" (habilitado após o render).
+                  if (!suggestion) setTimeout(() => regenRef.current?.focus(), 0);
+                }}
+              >
                 Cancelar
               </button>
             </div>

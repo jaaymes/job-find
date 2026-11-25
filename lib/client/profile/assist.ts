@@ -55,11 +55,11 @@ function draftTexts(target: AssistTarget, d: Draft): string[] | string {
   return text ? [text] : "o rascunho precisa trazer o campo text preenchido e deixar bullets null";
 }
 
-function validateDraft(profile: Profile, target: AssistTarget, sourceText: string, d: Draft, translated: boolean): string[] {
+function validateDraft(profile: Profile, target: AssistTarget, sourceText: string, d: Draft): string[] {
   const fixed = restoreName(profile, d);
   const texts = draftTexts(target, fixed);
   if (typeof texts === "string") return [texts];
-  return toPromptFeedback(validateAssistOutput(profile, sourceText, texts, { translated }));
+  return toPromptFeedback(validateAssistOutput(profile, sourceText, texts));
 }
 
 /** Chamada (prompt, schema e limites) das perguntas, sem o `validate`: o eval a reaproveita para medir o modelo cru. */
@@ -102,7 +102,7 @@ export async function writeDrafts(a: Common & { qa: { question: string; answer: 
   const sourceText = a.qa.map((x) => x.answer).join("\n");
   const { data } = await generateStructured({
     ...writeCall(a),
-    validate: (v) => v.options.flatMap((d) => validateDraft(a.profile, a.target, sourceText, d, false)),
+    validate: (v) => v.options.flatMap((d) => validateDraft(a.profile, a.target, sourceText, d)),
   });
   const [x, y] = data.options;
   return [restoreName(a.profile, x), restoreName(a.profile, y)];
@@ -123,10 +123,9 @@ export const rewriteCall = (a: Common & { current: Draft; tone: AssistTone }) =>
 /** RF-22: reescreve o texto atual no tom pedido. O texto atual é fonte de fatos; "Traduzir" compara nomes sem caixa. */
 export async function rewriteDraft(a: Common & { current: Draft; tone: AssistTone }): Promise<Draft> {
   const sourceText = draftSource(a.current);
-  const translated = a.tone.tone === "translate";
   const { data } = await generateStructured({
     ...rewriteCall(a),
-    validate: (v) => validateDraft(a.profile, a.target, sourceText, v.draft, translated),
+    validate: (v) => validateDraft(a.profile, a.target, sourceText, v.draft),
   });
   return restoreName(a.profile, data.draft);
 }

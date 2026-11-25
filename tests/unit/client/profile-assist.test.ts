@@ -102,15 +102,6 @@ describe("rewriteDraft", () => {
     const r = await rewriteDraft({ ...common(model), current, tone: { tone: "direct" } });
     expect(r.text).toBe("Entreguei 12 projetos com sucesso.");
     expect(spy.mock.calls[0][1]).toContain("Entreguei 12 projetos.");
-    expect(spy.mock.calls[0][3]).toEqual({ translated: false });
-    spy.mockRestore();
-  });
-
-  it("Traduzir passa translated: true ao validador", async () => {
-    const spy = vi.spyOn(validate, "validateAssistOutput");
-    const model = mockModel({ draft: { text: "I delivered 12 projects.", bullets: null } });
-    await rewriteDraft({ ...common(model), current, tone: { tone: "translate", lang: "en" } });
-    expect(spy.mock.calls[0][3]).toEqual({ translated: true });
     spy.mockRestore();
   });
 });

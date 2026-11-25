@@ -376,8 +376,8 @@ export async function runAssistSuite(profiles: { id: string; profile: Profile }[
       }
       times.push(now() - started);
     };
-    const checkInvented = (step: AssistStep, texts: string[], sourceText: string, translated = false) => {
-      for (const v of validateAssistOutput(profile, sourceText, texts, { translated })) {
+    const checkInvented = (step: AssistStep, texts: string[], sourceText: string) => {
+      for (const v of validateAssistOutput(profile, sourceText, texts)) {
         report.invented++;
         fail(step, `${v.kind} "${v.text}"`);
       }

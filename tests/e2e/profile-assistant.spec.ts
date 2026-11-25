@@ -244,7 +244,10 @@ test("RNF-05: foco no primeiro campo, região aria-live e fluxo só com Tab, Esp
 
   const first = dialog(page).getByRole("textbox").first();
   await expect(first).toBeFocused(FIRST);
-  expect(await dialog(page).locator('[aria-live="polite"]').count()).toBeGreaterThan(0);
+  const live = dialog(page).locator('[aria-live="polite"]');
+  expect(await live.count()).toBeGreaterThan(0);
+  // O anúncio é curto e estável: nunca o texto parcial da geração.
+  expect(((await live.first().textContent()) ?? "").length).toBeLessThan(40);
 
   await page.keyboard.type("Trabalho com produtos web.");
   // Pula as perguntas 2 e 3 e vai até "Gerar".

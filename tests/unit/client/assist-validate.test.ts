@@ -21,7 +21,7 @@ const profile: Profile = {
   ],
 };
 
-const run = (text: string, source = "", opts?: { translated?: boolean }) => validateAssistOutput(profile, source, [text], opts);
+const run = (text: string, source = "") => validateAssistOutput(profile, source, [text]);
 
 describe("validateAssistOutput (RN-20)", () => {
   it("número desconhecido vira unknown_number", () => {
@@ -40,6 +40,16 @@ describe("validateAssistOutput (RN-20)", () => {
     expect(run("Led seventy people").map((x) => x.kind)).toEqual(["unknown_number"]);
     expect(run("Lideré a setenta personas", "70 personas")).toEqual([]);
   });
+  it("número de 4 dígitos dito pelo usuário não é ano", () => {
+    expect(run("Atendi 2000 usuários simultâneos", "atendemos 2000 usuários")).toEqual([]);
+    expect(run("Processei mais de 1500 pedidos por minuto", "1500 pedidos por minuto")).toEqual([]);
+  });
+  it("número de 4 dígitos inventado ou usado como data continua barrado", () => {
+    expect(run("Atendi 2000 usuários simultâneos").map((x) => x.kind)).toEqual(["unknown_year"]);
+    expect(run("Em 2015 migrei o sistema", "2015").map((x) => x.kind)).toEqual(["unknown_year"]);
+    expect(run("Atuei de 2015 a 2017", "2015 2017").map((x) => x.kind)).toEqual(["unknown_year", "unknown_year"]);
+    expect(run("Atuo desde 2015.", "2015").map((x) => x.kind)).toEqual(["unknown_year"]);
+  });
   it("ano só vale do perfil, mesmo com 2015 no sourceText", () => {
     expect(run("Desde 2015 atuo com front-end", "2015").map((x) => x.kind)).toEqual(["unknown_year"]);
     expect(run("Desde 2019 atuo com front-end")).toEqual([]);
@@ -57,8 +67,8 @@ describe("validateAssistOutput (RN-20)", () => {
     expect(run("Led sixty people")).toEqual([]);
   });
   it("tradução preserva fatos do perfil", () => {
-    expect(run("Reduced build time by 60% at Lumen Pay", "", { translated: true })).toEqual([]);
-    expect(run("Reduced build time by 70% at Lumen Pay", "", { translated: true }).map((x) => x.kind)).toEqual(["unknown_number"]);
+    expect(run("Reduced build time by 60% at Lumen Pay")).toEqual([]);
+    expect(run("Reduced build time by 70% at Lumen Pay").map((x) => x.kind)).toEqual(["unknown_number"]);
   });
   it("texto fiel ao perfil passa", () => {
     expect(run("Reduziu o tempo de build em 60%")).toEqual([]);

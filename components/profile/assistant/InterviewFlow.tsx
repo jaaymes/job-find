@@ -19,13 +19,17 @@ export function InterviewFlow({ profile, target, settings, gen, onInsert }: Prop
   const [answers, setAnswers] = useState<string[]>([]);
   const [options, setOptions] = useState<[Draft, Draft] | null>(null);
   const [chosen, setChosen] = useState(0);
+  const [cancelled, setCancelled] = useState(false);
   const [lastAction, setLastAction] = useState<"questions" | "write">("questions");
 
   const loadQuestions = async () => {
+    setCancelled(false);
     const qs = await run(({ signal, onPartial }) => askQuestions({ profile, target, settings, signal, onPartial }));
     if (qs) {
       setQuestions(qs);
       setAnswers(qs.map(() => ""));
+    } else {
+      setCancelled(true); // cancelado (ou erro, que o bloco de erro mostra no lugar)
     }
   };
 
@@ -117,10 +121,15 @@ export function InterviewFlow({ profile, target, settings, gen, onInsert }: Prop
   }
 
   if (!questions) {
-    return errorBlock || (
-      <button type="button" className={`${BTN_OUTLINE} min-h-11 px-4 text-sm`} onClick={() => void loadQuestions()}>
-        Tentar de novo
-      </button>
+    return (
+      errorBlock || (
+        <div className="flex flex-col items-start gap-2">
+          {cancelled && <p className="text-sm text-jf-ink-3">Geração cancelada.</p>}
+          <button type="button" ref={cancelled ? focusOnMount : undefined} className={`${BTN_OUTLINE} min-h-11 px-4 text-sm`} onClick={() => void loadQuestions()}>
+            Tentar de novo
+          </button>
+        </div>
+      )
     );
   }
 

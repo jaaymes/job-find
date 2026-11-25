@@ -133,7 +133,9 @@ describe("AssistantDialog: entrevista", () => {
   });
 
   it("invalid_output mostra a mensagem da D-04 e Tentar de novo refaz a geração", async () => {
-    mocks.writeDrafts.mockRejectedValueOnce(new AiError("invalid_output")).mockResolvedValueOnce(drafts);
+    mocks.writeDrafts
+      .mockRejectedValueOnce(new AiError("invalid_output", { meta: { violations: ["número desconhecido"] } }))
+      .mockResolvedValueOnce(drafts);
     setup();
     fireEvent.click(await screen.findByRole("button", { name: "Gerar" }));
     const alert = await screen.findByRole("alert");
@@ -143,7 +145,16 @@ describe("AssistantDialog: entrevista", () => {
     expect(mocks.writeDrafts).toHaveBeenCalledTimes(2);
   });
 
-  it("região aria-live=polite mostra o texto parcial do onPartial", async () => {
+  it("invalid_output de JSON/schema inválido mostra a mensagem genérica", async () => {
+    mocks.writeDrafts.mockRejectedValueOnce(new AiError("invalid_output", { meta: { issues: ["a resposta não é um JSON válido"] } }));
+    setup();
+    fireEvent.click(await screen.findByRole("button", { name: "Gerar" }));
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("Não foi possível gerar agora. Tente de novo.");
+    expect(alert.textContent).not.toContain(INVENTED);
+  });
+
+  it("aria-live anuncia só um status curto; a prévia parcial fica fora dele, com aria-hidden", async () => {
     const pending = deferred<[Draft, Draft]>();
     mocks.writeDrafts.mockImplementation((a: { onPartial: (p: unknown) => void }) => {
       a.onPartial({ options: [{ text: "Texto parcial em andamento", bullets: null }] });
@@ -151,10 +162,52 @@ describe("AssistantDialog: entrevista", () => {
     });
     setup();
     fireEvent.click(await screen.findByRole("button", { name: "Gerar" }));
-    await waitFor(() => {
-      const live = document.querySelector('[aria-live="polite"]');
-      expect(live?.textContent).toContain("Texto parcial em andamento");
+    const preview = await screen.findByText("Texto parcial em andamento");
+    expect(preview.closest("[aria-hidden='true']")).toBeTruthy();
+    const live = document.querySelector('[aria-live="polite"]')!;
+    expect(live.textContent).toBe("Escrevendo…");
+    expect(live.getAttribute("aria-busy")).toBe("true");
+    expect(live.contains(preview)).toBe(false);
+    await act(async () => {
+      pending.resolve(drafts);
     });
+    await screen.findByRole("radiogroup");
+    expect(live.textContent).toBe("Sugestão pronta.");
+    expect(live.getAttribute("aria-busy")).toBe("false");
+  });
+
+  it("cancelar a busca inicial mostra \"Geração cancelada.\" com Tentar de novo focado", async () => {
+    const pending = deferred<string[]>();
+    mocks.askQuestions.mockReset().mockReturnValue(pending.promise);
+    setup();
+    fireEvent.click(await screen.findByRole("button", { name: "Cancelar" }));
+    await act(async () => {
+      pending.resolve(QUESTIONS);
+    });
+    expect(await screen.findByText("Geração cancelada.")).toBeTruthy();
+    const retry = screen.getByRole("button", { name: "Tentar de novo" });
+    await waitFor(() => expect(document.activeElement).toBe(retry));
+  });
+
+  it("Cancelar na reescrita sem sugestão devolve o foco a \"Gerar de novo\"", async () => {
+    const pending = deferred<Draft>();
+    mocks.rewriteDraft.mockReturnValue(pending.promise);
+    setup({ current: { text: "Texto atual", bullets: null } });
+    fireEvent.click(await screen.findByRole("button", { name: "Cancelar" }));
+    await act(async () => {
+      pending.resolve({ text: "x", bullets: null });
+    });
+    const regen = screen.getByRole("button", { name: "Gerar de novo" });
+    await waitFor(() => expect(document.activeElement).toBe(regen));
+  });
+
+  it("Remover um bullet leva o foco à textarea vizinha", async () => {
+    mocks.rewriteDraft.mockResolvedValue({ text: null, bullets: ["Um", "Dois", "Três"] });
+    setup({ target: { kind: "bullets", expId: "exp_1" }, current: { text: null, bullets: ["Antigo"] } });
+    fireEvent.click(await screen.findByRole("button", { name: "Remover realização 2" }));
+    await waitFor(() => expect((document.activeElement as HTMLTextAreaElement).value).toBe("Três"));
+    fireEvent.click(screen.getByRole("button", { name: "Remover realização 2" }));
+    await waitFor(() => expect((document.activeElement as HTMLTextAreaElement).value).toBe("Um"));
   });
 });
 

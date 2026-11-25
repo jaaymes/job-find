@@ -91,6 +91,25 @@ function numberTokens(text: string): NumToken[] {
   return out;
 }
 
+const MONTH_AFTER =
+  /^(?:jan|fev|feb|mar|abr|apr|mai|may|jun|jul|ago|aug|set|sep|out|oct|nov|dez|dec|janeiro|fevereiro|marco|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro|january|february|march|april|june|july|august|september|october|november|december)\b/iu;
+const DATE_BEFORE = /(?:^|[^\p{L}])(?:em|in|desde|since|até|ate|until|from|de|en|hasta|desde)\s+$/iu;
+const AMOUNT_BEFORE = /(?:mais|menos|cerca|quase|over|than|about|around|nearly|más|casi)\s+(?:de|of)?\s*$/iu;
+const RANGE_AFTER = /^\s*(?:[-–—]|a\b|à\b|até\b|to\b|and\b|e\b|hasta\b|y\b)/iu;
+
+/** Alguma ocorrência de `raw` em `text` está em contexto de data (em 2019, desde 2018, 2019 - 2021, 2019 janeiro)? */
+function usedAsDate(text: string, raw: string): boolean {
+  for (const m of text.matchAll(new RegExp(`(?<![\\d.,])${raw}(?![\\d]|[.,]\\d)`, "g"))) {
+    const before = text.slice(0, m.index);
+    const after = text.slice(m.index + raw.length);
+    if (DATE_BEFORE.test(before) && !AMOUNT_BEFORE.test(before)) return true;
+    if (RANGE_AFTER.test(after)) return true;
+    const word = /^\s+(\p{L}[\p{L}\p{N}]*)/u.exec(after);
+    if (!word || MONTH_AFTER.test(word[1])) return true; // sem substantivo depois: parece data
+  }
+  return false;
+}
+
 function yearsIn(text: string): string[] {
   return [...text.matchAll(/(?<!\d)(?:19|20)\d{2}(?!\d)/g)].map((m) => m[0]);
 }
@@ -434,18 +453,16 @@ const ASSIST_WRITTEN_RE = termRegex([...Object.keys(ASSIST_NUMBER_WORD_VALUE), .
  * `sourceText`: texto cujos números/termos por extenso valem para este trecho.
  * `allowJob`: termos da vaga (nomes, siglas, cargo/senioridade) valem; só na carta.
  */
-/**
- * `sourceText`: texto cujos números/termos por extenso valem para este trecho.
- * `allowJob`: termos da vaga (nomes, siglas, cargo/senioridade) valem; só na carta.
- */
 function checkText(env: CheckEnv, text: string, where: Where, key: string, sourceText: string, allowJob = false): void {
   const { facts, jobWords, jobSeniorityOk, add, assist } = env;
   const inJob = (w: string) => allowJob && jobWords.has(w);
   const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
   for (const t of numberTokens(text)) {
     if (t.yearLike) {
-      // Texto livre (assistente): datas vêm só do perfil, nunca do que o usuário digitou.
-      if (!facts.years.has(t.raw) && (assist || !sourceNumbers.has(t.value))) add("unknown_year", t.raw, where, key);
+      // Texto livre (assistente): datas vêm só do perfil. Um número de 4 dígitos que o usuário digitou
+      // ("2000 usuários") vale quando não aparece como data no texto gerado.
+      const typed = assist && sourceNumbers.has(t.value) && !usedAsDate(text, t.raw);
+      if (!facts.years.has(t.raw) && (assist ? !typed : !sourceNumbers.has(t.value))) add("unknown_year", t.raw, where, key);
     } else if (!sourceNumbers.has(t.value)) {
       add("unknown_number", t.raw, where, key);
     }
@@ -627,10 +644,10 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
 /**
  * Validador do RN-20 para texto livre do assistente de IA do perfil. Números e stacks valem se estão no perfil
  * ou em `sourceText` (respostas da entrevista / texto que o usuário pediu para reescrever); anos e nomes, só no
- * perfil. Nomes comparam sem caixa e sem acento (já é a regra do CV), o que cobre a tradução (`translated`).
+ * perfil (um número de 4 dígitos dito pelo usuário vale se não aparece como data). Nomes comparam sem caixa e
+ * sem acento (já é a regra do CV), o que já cobre a tradução.
  */
-export function validateAssistOutput(profile: Profile, sourceText: string, texts: string[], opts: { translated?: boolean } = {}): Violation[] {
-  void opts; // a comparação de nomes já é por `fold`; a opção documenta a intenção e fica reservada.
+export function validateAssistOutput(profile: Profile, sourceText: string, texts: string[]): Violation[] {
   const { profile: facts, jobWords, jobSeniorityOk } = (prepareFacts(profile) as PreparedInternal).built;
   const out: Violation[] = [];
   const seen = new Set<string>();

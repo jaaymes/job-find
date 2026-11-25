@@ -27,10 +27,15 @@ function Body({ profile, target, current, onInsert, settings, empty }: Omit<Prop
   const gen = useAssistRun();
   return (
     <>
-      {/* Texto parcial do streaming, lido pelo leitor de tela sem roubar o foco. */}
-      <div aria-live="polite" className={gen.busy && gen.partial ? "whitespace-pre-wrap rounded-lg bg-jf-chip p-3 text-sm text-jf-ink-2" : "sr-only"}>
-        {gen.busy ? gen.partial : ""}
+      {/* Anúncio curto e estável para leitor de tela; o texto parcial é só visual e não é anunciado. */}
+      <div role="status" aria-live="polite" aria-busy={gen.busy} className="sr-only">
+        {gen.busy ? "Escrevendo…" : gen.done ? "Sugestão pronta." : ""}
       </div>
+      {gen.busy && gen.partial && (
+        <div aria-hidden="true" className="whitespace-pre-wrap rounded-lg bg-jf-chip p-3 text-sm text-jf-ink-2">
+          {gen.partial}
+        </div>
+      )}
       {empty ? (
         <InterviewFlow profile={profile} target={target} settings={settings} gen={gen} onInsert={onInsert} />
       ) : (

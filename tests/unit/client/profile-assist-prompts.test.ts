@@ -81,8 +81,12 @@ describe("buildUser", () => {
       }
     });
   }
-  it("bullets cita empresa e cargo da experiência", () => {
+  it("bullets cita só o id da experiência fora do bloco do perfil; título e empresa ficam dentro dele", () => {
     for (const user of Object.values(builders(bullets))) {
+      const outside = user.replace(/<profile id="[a-z0-9]{8}">[\s\S]*?<\/profile id="[a-z0-9]{8}">/, "");
+      expect(outside).not.toContain("Lumen Pay");
+      expect(outside).not.toContain("Frontend Sênior");
+      expect(outside).toContain("exp_1");
       expect(user).toContain("Lumen Pay");
       expect(user).toContain("Frontend Sênior");
     }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { FIELD, FIELD_LABEL, BTN_OUTLINE } from "@/components/ui/styles";
 import type { AssistTarget, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import { focusOnMount } from "./useAssistRun";
@@ -42,10 +43,19 @@ type Props = { target: AssistTarget; value: Draft; onChange: (d: Draft) => void;
 
 /** Prévia editável: uma `textarea` para título/resumo, ou uma por bullet (com "Remover"). */
 export function DraftEditor({ target, value, onChange, label, autoFocus }: Props) {
+  const listRef = useRef<HTMLUListElement>(null);
   if (target.kind === "bullets") {
     const bullets = value.bullets ?? [];
+    const remove = (i: number) => {
+      onChange({ text: null, bullets: bullets.filter((_, j) => j !== i) });
+      // O botão focado desmonta: foca o campo vizinho (ou a lista, se esvaziou) depois do render.
+      setTimeout(() => {
+        const next = listRef.current?.querySelectorAll("textarea")[Math.min(i, bullets.length - 2)];
+        (next ?? listRef.current)?.focus();
+      }, 0);
+    };
     return (
-      <ul className="flex flex-col gap-2" aria-label={label ?? "Realizações sugeridas"}>
+      <ul ref={listRef} tabIndex={-1} className="flex flex-col gap-2 outline-none" aria-label={label ?? "Realizações sugeridas"}>
         {bullets.map((b, i) => (
           <li key={i} className="flex flex-col gap-2 sm:flex-row sm:items-start">
             <textarea
@@ -60,7 +70,7 @@ export function DraftEditor({ target, value, onChange, label, autoFocus }: Props
               type="button"
               aria-label={`Remover realização ${i + 1}`}
               className={`${BTN_OUTLINE} min-h-11 px-3 text-sm`}
-              onClick={() => onChange({ text: null, bullets: bullets.filter((_, j) => j !== i) })}
+              onClick={() => remove(i)}
             >
               Remover
             </button>

@@ -67,7 +67,7 @@ function targetBlock(profile: Profile, target: AssistTarget): string {
   const lines = [`Trecho a escrever: ${TARGET_LABEL[target.kind]}.`];
   if (target.kind === "bullets") {
     const exp = profile.experiences.find((e) => e.id === target.expId);
-    if (exp) lines.push(`Experiência: ${redactContact(exp.title)} na ${redactContact(exp.company)} (id ${exp.id}).`);
+    if (exp) lines.push(`Experiência alvo: id ${exp.id} (título e empresa estão em experiences, no perfil abaixo).`);
   }
   lines.push(`Perfil (JSON):\n${wrapUntrusted("profile", JSON.stringify(projectProfileForTailor(profile)), PROFILE_MAX_CHARS)}`);
   return lines.join("\n");

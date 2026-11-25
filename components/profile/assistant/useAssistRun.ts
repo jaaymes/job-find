@@ -9,7 +9,7 @@ export const GENERIC_ERROR = "Não foi possível gerar agora. Tente de novo.";
 /** Foco no primeiro campo de cada passo: ref estável, roda só quando o elemento monta. */
 export const focusOnMount = (el: HTMLElement | null) => el?.focus();
 
-/** Texto legível de um resultado parcial do streaming (objeto parcial do modelo), para a região `aria-live`. */
+/** Texto legível de um resultado parcial do streaming (objeto parcial do modelo), para a prévia visual (não é anunciada). */
 export function partialText(p: unknown): string {
   if (typeof p === "string") return p;
   if (Array.isArray(p)) return p.map(partialText).filter(Boolean).join("\n");
@@ -27,6 +27,7 @@ export function useAssistRun() {
   const [busy, setBusy] = useState(false);
   const [partial, setPartial] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState(false);
   const ctrl = useRef<AbortController | null>(null);
   const seq = useRef(0);
 
@@ -36,6 +37,7 @@ export function useAssistRun() {
     ctrl.current = null;
     setBusy(false);
     setPartial("");
+    setDone(false);
   }, []);
 
   useEffect(() => () => ctrl.current?.abort(), []);
@@ -47,6 +49,7 @@ export function useAssistRun() {
     ctrl.current = c;
     setBusy(true);
     setError(null);
+    setDone(false);
     setPartial("");
     try {
       const out = await fn({
@@ -58,15 +61,16 @@ export function useAssistRun() {
       if (seq.current !== mine || c.signal.aborted) return undefined;
       setBusy(false);
       setPartial("");
+      setDone(true);
       return out;
     } catch (e) {
       if (seq.current !== mine || c.signal.aborted || isAbortError(e)) return undefined;
       setBusy(false);
       setPartial("");
-      setError(e instanceof AiError && e.code === "invalid_output" ? ASSIST_INVENTED_MESSAGE : GENERIC_ERROR);
+      setError(e instanceof AiError && e.code === "invalid_output" && e.meta?.violations ? ASSIST_INVENTED_MESSAGE : GENERIC_ERROR);
       return undefined;
     }
   }, []);
 
-  return { busy, partial, error, run, cancel };
+  return { busy, partial, error, done, run, cancel };
 }

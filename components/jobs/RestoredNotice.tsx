@@ -13,7 +13,7 @@ export function RestoredNotice({ onClear }: { onClear: () => void }) {
       <button
         type="button"
         onClick={onClear}
-        className="inline-flex min-h-11 items-center rounded-md px-1 text-[13px] font-semibold text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand md:min-h-8"
+        className="inline-flex min-h-11 items-center rounded-md px-1 text-[13px] font-semibold text-jf-brand outline-none hover:text-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand"
       >
         Limpar
       </button>

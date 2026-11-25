@@ -17,6 +17,13 @@ describe("RestoredNotice", () => {
     expect(onClear).toHaveBeenCalledTimes(1);
   });
 
+  it("o botão Limpar tem alvo de toque de 44 px em qualquer largura", () => {
+    render(<RestoredNotice onClear={() => {}} />);
+    const classes = screen.getByRole("button", { name: "Limpar" }).className.split(/\s+/);
+    expect(classes).toContain("min-h-11");
+    expect(classes.filter((c) => /^\w+:min-h-/.test(c))).toEqual([]);
+  });
+
   it("clearRestoredSearch zera também a busca por texto (q), mesmo quando ela é o único filtro", () => {
     const set = vi.fn();
     clearRestoredSearch(set);

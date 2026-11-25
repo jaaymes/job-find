@@ -130,7 +130,7 @@ As páginas são shells estáticos na CDN. A lista é carregada pelo `GET /api/j
     - a fonte é `fullSnapshot` (entrega a lista completa a cada coleta);
     - a fonte trouxe pelo menos 50% do volume da coleta anterior.
   - **Fontes incrementais** (Himalayas por cursor, Jobicy com 7 dias, HN): só a regra dos 45 dias vale. No GitHub, uma issue fechada expira a vaga.
-  - **Retenção:** um `DELETE` diário apaga as vagas expiradas há mais de 30 dias, na execução das 03:17.
+  - **Retenção:** rota diária `/api/cron/purge`, agendada às 04:37 UTC e separada da coleta. Aplica as regras R-1 (vaga com `published_at` há mais de 60 dias, em qualquer estado), R-2 (vaga expirada há mais de 30 dias) e R-3 (`source_runs` com mais de 30 dias), em lotes de 2000. Detalhes em [auditoria e limpeza de vagas](2026-11-25-auditoria-insercao-e-limpeza-de-vagas.md).
 - **Tamanho estimado:** cerca de 200 a 250 MB para 20 mil vagas ativas, ou seja, ~25% do 1 GB do Neon Free.
 - *Especialista: arquitetura.*
 

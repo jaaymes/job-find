@@ -10,6 +10,7 @@ export type StorageKey =
   | "jobfind:v1:savedFilters"
   | "jobfind:v1:lastVisit"
   | "jobfind:v1:lastFilters"
-  | "jobfind:v1:onboarding";
+  | "jobfind:v1:onboarding"
+  | "jobfind:v1:cvPrefs";
 
 export const STORAGE_PREFIX = "jobfind:";

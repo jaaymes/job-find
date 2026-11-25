@@ -65,7 +65,7 @@ describe("generateDocs", () => {
     expect(args.prompt).toContain("Escreva tudo em English");
     expect(args.prompt).toContain("Gere também a carta");
     expect(args.prompt).not.toContain(EMAIL);
-    expect(record).toMatchObject({ provider: "deepseek", model: "m", promptVersion: 1, lang: "en", includeLetter: true, edits: null, approvedFlags: [], createdAt: "2026-11-23T12:00:00.000Z" });
+    expect(record).toMatchObject({ provider: "deepseek", model: "m", promptVersion: 1, lang: "en", includeLetter: true, edits: null, approvedFlags: [], templateId: null, createdAt: "2026-11-23T12:00:00.000Z" });
     expect(saved.ok).toBe(true);
     expect(generatedStore.get()["7"].coverLetter).toBe("Carta");
   });
@@ -90,7 +90,7 @@ describe("generateDocs", () => {
   });
 
   it("falha sem tocar no registro anterior (edições preservadas)", async () => {
-    const previous: GeneratedRecord = { ...docs(), provider: "deepseek", model: "m", promptVersion: 1, createdAt: "x", lang: "pt", includeLetter: false, edits: docs({ headline: "Editado" }), approvedFlags: ["k"] };
+    const previous: GeneratedRecord = { ...docs(), provider: "deepseek", model: "m", promptVersion: 1, createdAt: "x", lang: "pt", includeLetter: false, edits: docs({ headline: "Editado" }), approvedFlags: ["k"], templateId: null };
     generatedStore.set({ "7": previous });
     generate.mockRejectedValue(new AiError("rate_limit", { retryable: true }));
     await expect(generateDocs({ job, profile: profile(), settings: defaultAiSettings(), lang: "en", includeLetter: false })).rejects.toMatchObject({ code: "rate_limit" });
@@ -111,7 +111,7 @@ describe("generateDocs", () => {
 
 describe("generatedStore", () => {
   it("descarta só o registro inválido e mantém os demais", () => {
-    const good: GeneratedRecord = { ...docs(), provider: "deepseek", model: "m", promptVersion: 1, createdAt: "x", lang: "pt", includeLetter: false, edits: null, approvedFlags: [] };
+    const good: GeneratedRecord = { ...docs(), provider: "deepseek", model: "m", promptVersion: 1, createdAt: "x", lang: "pt", includeLetter: false, edits: null, approvedFlags: [], templateId: null };
     window.localStorage.setItem("jobfind:v1:generatedDocs", JSON.stringify({ v: 1, data: { "1": good, "2": { cv: "quebrado" }, "3": { ...good, lang: "xx" } } }));
     expect(Object.keys(generatedStore.get())).toEqual(["1"]);
   });

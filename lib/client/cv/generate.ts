@@ -58,6 +58,7 @@ export async function generateDocs(a: GenerateDocsArgs): Promise<{ record: Gener
     includeLetter: a.includeLetter,
     edits: null,
     approvedFlags: [],
+    templateId: null,
   };
   const store = a.store ?? generatedStore;
   const saved = store.set({ ...store.get(), [String(a.job.id)]: record });

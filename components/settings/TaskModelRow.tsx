@@ -49,15 +49,17 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
           </p>
           {cost !== undefined && <p className="mt-0.5 text-[13px] text-jf-ink-3">{cost}</p>}
         </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="min-h-11 flex-none"
-          disabled={!hasConnected}
-          onClick={() => setOpen(true)}
-        >
-          Trocar modelo
-        </Button>
+        <div className="flex flex-none flex-wrap gap-2">
+          {/* Sem isto, uma escolha com provedor desconectado e nenhum outro conectado não tem como voltar ao automático. */}
+          {stale && (
+            <Button type="button" variant="ghost" className="min-h-11" onClick={() => onChange(null)}>
+              Usar automático
+            </Button>
+          )}
+          <Button type="button" variant="outline" className="min-h-11" disabled={!hasConnected} onClick={() => setOpen(true)}>
+            Trocar modelo
+          </Button>
+        </div>
       </div>
       {stale && (
         <p role="alert" className="text-[13px] text-jf-danger-fg">

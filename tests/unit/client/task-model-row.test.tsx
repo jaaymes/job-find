@@ -80,3 +80,25 @@ describe("TaskModelRow: resumo da tarefa", () => {
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   });
 });
+
+describe("TaskModelRow: voltar ao automático", () => {
+  const STALE: AiSettings = {
+    ...defaultAiSettings(),
+    tasks: { extract: { provider: "anthropic", model: "m" }, analyze: null, cv: null },
+  };
+
+  it("escolha com provedor desconectado mostra 'Usar automático', que grava null", () => {
+    const { onChange } = setup(STALE);
+    fireEvent.click(screen.getByRole("button", { name: "Usar automático" }));
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
+  it("sem escolha desconectada, não mostra 'Usar automático'", () => {
+    setup(openRouterSettings("anthropic/claude-haiku"));
+    expect(screen.queryByRole("button", { name: "Usar automático" })).toBeNull();
+    cleanup();
+    setup();
+    expect(screen.queryByRole("button", { name: "Usar automático" })).toBeNull();
+  });
+});
+

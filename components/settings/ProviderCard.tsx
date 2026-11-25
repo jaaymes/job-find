@@ -52,9 +52,21 @@ type Props = {
   onRemove: () => void;
   onReviewPrivacy: () => void;
   oauthError?: string | null;
+  /** `"compact"`: uma linha para provedor conectado (nome, forma de conexão e ações), sem a descrição longa. */
+  variant?: "card" | "compact";
 };
 
-export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onRemove, onReviewPrivacy, oauthError }: Props) {
+export function ProviderCard({
+  def,
+  entry,
+  connected,
+  onAdd,
+  onConnectOAuth,
+  onRemove,
+  onReviewPrivacy,
+  oauthError,
+  variant = "card",
+}: Props) {
   const titleId = useId();
   const [test, setTest] = useState<Test>({ state: "idle" });
   const [showGuide, setShowGuide] = useState(false);
@@ -88,6 +100,67 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
       : entry?.source === "oauth"
         ? `Conectado pelo login do ${def.label} em ${date}. Chave terminada em ${last4}.`
         : `Chave colada em ${date}. Chave terminada em ${last4}.`;
+
+  const removeLabel = def.auth.kind === "paste" ? "Remover chave" : "Desconectar";
+  const reviewLabel = isOpenRouter ? "Revisar aviso dos modelos gratuitos" : "Revisar aviso de privacidade";
+  const testStatus = test.state !== "idle" && (
+    <p
+      role="status"
+      aria-live="polite"
+      className={cn("text-[13px] font-semibold", test.state === "error" ? "text-jf-danger-fg" : "text-jf-alta")}
+    >
+      {test.state === "loading" ? "Testando…" : test.state === "ok" ? "Conectado" : test.text}
+    </p>
+  );
+  const oauthAlert = oauthError && (
+    <p role="alert" className="text-[13px] text-jf-danger-fg">
+      {oauthError}
+    </p>
+  );
+
+  if (variant === "compact") {
+    const how = isLocal
+      ? `Servidor em ${entry?.baseURL ?? def.baseURL}`
+      : entry?.source === "oauth"
+        ? "Conectado com OAuth"
+        : "Chave colada";
+    return (
+      <article aria-labelledby={titleId} className="flex flex-col gap-2 px-[18px] py-3.5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
+          <div className="min-w-0 flex-[1_1_220px]">
+            <h3 id={titleId} className="flex items-center gap-2 text-base font-semibold">
+              <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-jf-alta" />
+              {def.label}
+            </h3>
+            <p className="mt-0.5 pl-4 text-[13px] text-jf-ink-3">
+              <span>{how}</span>
+              {last4 && !isLocal && <span className="tabular-nums"> · termina em {last4}</span>}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {needsReview && (
+              <Button variant="ghost" className="min-h-11 px-3 text-sm text-jf-warn-fg-strong" onClick={onReviewPrivacy}>
+                {reviewLabel}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="min-h-11 border-jf-line-strong px-3 text-sm"
+              onClick={runTest}
+              disabled={test.state === "loading"}
+            >
+              Testar conexão
+            </Button>
+            <Button variant="ghost" className="min-h-11 px-3 text-sm text-jf-ink-2" onClick={remove}>
+              {removeLabel}
+            </Button>
+          </div>
+        </div>
+        {testStatus}
+        {oauthAlert}
+      </article>
+    );
+  }
 
   return (
     <article
@@ -127,11 +200,11 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
               Testar conexão
             </Button>
             <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={remove}>
-              {def.auth.kind === "paste" ? "Remover chave" : "Desconectar"}
+              {removeLabel}
             </Button>
             {needsReview && (
               <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
-                {isOpenRouter ? "Revisar aviso dos modelos gratuitos" : "Revisar aviso de privacidade"}
+                {reviewLabel}
               </Button>
             )}
           </>
@@ -171,20 +244,8 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
           </Button>
         )}
       </div>
-      {test.state !== "idle" && (
-        <p
-          role="status"
-          aria-live="polite"
-          className={cn("text-[13px] font-semibold", test.state === "error" ? "text-jf-danger-fg" : "text-jf-alta")}
-        >
-          {test.state === "loading" ? "Testando…" : test.state === "ok" ? "Conectado" : test.text}
-        </p>
-      )}
-      {oauthError && (
-        <p role="alert" className="text-[13px] text-jf-danger-fg">
-          {oauthError}
-        </p>
-      )}
+      {testStatus}
+      {oauthAlert}
       {isLocal && showGuide && <LocalAiGuide />}
     </article>
   );

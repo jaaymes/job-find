@@ -8,7 +8,9 @@ afterEach(cleanup);
 
 type Entry = AiSettings["providers"]["openrouter"];
 
-function setup(id: "openrouter" | "openai" | "local", entry?: Entry, extra: { oauthError?: string | null } = {}) {
+type Extra = { oauthError?: string | null; variant?: "card" | "compact" };
+
+function setup(id: "openrouter" | "openai" | "local", entry?: Entry, extra: Extra = {}) {
   const handlers = { onAdd: vi.fn(), onConnectOAuth: vi.fn(), onRemove: vi.fn(), onReviewPrivacy: vi.fn() };
   render(<ProviderCard def={PROVIDERS[id]} entry={entry} connected={entry !== undefined} {...handlers} {...extra} />);
   return handlers;
@@ -55,6 +57,40 @@ describe("ProviderCard", () => {
 
   it("oauthError aparece como alerta", () => {
     setup("openrouter", undefined, { oauthError: "Falhou" });
+    expect(screen.getByRole("alert").textContent).toBe("Falhou");
+  });
+});
+
+describe("ProviderCard compact", () => {
+  const OAUTH: Entry = { key: "sk-or-abcd9876", addedAt: "2026-11-20T12:00:00.000Z", source: "oauth", freeConsent: true };
+  const PASTE: Entry = { key: "sk-abcd1234", addedAt: "2026-11-20T12:00:00.000Z", source: "paste" };
+
+  it("mostra Testar e Remover, sem a descrição longa", () => {
+    const h = setup("openai", PASTE, { variant: "compact" });
+    expect(screen.getByRole("button", { name: /Testar/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Remover/ }));
+    expect(h.onRemove).toHaveBeenCalledOnce();
+    expect(screen.queryByText(/Modelos GPT com a sua chave/)).toBeNull();
+    expect(screen.queryByText(/Chave colada em/)).toBeNull();
+  });
+
+  it("mostra a forma de conexão: 'Chave colada' ou 'Conectado com OAuth'", () => {
+    setup("openai", PASTE, { variant: "compact" });
+    expect(screen.getByText("Chave colada")).toBeTruthy();
+    cleanup();
+    setup("openrouter", OAUTH, { variant: "compact" });
+    expect(screen.getByText("Conectado com OAuth")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Desconectar" })).toBeTruthy();
+  });
+
+  it("mostra 'revisar aviso' quando o aviso não foi aceito", () => {
+    const h = setup("openrouter", { ...OAUTH, freeConsent: undefined }, { variant: "compact" });
+    fireEvent.click(screen.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" }));
+    expect(h.onReviewPrivacy).toHaveBeenCalledOnce();
+  });
+
+  it("mostra o erro de OAuth", () => {
+    setup("openrouter", OAUTH, { variant: "compact", oauthError: "Falhou" });
     expect(screen.getByRole("alert").textContent).toBe("Falhou");
   });
 });

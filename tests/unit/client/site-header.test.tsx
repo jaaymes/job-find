@@ -29,10 +29,10 @@ describe("SiteHeader", () => {
     const nav = screen.getByRole("navigation", { name: "Principal" });
     expect(within(nav).getAllByRole("link").map((link) => link.textContent)).toEqual([
       "Vagas",
-      "Fontes",
       "Minhas vagas",
       "Perfil",
       "Configurações",
+      "Fontes",
     ]);
     expect(within(nav).queryByRole("link", { name: "Apoie" })).toBeNull();
     expect(screen.getByRole("link", { name: "Apoie" }).getAttribute("href")).toBe("/apoie");

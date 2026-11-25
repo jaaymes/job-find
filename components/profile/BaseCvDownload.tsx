@@ -29,15 +29,18 @@ function saveBlob(blob: Blob, name: string) {
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-/** CV base (RF-37): monta o PDF só com o perfil salvo, sem vaga e sem IA. */
+/**
+ * Seção "Modelos de CV" do perfil: o modelo escolhido aqui vira o padrão dos próximos CVs (`cvPrefs`) e é o
+ * usado no CV base (RF-37), montado só com o perfil salvo, sem vaga e sem IA.
+ */
 export function BaseCvDownload({ profile }: { profile: Profile }) {
   const prefs = useStore(cvPrefsStore);
-  const [chosen, setChosen] = useState<CvTemplateId | null>(null);
   const [lang, setLang] = useState<CvLang>("pt");
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  const templateId = resolveTemplateId(chosen, prefs ?? { templateId: null }, profile, null);
+  const templateId = resolveTemplateId(null, prefs ?? { templateId: null }, profile, null);
+  const choose = (id: CvTemplateId) => cvPrefsStore.set({ templateId: id });
 
   async function download() {
     setBusy(true);
@@ -54,19 +57,20 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
   }
 
   return (
-    <section aria-labelledby="base-cv-t" className={`${CARD} mt-6 flex flex-col gap-3 p-4 sm:p-6`}>
+    <section id="modelos-de-cv" aria-labelledby="base-cv-t" className={`${CARD} mb-6 flex flex-col gap-3 p-4 sm:p-6`}>
       <h2 id="base-cv-t" className="text-lg font-semibold">
-        Baixar CV base
+        Modelos de CV
       </h2>
       <p className="text-sm text-jf-ink-3">
-        Gera um PDF só com os dados do perfil salvo, sem vaga e sem IA. Salve o perfil antes para incluir as últimas
-        edições.
+        O modelo escolhido aqui é o padrão dos próximos CVs gerados para as vagas (dá para trocar em cada CV). O CV
+        base é um PDF só com os dados do perfil salvo, sem vaga e sem IA: salve o perfil antes para incluir as
+        últimas edições.
       </p>
       <div className="flex flex-wrap items-end gap-3">
         <TemplatePicker
           value={templateId}
           recommended={recommendTemplate(profile, null)}
-          onChange={(id) => setChosen(id)}
+          onChange={(id) => choose(id)}
           showDefaultOption={false}
         />
         <label className={FIELD_LABEL}>

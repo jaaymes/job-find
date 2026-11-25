@@ -94,6 +94,7 @@ export function ProfileScreen() {
           />
         </div>
         <div className="min-w-0 flex-[999_1_560px]">
+          {profile && <BaseCvDownload profile={profile} />}
           {profile || manual ? (
             <ProfileEditor key={revision} profile={profile ?? emptyProfile()} onSave={(p) => persist(p, false)} />
           ) : (
@@ -101,7 +102,6 @@ export function ProfileScreen() {
               Ainda não há perfil. Importe um currículo ou preencha manualmente para ver as suas chances nas vagas.
             </div>
           )}
-          {profile && <BaseCvDownload profile={profile} />}
         </div>
       </div>
 

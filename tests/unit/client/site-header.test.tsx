@@ -12,12 +12,17 @@ vi.mock("@/components/onboarding/OnboardingGuide", () => ({ OnboardingGuide: () 
 afterEach(() => cleanup());
 
 describe("SiteHeader", () => {
-  it("mostra o apoio ao projeto logo depois de Configurações", () => {
+  it("mantém o apoio fora do menu principal, como link discreto à direita", () => {
     render(<SiteHeader />);
-    const links = within(screen.getByRole("navigation", { name: "Principal" })).getAllByRole("link");
-    const labels = links.map((link) => link.textContent);
-    expect(labels.slice(-2)).toEqual(["Configurações", "Apoie"]);
-    expect(links.at(-1)!.getAttribute("href")).toBe("/apoie");
+    const nav = screen.getByRole("navigation", { name: "Principal" });
+    expect(within(nav).getAllByRole("link").map((link) => link.textContent)).toEqual([
+      "Vagas",
+      "Minhas vagas",
+      "Perfil",
+      "Configurações",
+    ]);
+    expect(within(nav).queryByRole("link", { name: "Apoie" })).toBeNull();
+    expect(screen.getByRole("link", { name: "Apoie" }).getAttribute("href")).toBe("/apoie");
   });
 
   it("destaca o item na página de apoio", () => {

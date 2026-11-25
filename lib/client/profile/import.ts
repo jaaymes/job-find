@@ -16,6 +16,15 @@ export function renumber(experiences: Profile["experiences"]): Profile["experien
   }));
 }
 
+/** Reatribui `proj_N` e `proj_N.bM` em ordem, como em `renumber`. */
+export function renumberProjects(projects: Profile["projects"]): Profile["projects"] {
+  return projects.map((p, i) => ({
+    ...p,
+    id: `proj_${i + 1}`,
+    bullets: p.bullets.map((b, j) => ({ ...b, id: `proj_${i + 1}.b${j + 1}` })),
+  }));
+}
+
 /**
  * Estrutura o texto de um currículo com IA (D-11). E-mail e telefone são redigidos antes do envio e
  * preenchidos localmente depois; `stackId` e os ids vêm do cliente, não do modelo.
@@ -43,5 +52,7 @@ export async function importProfile(
     contact: extractContact(text),
     skills: data.skills.map((s) => ({ ...s, stackId: normalizeSkill(s.name) })),
     experiences: renumber(data.experiences),
+    projects: renumberProjects(data.projects),
+    highlights: [],
   };
 }

@@ -76,4 +76,22 @@ describe("parseBackup com perfil v1", () => {
     expect(r.keys).toContain(KEY);
     expect((r.backup.data[KEY] as Profile).schemaVersion).toBe(2);
   });
+
+  it("higieniza o link dos projetos", async () => {
+    const proj = (id: string, link: string) => ({ id, name: "P", link, stacks: [], bullets: [] });
+    const profile = {
+      ...emptyProfile(),
+      projects: [proj("proj_1", "javascript:alert(1)"), proj("proj_2", "https://github.com/ana/p")],
+    };
+    const file = new File(
+      [JSON.stringify({ format: "jobfind-backup", v: 1, exportedAt: "2026-11-20T00:00:00.000Z", data: { [KEY]: profile } })],
+      "b.json",
+      { type: "application/json" },
+    );
+    const r = await parseBackup(file);
+    expect(r.ok).toBe(true);
+    if (!r.ok) return;
+    const links = (r.backup.data[KEY] as Profile).projects.map((x) => x.link);
+    expect(links).toEqual([null, "https://github.com/ana/p"]);
+  });
 });

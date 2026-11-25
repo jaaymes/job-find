@@ -80,6 +80,20 @@ describe("importProfile", () => {
     expect(Profile.safeParse(p).success).toBe(true);
   });
 
+  it("renumera projetos e força highlights vazio", async () => {
+    const out = modelOutput();
+    out.projects = [
+      { id: "x", name: "P1", link: null, stacks: [], bullets: [{ id: "a", text: "t" }, { id: "a", text: "u" }] },
+      { id: "x", name: "P2", link: null, stacks: [], bullets: [{ id: "a", text: "v" }] },
+    ];
+    out.highlights = ["exp_1.b1"];
+    generate.mockResolvedValue({ data: out, provider: "openai", model: "m" });
+    const p = await importProfile(CV, defaultAiSettings());
+    expect(p.projects.map((x) => x.id)).toEqual(["proj_1", "proj_2"]);
+    expect(p.projects.flatMap((x) => x.bullets.map((b) => b.id))).toEqual(["proj_1.b1", "proj_1.b2", "proj_2.b1"]);
+    expect(p.highlights).toEqual([]);
+  });
+
   it("repassa o sinal de aborto", async () => {
     const ctrl = new AbortController();
     await importProfile(CV, defaultAiSettings(), ctrl.signal);

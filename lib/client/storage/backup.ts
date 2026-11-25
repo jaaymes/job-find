@@ -151,6 +151,7 @@ function sanitizeProfile(p: Profile | null): Profile | null {
   if (!p) return p;
   const clean = deepText(p);
   clean.contact.links = clean.contact.links.map(cleanUrl).filter((u): u is string => u !== null);
+  clean.projects = clean.projects.map((pr) => ({ ...pr, link: pr.link === null ? null : cleanUrl(pr.link) }));
   return clean;
 }
 

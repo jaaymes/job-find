@@ -172,7 +172,7 @@ describe("AssistantDialog: entrevista", () => {
       pending.resolve(drafts);
     });
     await screen.findByRole("radiogroup");
-    expect(live.textContent).toBe("Sugestão pronta.");
+    expect(live.textContent).toBe("Pronto.");
     expect(live.getAttribute("aria-busy")).toBe("false");
   });
 

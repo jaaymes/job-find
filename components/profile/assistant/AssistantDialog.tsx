@@ -29,7 +29,7 @@ function Body({ profile, target, current, onInsert, settings, empty }: Omit<Prop
     <>
       {/* Anúncio curto e estável para leitor de tela; o texto parcial é só visual e não é anunciado. */}
       <div role="status" aria-live="polite" aria-busy={gen.busy} className="sr-only">
-        {gen.busy ? "Escrevendo…" : gen.done ? "Sugestão pronta." : ""}
+        {gen.busy ? "Escrevendo…" : gen.done ? "Pronto." : ""}
       </div>
       {gen.busy && gen.partial && (
         <div aria-hidden="true" className="whitespace-pre-wrap rounded-lg bg-jf-chip p-3 text-sm text-jf-ink-2">

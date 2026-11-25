@@ -17,7 +17,7 @@ export default async function JobPage({ params }: { params: Promise<{ id: string
   return (
     <>
       <SiteHeader current="vagas" />
-      <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-5 px-4 pt-4 pb-16 sm:px-6 sm:pt-6">
+      <main id="conteudo" className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-5 px-4 pt-4 pb-16 sm:px-6 sm:pt-6">
         <JobDetail id={id} />
       </main>
       <SiteFooter />

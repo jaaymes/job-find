@@ -32,7 +32,7 @@
 
 ---
 
-### Tarefa 1: perfil v2, migração, store, backup e prompt de extração v2
+### Task 1: Tarefa 1 — perfil v2, migração, store, backup e prompt de extração v2
 
 **Arquivos:**
 - Modificar: `lib/shared/schemas/profile.ts`, `lib/client/profile/store.ts`, `lib/client/storage/backup.ts`, `lib/client/profile/import.ts`, `tests/unit/client/profile-import.test.ts`
@@ -70,7 +70,7 @@
 - [ ] **Passo 4:** rodar `pnpm vitest run tests/unit/client/profile-migration.test.ts tests/unit/client/profile-import.test.ts tests/unit/client/backup.test.ts`, depois `pnpm test`, `pnpm typecheck && pnpm lint`. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(perfil): schema v2 com projetos, certificações, idiomas e destaques`
 
-### Tarefa 2: `AssembledCv` com os dados novos e `assembleBaseCv`
+### Task 2: Tarefa 2 — `AssembledCv` com os dados novos e `assembleBaseCv`
 
 **Arquivos:**
 - Modificar: `lib/client/cv/assemble.ts`, `lib/client/pdf/CvDocument.tsx` (só `SECTION_LABELS`)
@@ -108,7 +108,7 @@
 - [ ] **Passo 4:** rodar o teste, depois `pnpm test`, `pnpm typecheck && pnpm lint`. Esperado: PASS. Os testes de PDF continuam verdes.
 - [ ] **Passo 5: commit** `feat(cv): projetos, certificações, idiomas e destaques na montagem do CV`
 
-### Tarefa 3: fontes novas com subconjunto latino
+### Task 3: Tarefa 3 — fontes novas com subconjunto latino
 
 **Arquivos:**
 - Criar:
@@ -136,7 +136,7 @@
 - [ ] **Passo 4: implementar `PDF_FAMILIES` e o registro** em `fonts.ts`, depois rodar `pnpm vitest run tests/unit/client/pdf-fonts.test.ts tests/unit/client/pdf.test.ts`. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(pdf): fontes Source Serif 4, Source Sans 3 e IBM Plex Sans (OFL, subconjunto latino)`
 
-### Tarefa 4: registro de templates, renderizador guiado por template, metadados e teste ATS
+### Task 4: Tarefa 4 — registro de templates, renderizador guiado por template, metadados e teste ATS
 
 **Arquivos:**
 - Criar: `lib/client/pdf/templates/types.ts`, `registry.ts`, `sections.tsx`
@@ -198,7 +198,7 @@ No `minimalista`, `projects` e `certifications` foram omitidos de propósito, co
 - [ ] **Passo 4:** rodar `pnpm vitest run tests/unit/client/pdf-templates.test.ts tests/unit/client/pdf.test.ts tests/unit/client/pdf-preview.test.tsx`, depois `pnpm typecheck && pnpm lint`. Esperado: PASS. Se a ordem extraída falhar num template, ajuste o token (por exemplo, a margem), não o teste.
 - [ ] **Passo 5: commit** `feat(pdf): dez templates de CV de coluna única guiados por registro`
 
-### Tarefa 5: recomendação, preferências e template por documento
+### Task 5: Tarefa 5 — recomendação, preferências e template por documento
 
 **Arquivos:**
 - Criar: `lib/client/pdf/templates/recommend.ts`, `lib/client/pdf/templates/prefs.ts`
@@ -236,7 +236,7 @@ No `minimalista`, `projects` e `certifications` foram omitidos de propósito, co
 - [ ] **Passo 4:** rodar os testes, depois `pnpm test`, `pnpm typecheck && pnpm lint`. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(cv): recomendação de template, padrão do usuário e template por documento`
 
-### Tarefa 6: seletor "Modelo do CV" no gerador
+### Task 6: Tarefa 6 — seletor "Modelo do CV" no gerador
 
 **Arquivos:**
 - Criar: `components/generator/TemplatePicker.tsx`
@@ -270,7 +270,7 @@ No `minimalista`, `projects` e `certifications` foram omitidos de propósito, co
 - [ ] **Passo 4:** rodar `pnpm vitest run tests/unit/client/template-picker.test.tsx tests/unit/client/pdf-preview.test.tsx` e `pnpm test:e2e tests/e2e/generator.spec.ts tests/e2e/mobile-generator.spec.ts`, depois `pnpm typecheck && pnpm lint`. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(gerador): seletor de modelo do CV com recomendação e padrão`
 
-### Tarefa 7: editores do perfil v2, estrela de destaque e "Baixar CV base"
+### Task 7: Tarefa 7 — editores do perfil v2, estrela de destaque e "Baixar CV base"
 
 **Arquivos:**
 - Criar: `components/profile/ProjectsEditor.tsx`, `CertificationsEditor.tsx`, `LanguagesEditor.tsx`, `BaseCvDownload.tsx`
@@ -304,7 +304,7 @@ No `minimalista`, `projects` e `certifications` foram omitidos de propósito, co
 - [ ] **Passo 4:** rodar os testes de unidade e `pnpm test:e2e tests/e2e/profile.spec.ts`, depois `pnpm typecheck && pnpm lint`. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(perfil): editores de projetos, certificações e idiomas, destaques e CV base`
 
-### Tarefa 8: verificação final
+### Task 8: Tarefa 8 — verificação final
 
 - [ ] **Passo 1:** `pnpm typecheck && pnpm lint && pnpm test && pnpm build`. Esperado: tudo verde.
 - [ ] **Passo 2:** `pnpm test:e2e`. Esperado: tudo verde.

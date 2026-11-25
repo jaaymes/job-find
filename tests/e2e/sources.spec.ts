@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { sql } from "drizzle-orm";
+import { CONNECTORS } from "@/lib/server/sources/registry";
 import { listSourcesStatus } from "@/lib/server/sources/status";
 import { MINUTE, seedDatabase, type E2eDb } from "./seed";
 
@@ -85,6 +86,18 @@ test("Fontes avisa coleta parada e destaca fonte falhando", async ({ page }) => 
   // hn: 3 falhas seguidas.
   await expect(item("Hacker News").getByText("Falhando")).toBeVisible();
   await expect(item("Lever").getByText("Falhando")).toHaveCount(0);
+});
+
+test("Fontes mostra um banner global quando todas estão atrasadas e não 1 alerta por fonte", async ({ page }) => {
+  await seedStates();
+  const old = new Date(Date.now() - 48 * HOUR).toISOString();
+  await db.execute(sql`TRUNCATE source_state RESTART IDENTITY`);
+  for (const source of Object.keys(CONNECTORS)) {
+    await db.execute(sql`INSERT INTO source_state (source, consecutive_failures, last_success_at) VALUES (${source}, 0, ${old})`);
+  }
+  await page.goto("/fontes");
+  await expect(page.getByRole("status").filter({ hasText: "todas as fontes" })).toHaveCount(1);
+  await expect(page.getByText(/Coleta parada há mais de/)).toHaveCount(0);
 });
 
 test("Fontes usa o limite de horas da própria fonte no aviso", async ({ page }) => {

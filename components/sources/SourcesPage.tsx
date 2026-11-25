@@ -6,13 +6,22 @@ import type { SourceStatus } from "@/lib/shared/types/sources-status";
 
 const BADGE = "rounded-full px-2.5 py-0.5 text-xs font-semibold";
 
-function SourceRow({ source, now }: { source: SourceStatus; now: number | null }) {
+function isStale(source: SourceStatus, now: number | null): boolean {
+  return now !== null && isSourceStale(source.lastSuccessAt, source.status === "failing", now, source.staleAfterMinutes * 60_000);
+}
+
+/** `allStale`: o banner global já avisa, então a linha não repete o alerta de coleta parada. */
+function SourceRow({ source, now, allStale }: { source: SourceStatus; now: number | null; allStale: boolean }) {
   const failing = source.status === "failing";
-  const stale = now !== null && isSourceStale(source.lastSuccessAt, failing, now, source.staleAfterMinutes * 60_000);
+  const stale = isStale(source, now);
   const collected = source.lastSuccessAt ? formatCollectedAt(source.lastSuccessAt) : null;
   return (
     <li className="flex flex-col gap-2 rounded-xl border border-jf-line bg-jf-surface px-4 py-3.5">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+        <span
+          aria-hidden="true"
+          className={`size-2.5 shrink-0 rounded-full ${failing || stale ? "bg-jf-new-fg" : "bg-jf-alta"}`}
+        />
         <a
           href={source.attributionUrl}
           target="_blank"
@@ -31,7 +40,7 @@ function SourceRow({ source, now }: { source: SourceStatus; now: number | null }
       {failing && (
         <p className="text-sm text-jf-new-fg">Falhas seguidas nas últimas coletas; os dados desta fonte podem estar desatualizados.</p>
       )}
-      {stale && (
+      {stale && !allStale && (
         <p
           role="status"
           className="rounded-lg border border-jf-new-fg/20 bg-jf-new-bg px-3 py-2 text-sm text-jf-new-fg"
@@ -47,6 +56,8 @@ export function SourcesPage() {
   const query = useSourcesStatus();
   // Relógio do cliente = instante em que os dados chegaram (o pré-render não conhece a hora).
   const now = query.dataUpdatedAt > 0 ? query.dataUpdatedAt : null;
+  const sources = query.data?.sources ?? [];
+  const allStale = sources.length > 0 && sources.every((s) => isStale(s, now));
 
   return (
     <>
@@ -66,10 +77,16 @@ export function SourcesPage() {
           </button>
         </p>
       )}
+      {allStale && (
+        <p role="status" className="rounded-lg border border-jf-new-fg/20 bg-jf-new-bg px-4 py-3 text-sm text-jf-new-fg">
+          A coleta está atrasada em todas as fontes. As vagas podem estar desatualizadas; a coleta volta ao normal
+          sozinha.
+        </p>
+      )}
       {query.data && (
         <ul className="grid gap-3 sm:grid-cols-2">
           {query.data.sources.map((s) => (
-            <SourceRow key={s.source} source={s} now={now} />
+            <SourceRow key={s.source} source={s} now={now} allStale={allStale} />
           ))}
         </ul>
       )}

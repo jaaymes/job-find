@@ -39,23 +39,26 @@ export default async function ApoiePage() {
       </div>
 
       <Channel title="Pix">
-        <div className="flex flex-col items-start gap-5 sm:flex-row">
+        {/* No celular o "copia e cola" vem antes do QR (não dá para apontar a câmera para a própria tela); a partir de sm o QR fica à esquerda. */}
+        <div className="flex flex-col items-start gap-5 sm:grid sm:grid-cols-[176px_1fr] sm:gap-y-3">
+          <div className="sm:col-start-2 sm:row-start-2">
+            <CopyPixKey value={payload} label="Copiar Pix copia e cola" />
+          </div>
           {/* eslint-disable-next-line @next/next/no-img-element -- SVG gerado no build, em data URL */}
           <img
             src={qrSrc}
             alt="QR code do Pix para apoiar o Job Find"
             width={176}
             height={176}
-            className="shrink-0 rounded-lg border border-jf-line"
+            className="shrink-0 rounded-lg border border-jf-line sm:col-start-1 sm:row-span-2 sm:row-start-1"
           />
-          <div className="flex min-w-0 flex-col gap-3">
+          <div className="flex min-w-0 flex-col gap-3 sm:col-start-2 sm:row-start-1">
             <p>Aponte a câmera do app do seu banco para o QR code e escolha o valor.</p>
             <p className="text-[13px] text-jf-ink-3">Chave aleatória</p>
             <code className="rounded-lg bg-jf-chip px-3 py-2 font-mono text-[13px] break-all text-jf-ink select-all">
               {PIX.key}
             </code>
             <CopyPixKey value={PIX.key} label="Copiar chave Pix" />
-            <CopyPixKey value={payload} label="Copiar Pix copia e cola" />
           </div>
         </div>
       </Channel>

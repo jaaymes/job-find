@@ -11,6 +11,10 @@ import { MINUTE, seedDatabase, type E2eDb } from "./seed";
 
 const SAVED_KEY = "jobfind:v1:savedFilters";
 const VISIT_KEY = "jobfind:v1:lastVisit";
+const LAST_FILTERS_KEY = "jobfind:v1:lastFilters";
+
+/** A home restaura a última busca antes da busca padrão: apagá-la isola o comportamento da busca padrão. */
+const forgetLastSearch = (page: Page) => page.evaluate((k) => localStorage.removeItem(k), LAST_FILTERS_KEY);
 
 let db: E2eDb;
 let closeDb: () => Promise<void>;
@@ -91,6 +95,7 @@ test.describe("busca padrão", () => {
     expect(await stored(page, SAVED_KEY)).toEqual({ workMode: "remote", stacks: ["react"] });
 
     await page.goto("/privacidade");
+    await forgetLastSearch(page);
     await page.goto("/");
     await expect(page).toHaveURL(/[?&]workMode=remote(&|$)/);
     await expect(page).toHaveURL(/[?&]stacks=react(&|$)/);
@@ -123,6 +128,7 @@ test.describe("busca padrão", () => {
     await expect(page.getByText("Busca padrão ativa")).toHaveCount(0);
     expect(await stored(page, SAVED_KEY)).toBeNull();
 
+    await forgetLastSearch(page);
     await open(page, "/");
     await expect(page).not.toHaveURL(/origin=/);
     await expect(cards(page)).toHaveCount(30);

@@ -50,6 +50,17 @@ describe("ProjectsEditor", () => {
   });
 });
 
+describe("ProjectsEditor com stacks vindas de fora", () => {
+  it("mostra o texto novo no campo Tecnologias depois de um desfazer", () => {
+    const proj = (stacks: string[]): Profile["projects"] => [{ id: "proj_1", name: "P", link: null, stacks, bullets: [] }];
+    const { rerender } = render(<ProjectsEditor projects={proj(["React"])} onChange={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Editar projeto/ }));
+    expect((screen.getByLabelText(/^Tecnologias/) as HTMLInputElement).value).toBe("React");
+    rerender(<ProjectsEditor projects={proj(["Vue", "Go"])} onChange={() => {}} />);
+    expect((screen.getByLabelText(/^Tecnologias/) as HTMLInputElement).value).toBe("Vue, Go");
+  });
+});
+
 describe("LanguagesEditor", () => {
   it("o select de nível tem as 5 opções em português", () => {
     render(<LanguagesEditor languages={[{ name: "Inglês", level: "fluent" }]} onChange={() => {}} />);
@@ -144,6 +155,29 @@ describe("estrela de destaque", () => {
     fireEvent.click(screen.getByRole("button", { name: "Remover realização 4" }));
     fireEvent.click(screen.getByRole("button", { name: "+ Realização" }));
     expect(ids()).toEqual(["exp_1.b1", "exp_1.b2", "exp_1.b3", "exp_1.b6"]);
+  });
+
+  it("remover a experiência com bullet destacado esvazia highlights", () => {
+    render(<Exp initial={["exp_1.b2"]} />);
+    expect(screen.getByTestId("hl").textContent).toBe("exp_1.b2");
+    fireEvent.click(screen.getByRole("button", { name: /^Remover experiência/ }));
+    expect(screen.getByTestId("hl").textContent).toBe("");
+  });
+
+  it("recolhida, só o bullet destacado tem '(destacado)' e a estrela aria-hidden", () => {
+    render(<Exp initial={["exp_1.b2"]} />);
+    const items = screen.getAllByRole("listitem").filter((li) => li.parentElement?.className.includes("list-disc"));
+    expect(items).toHaveLength(4);
+    items.forEach((li, i) => {
+      const mark = li.querySelector(".sr-only");
+      if (i === 1) {
+        expect(mark?.textContent).toBe("(destacado)");
+        expect(li.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
+      } else {
+        expect(mark).toBeNull();
+        expect(li.querySelector("svg")).toBeNull();
+      }
+    });
   });
 
   it("apagar um bullet destacado remove o id de highlights", () => {

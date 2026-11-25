@@ -163,6 +163,71 @@ describe("inserir e desfazer", () => {
   });
 });
 
+describe("desfazer e limite de destaques", () => {
+  it("o Desfazer nunca deixa mais de 3 destaques", () => {
+    const onSave = vi.fn(() => true);
+    const base = profile({ headline: "x", summary: "y" });
+    const exp2 = {
+      id: "exp_2",
+      company: "Beta",
+      title: "Dev2",
+      startDate: null,
+      endDate: null,
+      bullets: [
+        { id: "exp_2.b1", text: "C1" },
+        { id: "exp_2.b2", text: "C2" },
+        { id: "exp_2.b3", text: "C3" },
+      ],
+    };
+    // 1 destaque fora de exp_1 e 2 dentro dela.
+    render(
+      <ProfileEditor
+        profile={{ ...base, experiences: [...base.experiences, exp2], highlights: ["exp_2.b1", "exp_1.b1", "exp_1.b2"] }}
+        onSave={onSave}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Editar experiência\s*Dev · Acme/ }));
+    mocks.insert = { text: null, bullets: ["Novo 1", "Novo 2"] };
+    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[2]);
+    fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
+    // Libera 2 vagas e as ocupa com bullets de exp_2.
+    fireEvent.click(screen.getByRole("button", { name: /Editar experiência\s*Dev2/ }));
+    const stars = screen.getAllByRole("button", { name: "Destacar no CV" });
+    fireEvent.click(stars[3]);
+    fireEvent.click(stars[4]);
+    undo();
+    fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
+    const saved = (onSave.mock.calls[0] as unknown as [Profile])[0];
+    expect(saved.highlights.length).toBeLessThanOrEqual(3);
+  });
+
+  it("depois de remover o último bullet, o assistente não reaproveita o id", () => {
+    const onSave = vi.fn(() => true);
+    const base = profile({ headline: "x", summary: "y", highlights: [] });
+    const exp = base.experiences[0];
+    const withFour = {
+      ...base,
+      experiences: [
+        {
+          ...exp,
+          bullets: [...exp.bullets, { id: "exp_1.b3", text: "Fiz C" }, { id: "exp_1.b4", text: "Fiz D" }],
+        },
+      ],
+    };
+    render(<ProfileEditor profile={withFour} onSave={onSave} />);
+    fireEvent.click(screen.getByRole("button", { name: /Editar experiência/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Remover realização 4" }));
+    mocks.insert = { text: null, bullets: ["N1", "N2", "N3", "N4"] };
+    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[2]);
+    fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
+    fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
+    const saved = (onSave.mock.calls[0] as unknown as [Profile])[0];
+    const ids = saved.experiences[0].bullets.map((b) => b.id);
+    expect(ids).not.toContain("exp_1.b4");
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});
+
 describe("alterações não salvas calculadas do rascunho", () => {
   const headline = () => screen.getByLabelText("Título profissional") as HTMLInputElement;
 

@@ -25,7 +25,14 @@ function Row({
   const [open, setOpen] = useState(startOpen);
   const seenBullet = useRef(maxSeq(item.bullets.map((b) => b.id), /\.b(\d+)$/));
   // Texto cru das tecnologias: separar por vírgula a cada tecla apagaria vírgulas e espaços digitados.
-  const [stacksText, setStacksText] = useState(item.stacks.join(", "));
+  const stacksKey = item.stacks.join(", ");
+  const [stacksText, setStacksText] = useState(stacksKey);
+  // Mudança vinda de fora (ex.: desfazer) ressincroniza o texto; o que o usuário digitou (ex.: vírgula final) é preservado quando a lista é a mesma.
+  const [seenKey, setSeenKey] = useState(stacksKey);
+  if (seenKey !== stacksKey) {
+    setSeenKey(stacksKey);
+    if (stacksText.split(",").map((s) => s.trim()).filter(Boolean).join(", ") !== stacksKey) setStacksText(stacksKey);
+  }
   const set = (patch: Partial<Project>) => onChange({ ...item, ...patch });
   const title = item.name || "Novo projeto";
 

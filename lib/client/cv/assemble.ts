@@ -65,6 +65,9 @@ function certificationLine(c: Profile["certifications"][number]): string {
 /**
  * Monta o CV (RN-07 camada 1): empresa, cargo, datas, formação e contato vêm só do perfil local; do modelo vêm
  * apenas o texto, a ordem das experiências e das skills. `expId` fora do perfil lança erro.
+ *
+ * Não normaliza para NFC aqui: o NFC acontece só na renderização (`CvDocument`). O validador compara o CV com o
+ * perfil cru, então normalizar antes faria o texto legítimo divergir do perfil.
  */
 export function assembleCv(
   profile: Profile,

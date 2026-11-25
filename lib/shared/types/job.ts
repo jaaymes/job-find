@@ -1,23 +1,10 @@
+import type { SourceId } from "@/lib/shared/sources";
+
 export type WorkMode = "remote" | "hybrid" | "onsite" | "unknown";
 
 export type Seniority = "intern" | "junior" | "mid" | "senior" | "lead";
 
-export type SourceId =
-  | "himalayas"
-  | "greenhouse"
-  | "ashby"
-  | "lever"
-  | "jobicy"
-  | "github"
-  | "wwr"
-  | "remoteok"
-  | "hn"
-  | "smartrecruiters"
-  | "fourdayweek"
-  | "getonboard"
-  | "arbeitnow"
-  | "gupy"
-  | "linkedin";
+export type { SourceId };
 
 export type JobOrigin = "national" | "international" | "unknown";
 

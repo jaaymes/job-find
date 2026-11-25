@@ -1,4 +1,5 @@
 import "server-only";
+import { SOURCE_TRUST } from "@/lib/shared/sources";
 import type { SourceId } from "@/lib/shared/types/job";
 
 /**
@@ -7,23 +8,7 @@ import type { SourceId } from "@/lib/shared/types/job";
  * usuário (comentário no HN, issue no GitHub), onde qualquer pessoa escreve empresa e cargo.
  * Uma fonte menos confiável nunca sobrescreve o conteúdo nem o link de candidatura de uma mais confiável.
  */
-export const SOURCE_TRUST: Record<SourceId, 1 | 2 | 3> = {
-  greenhouse: 3,
-  lever: 3,
-  ashby: 3,
-  smartrecruiters: 3,
-  gupy: 3,
-  himalayas: 2,
-  jobicy: 2,
-  wwr: 2,
-  remoteok: 2,
-  fourdayweek: 2,
-  getonboard: 2,
-  arbeitnow: 2,
-  linkedin: 2,
-  hn: 1,
-  github: 1,
-};
+export { SOURCE_TRUST };
 
 export function trustOf(source: string): number {
   return Object.hasOwn(SOURCE_TRUST, source) ? SOURCE_TRUST[source as SourceId] : 0;

@@ -4,7 +4,7 @@ import type { Seniority, SourceId, WorkMode } from "@/lib/shared/types/job";
 /** Empresa que os conectores usam quando a fonte não informa uma (GitHub issues, WWR). */
 export const UNKNOWN_COMPANY = "Não informada";
 
-/** Vaga já normalizada por um conector, antes do enriquecimento (a Tarefa 10 completa este arquivo). */
+/** Vaga já normalizada por um conector, antes do enriquecimento. */
 export type NormalizedJob = {
   externalId: string;
   url: string;

@@ -1,6 +1,6 @@
 import "client-only";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createStore, useStore, type SetResult, type Store } from "@/lib/client/storage/store";
 import { jobsQuerySchema } from "@/lib/shared/schemas/jobs-query";
@@ -99,16 +99,18 @@ export function readLastFilters(now: number = Date.now()): SavedFilters | null {
  */
 export function useRememberFilters(filters: PageFilters, ready: boolean): void {
   const serialized = JSON.stringify(toSavedFilters(filters));
-  const onlyHidden =
-    filters.showHidden === true &&
-    Object.entries(filters).every(([key, value]) => key === "showHidden" || value === undefined);
+  const previous = useRef<string | undefined>(undefined);
+  const showHidden = filters.showHidden === true;
   useEffect(() => {
     if (!ready) return;
     const next: SavedFilters | null = JSON.parse(serialized);
     const current = lastFiltersStore.get();
+    const before = previous.current;
+    previous.current = serialized;
     if (next === null) {
-      // Só limpa se a URL tinha um filtro salvável que foi removido; URL sem nenhum (só `ocultas`) não toca na store.
-      if (current !== null && !onlyHidden) lastFiltersStore.set(null);
+      // URL sem filtro salvável desde o início (só `ocultas`) não toca na store; já limpar um filtro que existia, sim.
+      const neverHadFilter = before === undefined || before === "null";
+      if (current !== null && !(showHidden && neverHadFilter)) lastFiltersStore.set(null);
       return;
     }
     const unchanged =
@@ -116,7 +118,7 @@ export function useRememberFilters(filters: PageFilters, ready: boolean): void {
       JSON.stringify(toSavedFilters(current.filters)) === serialized &&
       isFresh(current.savedAt, Date.now());
     if (!unchanged) lastFiltersStore.set({ filters: next, savedAt: new Date().toISOString() });
-  }, [ready, serialized, onlyHidden]);
+  }, [ready, serialized, showHidden]);
 }
 
 type Restored = { filters: SavedFilters; source: "last" | "saved" };

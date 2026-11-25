@@ -130,6 +130,15 @@ describe("useRememberFilters", () => {
     expect(lastFiltersStore.get()?.filters).toEqual({ lang: "en" });
   });
 
+  it("limpar todos os filtros com ocultas ligado apaga a última busca", () => {
+    const { rerender } = renderHook(({ f }) => useRememberFilters(f, true), {
+      initialProps: { f: { lang: "pt", showHidden: true } as PageFilters },
+    });
+    expect(lastFiltersStore.get()?.filters).toEqual({ lang: "pt" });
+    rerender({ f: { showHidden: true } });
+    expect(lastFiltersStore.get()).toBeNull();
+  });
+
   it("renova savedAt expirado quando os filtros mudam de verdade", () => {
     localStorage.setItem(LAST_KEY, seed);
     renderHook(() => useRememberFilters({ lang: "pt" } satisfies PageFilters, true));

@@ -1,6 +1,7 @@
 import "server-only";
 import { extractStacks } from "@/lib/shared/stacks";
 import type { Seniority, SourceId, WorkMode } from "@/lib/shared/types/job";
+import { canonicalUrl } from "@/lib/server/enrich/canonical-url";
 import { safeUrl } from "@/lib/shared/url";
 import { contentHash as hashParts, dedupeKey } from "@/lib/server/enrich/dedupe";
 import { detectLanguage } from "@/lib/server/enrich/language";
@@ -46,20 +47,6 @@ export type EnrichedJob = {
   /** `computeContentHash`: conteúdo bruto + versão do sanitizador; decide se vale sanitizar e atualizar de novo. */
   contentHash: string;
 };
-
-const TRACKING_PARAM = /^(utm_|gh_src$|ref$|source$|fbclid$|gclid$)/i;
-
-/** URL canônica: https válida, sem fragmento e sem parâmetros de rastreamento. */
-function canonicalUrl(raw: string): string | null {
-  const safe = safeUrl(raw);
-  if (!safe) return null;
-  const url = new URL(safe);
-  url.hash = "";
-  for (const key of [...url.searchParams.keys()]) {
-    if (TRACKING_PARAM.test(key)) url.searchParams.delete(key);
-  }
-  return url.toString();
-}
 
 function cleanCountry(value: string | null): string | null {
   const c = value?.trim().toUpperCase() ?? "";

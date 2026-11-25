@@ -1,5 +1,6 @@
 "use client";
 
+import { Download } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
@@ -13,6 +14,7 @@ import { docsOf, generatedStore, type GeneratedRecord } from "@/lib/client/cv/ge
 import type { CvLang } from "@/lib/client/cv/period";
 import { reviewDocs } from "@/lib/client/cv/review";
 import { useJobStates } from "@/lib/client/jobs/job-state";
+import { useMediaQuery } from "@/lib/client/use-media-query";
 import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { cvFileName } from "@/lib/client/pdf/filename";
@@ -75,6 +77,97 @@ function readPartial(p: unknown): { headline: string; summary: string; skills: s
   };
 }
 
+type MobileView = "edit" | "preview";
+const VIEWS: { id: MobileView; label: string }[] = [
+  { id: "edit", label: "Editar" },
+  { id: "preview", label: "Pré-visualizar" },
+];
+const viewTab = (id: MobileView) => `gerador-modo-${id}`;
+const VIEW_PANEL = "gerador-modo-painel";
+
+/** Abas Editar / Pré-visualizar (abaixo de `lg`), com sublinhado de 2px na aba ativa e setas do teclado. */
+function ViewTabs({ view, onView }: { view: MobileView; onView: (v: MobileView) => void }) {
+  const refs = useRef<(HTMLButtonElement | null)[]>([]);
+  const onKey = (e: React.KeyboardEvent, index: number) => {
+    const step = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+    if (step === 0 && e.key !== "Home" && e.key !== "End") return;
+    const target = e.key === "Home" ? 0 : e.key === "End" ? VIEWS.length - 1 : (index + step + VIEWS.length) % VIEWS.length;
+    e.preventDefault();
+    refs.current[target]?.focus();
+    onView(VIEWS[target].id);
+  };
+  return (
+    <div role="tablist" aria-label="Modo" className="-mx-4 flex border-b border-jf-line bg-jf-surface px-4 pt-2 sm:-mx-6 sm:px-6">
+      {VIEWS.map((v, i) => (
+        <button
+          key={v.id}
+          ref={(el) => {
+            refs.current[i] = el;
+          }}
+          type="button"
+          role="tab"
+          id={viewTab(v.id)}
+          aria-selected={view === v.id}
+          aria-controls={VIEW_PANEL}
+          tabIndex={view === v.id ? 0 : -1}
+          onClick={() => onView(v.id)}
+          onKeyDown={(e) => onKey(e, i)}
+          className={`min-h-11 flex-1 border-b-2 text-[15px] outline-none focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-inset ${
+            view === v.id ? "border-jf-brand font-semibold text-jf-ink" : "border-transparent font-medium text-jf-ink-2"
+          }`}
+        >
+          {v.label}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/** Barra de ação fixa do gerador no celular: "Gerar de novo" e "Baixar PDF". Some com o teclado aberto. */
+function MobileActionBar({
+  canGenerate,
+  busy,
+  downloading,
+  downloadDisabled,
+  onGenerate,
+  onDownload,
+}: {
+  canGenerate: boolean;
+  busy: boolean;
+  downloading: boolean;
+  downloadDisabled: boolean;
+  onGenerate: () => void;
+  onDownload: () => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="Ações do documento"
+      className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-jf-line bg-jf-surface px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(21,23,28,0.08)] lg:hidden [body:has(input:focus,textarea:focus,select:focus)_&]:hidden"
+    >
+      {canGenerate && (
+        <button
+          type="button"
+          onClick={onGenerate}
+          disabled={busy}
+          className="inline-flex min-h-13 flex-none items-center justify-center rounded-xl border border-jf-field-border bg-jf-surface px-4 text-[15px] font-semibold text-jf-ink outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand disabled:opacity-60"
+        >
+          Gerar de novo
+        </button>
+      )}
+      <button
+        type="button"
+        onClick={onDownload}
+        disabled={downloading || downloadDisabled}
+        className="inline-flex min-h-13 min-w-0 flex-1 items-center justify-center gap-2 rounded-xl bg-jf-brand px-3 text-base font-semibold text-jf-on-brand outline-none hover:bg-jf-brand-dark focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <Download aria-hidden="true" className="size-[18px]" />
+        Baixar PDF
+      </button>
+    </div>
+  );
+}
+
 /** Tudo aqui é texto: a saída da IA nunca vira HTML. */
 function StreamingPreview({ partial }: { partial: unknown }) {
   const p = readPartial(partial);
@@ -128,6 +221,8 @@ function Generator({ job }: { job: JobDetail }) {
   const [pages, setPages] = useState<number | null>(null);
   const [downloading, setDownloading] = useState(false);
   const [downloadFailed, setDownloadFailed] = useState(false);
+  const wide = useMediaQuery("(min-width: 1024px)");
+  const [view, setView] = useState<MobileView>("edit");
 
   /** Grava no localStorage o último estado pendente (as edições são gravadas com atraso). */
   const flush = useCallback(() => {
@@ -199,6 +294,7 @@ function Generator({ job }: { job: JobDetail }) {
         setDraft(args);
         setTab("cv");
         setPages(null);
+        setView("preview");
       } catch (e) {
         if (ctrl.signal.aborted || isAbortError(e)) return;
         // Falhou: o registro anterior (e as edições) continua na tela e no armazenamento.
@@ -282,15 +378,23 @@ function Generator({ job }: { job: JobDetail }) {
 
   return (
     <>
-      <Link href={`/vagas/${job.id}`} className="inline-flex min-h-11 items-center gap-1.5 self-start text-sm text-jf-brand no-underline hover:text-jf-brand-dark">
-        <span aria-hidden="true">←</span> Voltar para a vaga
-      </Link>
-      <header className="flex flex-col gap-1">
-        <h1 className="font-display text-2xl font-bold sm:text-3xl">Gerador de CV e carta</h1>
-        <p className="text-[15px] text-jf-ink-2">
-          {job.title} · {job.company}
-        </p>
-      </header>
+      <div className="flex items-center gap-1 lg:flex-col lg:items-stretch lg:gap-5">
+        <Link
+          href={`/vagas/${job.id}`}
+          className="inline-flex size-11 flex-none items-center justify-center gap-1.5 text-jf-ink no-underline outline-none focus-visible:ring-2 focus-visible:ring-jf-brand lg:size-auto lg:min-h-11 lg:justify-start lg:self-start lg:text-sm lg:text-jf-brand lg:hover:text-jf-brand-dark"
+        >
+          <span aria-hidden="true" className="text-xl lg:text-sm">
+            ←
+          </span>
+          <span className="sr-only lg:not-sr-only">Voltar para a vaga</span>
+        </Link>
+        <header className="flex min-w-0 flex-col gap-0.5 lg:gap-1">
+          <h1 className="font-display text-base leading-tight font-bold sm:text-lg lg:text-3xl">Gerador de CV e carta</h1>
+          <p className="truncate text-xs text-jf-ink-2 lg:text-[15px]">
+            {job.title} · {job.company}
+          </p>
+        </header>
+      </div>
 
       {settings === null ? (
         <Skeleton className={`${CARD} h-40`} />
@@ -388,44 +492,86 @@ function Generator({ job }: { job: JobDetail }) {
                     triagem.
                   </p>
                 )}
-                <div className="grid items-start gap-5 lg:grid-cols-2">
-                  <div className="flex flex-col gap-5">
-                    <TailoredEditor
-                      key={record.createdAt}
-                      docs={docs}
-                      review={review}
-                      tab={activeTab}
-                      showLetterTab={showLetterTab}
-                      onTab={setTab}
-                      onChange={onChange}
-                      onApprove={onApprove}
-                    />
-                    <GapsPanel
-                      violations={review.violations}
-                      approvedFlags={record.approvedFlags}
-                      removedExperiences={review.removedExperiences}
-                    />
-                    <p className="text-xs text-jf-ink-3">
-                      Gerado com {record.model} via {record.provider}. Tudo fica só no seu navegador.
-                    </p>
-                  </div>
-                  <div className="lg:sticky lg:top-4">
-                    {activeTab === "letter" && review.letter.flagged ? (
-                      <div
-                        role="status"
-                        className="flex h-[70vh] min-h-[420px] w-full items-center justify-center rounded-xl border border-jf-line bg-jf-surface p-6 text-center text-sm text-jf-ink-3"
-                      >
-                        Aprove ou corrija o trecho da carta para ver o PDF.
-                      </div>
-                    ) : (
-                      <PdfPreview
-                        cv={review.cv}
-                        letter={activeTab === "letter" ? docs.coverLetter : null}
-                        onPages={setPages}
+                {!wide && <ViewTabs view={view} onView={setView} />}
+                <div
+                  role={wide ? undefined : "tabpanel"}
+                  id={wide ? undefined : VIEW_PANEL}
+                  aria-labelledby={wide ? undefined : viewTab(view)}
+                  className="grid items-start gap-5 lg:grid-cols-2"
+                >
+                  {(wide || view === "edit") && (
+                    <div className="flex flex-col gap-5">
+                      <TailoredEditor
+                        key={record.createdAt}
+                        docs={docs}
+                        review={review}
+                        tab={activeTab}
+                        showLetterTab={showLetterTab}
+                        onTab={setTab}
+                        onChange={onChange}
+                        onApprove={onApprove}
                       />
-                    )}
-                  </div>
+                      <GapsPanel
+                        violations={review.violations}
+                        approvedFlags={record.approvedFlags}
+                        removedExperiences={review.removedExperiences}
+                      />
+                      <p className="text-xs text-jf-ink-3">
+                        Gerado com {record.model} via {record.provider}. Tudo fica só no seu navegador.
+                      </p>
+                    </div>
+                  )}
+                  {(wide || view === "preview") && (
+                    <div className="flex flex-col gap-3 lg:sticky lg:top-4">
+                      {!wide && showLetterTab && (
+                        <div role="group" aria-label="Documento" className="flex gap-2">
+                          {(["cv", "letter"] as const).map((t) => (
+                            <button
+                              key={t}
+                              type="button"
+                              aria-pressed={activeTab === t}
+                              onClick={() => setTab(t)}
+                              className={`inline-flex min-h-11 items-center rounded-full border px-4 text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-jf-brand ${
+                                activeTab === t
+                                  ? "border-jf-brand bg-jf-chip font-semibold text-jf-brand-dark"
+                                  : "border-jf-line bg-jf-surface font-medium text-jf-ink-2"
+                              }`}
+                            >
+                              {t === "cv" ? "Currículo" : "Carta"}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                      {activeTab === "letter" && review.letter.flagged ? (
+                        <div
+                          role="status"
+                          className="flex h-[70vh] min-h-[420px] w-full items-center justify-center rounded-xl border border-jf-line bg-jf-surface p-6 text-center text-sm text-jf-ink-3"
+                        >
+                          Aprove ou corrija o trecho da carta para ver o PDF.
+                        </div>
+                      ) : (
+                        <PdfPreview
+                          cv={review.cv}
+                          letter={activeTab === "letter" ? docs.coverLetter : null}
+                          onPages={setPages}
+                        />
+                      )}
+                    </div>
+                  )}
                 </div>
+                {!wide && (
+                  <>
+                    <div aria-hidden="true" className="h-14" />
+                    <MobileActionBar
+                      canGenerate={hasProvider}
+                      busy={running !== null}
+                      downloading={downloading}
+                      downloadDisabled={activeTab === "letter" && review.letter.flagged}
+                      onGenerate={() => request({ lang: record.lang, includeLetter: shown.includeLetter })}
+                      onDownload={() => void download(activeTab)}
+                    />
+                  </>
+                )}
               </>
             )
           )}

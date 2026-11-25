@@ -1,6 +1,6 @@
 import { connection } from "next/server";
 import type { ReactNode } from "react";
-import { AppShell } from "@/components/layout/AppShell";
+import { LocalShell } from "@/components/layout/LocalShell";
 import { StorageBanner } from "@/components/layout/StorageBanner";
 
 // Páginas com dados pessoais do navegador (perfil, configurações): aviso de armazenamento.
@@ -8,9 +8,9 @@ import { StorageBanner } from "@/components/layout/StorageBanner";
 export default async function LocalLayout({ children }: { children: ReactNode }) {
   await connection();
   return (
-    <AppShell>
+    <LocalShell>
       <StorageBanner />
       {children}
-    </AppShell>
+    </LocalShell>
   );
 }

@@ -564,6 +564,8 @@ test("provedor com aviso de privacidade pendente leva às Configurações", asyn
 });
 
 test("o detalhe da vaga tem o link 'Gerar CV + carta'", async ({ page }) => {
+  // Sem currículo importado o detalhe mostra o botão desabilitado ("precisa do currículo"), não o link.
+  await seedStorage(page, { [PROFILE_KEY]: PROFILE });
   await page.goto("/vagas/1");
   await expect(page.getByRole("link", { name: "Gerar CV + carta" })).toHaveAttribute("href", "/gerador/1");
 });

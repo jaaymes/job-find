@@ -36,7 +36,7 @@ export function GeneratorToolbar(p: ToolbarProps) {
       <label className={`${FIELD_LABEL} w-44`}>
         Idioma do CV
         <select
-          className={FIELD}
+          className={`${FIELD} max-md:text-base`}
           value={p.lang}
           disabled={p.running}
           onChange={(e) => p.onLang(e.target.value as CvLang)}
@@ -58,9 +58,9 @@ export function GeneratorToolbar(p: ToolbarProps) {
         />
         Incluir carta de apresentação
       </label>
-      <div className="flex flex-wrap gap-2 sm:ml-auto">
+      <div className="flex flex-wrap gap-2 empty:hidden sm:ml-auto">
         {p.canGenerate && (
-          <button type="button" className={p.hasDocs ? BTN_OUTLINE : BTN_PRIMARY} onClick={p.onGenerate} disabled={p.running}>
+          <button type="button" className={p.hasDocs ? `${BTN_OUTLINE} max-lg:hidden` : BTN_PRIMARY} onClick={p.onGenerate} disabled={p.running}>
             {p.running ? "Gerando…" : p.hasDocs ? "Regenerar" : "Gerar CV para esta vaga"}
           </button>
         )}
@@ -71,13 +71,13 @@ export function GeneratorToolbar(p: ToolbarProps) {
         )}
         {p.hasDocs && !p.running && (
           <>
-            <button type="button" className={BTN_PRIMARY} onClick={p.onDownloadCv} disabled={p.downloading}>
+            <button type="button" className={`${BTN_PRIMARY} max-lg:hidden`} onClick={p.onDownloadCv} disabled={p.downloading}>
               Baixar PDF
             </button>
             {p.letterAvailable && (
               <button
                 type="button"
-                className={BTN_OUTLINE}
+                className={`${BTN_OUTLINE} max-lg:hidden`}
                 onClick={p.onDownloadLetter}
                 disabled={p.downloading || p.letterBlocked}
                 title={p.letterBlocked ? "Aprove ou corrija o trecho em revisão da carta para baixar." : undefined}

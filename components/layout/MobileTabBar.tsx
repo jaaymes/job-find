@@ -4,9 +4,11 @@ import { Bookmark, Search, User, type LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { useMediaQuery } from "@/lib/client/use-media-query";
 import { HardLink } from "@/components/ui/hard-link";
 import { isSavedStage, useJobStates } from "@/lib/client/jobs/job-state";
 import { cn } from "@/lib/utils";
+import { HIDE_ON_TEXT_FOCUS } from "./hide-on-text-focus";
 import { MoreSheet } from "./MoreSheet";
 import { isLocalRoute, MORE_NAV, navItemForPath, type NavId } from "./nav";
 
@@ -40,13 +42,16 @@ export function MobileTabBar({ current }: { current?: NavId }) {
   const active = current ?? currentFromPath(pathname);
   const saved = useSavedCount();
   const [moreOpen, setMoreOpen] = useState(false);
+  // Ao cruzar md (girar o celular) a folha some; fecha o estado junto (mesmo padrão dos filtros).
+  const md = useMediaQuery("(min-width: 768px)");
+  if (md && moreOpen) setMoreOpen(false);
   const moreActive = active !== undefined && MORE_IDS.has(active);
 
   return (
     <>
       <nav
         aria-label="Navegação inferior"
-        className="fixed inset-x-0 bottom-0 z-40 grid h-[calc(64px+env(safe-area-inset-bottom))] grid-cols-4 border-t border-jf-line bg-jf-surface pb-[env(safe-area-inset-bottom)] md:hidden [body:has(input:focus,textarea:focus)_&]:hidden"
+        className={cn("fixed inset-x-0 bottom-0 z-40 grid h-[calc(64px+env(safe-area-inset-bottom))] grid-cols-4 border-t border-jf-line bg-jf-surface pb-[env(safe-area-inset-bottom)] md:hidden", HIDE_ON_TEXT_FOCUS)}
       >
         {TABS.map(({ id, label, href, icon: Icon }) => {
           const isActive = id === active;

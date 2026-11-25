@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 const POPUP =
   "z-50 min-w-48 rounded-xl border border-jf-line bg-jf-surface p-1 text-jf-ink shadow-lg outline-none";
 const ITEM =
-  "flex min-h-11 cursor-default items-center gap-2 rounded-lg px-3 text-sm outline-none select-none data-[highlighted]:bg-jf-chip sm:min-h-10";
+  "flex min-h-11 cursor-default items-center gap-2 rounded-lg px-3 text-sm outline-none select-none data-[highlighted]:bg-jf-chip md:min-h-10";
 
 /** Menu "⋯" do card: Mudar status (submenu), Ocultar vaga e Copiar link. */
 export function JobCardMenu({
@@ -49,7 +49,7 @@ export function JobCardMenu({
       <Menu.Trigger
         aria-label={title ? `Mais ações: ${title}` : `Mais ações da vaga ${jobId}`}
         className={cn(
-          "relative z-10 inline-flex size-11 items-center justify-center rounded-lg text-jf-ink-2 outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand data-[popup-open]:bg-jf-chip sm:size-10",
+          "relative z-10 inline-flex size-11 items-center justify-center rounded-lg text-jf-ink-2 outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand data-[popup-open]:bg-jf-chip md:size-10",
           className,
         )}
       >

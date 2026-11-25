@@ -1,5 +1,6 @@
-import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { HIDE_ON_TEXT_FOCUS } from "@/components/layout/hide-on-text-focus";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { jobStateStore, type JobState } from "@/lib/client/jobs/job-state";
 import { ThemeProvider } from "@/lib/client/theme/ThemeProvider";
@@ -107,7 +108,30 @@ describe("MobileTabBar", () => {
   it("barra recebe classe que a oculta quando um campo de texto tem foco", () => {
     renderBar();
     const nav = screen.getByRole("navigation", { name: "Navegação inferior" });
-    expect(nav.className).toContain("[body:has(input:focus,textarea:focus)_&]:hidden");
+    expect(nav.className).toContain(HIDE_ON_TEXT_FOCUS);
     expect(nav.className).toContain("md:hidden");
+  });
+
+  it("a folha Mais fecha quando md passa a valer (girar o celular)", async () => {
+    let md = false;
+    const listeners = new Set<() => void>();
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        get matches() {
+          return query === "(min-width: 768px)" ? md : false;
+        },
+        media: query,
+        addEventListener: (_: string, fn: () => void) => listeners.add(fn),
+        removeEventListener: (_: string, fn: () => void) => listeners.delete(fn),
+      })),
+    );
+    renderBar();
+    fireEvent.click(screen.getByRole("button", { name: "Mais" }));
+    await screen.findByRole("dialog");
+    md = true;
+    act(() => listeners.forEach((fn) => fn()));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(screen.getByRole("button", { name: "Mais" }).getAttribute("aria-expanded")).toBe("false");
   });
 });

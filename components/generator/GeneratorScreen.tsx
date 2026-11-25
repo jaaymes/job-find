@@ -4,6 +4,7 @@ import { Download } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
+import { HIDE_ON_TEXT_FOCUS } from "@/components/layout/hide-on-text-focus";
 import { NoProviderCta } from "@/components/settings/NoProviderCta";
 import { BTN_OUTLINE, BTN_PRIMARY, CARD } from "@/components/ui/styles";
 import { AiError, isAbortError } from "@/lib/client/ai/errors";
@@ -124,7 +125,7 @@ function ViewTabs({ view, onView }: { view: MobileView; onView: (v: MobileView) 
 }
 
 /** Barra de ação fixa do gerador no celular: "Gerar de novo" e "Baixar PDF". Some com o teclado aberto. */
-function MobileActionBar({
+export function MobileActionBar({
   canGenerate,
   busy,
   downloading,
@@ -143,7 +144,7 @@ function MobileActionBar({
     <div
       role="group"
       aria-label="Ações do documento"
-      className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-jf-line bg-jf-surface px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(21,23,28,0.08)] lg:hidden [body:has(input:focus,textarea:focus,select:focus)_&]:hidden"
+      className={`fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-jf-line bg-jf-surface px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(21,23,28,0.08)] lg:hidden ${HIDE_ON_TEXT_FOCUS}`}
     >
       {canGenerate && (
         <button

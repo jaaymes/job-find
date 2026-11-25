@@ -16,7 +16,7 @@ const MAX_STACKS = 5;
 
 const POPUP = "z-50 min-w-48 rounded-xl border border-jf-line bg-jf-surface p-1 text-jf-ink shadow-lg outline-none";
 const ITEM =
-  "flex min-h-11 cursor-default items-center justify-between gap-2 rounded-lg px-3 text-sm outline-none select-none data-[highlighted]:bg-jf-chip sm:min-h-10";
+  "flex min-h-11 cursor-default items-center justify-between gap-2 rounded-lg px-3 text-sm outline-none select-none data-[highlighted]:bg-jf-chip md:min-h-10";
 
 /** Cartão de "Minhas vagas": desenhado só com o snapshot, sem chamar a API. */
 export function JobMiniCard({ state }: { state: JobState }) {

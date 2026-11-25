@@ -221,3 +221,10 @@
     padding-bottom: calc(72px + env(safe-area-inset-bottom));
   }
 }
+
+/* O sonner só aplica `mobileOffset` abaixo de 600px; a barra de abas aparece até 767px, então o toast sobe até md. */
+@media (width < 48rem) {
+  [data-sonner-toaster][data-y-position="bottom"] {
+    bottom: calc(80px + env(safe-area-inset-bottom)) !important;
+  }
+}

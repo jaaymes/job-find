@@ -8,7 +8,7 @@ import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
 import { describeViolation } from "./violation-text";
 
 /** Campos do editor: 16px no celular (abaixo disso o iOS dá zoom ao focar). */
-const EDIT_FIELD = `${FIELD} max-md:text-base`;
+const EDIT_FIELD = FIELD;
 
 export type EditorTab = "cv" | "letter";
 

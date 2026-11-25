@@ -93,7 +93,9 @@ function CanvasPreview({ blob, url }: { blob: Blob; url: string }) {
     void (async () => {
       try {
         const { getDocument } = await import("unpdf/pdfjs");
+        if (stale) return;
         const data = new Uint8Array(await blob.arrayBuffer());
+        if (stale) return;
         const task = getDocument({ data, useWasm: false, useSystemFonts: true });
         opened = task;
         const pdf = await task.promise;

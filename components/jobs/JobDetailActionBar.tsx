@@ -1,7 +1,9 @@
 "use client";
 
+import { HIDE_ON_TEXT_FOCUS } from "@/components/layout/hide-on-text-focus";
 import { HardLink } from "@/components/ui/hard-link";
 import type { SnapshotSource } from "@/lib/client/jobs/job-state";
+import { cn } from "@/lib/utils";
 import { FavoriteButton } from "./JobActions";
 
 const SECONDARY =
@@ -30,7 +32,7 @@ export function JobDetailActionBar({
     <div
       role="group"
       aria-label="Ações da vaga"
-      className="fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-jf-line bg-jf-surface px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(21,23,28,0.08)] md:hidden [body:has(input:focus,textarea:focus,select:focus)_&]:hidden"
+      className={cn("fixed inset-x-0 bottom-0 z-40 flex gap-2 border-t border-jf-line bg-jf-surface px-4 pt-2.5 pb-[calc(10px+env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(21,23,28,0.08)] md:hidden", HIDE_ON_TEXT_FOCUS)}
     >
       <FavoriteButton job={job} className="size-13 flex-none rounded-xl border-jf-field-border" />
       {canGenerate ? (

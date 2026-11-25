@@ -36,7 +36,7 @@ export function GeneratorToolbar(p: ToolbarProps) {
       <label className={`${FIELD_LABEL} w-44`}>
         Idioma do CV
         <select
-          className={`${FIELD} max-md:text-base`}
+          className={FIELD}
           value={p.lang}
           disabled={p.running}
           onChange={(e) => p.onLang(e.target.value as CvLang)}

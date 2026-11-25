@@ -130,7 +130,7 @@ export function JobCard({
         <div className="-mt-2 -mr-2 flex max-w-40 flex-wrap items-center justify-end sm:mt-0 sm:mr-0 sm:gap-1">
           <FavoriteButton
             job={job}
-            className="relative z-10 border-0 bg-transparent sm:size-10"
+            className="relative z-10 border-0 bg-transparent md:size-10"
           />
           <JobCardMenu
             jobId={job.id}

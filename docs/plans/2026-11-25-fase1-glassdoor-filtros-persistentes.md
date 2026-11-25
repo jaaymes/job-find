@@ -57,7 +57,7 @@
 
 ---
 
-### Tarefa 1: URL de busca do Glassdoor
+### Task 1: Tarefa 1 — URL de busca do Glassdoor
 
 **Arquivos:**
 - Criar: `lib/client/jobs/glassdoor.ts`
@@ -109,7 +109,7 @@ describe("buildGlassdoorUrl", () => {
 - [ ] **Passo 4:** rodar o mesmo comando. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(vagas): URL de busca da empresa no Glassdoor`
 
-### Tarefa 2: link do Glassdoor no detalhe e no menu ⋯
+### Task 2: Tarefa 2 — link do Glassdoor no detalhe e no menu ⋯
 
 **Arquivos:**
 - Modificar: `components/jobs/JobCardMenu.tsx`, `components/jobs/JobCard.tsx`, `components/jobs/JobDetail.tsx` (linha da empresa no `JobDetailView` e `MobileTopBar`)
@@ -130,7 +130,7 @@ describe("buildGlassdoorUrl", () => {
 - [ ] **Passo 4:** rodar os testes. Esperado: PASS. Depois `pnpm typecheck && pnpm lint`.
 - [ ] **Passo 5: commit** `feat(vagas): link do Glassdoor no detalhe e no menu da vaga`
 
-### Tarefa 3: store da última busca, gravação e restauração com precedência
+### Task 3: Tarefa 3 — store da última busca, gravação e restauração com precedência
 
 **Arquivos:**
 - Modificar: `lib/client/jobs/saved-search.ts`, `lib/client/storage/keys.ts`, `components/jobs/JobsPage.tsx:93-95`
@@ -165,7 +165,7 @@ describe("buildGlassdoorUrl", () => {
 - [ ] **Passo 4:** rodar os testes. Esperado: PASS. Depois `pnpm test` (suíte unit inteira) para garantir que nenhum outro teste importava `useApplySavedSearch`.
 - [ ] **Passo 5: commit** `feat(filtros): lembra a última busca e restaura com precedência`
 
-### Tarefa 4: aviso "Busca da última visita restaurada"
+### Task 4: Tarefa 4 — aviso "Busca da última visita restaurada"
 
 **Arquivos:**
 - Modificar: `components/jobs/JobsPage.tsx`
@@ -183,7 +183,7 @@ describe("buildGlassdoorUrl", () => {
 
 > A Tarefa 4 usa `serializeFilters` da Tarefa 5, Passo 3a. Faça a Tarefa 5 antes ou extraia `serializeFilters` primeiro.
 
-### Tarefa 5: links para a lista com a última busca e "Voltar" pelo histórico
+### Task 5: Tarefa 5 — links para a lista com a última busca e "Voltar" pelo histórico
 
 **Arquivos:**
 - Modificar: `lib/client/jobs/use-jobs.ts`, `components/layout/SiteHeader.tsx`, `components/layout/MobileTabBar.tsx`, `components/jobs/JobCard.tsx`, `components/jobs/JobDetail.tsx` (`BackLink`, `MobileTopBar`, `NotFound`)
@@ -224,7 +224,7 @@ describe("buildGlassdoorUrl", () => {
 - [ ] **Passo 4:** `pnpm vitest run tests/unit/client` + `pnpm typecheck && pnpm lint`. Esperado: PASS.
 - [ ] **Passo 5: commit** `feat(filtros): links e "Voltar" preservam a busca`
 
-### Tarefa 6: E2E de persistência e privacidade
+### Task 6: Tarefa 6 — E2E de persistência e privacidade
 
 **Arquivos:**
 - Criar: `tests/e2e/filters-persistence.spec.ts` (copiar de `tests/e2e/home.spec.ts` o `beforeAll`/`beforeEach` com `seedDatabase` e o `page.route("**/api/jobs*")`)
@@ -243,7 +243,7 @@ describe("buildGlassdoorUrl", () => {
 - [ ] **Passo 2:** `pnpm db:test:up && pnpm test:e2e tests/e2e/filters-persistence.spec.ts tests/e2e/job-detail.spec.ts`. Esperado: PASS (as Tarefas 1–5 já implementadas). Uma falha aqui é bug das tarefas anteriores: corrigir lá.
 - [ ] **Passo 3: commit** `test(e2e): persistência de filtros e link do Glassdoor`
 
-### Tarefa 7: aviso de alterações não salvas no perfil
+### Task 7: Tarefa 7 — aviso de alterações não salvas no perfil
 
 **Arquivos:**
 - Criar: `lib/client/use-unsaved-changes-guard.ts`

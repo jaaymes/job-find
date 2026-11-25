@@ -129,23 +129,32 @@ export const ASSIST_REWRITE_V1: PromptDef<AssistRewriteInput, { draft: Draft }> 
   temperature: 0.3,
 };
 
-// RN-22 (D-05): termos sensíveis em pt, en e es, comparados sem acento e sem caixa.
-const SENSITIVE = new RegExp(
-  `\\b(?:${[
-    "idade", "age", "edad", "nascimento", "nasceu", "birth\\w*", "nacimiento", "nacio",
-    "estado civil", "marital", "civil status", "casad[oa]s?", "married", "solteir[oa]s?", "single",
-    "filh[oa]s?", "children", "kids?", "hij[oa]s?",
-    "gravidez", "gravida", "pregnan\\w*", "embarazo", "embarazada",
-    "saude", "health", "salud", "doenca", "illness", "disease", "enfermedad",
-    "deficiencia", "disabilit\\w*", "disabled", "discapacidad",
-    "religia\\w*", "religio\\w*", "igreja", "church", "iglesia",
-    "cpf", "rg", "endereco", "address", "direccion", "cep", "zip code", "codigo postal",
-    "raca", "race", "raza", "cor da pele", "skin colou?r", "color de piel",
-    "orientacao sexual", "sexual orientation", "orientacion sexual",
-    "salario atual", "current salary", "salario actual",
-  ].join("|")})\\b`,
-  "i",
-);
+// RN-22 (D-05): termos sensíveis em pt, en e es, comparados sem acento e sem caixa. Termos que também são
+// vocabulário técnico ("health check", "race condition", "IP address", "children" do React, "idade média do
+// sistema") só valem em contexto pessoal (possessivo, "você tem", "do you have"...).
+const POSS = "(?:sua|seu|suas|seus|tua|teu|your|tu|tus|su|sus)";
+const HAVE = "(?:voce tem|tem voce|tens|possui|do you have|have you|tiene|tienes|has|have)";
+const SENSITIVE_PATTERNS = [
+  `${POSS} (?:idade|age|edad)`,
+  "quantos anos (?:voce )?tem",
+  "how old (?:are|is) (?:you|she|he)",
+  "cuantos anos tienes",
+  "data de nascimento|date of birth|birth ?date|birthday|fecha de nacimiento|onde (?:voce )?nasceu|when were you born",
+  "estado civil|marital status|civil status",
+  "casad[oa]s?|are you married|estas casad[oa]|eres casad[oa]",
+  `(?:${HAVE}|${POSS})(?: \\w+){0,3} (?:filh[oa]s?|children|kids|hij[oa]s?)`,
+  "gravidez|gravida|pregnan\\w*|embarazo|embarazada",
+  `${POSS} (?:estado de )?(?:saude|health|salud)|problemas? de saude|health (?:condition|issue|problem)s?|plano de saude`,
+  "doenca|illness|enfermedad|medical condition",
+  `(?:${HAVE}|${POSS}|alguma|pessoa com|any|a) deficiencia|(?:${HAVE}|${POSS}|any|a) (?:disabilit\\w*|disability)|discapacidad`,
+  "religia\\w*|religio\\w*|igreja|church|iglesia",
+  "cpf|rg|cep|zip code|codigo postal",
+  `${POSS} (?:endereco|address|direccion)|(?:home|residential|residencial) address|endereco residencial|onde (?:voce )?mora|where do you live`,
+  `${POSS} (?:raca|race|raza|cor|etnia|ethnicity)|cor da pele|skin colou?r|color de piel`,
+  "orientacao sexual|sexual orientation|orientacion sexual",
+  "salario atual|current salary|salario actual",
+];
+const SENSITIVE = new RegExp(`\\b(?:${SENSITIVE_PATTERNS.join("|")})\\b`, "i");
 
 const unaccent = (t: string) => t.normalize("NFD").replace(/\p{M}/gu, "");
 

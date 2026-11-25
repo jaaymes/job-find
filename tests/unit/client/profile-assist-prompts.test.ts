@@ -102,11 +102,19 @@ describe("system do rewrite", () => {
 });
 
 describe("sensitiveQuestion (RN-22)", () => {
-  it.each(["Qual a sua idade?", "Você é casado?", "Qual seu CPF?", "What is your religion?", "¿Cuál es tu estado civil?", "Qual seu salário atual?"])(
+  it.each(["Qual a sua idade?", "Você é casado?", "Qual seu CPF?", "What is your religion?", "¿Cuál es tu estado civil?", "Qual seu salário atual?", "Você tem filhos?", "Do you have kids?", "Qual a sua data de nascimento?", "Qual o seu endereço?", "How is your health?"])(
     "bloqueia %s",
     (q) => expect(sensitiveQuestion(q)).toBe(true),
   );
-  it.each(["Que tipo de produto você mais gosta de construir?", "Qual foi o maior desafio técnico?", "How did you manage the team?"])(
+  it.each(["Que tipo de produto você mais gosta de construir?", "Qual foi o maior desafio técnico?", "How did you manage the team?",
+    "Você implementou single sign-on?",
+    "Como você resolveu a race condition?",
+    "O serviço tinha health check?",
+    "Usou children props no React?",
+    "Configurou o IP address do balanceador?",
+    "Qual a idade média do sistema legado?",
+    "Como você tratou o endereço de e-mail duplicado?",
+  ])(
     "libera %s",
     (q) => expect(sensitiveQuestion(q)).toBe(false),
   );

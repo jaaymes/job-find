@@ -17,7 +17,8 @@ import type { SourceId } from "@/lib/shared/types/job";
 // Depois do shim: estes módulos de `lib/server` carregam `server-only`.
 const { getPoolDb } = await import("@/lib/server/db/client");
 const { acquireLock, releaseLock } = await import("@/lib/server/collect/lock");
-const { applyRekey, findReservedConflicts, loadRekeyRows, loadReservedUrls, planRekey } = await import("@/lib/server/jobs/rekey");
+const { applyRekey, findMixedTitleGroups, findReservedConflicts, loadRekeyRows, loadReservedUrls, planRekey } =
+  await import("@/lib/server/jobs/rekey");
 const { SOURCE_IDS } = await import("@/lib/shared/sources");
 
 const LOCK_TTL_MS = 300_000;
@@ -48,16 +49,21 @@ async function main() {
     console.log(`Vagas que expiram: ${toMerge.reduce((n, g) => n + g.ids.length - 1, 0)}`);
     console.log(`Vagas regravadas (sobreviventes e sem fusão): ${groups.length}`);
     console.log(`URLs mantidas por conflito com vagas sem empresa: ${findReservedConflicts(rows, reservedUrls).length}`);
+    const printGroup = (group: (typeof groups)[number]) => {
+      console.log(`- Grupo com ${group.ids.length} vagas:`);
+      for (const id of group.ids) {
+        const row = byId.get(id)!;
+        console.log(`    #${id} ${row.company} — ${row.title}`);
+      }
+    };
     if (toMerge.length > 0) {
       console.log(`Amostras (até ${MAX_SAMPLES} grupos):`);
-      for (const group of toMerge.slice(0, MAX_SAMPLES)) {
-        console.log(`- Grupo com ${group.ids.length} vagas:`);
-        for (const id of group.ids) {
-          const row = byId.get(id)!;
-          console.log(`    #${id} ${row.company} — ${row.title}`);
-        }
-      }
+      for (const group of toMerge.slice(0, MAX_SAMPLES)) printGroup(group);
     }
+    // Todos, sem limite: são os candidatos a falso positivo (RQ-02).
+    const mixedTitles = findMixedTitleGroups(groups, rows);
+    console.log(`Grupos com títulos diferentes (confira antes do --apply): ${mixedTitles.length}`);
+    for (const group of mixedTitles) printGroup(group);
 
     if (!values.apply) {
       console.log("Simulação: nada foi gravado. Rode com --apply para aplicar.");

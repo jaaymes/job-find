@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { dedupeKey } from "@/lib/server/enrich/dedupe";
-import { findReservedConflicts, planRekey, type RekeyRow } from "@/lib/server/jobs/rekey";
+import { findMixedTitleGroups, findReservedConflicts, planRekey, type RekeyRow } from "@/lib/server/jobs/rekey";
 
 /** Linha em Berlin/DE presencial, com uma chave antiga qualquer e URL já canônica por padrão. */
 function row(id: number, company: string, title: string, url = `https://example.com/jobs/${id}`): RekeyRow {
@@ -94,5 +94,27 @@ describe("planRekey", () => {
       ];
       expect(findReservedConflicts(rows, reserved)).toEqual([1]);
     });
+  });
+});
+
+describe("findMixedTitleGroups", () => {
+  it("devolve só os grupos de mais de uma vaga cujos títulos normalizados diferem", () => {
+    const rows = [
+      // Mesmo título normalizado (marcador de gênero some): não entra.
+      row(1, "resonads GmbH", "Backend Developer (m/w/d)"),
+      row(2, "resonads", "Backend Developer"),
+      // Juntas pela URL, com títulos diferentes: entra.
+      current(3, "Acme", "Backend Developer", "https://job-boards.greenhouse.io/acme/jobs/1"),
+      current(4, "Acme", "Engenheiro de Software", "https://boards.greenhouse.io/acme/jobs/1"),
+      // Grupo de uma vaga só (chave mudou): não entra.
+      row(5, "Solo", "Frontend Developer"),
+    ];
+    const groups = planRekey(rows);
+    expect(groups.map((g) => g.ids)).toEqual([[1, 2], [3, 4], [5]]);
+    expect(findMixedTitleGroups(groups, rows).map((g) => g.ids)).toEqual([[3, 4]]);
+  });
+
+  it("sem grupos, lista vazia", () => {
+    expect(findMixedTitleGroups([], [])).toEqual([]);
   });
 });

@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { mergeJobs } from "@/lib/server/jobs/merge";
 import { upsertJob } from "@/lib/server/jobs/upsert";
@@ -85,5 +86,39 @@ describe("mergeJobs", () => {
     const row = await getRow(db, a.jobId);
     expect(row.updatedAt).toEqual(T0);
     expect(row.expiredAt).toBeNull();
+  });
+
+  it("id inexistente lança erro", async () => {
+    const db = await testDb();
+    const a = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: urlA }),
+      { source: "greenhouse", externalId: "g-1", url: urlA },
+      T0,
+    );
+    await expect(mergeJobs(db, [a.jobId!, 999_999], addDays(T0, 1))).rejects.toThrow("mergeJobs");
+    expect((await getRow(db, a.jobId)).expiredAt).toBeNull();
+  });
+
+  it("vaga já expirada lança erro e não grava nada", async () => {
+    const db = await testDb();
+    const a = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: urlA }),
+      { source: "himalayas", externalId: "h-1", url: urlA },
+      T0,
+    );
+    const b = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: urlB }),
+      { source: "greenhouse", externalId: "g-1", url: urlB },
+      T0,
+    );
+    const expiredAt = addDays(T0, 2);
+    await db.execute(sql`UPDATE jobs SET expired_at = ${expiredAt.toISOString()}::timestamptz WHERE id = ${b.jobId}`);
+    await expect(mergeJobs(db, [a.jobId!, b.jobId!], addDays(T0, 3))).rejects.toThrow("mergeJobs");
+    expect((await getRow(db, a.jobId)).expiredAt).toBeNull();
+    expect((await getRow(db, b.jobId)).expiredAt).toEqual(expiredAt);
+    expect((await getSource(db, "greenhouse", "g-1"))?.jobId).toBe(b.jobId);
   });
 });

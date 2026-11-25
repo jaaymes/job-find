@@ -2,6 +2,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
+import { lastFiltersStore } from "@/lib/client/jobs/saved-search";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
 // O botão de tema depende do ThemeProvider e tem testes próprios; aqui só interessa a navegação.
@@ -13,6 +14,16 @@ vi.mock("@/components/onboarding/OnboardingGuide", () => ({ OnboardingGuide: () 
 afterEach(() => cleanup());
 
 describe("SiteHeader", () => {
+  it("logo e item Vagas levam à lista com a última busca", () => {
+    window.localStorage.clear();
+    lastFiltersStore.set({ filters: { workMode: "remote" }, savedAt: new Date().toISOString() });
+    render(<SiteHeader current="vagas" />);
+    const nav = screen.getByRole("navigation", { name: "Principal" });
+    expect(within(nav).getByRole("link", { name: "Vagas" }).getAttribute("href")).toBe("/?workMode=remote");
+    expect(screen.getAllByRole("link", { name: /Job\s*Find/ })[0]!.getAttribute("href")).toBe("/?workMode=remote");
+    window.localStorage.clear();
+  });
+
   it("mantém o apoio fora do menu principal, como link discreto à direita", () => {
     render(<SiteHeader />);
     const nav = screen.getByRole("navigation", { name: "Principal" });

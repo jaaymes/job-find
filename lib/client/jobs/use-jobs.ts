@@ -6,6 +6,7 @@ import {
   parseAsBoolean,
   parseAsString,
   parseAsStringLiteral,
+  createSerializer,
   useQueryStates,
 } from "nuqs";
 import { useCallback, useMemo } from "react";
@@ -52,6 +53,8 @@ const urlParsers = {
 type FilterKey = keyof typeof urlParsers;
 /** Nomes dos parâmetros na URL (`showHidden` aparece como `ocultas`). */
 const URL_KEY_OVERRIDES = { showHidden: "ocultas" } as const;
+/** Monta a URL da lista com os filtros (mesmos parsers e nomes da página, então igual ao que `setState` geraria). */
+export const serializeFilters = createSerializer(urlParsers, { urlKeys: URL_KEY_OVERRIDES });
 export const URL_FILTER_KEYS: string[] = (Object.keys(urlParsers) as FilterKey[]).map(
   (k) => (URL_KEY_OVERRIDES as Record<string, string>)[k] ?? k,
 );

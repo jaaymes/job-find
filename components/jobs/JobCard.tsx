@@ -10,6 +10,7 @@ import type { JobSummary } from "@/lib/shared/types/job";
 import { ChanceBadge } from "./ChanceBadge";
 import { FavoriteButton, StatusBadge, useJobMenuActions, useJobState } from "./JobActions";
 import { buildGlassdoorUrl } from "@/lib/client/jobs/glassdoor";
+import { markListReturn } from "@/lib/client/jobs/list-href";
 import { JobCardMenu } from "./JobCardMenu";
 import {
   LANGUAGE_LABELS,
@@ -102,6 +103,9 @@ export function JobCard({
         <h3 className="text-base leading-snug font-semibold sm:text-lg">
           <Link
             href={`/vagas/${job.id}`}
+            onClick={(e) => {
+              if (e.button === 0 && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey) markListReturn(job.id);
+            }}
             className="text-jf-ink no-underline outline-none after:absolute after:inset-0 after:rounded-2xl hover:text-jf-brand-dark hover:underline"
           >
             {job.title}

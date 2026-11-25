@@ -1,6 +1,7 @@
 import { Radar } from "lucide-react";
 import Link from "next/link";
-import { NavLink } from "./NavLink";
+import { JobsListLink } from "@/components/jobs/JobsListLink";
+import { NavLink, navLinkClassName } from "./NavLink";
 import { PRIMARY_NAV, type NavId } from "./nav";
 import { SetupStatus } from "./SetupStatus";
 import { ThemeToggle } from "./ThemeToggle";
@@ -9,7 +10,7 @@ export function SiteHeader({ current }: { current?: NavId }) {
   return (
     <header className="box-border h-14 border-b border-jf-line bg-jf-surface md:h-auto">
       <div className="mx-auto flex h-full w-full max-w-[1280px] items-center gap-x-6 px-4 sm:px-6 md:h-auto md:flex-wrap md:gap-y-2 md:py-3.5">
-        <Link href="/" className="flex items-center gap-2.5 text-jf-ink no-underline">
+        <JobsListLink className="flex items-center gap-2.5 text-jf-ink no-underline">
           {/* Símbolo da marca (lupa cujo cabo forma o J); mesmo desenho de public/brand/jobfind-mark.svg. */}
           <svg aria-hidden="true" viewBox="7 3 43 59" className="h-8 w-auto" fill="none" strokeWidth={6}>
             <circle cx="28" cy="24" r="16" className="stroke-jf-ink" />
@@ -24,16 +25,26 @@ export function SiteHeader({ current }: { current?: NavId }) {
           <span className="font-display text-[19px] font-bold">
             Job <span className="text-jf-brand">Find</span>
           </span>
-        </Link>
+        </JobsListLink>
         <nav
           aria-label="Principal"
           className="hidden flex-wrap gap-1 md:flex md:flex-1"
         >
-          {PRIMARY_NAV.map((item) => (
-            <NavLink key={item.id} href={item.href} current={item.id === current}>
-              {item.label}
-            </NavLink>
-          ))}
+          {PRIMARY_NAV.map((item) =>
+            item.id === "vagas" ? (
+              <JobsListLink
+                key={item.id}
+                aria-current={item.id === current ? "page" : undefined}
+                className={navLinkClassName(item.id === current)}
+              >
+                {item.label}
+              </JobsListLink>
+            ) : (
+              <NavLink key={item.id} href={item.href} current={item.id === current}>
+                {item.label}
+              </NavLink>
+            ),
+          )}
         </nav>
         {/* Abaixo de md só ficam o logo e o tema; o menu vive na barra de abas inferior. */}
         {/* Apoie sai do menu principal e fica como link discreto à direita (spec D-06/P-05). */}

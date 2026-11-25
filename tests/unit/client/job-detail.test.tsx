@@ -1,10 +1,13 @@
 import { cleanup, render as rtlRender, screen } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { JobDetailView } from "@/components/jobs/JobDetail";
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 import { resetStorageProbeForTests } from "@/lib/client/storage/store";
 import type { JobDetail } from "@/lib/shared/types/job";
+
+// O "Voltar" usa o roteador para voltar pelo histórico.
+vi.mock("next/navigation", () => ({ useRouter: () => ({ back: vi.fn() }) }));
 
 const HIMALAYAS_APPLY = "https://himalayas.app/companies/acme/jobs/dev?utm_source=api";
 

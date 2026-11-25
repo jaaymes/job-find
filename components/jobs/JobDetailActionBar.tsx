@@ -2,6 +2,7 @@
 
 import { HIDE_ON_TEXT_FOCUS } from "@/components/layout/hide-on-text-focus";
 import { HardLink } from "@/components/ui/hard-link";
+import { consumeListReturn } from "@/lib/client/jobs/list-href";
 import type { SnapshotSource } from "@/lib/client/jobs/job-state";
 import { cn } from "@/lib/utils";
 import { FavoriteButton } from "./JobActions";
@@ -36,7 +37,7 @@ export function JobDetailActionBar({
     >
       <FavoriteButton job={job} className="size-13 flex-none rounded-xl border-jf-field-border" />
       {canGenerate ? (
-        <HardLink href={`/gerador/${jobId}`} className={SECONDARY}>
+        <HardLink href={`/gerador/${jobId}`} onClick={() => consumeListReturn(jobId)} className={SECONDARY}>
           Gerar CV
         </HardLink>
       ) : (

@@ -30,7 +30,7 @@ export default async function ApoiePage() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader current="apoie" />
       <main className="mx-auto flex w-full max-w-[800px] flex-1 flex-col gap-7 px-4 pt-6 pb-16 text-[15px] leading-relaxed text-jf-ink-2 sm:px-6 sm:pt-7">
         <div className="flex flex-col gap-1.5">
           <h1 className="font-display text-[28px] leading-tight font-bold text-jf-ink">Apoie o projeto</h1>

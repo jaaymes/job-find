@@ -5,6 +5,7 @@
  *   pnpm tsx scripts/eval-ai.ts --provider openrouter            (a chave é pedida sem eco)
  *   pnpm tsx scripts/eval-ai.ts --provider openrouter --key-file ~/segredos/openrouter.key
  *   pnpm tsx scripts/eval-ai.ts --mock                           (modelo falso, sem rede nem chave)
+ *   pnpm tsx scripts/eval-ai.ts --suite assist --mock            (assistente de perfil: fatos inventados e perguntas sensíveis)
  *   pnpm tsx scripts/eval-ai.ts --mock --out ~/eval-cv           (grava o CV e a carta de cada par em texto)
  *
  * A chave nunca vem por argumento (iria para o histórico do shell e para o `ps`) nem por variável de ambiente,
@@ -18,11 +19,15 @@ import { pickLanguage } from "@/lib/client/ai/prompts/cv.tailor.v1";
 import {
   abortReason,
   evaluatePair,
+  renderAssistReport,
+  runAssistSuite,
   loadPairs,
   renderReport,
   summarize,
   writeOutputs,
+  P95_LIMIT_MS,
   type Aborted,
+  type Pair,
   type PairResult,
   type Price,
 } from "./eval-ai/core";
@@ -35,6 +40,8 @@ const HELP = `Uso: pnpm tsx scripts/eval-ai.ts [opções]
   --accept-privacy   aceita o aviso de privacidade do provedor, quando houver
   --out <dir>        grava o CV e a carta (texto montado) de cada par em <dir>, fora do repositório ou ignorado
                      pelo git; sem ele, nada é gravado
+  --suite <nome>     suíte a rodar: cv (padrão) ou assist (assistente de perfil: mede fatos inventados e perguntas
+                     sensíveis na saída crua do modelo, nos perfis dos pares 01 a 10)
   --mock             usa um modelo falso (valida o encanamento, não avalia modelo algum)
   --help`;
 
@@ -70,6 +77,7 @@ async function main() {
         "key-file": { type: "string" },
         "accept-privacy": { type: "boolean", default: false },
         out: { type: "string" },
+        suite: { type: "string", default: "cv" },
         mock: { type: "boolean", default: false },
         help: { type: "boolean", default: false },
       },
@@ -82,6 +90,7 @@ async function main() {
   }
   if (values.help) return console.log(HELP);
   if (!(PROVIDER_IDS as readonly string[]).includes(values.provider)) fail(`Provedor desconhecido.\n\n${HELP}`);
+  if (values.suite !== "cv" && values.suite !== "assist") fail(`Suíte desconhecida.\n\n${HELP}`);
   const providerId = values.provider as ProviderId;
   const def = PROVIDERS[providerId];
   const modelId = values.model ?? def.defaultModels.cv;
@@ -136,6 +145,20 @@ async function main() {
     };
     price = await lookupPrice(providerId, apiKey, modelId);
     console.log(`Provedor: ${def.label} | modelo: ${modelId} | ${pairs.length} pares\n`);
+  }
+
+  if (values.suite === "assist") {
+    // O par 11 é específico da suíte de CV (perfil abaixo da senioridade da vaga).
+    const profiles = pairs.filter((p) => p.id <= "10");
+    let resolveModelFor;
+    if (values.mock) {
+      const { assistMockResolverFor } = await import("./eval-ai/mock");
+      resolveModelFor = (p: { profile: Pair["profile"] }) => assistMockResolverFor(p.profile);
+    }
+    const report = await runAssistSuite(profiles, { settings, resolveModelFor });
+    console.log(renderAssistReport(report));
+    process.exitCode = report.failures.length === 0 && report.p95Ms <= P95_LIMIT_MS ? 0 : 1;
+    return;
   }
 
   const results: PairResult[] = [];

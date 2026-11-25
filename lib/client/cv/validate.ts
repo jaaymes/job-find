@@ -4,7 +4,7 @@ import type { Profile } from "@/lib/shared/schemas/profile";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
 import { SENIORITY_LABEL } from "@/lib/shared/schemas/profile";
 import { extractStacks, normalizeSkill, STACKS } from "@/lib/shared/stacks";
-import { bulletKey, experienceKey, headlineKey, letterKey, skillKey, summaryKey } from "./flags";
+import { textHash, bulletKey, experienceKey, headlineKey, letterKey, skillKey, summaryKey } from "./flags";
 
 /**
  * Validador determinístico anti-alucinação (RN-07, camada 2). Todos os regex são lineares (sem grupos
@@ -89,6 +89,25 @@ function numberTokens(text: string): NumToken[] {
     out.push({ raw, value, yearLike: plain && !raw.endsWith("%") && raw.length === 4 && n >= 1950 && n <= 2100 });
   }
   return out;
+}
+
+const MONTH_AFTER =
+  /^(?:jan|fev|feb|mar|abr|apr|mai|may|jun|jul|ago|aug|set|sep|out|oct|nov|dez|dec|janeiro|fevereiro|marco|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro|january|february|march|april|june|july|august|september|october|november|december)\b/iu;
+const DATE_BEFORE = /(?:^|[^\p{L}])(?:em|in|desde|since|até|ate|until|from|de|en|hasta|desde)\s+$/iu;
+const AMOUNT_BEFORE = /(?:mais|menos|cerca|quase|over|than|about|around|nearly|más|casi)\s+(?:de|of)?\s*$/iu;
+const RANGE_AFTER = /^\s*(?:[-–—]|a\b|à\b|até\b|to\b|and\b|e\b|hasta\b|y\b)/iu;
+
+/** Alguma ocorrência de `raw` em `text` está em contexto de data (em 2019, desde 2018, 2019 - 2021, 2019 janeiro)? */
+function usedAsDate(text: string, raw: string): boolean {
+  for (const m of text.matchAll(new RegExp(`(?<![\\d.,])${raw}(?![\\d]|[.,]\\d)`, "g"))) {
+    const before = text.slice(0, m.index);
+    const after = text.slice(m.index + raw.length);
+    if (DATE_BEFORE.test(before) && !AMOUNT_BEFORE.test(before)) return true;
+    if (RANGE_AFTER.test(after)) return true;
+    const word = /^\s+(\p{L}[\p{L}\p{N}]*)/u.exec(after);
+    if (!word || MONTH_AFTER.test(word[1])) return true; // sem substantivo depois: parece data
+  }
+  return false;
 }
 
 function yearsIn(text: string): string[] {
@@ -406,6 +425,139 @@ export function prepareFacts(profile: Profile, job?: JobContext): PreparedFacts 
 
 type Where = Violation["where"];
 
+type CheckEnv = {
+  facts: Facts;
+  jobWords: Set<string>;
+  jobSeniorityOk: Set<number>;
+  add: (kind: ViolationKind, text: string, where: Where, key: string) => void;
+  /** Modo texto livre do assistente (RN-20): anos só do perfil e tabela estendida de números por extenso. */
+  assist?: boolean;
+  /** Stacks extras aceitas (as que o usuário escreveu). */
+  extraStacks?: Set<string>;
+};
+
+// Números por extenso do assistente (pt/en/es): 0–20, dezenas, cem/cento/cien e mil. Só para texto livre;
+// o CV mantém `NUMBER_WORD_VALUE`. "once" (es) fica de fora: é palavra comum em inglês.
+const ASSIST_EXTRA_NUMBERS: Record<string, string> = {
+  zero: "0", cero: "0",
+  cuatro: "4", siete: "7", ocho: "8", nueve: "9", diez: "10", doce: "12", trece: "13", catorce: "14", quince: "15",
+  dieciseis: "16", diecisiete: "17", dieciocho: "18", diecinueve: "19", veinte: "20",
+  trinta: "30", quarenta: "40", cinquenta: "50", sessenta: "60", setenta: "70", oitenta: "80", noventa: "90",
+  thirty: "30", forty: "40", fifty: "50", sixty: "60", seventy: "70", eighty: "80", ninety: "90",
+  treinta: "30", cuarenta: "40", cincuenta: "50", sesenta: "60", ochenta: "80",   cien: "100", ciento: "100",
+};
+const ASSIST_NUMBER_WORD_VALUE: Record<string, string> = { ...NUMBER_WORD_VALUE, ...ASSIST_EXTRA_NUMBERS };
+const ASSIST_WRITTEN_RE = termRegex([...Object.keys(ASSIST_NUMBER_WORD_VALUE), ...WORD_ONLY_NUMBERS]);
+
+/**
+ * `sourceText`: texto cujos números/termos por extenso valem para este trecho.
+ * `allowJob`: termos da vaga (nomes, siglas, cargo/senioridade) valem; só na carta.
+ */
+function checkText(env: CheckEnv, text: string, where: Where, key: string, sourceText: string, allowJob = false): void {
+  const { facts, jobWords, jobSeniorityOk, add, assist } = env;
+  const inJob = (w: string) => allowJob && jobWords.has(w);
+  const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
+  for (const t of numberTokens(text)) {
+    if (t.yearLike) {
+      // Texto livre (assistente): datas vêm só do perfil. Um número de 4 dígitos que o usuário digitou
+      // ("2000 usuários") vale quando não aparece como data no texto gerado.
+      const typed = assist && sourceNumbers.has(t.value) && !usedAsDate(text, t.raw);
+      if (!facts.years.has(t.raw) && (assist ? !typed : !sourceNumbers.has(t.value))) add("unknown_year", t.raw, where, key);
+    } else if (!sourceNumbers.has(t.value)) {
+      add("unknown_number", t.raw, where, key);
+    }
+  }
+  for (const id of stackIdsIn(text)) {
+    if (!facts.stacks.has(id) && !env.extraStacks?.has(id)) add("unknown_stack", STACK_LABEL.get(id) ?? id, where, key);
+  }
+  const flaggedNames = new Set<string>();
+  const flagName = (w: string) => {
+    flaggedNames.add(fold(w));
+    for (const part of fold(w).split(/\s+/)) flaggedNames.add(part); // "tech lead" também cobre "Lead"
+    add("unknown_name", w, where, key);
+  };
+  // Marcador literal de dado ocultado ("[NOME]"): destacar e deixar fora do PDF.
+  for (const m of text.matchAll(PLACEHOLDER_RE)) {
+    flaggedNames.add(fold(m[0].slice(1, -1)));
+    add("unknown_name", m[0], where, key);
+  }
+  // Mesmo comprimento: os índices de `folded` são usados também sobre `text` (ver "à" abaixo).
+  const folded = foldText(text).replace(/hiring manager/g, (x) => " ".repeat(x.length));
+
+  // Senioridade/cargo (perfil; vaga só na carta); termo que descreve outras pessoas não conta.
+  {
+    SENIORITY_RES.forEach((re, i) => {
+      if (facts.seniorityOk.has(i) || (allowJob && jobSeniorityOk.has(i))) return;
+      re.lastIndex = 0;
+      for (const m of folded.matchAll(re)) {
+        const before = /([\p{L}]+)\s+$/u.exec(folded.slice(Math.max(0, m.index - 24), m.index))?.[1];
+        const after = /^\s+([\p{L}]+)/u.exec(folded.slice(m.index + m[0].length, m.index + m[0].length + 24))?.[1];
+        if ((before && OTHER_PEOPLE.has(before)) || (after && OTHER_PEOPLE.has(after))) continue;
+        // "Reportava ao CTO", "para o diretor", "to the CTO": outra pessoa.
+        const lead = folded.slice(Math.max(0, m.index - 16), m.index);
+        if (/(?:^|\s)(?:ao|para o|para a|to the|reporting to|reported to)\s+$/.test(lead)) continue;
+        if (/(?:^|\s)à\s+$/i.test(text.slice(Math.max(0, m.index - 4), m.index))) continue;
+        flagName(m[0]);
+        break;
+      }
+    });
+  }
+  // Certificação/formação: só perfil.
+  CREDENTIAL_RES.forEach((re, i) => {
+    re.lastIndex = 0;
+    const m = re.exec(folded);
+    if (m && !facts.credentialOk.has(i)) flagName(m[0]);
+  });
+
+  // Números por extenso, fora dos trechos já lidos como numerais ("1,5 mil"). Valem se o valor ou a própria
+  // palavra está na fonte; "dez" colado a ano/dia é mês; "two-factor"/"Three.js" não são números.
+  const f0 = foldText(text);
+  const noDigits = f0.replace(NUMBER_RE, (x) => " ".repeat(x.length));
+  const sourceFolded = foldText(sourceText);
+  const sourceWords = wordSet(sourceFolded);
+  for (const m of noDigits.matchAll(assist ? ASSIST_WRITTEN_RE : WRITTEN_RE)) {
+    const w = m[0];
+    const end = m.index + w.length;
+    const next = f0[end];
+    if (next === "-" || (next === "." && /[\p{L}\d]/u.test(f0[end + 1] ?? ""))) continue;
+    if (f0[m.index - 1] === "-") continue;
+    if (w === "dez" && (/\d\s*$/.test(f0.slice(Math.max(0, m.index - 8), m.index)) || /^\s*\d/.test(f0.slice(end, end + 8)))) continue;
+    if (w === "cento" && /por\s+$/.test(f0.slice(Math.max(0, m.index - 8), m.index))) continue;
+    const value = assist ? ASSIST_NUMBER_WORD_VALUE[w] : NUMBER_WORD_VALUE[w];
+    if (sourceWords.has(w) || (value !== undefined && sourceNumbers.has(value))) continue;
+    add("unknown_number", w, where, key);
+  }
+
+  const companyStarts = companyRunStarts(text);
+  for (const { word: w, end } of capitalizedMidSentence(text)) {
+    const f = fold(w);
+    // Produto colado a uma empresa ("Amazon S3", "Google Analytics").
+    if (PRODUCT_WORDS.has(f) || PRODUCT_AFTER.test(foldText(text.slice(end, end + 24)))) continue;
+    const common = COMMON_CAPITALIZED.has(f) && !(COMMON_ROLE_WORDS.has(f) && companyStarts.has(end - w.length));
+    if (common || CATALOG_WORDS.has(f) || facts.words.has(f) || inJob(f) || flaggedNames.has(f)) continue;
+    flagName(w);
+  }
+
+  // Empresas conhecidas em minúsculas.
+  for (const m of folded.matchAll(COMPANY_RE)) {
+    const after = folded.slice(m.index + m[0].length, m.index + m[0].length + 24);
+    const compound = /^-\p{L}/u.test(after) || /\p{L}-$/u.test(folded.slice(Math.max(0, m.index - 2), m.index));
+    if (compound || PRODUCT_AFTER.test(after)) continue;
+    if (!facts.words.has(m[0]) && !inJob(m[0]) && !flaggedNames.has(m[0])) flagName(m[0]);
+  }
+
+  // Siglas desconhecidas, só como nome de empresa (depois de "na", "no", "at", "for"...). As demais ficam com
+  // `unknown_stack` (catálogo) e com a lista de siglas comuns.
+  for (const m of text.matchAll(ACRONYM_RE)) {
+    const f = fold(m[0]);
+    const base = f.endsWith("s") ? f.slice(0, -1) : f;
+    const known = (x: string) => ACRONYM_ALLOWLIST.has(x) || CATALOG_WORDS.has(x) || facts.words.has(x) || inJob(x);
+    if (known(f) || known(base) || flaggedNames.has(f)) continue;
+    const prev = /([\p{L}]+)\s+$/u.exec(text.slice(Math.max(0, m.index - 16), m.index))?.[1];
+    if (prev && COMPANY_PREPOSITIONS.has(prev.toLowerCase())) flagName(m[0]);
+  }
+}
+
 /**
  * @param profile perfil local do usuário (fonte de verdade).
  * @param docs saída do modelo.
@@ -444,111 +596,7 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     out.push({ kind, text, where, key });
   };
 
-  /**
-   * `sourceText`: texto cujos números/termos por extenso valem para este trecho.
-   * `allowJob`: termos da vaga (nomes, siglas, cargo/senioridade) valem; só na carta.
-   */
-  const checkText = (text: string, where: Where, key: string, sourceText: string, allowJob = false) => {
-    const inJob = (w: string) => allowJob && jobWords.has(w);
-    const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
-    for (const t of numberTokens(text)) {
-      if (t.yearLike) {
-        if (!facts.years.has(t.raw) && !sourceNumbers.has(t.value)) add("unknown_year", t.raw, where, key);
-      } else if (!sourceNumbers.has(t.value)) {
-        add("unknown_number", t.raw, where, key);
-      }
-    }
-    for (const id of stackIdsIn(text)) {
-      if (!facts.stacks.has(id)) add("unknown_stack", STACK_LABEL.get(id) ?? id, where, key);
-    }
-    const flaggedNames = new Set<string>();
-    const flagName = (w: string) => {
-      flaggedNames.add(fold(w));
-      for (const part of fold(w).split(/\s+/)) flaggedNames.add(part); // "tech lead" também cobre "Lead"
-      add("unknown_name", w, where, key);
-    };
-    // Marcador literal de dado ocultado ("[NOME]"): destacar e deixar fora do PDF.
-    for (const m of text.matchAll(PLACEHOLDER_RE)) {
-      flaggedNames.add(fold(m[0].slice(1, -1)));
-      add("unknown_name", m[0], where, key);
-    }
-    // Mesmo comprimento: os índices de `folded` são usados também sobre `text` (ver "à" abaixo).
-    const folded = foldText(text).replace(/hiring manager/g, (x) => " ".repeat(x.length));
-
-    // Senioridade/cargo (perfil; vaga só na carta); termo que descreve outras pessoas não conta.
-    {
-      SENIORITY_RES.forEach((re, i) => {
-        if (facts.seniorityOk.has(i) || (allowJob && jobSeniorityOk.has(i))) return;
-        re.lastIndex = 0;
-        for (const m of folded.matchAll(re)) {
-          const before = /([\p{L}]+)\s+$/u.exec(folded.slice(Math.max(0, m.index - 24), m.index))?.[1];
-          const after = /^\s+([\p{L}]+)/u.exec(folded.slice(m.index + m[0].length, m.index + m[0].length + 24))?.[1];
-          if ((before && OTHER_PEOPLE.has(before)) || (after && OTHER_PEOPLE.has(after))) continue;
-          // "Reportava ao CTO", "para o diretor", "to the CTO": outra pessoa.
-          const lead = folded.slice(Math.max(0, m.index - 16), m.index);
-          if (/(?:^|\s)(?:ao|para o|para a|to the|reporting to|reported to)\s+$/.test(lead)) continue;
-          if (/(?:^|\s)à\s+$/i.test(text.slice(Math.max(0, m.index - 4), m.index))) continue;
-          flagName(m[0]);
-          break;
-        }
-      });
-    }
-    // Certificação/formação: só perfil.
-    CREDENTIAL_RES.forEach((re, i) => {
-      re.lastIndex = 0;
-      const m = re.exec(folded);
-      if (m && !facts.credentialOk.has(i)) flagName(m[0]);
-    });
-
-    // Números por extenso, fora dos trechos já lidos como numerais ("1,5 mil"). Valem se o valor ou a própria
-    // palavra está na fonte; "dez" colado a ano/dia é mês; "two-factor"/"Three.js" não são números.
-    const f0 = foldText(text);
-    const noDigits = f0.replace(NUMBER_RE, (x) => " ".repeat(x.length));
-    const sourceFolded = foldText(sourceText);
-    const sourceWords = wordSet(sourceFolded);
-    for (const m of noDigits.matchAll(WRITTEN_RE)) {
-      const w = m[0];
-      const end = m.index + w.length;
-      const next = f0[end];
-      if (next === "-" || (next === "." && /[\p{L}\d]/u.test(f0[end + 1] ?? ""))) continue;
-      if (f0[m.index - 1] === "-") continue;
-      if (w === "dez" && (/\d\s*$/.test(f0.slice(Math.max(0, m.index - 8), m.index)) || /^\s*\d/.test(f0.slice(end, end + 8)))) continue;
-      if (w === "cento" && /por\s+$/.test(f0.slice(Math.max(0, m.index - 8), m.index))) continue;
-      const value = NUMBER_WORD_VALUE[w];
-      if (sourceWords.has(w) || (value !== undefined && sourceNumbers.has(value))) continue;
-      add("unknown_number", w, where, key);
-    }
-
-    const companyStarts = companyRunStarts(text);
-    for (const { word: w, end } of capitalizedMidSentence(text)) {
-      const f = fold(w);
-      // Produto colado a uma empresa ("Amazon S3", "Google Analytics").
-      if (PRODUCT_WORDS.has(f) || PRODUCT_AFTER.test(foldText(text.slice(end, end + 24)))) continue;
-      const common = COMMON_CAPITALIZED.has(f) && !(COMMON_ROLE_WORDS.has(f) && companyStarts.has(end - w.length));
-      if (common || CATALOG_WORDS.has(f) || facts.words.has(f) || inJob(f) || flaggedNames.has(f)) continue;
-      flagName(w);
-    }
-
-    // Empresas conhecidas em minúsculas.
-    for (const m of folded.matchAll(COMPANY_RE)) {
-      const after = folded.slice(m.index + m[0].length, m.index + m[0].length + 24);
-      const compound = /^-\p{L}/u.test(after) || /\p{L}-$/u.test(folded.slice(Math.max(0, m.index - 2), m.index));
-      if (compound || PRODUCT_AFTER.test(after)) continue;
-      if (!facts.words.has(m[0]) && !inJob(m[0]) && !flaggedNames.has(m[0])) flagName(m[0]);
-    }
-
-    // Siglas desconhecidas, só como nome de empresa (depois de "na", "no", "at", "for"...). As demais ficam com
-    // `unknown_stack` (catálogo) e com a lista de siglas comuns.
-    for (const m of text.matchAll(ACRONYM_RE)) {
-      const f = fold(m[0]);
-      const base = f.endsWith("s") ? f.slice(0, -1) : f;
-      const known = (x: string) => ACRONYM_ALLOWLIST.has(x) || CATALOG_WORDS.has(x) || facts.words.has(x) || inJob(x);
-      if (known(f) || known(base) || flaggedNames.has(f)) continue;
-      const prev = /([\p{L}]+)\s+$/u.exec(text.slice(Math.max(0, m.index - 16), m.index))?.[1];
-      if (prev && COMPANY_PREPOSITIONS.has(prev.toLowerCase())) flagName(m[0]);
-    }
-  };
-
+  const env: CheckEnv = { facts, jobWords, jobSeniorityOk, add };
   const cvWhere: Where = { part: "cv" };
 
   // skills
@@ -557,8 +605,8 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
     const ok = id ? facts.stacks.has(id) : facts.skillNames.has(fold(skill.trim()));
     if (!ok) add("unknown_skill", skill, cvWhere, skillKey(i, skill));
   });
-  checkText(docs.cv.headline, cvWhere, headlineKey(docs.cv.headline), facts.all);
-  checkText(docs.cv.summary, cvWhere, summaryKey(docs.cv.summary), facts.all);
+  checkText(env, docs.cv.headline, cvWhere, headlineKey(docs.cv.headline), facts.all);
+  checkText(env, docs.cv.summary, cvWhere, summaryKey(docs.cv.summary), facts.all);
 
   // experiências e bullets
   const bulletById = new Map<string, { expId: string; text: string }>();
@@ -585,11 +633,33 @@ export function validateTailored(profile: Profile, docs: TailoredDocs, job?: Job
         else sources.push(src.text);
       }
       if (b.sourceBulletIds.length === 0) add("unknown_exp", "sem fonte", where, key);
-      checkText(b.text, where, key, sources.join("\n"));
+      checkText(env, b.text, where, key, sources.join("\n"));
     });
   }
 
-  if (docs.coverLetter) checkText(docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all, true);
+  if (docs.coverLetter) checkText(env, docs.coverLetter, { part: "letter" }, letterKey(docs.coverLetter), facts.all, true);
+  return out;
+}
+
+/**
+ * Validador do RN-20 para texto livre do assistente de IA do perfil. Números e stacks valem se estão no perfil
+ * ou em `sourceText` (respostas da entrevista / texto que o usuário pediu para reescrever); anos e nomes, só no
+ * perfil (um número de 4 dígitos dito pelo usuário vale se não aparece como data). Nomes comparam sem caixa e
+ * sem acento (já é a regra do CV), o que já cobre a tradução.
+ */
+export function validateAssistOutput(profile: Profile, sourceText: string, texts: string[]): Violation[] {
+  const { profile: facts, jobWords, jobSeniorityOk } = (prepareFacts(profile) as PreparedInternal).built;
+  const out: Violation[] = [];
+  const seen = new Set<string>();
+  const add = (kind: ViolationKind, text: string, where: Where, key: string) => {
+    const id = `${kind}|${text}|${key}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    out.push({ kind, text, where, key });
+  };
+  const env: CheckEnv = { facts, jobWords, jobSeniorityOk, add, assist: true, extraStacks: new Set(stackIdsIn(sourceText)) };
+  const source = `${facts.all}\n${sourceText}`;
+  for (const t of texts) checkText(env, t, { part: "cv" }, `assist:${textHash(t)}`, source);
   return out;
 }
 

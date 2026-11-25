@@ -1,0 +1,89 @@
+"use client";
+
+import { useState } from "react";
+import { NoProviderCta } from "@/components/settings/NoProviderCta";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { hasUsableProvider } from "@/lib/client/ai/model";
+import type { AssistTarget, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
+import { aiSettingsStore, type AiSettings } from "@/lib/client/ai/settings";
+import { useStore } from "@/lib/client/storage/store";
+import type { Profile } from "@/lib/shared/schemas/profile";
+import { isDraftEmpty, targetName } from "./DraftEditor";
+import { InterviewFlow } from "./InterviewFlow";
+import { RewriteFlow } from "./RewriteFlow";
+import { useAssistRun } from "./useAssistRun";
+
+type Props = {
+  open: boolean;
+  onOpenChange: (o: boolean) => void;
+  profile: Profile;
+  target: AssistTarget;
+  current: Draft;
+  onInsert: (d: Draft) => void;
+};
+
+/** Conteúdo montado só com o painel aberto: fechar desmonta, aborta a geração e descarta as respostas. */
+function Body({ profile, target, current, onInsert, settings, empty }: Omit<Props, "open" | "onOpenChange"> & { settings: AiSettings; empty: boolean }) {
+  const gen = useAssistRun();
+  return (
+    <>
+      {/* Anúncio curto e estável para leitor de tela; o texto parcial é só visual e não é anunciado. */}
+      <div role="status" aria-live="polite" aria-busy={gen.busy} className="sr-only">
+        {gen.busy ? "Escrevendo…" : gen.done ? "Pronto." : ""}
+      </div>
+      {gen.busy && gen.partial && (
+        <div aria-hidden="true" className="whitespace-pre-wrap rounded-lg bg-jf-chip p-3 text-sm text-jf-ink-2">
+          {gen.partial}
+        </div>
+      )}
+      {empty ? (
+        <InterviewFlow profile={profile} target={target} settings={settings} gen={gen} onInsert={onInsert} />
+      ) : (
+        <RewriteFlow profile={profile} target={target} settings={settings} current={current} gen={gen} onInsert={onInsert} />
+      )}
+    </>
+  );
+}
+
+/** Assistente de IA do perfil (D-06): entrevista com o campo vazio, reescrita com o campo preenchido. */
+export function AssistantDialog({ open, onOpenChange, profile, target, current, onInsert }: Props) {
+  const settings = useStore(aiSettingsStore);
+  // O modo fica congelado da abertura até o painel fechar (inclusive na animação de saída): inserir altera
+  // `current`, e recalcular trocaria para a reescrita e gastaria uma chamada de IA que ninguém vê.
+  const [frozen, setFrozen] = useState({ empty: isDraftEmpty(target, current), open: false });
+  if (open && !frozen.open) setFrozen({ empty: isDraftEmpty(target, current), open: true });
+  else if (!open && frozen.open) setFrozen({ ...frozen, open: false });
+  const empty = frozen.empty;
+  const title = empty ? "Escrever com IA" : "Melhorar com IA";
+  const usable = settings !== null && hasUsableProvider(settings, "cv");
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent mobile="sheet" className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{targetName(target)} do perfil. Nada é salvo até você usar “Salvar perfil”.</DialogDescription>
+        </DialogHeader>
+        {settings && !usable && (
+          <div className="flex flex-col gap-3">
+            <p className="text-sm font-semibold text-jf-ink">Conecte uma IA para usar o assistente</p>
+            <NoProviderCta task="cv" />
+          </div>
+        )}
+        {settings && usable && (
+          <Body
+            profile={profile}
+            target={target}
+            current={current}
+            settings={settings}
+            empty={empty}
+            onInsert={(d) => {
+              onInsert(d);
+              onOpenChange(false);
+            }}
+          />
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+}

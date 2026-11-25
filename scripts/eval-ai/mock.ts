@@ -4,6 +4,7 @@ import { PROVIDERS } from "@/lib/client/ai/providers";
 import type { GenerateArgs } from "@/lib/client/ai/generate";
 import type { CvLang } from "@/lib/client/cv/period";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
+import type { Profile } from "@/lib/shared/schemas/profile";
 import type { Pair } from "./core";
 
 /**
@@ -78,6 +79,46 @@ export function mockResolverFor(pair: Pair, lang: CvLang, scenario: MockScenario
             ? JSON.stringify(copiedFromJobDocs(pair, lang))
             : JSON.stringify(faithfulDocs(pair, lang, (scenario === "invented-number" && call === 1) || scenario === "persistent-invention"));
       const input = Math.ceil(JSON.stringify(options.prompt).length / 4);
+      const chunks = [
+        { type: "stream-start", warnings: [] },
+        { type: "text-start", id: "t" },
+        { type: "text-delta", id: "t", delta: text },
+        { type: "text-end", id: "t" },
+        { type: "finish", usage: usageOf(input, Math.ceil(text.length / 4)), finishReason: { unified: "stop", raw: "stop" } },
+      ];
+      return { stream: simulateReadableStream({ chunks: chunks as never[] }) };
+    },
+  } as never);
+  return async () => ({ model, provider: PROVIDERS.openrouter, modelId: "mock/modelo-falso" });
+}
+
+/** Opções do modelo falso da suíte `assist`: cada uma injeta um defeito que a suíte precisa pegar. */
+export type AssistMockOpts = { inventedNumber?: boolean; sensitiveQuestion?: boolean };
+
+const SUMMARY = "Pessoa desenvolvedora com experiência prática, foco em qualidade e em entregar o que o time precisa.";
+
+/** Modelo falso do `--suite assist --mock`: responde pelo tipo de pedido (perguntas, redação ou reescrita). */
+export function assistMockResolverFor(profile: Profile, opts: AssistMockOpts = {}): NonNullable<GenerateArgs<unknown>["resolveModel"]> {
+  const firstBullet = profile.experiences.find((e) => e.bullets.length > 0)?.bullets[0]?.text ?? "";
+  const suffix = opts.inventedNumber ? " e aumentou a conversão em 45%" : "";
+  const answerFor = (prompt: string): unknown => {
+    if (prompt.includes("escreva exatamente 2 opções")) {
+      return { options: [SUMMARY, `${SUMMARY} Gosta de trabalhar em equipe`].map((t) => ({ text: `${t}${suffix}`, bullets: null })) };
+    }
+    if (prompt.includes("reescreva o texto atual")) return { draft: { text: null, bullets: [`${firstBullet}${suffix}`] } };
+    return {
+      questions: [
+        opts.sensitiveQuestion ? "Qual é a sua idade?" : "Qual era o contexto do trabalho?",
+        "O que você fez no dia a dia?",
+        "Quais resultados você percebeu?",
+      ],
+    };
+  };
+  const model = new MockLanguageModelV4({
+    doStream: async (options: { prompt: unknown }) => {
+      const prompt = JSON.stringify(options.prompt);
+      const text = JSON.stringify(answerFor(prompt));
+      const input = Math.ceil(prompt.length / 4);
       const chunks = [
         { type: "stream-start", warnings: [] },
         { type: "text-start", id: "t" },

@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
+import type { AssistTarget, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
+import type { Finding } from "@/lib/client/profile/review";
 import { useUnsavedChangesGuard } from "@/lib/client/use-unsaved-changes-guard";
 import {
   ENGLISH_LABEL,
@@ -9,7 +12,11 @@ import {
   SENIORITY_LABEL,
   type Profile,
 } from "@/lib/shared/schemas/profile";
+import { AssistantDialog } from "./assistant/AssistantDialog";
+import { AssistButton } from "./assistant/AssistButton";
 import { CertificationsEditor } from "./CertificationsEditor";
+import { ProfileReview } from "./ProfileReview";
+import { SkillSuggestions } from "./SkillSuggestions";
 import { ContactLinks } from "./ContactLinks";
 import { EducationEditor } from "./EducationEditor";
 import { ExperienceEditor } from "./ExperienceEditor";
@@ -26,6 +33,9 @@ type Props = {
 
 const orNull = (v: string): string | null => (v.trim() === "" ? null : v);
 
+type TextField = "headline" | "summary";
+const isBlank = (v: string | null) => (v ?? "").trim() === "";
+
 /** Edita uma cópia do perfil; só grava no localStorage ao clicar em "Salvar perfil". */
 export function ProfileEditor({ profile, onSave }: Props) {
   const [draft, setDraft] = useState(profile);
@@ -37,6 +47,28 @@ export function ProfileEditor({ profile, onSave }: Props) {
     setSaved("idle");
     setDirty(true);
   };
+  const [assist, setAssist] = useState<{ field: TextField; open: boolean }>({ field: "headline", open: false });
+  const assistTarget: AssistTarget = { kind: assist.field };
+  // "Corrigir" de um bullet reaproveita o painel (e o inserir/desfazer) do ExperienceEditor; `n` repete o mesmo alvo.
+  const [bulletFix, setBulletFix] = useState<{ expId: string; n: number } | null>(null);
+  function fix(f: Finding) {
+    if (f.where.field === "summary") setAssist({ field: "summary", open: true });
+    else if (f.where.field === "bullet") {
+      const expId = f.where.expId;
+      setBulletFix((b) => ({ expId, n: (b?.n ?? 0) + 1 }));
+    }
+  }
+
+  // Só altera o rascunho (como qualquer edição): o perfil salvo só muda em "Salvar perfil".
+  function insertText(field: TextField, d: Draft) {
+    if (d.text === null) return;
+    const previous = draft[field];
+    patch({ [field]: orNull(d.text) });
+    toast("Texto inserido", {
+      duration: 8000,
+      action: { label: "Desfazer", onClick: () => patch({ [field]: previous }) },
+    });
+  }
 
   return (
     <section aria-labelledby="ed-t" className={`${CARD} flex min-w-0 flex-col gap-5 p-4 sm:p-6`}>
@@ -62,19 +94,24 @@ export function ProfileEditor({ profile, onSave }: Props) {
         </p>
       )}
 
+      <ProfileReview profile={draft} onFix={fix} />
+
       <div className="grid gap-3.5 sm:grid-cols-2">
         <label className={FIELD_LABEL}>
           Nome
           <input className={FIELD} value={draft.name ?? ""} onChange={(e) => patch({ name: orNull(e.target.value) })} />
         </label>
-        <label className={`${FIELD_LABEL} sm:col-span-2`}>
-          Título profissional
-          <input
-            className={FIELD}
-            value={draft.headline ?? ""}
-            onChange={(e) => patch({ headline: orNull(e.target.value) })}
-          />
-        </label>
+        <div className="flex flex-col gap-2 sm:col-span-2">
+          <label className={FIELD_LABEL}>
+            Título profissional
+            <input
+              className={FIELD}
+              value={draft.headline ?? ""}
+              onChange={(e) => patch({ headline: orNull(e.target.value) })}
+            />
+          </label>
+          <AssistButton empty={isBlank(draft.headline)} onClick={() => setAssist({ field: "headline", open: true })} />
+        </div>
         <label className={FIELD_LABEL}>
           Cidade
           <input
@@ -136,22 +173,36 @@ export function ProfileEditor({ profile, onSave }: Props) {
         links={draft.contact.links}
         onChange={(links) => patch({ contact: { ...draft.contact, links } })}
       />
-      <label className={FIELD_LABEL}>
-        Resumo
-        <textarea
-          rows={3}
-          className={FIELD}
-          value={draft.summary ?? ""}
-          onChange={(e) => patch({ summary: orNull(e.target.value) })}
-        />
-      </label>
+      <div className="flex flex-col gap-2">
+        <label className={FIELD_LABEL}>
+          Resumo
+          <textarea
+            rows={3}
+            className={FIELD}
+            value={draft.summary ?? ""}
+            onChange={(e) => patch({ summary: orNull(e.target.value) })}
+          />
+        </label>
+        <AssistButton empty={isBlank(draft.summary)} onClick={() => setAssist({ field: "summary", open: true })} />
+      </div>
+      <AssistantDialog
+        open={assist.open}
+        onOpenChange={(open) => setAssist((a) => ({ ...a, open }))}
+        profile={draft}
+        target={assistTarget}
+        current={{ text: draft[assist.field], bullets: null }}
+        onInsert={(d) => insertText(assist.field, d)}
+      />
 
       <SkillChips skills={draft.skills} onChange={(skills) => patch({ skills })} />
+      <SkillSuggestions profile={draft} onAdd={(skill) => patch({ skills: [...draft.skills, skill] })} />
       <ExperienceEditor
+        profile={draft}
         experiences={draft.experiences}
         onChange={(experiences) => patch({ experiences })}
         highlights={draft.highlights}
         onHighlightsChange={(highlights) => patch({ highlights })}
+        assistRequest={bulletFix}
       />
 
       <ProjectsEditor projects={draft.projects} onChange={(projects) => patch({ projects })} />

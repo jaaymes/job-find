@@ -1,18 +1,28 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type MutableRefObject } from "react";
+import { toast } from "sonner";
+import type { Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import { MAX_HIGHLIGHTS, type Profile } from "@/lib/shared/schemas/profile";
 import { BTN_OUTLINE, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
+import { AssistantDialog } from "./assistant/AssistantDialog";
+import { AssistButton } from "./assistant/AssistButton";
 import { maxSeq, nextSeq } from "./ids";
+
+const BULLET_ID = /\.b(\d+)$/;
 
 type Experience = Profile["experiences"][number];
 
 type Props = {
+  /** Rascunho do perfil, usado como contexto do assistente de IA. */
+  profile: Profile;
   experiences: Experience[];
   onChange: (experiences: Experience[]) => void;
   /** Ids `exp_N.bM` dos bullets destacados (estrela). */
   highlights: string[];
   onHighlightsChange: (ids: string[]) => void;
+  /** Pedido externo para abrir o assistente numa experiência (ex.: "Corrigir" da revisão); `n` distingue pedidos repetidos. */
+  assistRequest?: { expId: string; n: number } | null;
 };
 
 function period(e: Experience): string {
@@ -28,6 +38,8 @@ function Row({
   highlights,
   activeCount,
   onHighlightsChange,
+  seenFor,
+  onAssist,
 }: {
   exp: Experience;
   onChange: (e: Experience) => void;
@@ -37,10 +49,12 @@ function Row({
   /** Destaques que apontam para realizações existentes (em todas as experiências). */
   activeCount: number;
   onHighlightsChange: (ids: string[]) => void;
+  /** Maior número de bullet já emitido nesta experiência (compartilhado com as inserções do assistente). */
+  seenFor: (e: Experience) => MutableRefObject<number>;
+  onAssist: () => void;
 }) {
   const [open, setOpen] = useState(startOpen);
   const set = (patch: Partial<Experience>) => onChange({ ...exp, ...patch });
-  const seenBullet = useRef(maxSeq(exp.bullets.map((b) => b.id), /\.b(\d+)$/));
   const atMax = activeCount >= MAX_HIGHLIGHTS;
   const title = [exp.title, exp.company].filter(Boolean).join(" · ") || "Nova experiência";
 
@@ -122,16 +136,19 @@ function Row({
                 </button>
               </div>
             ))}
+            <div className="flex flex-wrap gap-2">
             <button
               type="button"
               className={`${BTN_OUTLINE} w-fit`}
               onClick={() => {
-                const n = nextSeq(seenBullet, exp.bullets.map((b) => b.id), /\.b(\d+)$/);
+                const n = nextSeq(seenFor(exp), exp.bullets.map((b) => b.id), BULLET_ID);
                 set({ bullets: [...exp.bullets, { id: `${exp.id}.b${n}`, text: "" }] });
               }}
             >
               + Realização
             </button>
+            <AssistButton empty={exp.bullets.every((b) => b.text.trim() === "")} onClick={onAssist} />
+            </div>
           </fieldset>
         </div>
       )}
@@ -157,8 +174,64 @@ function Row({
   );
 }
 
-export function ExperienceEditor({ experiences, onChange, highlights, onHighlightsChange }: Props) {
+export function ExperienceEditor({ profile, experiences, onChange, highlights, onHighlightsChange, assistRequest = null }: Props) {
   const [newId, setNewId] = useState<string | null>(null);
+  const [assistId, setAssistId] = useState<string | null>(null);
+  const [assistOpen, setAssistOpen] = useState(false);
+  const [handled, setHandled] = useState(assistRequest?.n ?? 0);
+  if (assistRequest && assistRequest.n !== handled) {
+    setHandled(assistRequest.n);
+    setAssistId(assistRequest.expId);
+    setAssistOpen(true);
+  }
+  const seenBullets = useRef(new Map<string, MutableRefObject<number>>());
+  const seenFor = (e: Experience) => {
+    let ref = seenBullets.current.get(e.id);
+    if (!ref) seenBullets.current.set(e.id, (ref = { current: maxSeq(e.bullets.map((b) => b.id), BULLET_ID) }));
+    return ref;
+  };
+  // O desfazer roda até 8 s depois: precisa ler o estado atual, não o da renderização que o criou.
+  const latest = useRef({ experiences, highlights, onChange, onHighlightsChange });
+  // Registra o maior id visto a cada renderização, antes de qualquer remoção: `seenFor` lazy no clique já veria só o que sobrou.
+  useEffect(() => {
+    for (const e of experiences) {
+      const ref = seenFor(e);
+      ref.current = Math.max(ref.current, maxSeq(e.bullets.map((b) => b.id), BULLET_ID));
+    }
+  });
+  useEffect(() => {
+    latest.current = { experiences, highlights, onChange, onHighlightsChange };
+  });
+  const assistExp = experiences.find((e) => e.id === assistId);
+
+  // Só altera o rascunho: o perfil salvo só muda em "Salvar perfil".
+  function insertBullets(expId: string, d: Draft) {
+    const cur = latest.current;
+    const exp = cur.experiences.find((e) => e.id === expId);
+    if (!exp || d.bullets === null) return;
+    const previous = { bullets: exp.bullets, highlights: cur.highlights };
+    const oldIds = new Set(exp.bullets.map((b) => b.id));
+    // Ids novos: nunca reaproveitam os existentes nem os já removidos (`seen` guarda o maior emitido).
+    const seen = seenFor(exp);
+    const bullets = d.bullets.map((text) => ({ id: `${exp.id}.b${nextSeq(seen, exp.bullets.map((b) => b.id), BULLET_ID)}`, text }));
+    const newIds = new Set(bullets.map((b) => b.id));
+    cur.onChange(cur.experiences.map((e) => (e.id === expId ? { ...e, bullets } : e)));
+    if (cur.highlights.some((h) => oldIds.has(h))) cur.onHighlightsChange(cur.highlights.filter((h) => !oldIds.has(h)));
+    toast("Texto inserido", {
+      duration: 8000,
+      action: {
+        label: "Desfazer",
+        onClick: () => {
+          const now = latest.current;
+          if (!now.experiences.some((e) => e.id === expId)) return;
+          now.onChange(now.experiences.map((e) => (e.id === expId ? { ...e, bullets: previous.bullets } : e)));
+          const restored = previous.highlights.filter((h) => oldIds.has(h));
+          const kept = now.highlights.filter((h) => !newIds.has(h) && !restored.includes(h));
+          now.onHighlightsChange([...kept, ...restored]);
+        },
+      },
+    });
+  }
   const seenExp = useRef(maxSeq(experiences.map((e) => e.id), /^exp_(\d+)$/));
   const existingIds = new Set(experiences.flatMap((e) => e.bullets.map((b) => b.id)));
   const activeHighlights = highlights.filter((h) => existingIds.has(h));
@@ -190,6 +263,11 @@ export function ExperienceEditor({ experiences, onChange, highlights, onHighligh
             exp={e}
             startOpen={e.id === newId}
             highlights={highlights}
+            seenFor={seenFor}
+            onAssist={() => {
+              setAssistId(e.id);
+              setAssistOpen(true);
+            }}
             activeCount={activeHighlights.length}
             onHighlightsChange={onHighlightsChange}
             onChange={(x) => onChange(experiences.map((y) => (y.id === e.id ? x : y)))}
@@ -201,6 +279,14 @@ export function ExperienceEditor({ experiences, onChange, highlights, onHighligh
           />
         ))}
       </ul>
+      <AssistantDialog
+        open={assistOpen}
+        onOpenChange={setAssistOpen}
+        profile={profile}
+        target={{ kind: "bullets", expId: assistId ?? "" }}
+        current={{ text: null, bullets: (assistExp?.bullets ?? []).map((b) => b.text) }}
+        onInsert={(d) => assistId && insertBullets(assistId, d)}
+      />
     </div>
   );
 }

@@ -3,10 +3,12 @@ import { join } from "node:path";
 import { AiError } from "@/lib/client/ai/errors";
 import { generateStructured, type GenerateArgs, type TokenUsage } from "@/lib/client/ai/generate";
 import { CV_TAILOR_V1, pickLanguage } from "@/lib/client/ai/prompts/cv.tailor.v1";
+import { sensitiveQuestion, type AssistTarget, type Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import type { AiSettings } from "@/lib/client/ai/settings";
 import { assembleCv } from "@/lib/client/cv/assemble";
 import type { CvLang } from "@/lib/client/cv/period";
-import { toPromptFeedback, validateTailored, type Violation } from "@/lib/client/cv/validate";
+import { toPromptFeedback, validateAssistOutput, validateTailored, type Violation } from "@/lib/client/cv/validate";
+import { questionsCall, restoreName, rewriteCall, writeCall } from "@/lib/client/profile/assist";
 import { Profile } from "@/lib/shared/schemas/profile";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
 import type { JobDetail } from "@/lib/shared/types/job";
@@ -316,5 +318,114 @@ export function renderReport(
     r.violations.map((v) => `  par ${r.id}: ${v.kind} "${v.text}"`).concat(r.error ? [`  par ${r.id}: erro ${r.error}`] : []),
   );
   if (details.length > 0) out.push("", "Detalhe:", ...details);
+  return out.join("\n");
+}
+
+// ---------------------------------------------------------------------------
+// Suíte `assist`: o modelo cru do assistente de perfil (--suite assist)
+// ---------------------------------------------------------------------------
+
+export type AssistStep = "questions" | "write" | "rewrite";
+
+export type AssistReport = {
+  generations: number;
+  /** Violações do anti-invenção (RN-20) na saída crua, antes de qualquer filtro do serviço. */
+  invented: number;
+  /** Perguntas sensíveis (RN-22) na saída crua. */
+  sensitive: number;
+  p95Ms: number;
+  failures: { profile: string; step: string; detail: string }[];
+};
+
+export type AssistDeps = {
+  settings: AiSettings;
+  /** Modelo por perfil (o modo mock injeta o falso). */
+  resolveModelFor?: (p: { id: string; profile: Profile }) => GenerateArgs<unknown>["resolveModel"];
+  now?: () => number;
+};
+
+/** Respostas fixas da entrevista, sem números nem tecnologias: não dão fonte para nada inventado. */
+const FIXED_ANSWERS = [
+  "Trabalhei em equipe, ajudando a manter o produto e conversando com quem usa.",
+  "Cuidei da qualidade do código e da entrega das tarefas.",
+  "Melhorei a experiência de quem usa o sistema no dia a dia.",
+];
+
+/**
+ * Mede o modelo cru do assistente: 3 gerações por perfil (perguntas do resumo, redação do resumo com respostas
+ * fixas e reescrita "Mais direto" do 1º bullet). Usa as mesmas chamadas do serviço, mas com um `validate` que só
+ * aceita; as violações são contadas sobre a saída antes de qualquer filtro. Não interrompe em erro de uma geração.
+ */
+export async function runAssistSuite(profiles: { id: string; profile: Profile }[], deps: AssistDeps): Promise<AssistReport> {
+  const now = deps.now ?? (() => performance.now());
+  const report: AssistReport = { generations: 0, invented: 0, sensitive: 0, p95Ms: Number.NaN, failures: [] };
+  const times: number[] = [];
+  const accept = () => [] as string[];
+
+  for (const entry of profiles) {
+    const { id, profile } = entry;
+    const common = { profile, settings: deps.settings, resolveModel: deps.resolveModelFor?.(entry) };
+    const fail = (step: AssistStep, detail: string) => report.failures.push({ profile: id, step, detail });
+    const timed = async (step: AssistStep, run: () => Promise<void>) => {
+      report.generations++;
+      const started = now();
+      try {
+        await run();
+      } catch (e) {
+        fail(step, e instanceof AiError ? `erro ${e.code}` : "erro inesperado");
+      }
+      times.push(now() - started);
+    };
+    const checkInvented = (step: AssistStep, texts: string[], sourceText: string) => {
+      for (const v of validateAssistOutput(profile, sourceText, texts)) {
+        report.invented++;
+        fail(step, `${v.kind} "${v.text}"`);
+      }
+    };
+    const summary: AssistTarget = { kind: "summary" };
+
+    await timed("questions", async () => {
+      const { data } = await generateStructured({ ...questionsCall({ ...common, target: summary }), validate: accept });
+      for (const q of data.questions.filter(sensitiveQuestion)) {
+        report.sensitive++;
+        fail("questions", `pergunta sensível "${q}"`);
+      }
+    });
+
+    await timed("write", async () => {
+      const qa = FIXED_ANSWERS.map((answer, i) => ({ question: `Pergunta ${i + 1}`, answer }));
+      const { data } = await generateStructured({ ...writeCall({ ...common, target: summary, qa }), validate: accept });
+      const texts = data.options.map((d) => restoreName(profile, d).text?.trim() ?? "").filter(Boolean);
+      checkInvented("write", texts, FIXED_ANSWERS.join("\n"));
+    });
+
+    await timed("rewrite", async () => {
+      const exp = profile.experiences.find((e) => e.bullets.length > 0);
+      if (!exp) {
+        fail("rewrite", "perfil sem experiência com bullets");
+        return;
+      }
+      const current: Draft = { text: null, bullets: [exp.bullets[0].text] };
+      const target: AssistTarget = { kind: "bullets", expId: exp.id };
+      const { data } = await generateStructured({ ...rewriteCall({ ...common, target, current, tone: { tone: "direct" } }), validate: accept });
+      const bullets = (restoreName(profile, data.draft).bullets ?? []).filter((b) => b.trim());
+      checkInvented("rewrite", bullets, current.bullets?.join("\n") ?? "");
+    });
+  }
+
+  report.p95Ms = percentile(times, 95);
+  return report;
+}
+
+/** Texto curto da suíte `assist` para o terminal. */
+export function renderAssistReport(r: AssistReport, limitMs = P95_LIMIT_MS): string {
+  const out = [
+    `Gerações: ${r.generations}`,
+    `Fatos inventados (saída crua): ${r.invented}`,
+    `Perguntas sensíveis (saída crua): ${r.sensitive}`,
+    `Tempo p95: ${formatMs(Math.round(r.p95Ms))}`,
+    `Resultado: ${r.failures.length === 0 && r.p95Ms <= limitMs ? "APROVADO" : "REPROVADO"}`,
+  ];
+  if (r.failures.length > 0) out.push("", "Detalhe:", ...r.failures.map((f) => `  perfil ${f.profile} (${f.step}): ${f.detail}`));
   return out.join("\n");
 }

@@ -9,7 +9,7 @@ import { lastVisitStore } from "@/lib/client/jobs/last-visit";
 import { SavedFilters, savedFiltersStore } from "@/lib/client/jobs/saved-search";
 import { GeneratedRecord, generatedStore } from "@/lib/client/cv/generated-store";
 import { profileStore } from "@/lib/client/profile/store";
-import { Profile } from "@/lib/shared/schemas/profile";
+import { migrateProfileV1toV2, Profile } from "@/lib/shared/schemas/profile";
 import { DISCARD_CONTENT_TAGS } from "@/lib/shared/sanitize-policy";
 import { safeUrl } from "@/lib/shared/url";
 import { z } from "@/lib/shared/zod";
@@ -187,8 +187,12 @@ function validateKey(key: BackupKey, raw: unknown): unknown {
       // Além da forma estrita, vale o schema da store (que traz as regras de baseURL).
       return must<AiSettings>(AiSettings, data);
     }
-    case PROFILE:
-      return sanitizeProfile(must<Profile | null>(strict.profile, raw));
+    case PROFILE: {
+      // Backups antigos (perfil v1) são migrados antes da validação estrita.
+      const old = raw as { schemaVersion?: unknown } | null;
+      const value = old !== null && typeof old === "object" && old.schemaVersion === 1 ? migrateProfileV1toV2(raw) : raw;
+      return sanitizeProfile(must<Profile | null>(strict.profile, value));
+    }
     case JOB_STATE:
       return sanitizeJobStates(must<Record<string, JobState>>(strict.jobState, raw));
     case ANALYSIS:

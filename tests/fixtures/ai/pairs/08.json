@@ -1,6 +1,6 @@
 {
   "profile": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "name": "Helena Muestra",
     "headline": "Analista de Datos Junior",
     "location": "Madrid, España",
@@ -77,7 +77,11 @@
         "startYear": "2019",
         "endYear": "2023"
       }
-    ]
+    ],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "highlights": []
   },
   "job": {
     "id": 9007,

@@ -1,6 +1,6 @@
 {
   "profile": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "name": "Daniela Ficticia",
     "headline": "Desenvolvedora Back-end Pleno",
     "location": "Recife, PE, Brasil",
@@ -73,7 +73,11 @@
         "startYear": "2017",
         "endYear": "2021"
       }
-    ]
+    ],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "highlights": []
   },
   "job": {
     "id": 9010,

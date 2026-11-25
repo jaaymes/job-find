@@ -2,10 +2,16 @@ import { z } from "@/lib/shared/zod";
 
 // Perfil do usuário (US-04). Vive só no localStorage; é também o schema que a IA preenche.
 // `.nullable()` em vez de `.optional()`: provedores com `json_schema` estrito exigem todos os campos.
-export const PROFILE_SCHEMA_VERSION = 1;
+export const PROFILE_SCHEMA_VERSION = 2;
 
 export const SENIORITIES = ["junior", "mid", "senior", "lead"] as const;
 export const ENGLISH_LEVELS = ["none", "basic", "intermediate", "advanced", "fluent"] as const;
+
+export const LANGUAGE_LEVELS = ["basic", "intermediate", "advanced", "fluent", "native"] as const;
+export type LanguageLevel = (typeof LANGUAGE_LEVELS)[number];
+
+/** Máximo de bullets destacados (template `resultados`). */
+export const MAX_HIGHLIGHTS = 3;
 
 export const Profile = z.object({
   schemaVersion: z.literal(PROFILE_SCHEMA_VERSION),
@@ -50,6 +56,27 @@ export const Profile = z.object({
       endYear: z.string().nullable(),
     }),
   ),
+  projects: z.array(
+    z.object({
+      /** `proj_N`, único no perfil. */
+      id: z.string(),
+      name: z.string(),
+      link: z.string().nullable(),
+      stacks: z.array(z.string()),
+      /** Bullets com `id` `proj_N.bM`. */
+      bullets: z.array(z.object({ id: z.string(), text: z.string() })),
+    }),
+  ),
+  certifications: z.array(
+    z.object({
+      name: z.string(),
+      issuer: z.string().nullable(),
+      year: z.string().nullable(),
+    }),
+  ),
+  languages: z.array(z.object({ name: z.string(), level: z.enum(LANGUAGE_LEVELS) })),
+  /** Ids `exp_N.bM` de até `MAX_HIGHLIGHTS` bullets destacados. */
+  highlights: z.array(z.string()),
 });
 export type Profile = z.infer<typeof Profile>;
 
@@ -68,6 +95,18 @@ export const ENGLISH_LABEL: Record<(typeof ENGLISH_LEVELS)[number], string> = {
   fluent: "Fluente",
 };
 
+export const LANGUAGE_LEVEL_LABEL: Record<"pt" | "en" | "es", Record<LanguageLevel, string>> = {
+  pt: { basic: "Básico", intermediate: "Intermediário", advanced: "Avançado", fluent: "Fluente", native: "Nativo" },
+  en: { basic: "Basic", intermediate: "Intermediate", advanced: "Advanced", fluent: "Fluent", native: "Native" },
+  es: { basic: "Básico", intermediate: "Intermedio", advanced: "Avanzado", fluent: "Fluido", native: "Nativo" },
+};
+
+/** v1 -> v2: acrescenta as listas novas vazias. Valor que não é objeto passa como veio (o `safeParse` rejeita). */
+export function migrateProfileV1toV2(old: unknown): unknown {
+  if (old === null || typeof old !== "object" || Array.isArray(old)) return old;
+  return { ...old, schemaVersion: 2, projects: [], certifications: [], languages: [], highlights: [] };
+}
+
 export function emptyProfile(): Profile {
   return {
     schemaVersion: PROFILE_SCHEMA_VERSION,
@@ -81,5 +120,9 @@ export function emptyProfile(): Profile {
     skills: [],
     experiences: [],
     education: [],
+    projects: [],
+    certifications: [],
+    languages: [],
+    highlights: [],
   };
 }

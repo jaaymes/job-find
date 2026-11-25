@@ -1,6 +1,6 @@
 {
   "profile": {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
     "name": "Elisa Sample",
     "headline": "Senior Frontend Engineer (Vue)",
     "location": "Lisboa, Portugal",
@@ -95,7 +95,11 @@
         "startYear": "2012",
         "endYear": "2015"
       }
-    ]
+    ],
+    "projects": [],
+    "certifications": [],
+    "languages": [],
+    "highlights": []
   },
   "job": {
     "id": 9004,

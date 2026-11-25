@@ -1,7 +1,7 @@
 import "client-only";
 
 import { generateStructured } from "@/lib/client/ai/generate";
-import { PROFILE_EXTRACT_V1 } from "@/lib/client/ai/prompts/profile.extract.v1";
+import { PROFILE_EXTRACT_V2 } from "@/lib/client/ai/prompts/profile.extract.v2";
 import type { AiSettings } from "@/lib/client/ai/settings";
 import { extractContact, redactContact } from "@/lib/client/extract/contact";
 import type { Profile } from "@/lib/shared/schemas/profile";
@@ -30,11 +30,11 @@ export async function importProfile(
   const { data } = await generateStructured({
     task: "extract",
     settings,
-    system: PROFILE_EXTRACT_V1.system,
-    prompt: PROFILE_EXTRACT_V1.buildUser({ cvText: redactContact(text) }),
-    schema: PROFILE_EXTRACT_V1.schema,
-    maxOutputTokens: PROFILE_EXTRACT_V1.maxOutputTokens,
-    temperature: PROFILE_EXTRACT_V1.temperature,
+    system: PROFILE_EXTRACT_V2.system,
+    prompt: PROFILE_EXTRACT_V2.buildUser({ cvText: redactContact(text) }),
+    schema: PROFILE_EXTRACT_V2.schema,
+    maxOutputTokens: PROFILE_EXTRACT_V2.maxOutputTokens,
+    temperature: PROFILE_EXTRACT_V2.temperature,
     signal,
     onPartial,
   });

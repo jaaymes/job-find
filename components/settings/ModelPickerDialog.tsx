@@ -73,7 +73,7 @@ export function ModelPickerDialog({ task, settings, open, onOpenChange, onSelect
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent initialFocus={inputRef} className="flex max-h-[min(90dvh,44rem)] flex-col gap-3 sm:max-w-xl">
+      <DialogContent initialFocus={inputRef} className="flex flex-col gap-3 sm:max-h-[min(90dvh,44rem)] sm:max-w-xl">
         <DialogHeader className="pr-8">
           <DialogTitle>Modelo para {copy.name}</DialogTitle>
           <DialogDescription>{copy.desc}</DialogDescription>
@@ -185,7 +185,7 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
             autoComplete="off"
             spellCheck={false}
             placeholder="Nome, provedor ou id"
-            className="min-h-11 w-full min-w-0 rounded-lg border border-jf-line-strong bg-jf-surface px-2.5 text-[15px] text-jf-ink outline-none placeholder:text-jf-ink-3 focus-visible:ring-2 focus-visible:ring-jf-brand"
+            className="min-h-11 w-full min-w-0 rounded-lg border border-jf-line-strong bg-jf-surface px-2.5 text-base text-jf-ink outline-none md:text-[15px] placeholder:text-jf-ink-3 focus-visible:ring-2 focus-visible:ring-jf-brand"
           />
         </div>
         <div role="group" aria-label="Filtros" className="flex flex-wrap gap-2">

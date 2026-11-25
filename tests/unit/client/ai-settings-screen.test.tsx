@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiSettingsScreen } from "@/components/settings/AiSettingsScreen";
 import { PROVIDER_IDS, PROVIDERS } from "@/lib/client/ai/providers";
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
+import { BTN_PRIMARY } from "@/components/ui/styles";
 
 beforeEach(() => localStorage.clear());
 afterEach(() => {
@@ -27,9 +28,9 @@ function sectionOrder(): string[] {
 }
 
 describe("AiSettingsScreen: estrutura", () => {
-  it("sem provedor conectado, 'Provedores' vem antes das tarefas e o estado diz 'Nenhuma IA conectada'", () => {
+  it("sem provedor conectado, só 'Provedores' aparece (sem as tarefas) e o estado diz 'Nenhuma IA conectada'", () => {
     renderScreen();
-    expect(sectionOrder()).toEqual(["Provedores", "Modelo para cada tarefa"]);
+    expect(sectionOrder()).toEqual(["Provedores"]);
     expect(screen.getByText("Nenhuma IA conectada")).toBeTruthy();
     expect(screen.queryByRole("list", { name: "Provedores conectados" })).toBeNull();
   });
@@ -47,9 +48,10 @@ describe("AiSettingsScreen: estrutura", () => {
     expect(within(connected).getByRole("heading", { name: "OpenRouter" })).toBeTruthy();
     expect(within(connected).getByText("Conectado com OAuth")).toBeTruthy();
 
-    const grid = screen.getByRole("list", { name: "Provedores para conectar" });
-    expect(within(grid).queryByRole("heading", { name: "OpenRouter" })).toBeNull();
-    expect(within(grid).getByRole("heading", { name: "OpenAI" })).toBeTruthy();
+    expect(screen.queryByRole("list", { name: "Provedor recomendado" })).toBeNull();
+    const rows = screen.getByRole("list", { name: "Provedores para conectar" });
+    expect(within(rows).queryByRole("button", { name: /OpenRouter/ })).toBeNull();
+    expect(within(rows).getByRole("button", { name: /OpenAI/ })).toBeTruthy();
   });
 
   it("com dois provedores conectados, o estado usa o plural", () => {
@@ -92,8 +94,8 @@ describe("AiSettingsScreen: estrutura", () => {
     expect(screen.getByText(`Mais provedores (${expected.length})`)).toBeTruthy();
     const more = screen.getByRole("list", { name: "Mais provedores para conectar", hidden: true });
     const names = within(more)
-      .getAllByRole("heading", { level: 3, hidden: true })
-      .map((h) => h.textContent);
+      .getAllByRole("button", { hidden: true })
+      .map((b) => b.querySelector("span span")?.textContent);
     expect(names).toEqual(expected);
     const connected = screen.getByRole("list", { name: "Provedores conectados" });
     expect(within(connected).getByRole("heading", { name: "Groq" })).toBeTruthy();
@@ -123,7 +125,9 @@ describe("AiSettingsScreen: foco após reordenar", () => {
     );
     renderScreen();
     const grid = screen.getByRole("list", { name: "Provedores para conectar" });
-    const add = within(within(grid).getByRole("article", { name: "OpenAI" })).getByRole("button", { name: "Adicionar chave" });
+    fireEvent.click(within(grid).getByRole("button", { name: /OpenAI/ }));
+    const sheet = await screen.findByRole("dialog", { name: "OpenAI" });
+    const add = within(sheet).getByRole("button", { name: "Adicionar chave" });
     add.focus();
     fireEvent.click(add);
     const dialog = await screen.findByRole("dialog", { name: /Adicionar chave/ });
@@ -165,5 +169,34 @@ describe("AiSettingsScreen: foco após reordenar", () => {
     fireEvent.click(within(dialog).getByRole("button", { name: "Cancelar" }));
     await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
     await waitFor(() => expect(document.activeElement).toBe(review));
+  });
+});
+
+describe("AiSettingsScreen: hierarquia (D-10)", () => {
+  it("só o OpenRouter tem botão primário entre os provedores", () => {
+    renderScreen();
+    const primary = BTN_PRIMARY.split(" ").filter((c) => c.startsWith("bg-jf-brand") && !c.includes(":"));
+    const buttons = screen.getAllByRole("button", { hidden: true }).filter((b) => primary.every((c) => b.classList.contains(c)));
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0].textContent).toBe("Conectar com OpenRouter");
+  });
+
+  it("os outros provedores são linhas que abrem um diálogo com a ação", () => {
+    renderScreen();
+    fireEvent.click(screen.getByRole("button", { name: /OpenAI/ }));
+    const dialog = screen.getByRole("dialog", { name: "OpenAI" });
+    expect(within(dialog).getByRole("button", { name: "Adicionar chave" })).toBeTruthy();
+  });
+
+  it("Modelo por tarefa fica oculto sem provedor conectado", () => {
+    renderScreen();
+    expect(screen.queryByRole("heading", { name: "Modelo para cada tarefa" })).toBeNull();
+  });
+
+  it("título da página é Configurações e há a seção Dados e backup", () => {
+    renderScreen();
+    expect(screen.getByRole("heading", { level: 1, name: "Configurações" })).toBeTruthy();
+    const section = screen.getByRole("heading", { level: 2, name: "Dados e backup" }).closest("section");
+    expect(section?.id).toBe("dados-e-backup");
   });
 });

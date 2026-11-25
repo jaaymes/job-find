@@ -90,6 +90,14 @@ const card = (page: Page, name: string) => page.getByRole("article", { name, exa
 const connectedRow = (page: Page, name: string) =>
   page.getByRole("list", { name: "Provedores conectados" }).getByRole("article", { name, exact: true });
 
+/** Linha de um provedor não conectado (abre o sheet com a ação); abre "Mais provedores" se ela estiver lá dentro. */
+async function openRow(page: Page, name: string | RegExp) {
+  const row = page.getByRole("button", { name, exact: false }).filter({ hasText: "Não conectado" });
+  if (!(await row.isVisible())) await page.getByText(/^Mais provedores/).click();
+  await row.click();
+  return page.getByRole("dialog").getByRole("article", { name });
+}
+
 const pendingOAuth = (page: Page): Promise<string | null> =>
   page.evaluate(() => window.sessionStorage.getItem("jobfind:oauth:pending"));
 
@@ -122,13 +130,13 @@ test.beforeEach(async ({ page }) => {
   await mockProviders(page);
 });
 
-test.describe("Configurações de IA", () => {
+test.describe("Configurações", () => {
   test("colar a chave da OpenAI e testar a conexão: Conectado, e Chave inválida com 401", async ({ page }) => {
     await page.goto("/configuracoes");
-    await expect(page.getByRole("heading", { name: "Configurações de IA", level: 1 })).toBeVisible();
-    const openai = card(page, "OpenAI");
-    await expect(openai.getByText("Não conectado")).toBeVisible();
-    await openai.getByRole("button", { name: "Adicionar chave" }).click();
+    await expect(page.getByRole("heading", { name: "Configurações", level: 1, exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Modelo para cada tarefa" })).toHaveCount(0);
+    const sheet = await openRow(page, "OpenAI");
+    await sheet.getByRole("button", { name: "Adicionar chave" }).click();
 
     const dialog = page.getByRole("dialog", { name: /Adicionar chave/ });
     const input = dialog.getByLabel("Chave de API");
@@ -141,7 +149,8 @@ test.describe("Configurações de IA", () => {
 
     // Conectado: sai da grade e vira uma linha da lista "Provedores conectados".
     // A chave completa nunca aparece na tela; só os 4 últimos caracteres.
-    await expect(connectedRow(page, "OpenAI")).toBeVisible();
+    const openai = connectedRow(page, "OpenAI");
+    await expect(openai).toBeVisible();
     await expect(openai.getByText("Chave colada", { exact: true })).toBeVisible();
     await expect(openai.getByText("· termina em 1234")).toBeVisible();
     await expect(page.getByRole("status").filter({ hasText: "1 provedor conectado" })).toBeVisible();
@@ -359,7 +368,7 @@ test.describe("Configurações de IA", () => {
 
   test("Gemini abre o aviso de privacidade; confirmar libera o campo da chave e grava o aceite", async ({ page }) => {
     await page.goto("/configuracoes");
-    const gemini = card(page, "Google Gemini");
+    const gemini = await openRow(page, "Google Gemini");
     await gemini.getByRole("button", { name: "Adicionar chave" }).click();
     const privacy = page.getByRole("dialog", { name: /Aviso de privacidade/ });
     await expect(privacy).toContainText("pode usar os dados enviados");
@@ -378,7 +387,7 @@ test.describe("Configurações de IA", () => {
 
   test("colar uma chave da Anthropic no card da OpenAI avisa sem bloquear o botão", async ({ page }) => {
     await page.goto("/configuracoes");
-    await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
+    await (await openRow(page, "OpenAI")).getByRole("button", { name: "Adicionar chave" }).click();
     const dialog = page.getByRole("dialog", { name: /Adicionar chave/ });
     await dialog.getByLabel("Chave de API").fill("sk-ant-x");
     await expect(dialog.getByText("Parece uma chave do(a) Anthropic (Claude)")).toBeVisible();
@@ -388,7 +397,7 @@ test.describe("Configurações de IA", () => {
   test("chave recusada pelo provedor (401) mantém o diálogo aberto e não salva", async ({ page }) => {
     openaiStatus = 401;
     await page.goto("/configuracoes");
-    await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
+    await (await openRow(page, "OpenAI")).getByRole("button", { name: "Adicionar chave" }).click();
     const dialog = page.getByRole("dialog", { name: /Adicionar chave/ });
     const input = dialog.getByLabel("Chave de API");
     await input.fill(OPENAI_KEY);
@@ -402,12 +411,12 @@ test.describe("Configurações de IA", () => {
 
   test("cancelar o aviso de privacidade deixa o Gemini desconectado", async ({ page }) => {
     await page.goto("/configuracoes");
-    const gemini = card(page, "Google Gemini");
+    const gemini = await openRow(page, "Google Gemini");
     await gemini.getByRole("button", { name: "Adicionar chave" }).click();
     const privacy = page.getByRole("dialog", { name: /Aviso de privacidade/ });
     await privacy.getByRole("button", { name: "Cancelar" }).click();
     await expect(page.getByRole("dialog")).toHaveCount(0);
-    await expect(gemini.getByText("Não conectado")).toBeVisible();
+    await expect(page.getByRole("button", { name: /Google Gemini/ })).toContainText("Não conectado");
     expect((await stored(page))?.providers.google).toBeUndefined();
   });
 
@@ -417,7 +426,7 @@ test.describe("Configurações de IA", () => {
     const openai = card(page, "OpenAI");
     await expect(connectedRow(page, "OpenAI")).toBeVisible();
     await openai.getByRole("button", { name: "Remover chave" }).click();
-    await expect(openai.getByText("Não conectado")).toBeVisible();
+    await expect(page.getByRole("button", { name: /OpenAI/ })).toContainText("Não conectado");
     await expect(page.getByRole("list", { name: "Provedores conectados" })).toHaveCount(0);
     // A linha removida (e o botão focado) some e a seção sobe: o foco vai para o título "Provedores".
     await expect(page.getByRole("heading", { name: "Provedores", level: 2, exact: true })).toBeFocused();
@@ -428,7 +437,8 @@ test.describe("Configurações de IA", () => {
 
   test("a IA local mostra o guia experimental com a origem desta página", async ({ page }) => {
     await page.goto("/configuracoes");
-    await page.getByRole("article", { name: /IA local/ }).getByRole("button", { name: "Ver guia" }).click();
+    const local = await openRow(page, /IA local/);
+    await local.getByRole("button", { name: "Ver guia" }).click();
     const guide = page.getByRole("region", { name: "Guia da IA local" });
     await expect(guide).toContainText("experimental");
     await expect(guide).toContainText("OLLAMA_ORIGINS=http://localhost:3100");
@@ -448,7 +458,7 @@ test.describe("Configurações de IA", () => {
     });
     await page.goto("/configuracoes");
     await expect(page.getByRole("heading", { name: "Provedores" })).toBeVisible();
-    await card(page, "OpenAI").getByRole("button", { name: "Adicionar chave" }).click();
+    await (await openRow(page, "OpenAI")).getByRole("button", { name: "Adicionar chave" }).click();
     expect(await page.evaluate(() => (window as unknown as { __v: string[] }).__v)).toEqual([]);
     await page.goto("/configuracoes/callback");
     // Sem login pendente, o callback não sabe o provedor: título genérico.

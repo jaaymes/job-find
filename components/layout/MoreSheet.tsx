@@ -4,7 +4,7 @@ import { ChevronRight, CircleHelp as HelpIcon, Database, Heart, KeyRound, Radar,
 import Link from "next/link";
 import type { ComponentType, KeyboardEvent, ReactNode } from "react";
 import { OnboardingGuide } from "@/components/onboarding/OnboardingGuide";
-import { HardLink } from "@/components/ui/hard-link";
+import { HardLink, type LocalRoute } from "@/components/ui/hard-link";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useTheme, type ThemePref } from "@/lib/client/theme/ThemeProvider";
 import { cn } from "@/lib/utils";
@@ -84,7 +84,7 @@ type LinkRow = { label: string; href: string; icon: Icon; hint?: string };
 
 const ROWS_BEFORE_GUIDE: readonly LinkRow[] = [
   { label: "Configurações de IA", href: "/configuracoes", icon: KeyRound },
-  { label: "Dados e backup", href: "/configuracoes", icon: Database, hint: "Exportar ou importar seus dados" },
+  { label: "Dados e backup", href: "/configuracoes#dados-e-backup", icon: Database, hint: "Exportar ou importar seus dados" },
   { label: "Fontes de vagas", href: "/fontes", icon: Radar },
 ];
 
@@ -92,6 +92,8 @@ const ROWS_AFTER_GUIDE: readonly LinkRow[] = [
   { label: "Apoie o projeto", href: "/apoie", icon: Heart },
   { label: "Privacidade", href: "/privacidade", icon: ShieldCheck },
 ];
+
+const isLocalRow = (href: string): href is LocalRoute => href.startsWith("/configuracoes");
 
 /** Folha "Mais" da barra de abas: atalhos secundários e seletor de tema. */
 export function MoreSheet({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
@@ -102,8 +104,8 @@ export function MoreSheet({ open, onOpenChange }: { open: boolean; onOpenChange:
     const className = cn(ROW, ROW_FOCUS);
     return (
       <li key={row.label}>
-        {row.href === "/configuracoes" ? (
-          <HardLink href="/configuracoes" className={className} onClick={close}>
+        {isLocalRow(row.href) ? (
+          <HardLink href={row.href} className={className} onClick={close}>
             {body}
           </HardLink>
         ) : (

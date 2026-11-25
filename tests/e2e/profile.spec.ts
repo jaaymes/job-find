@@ -342,10 +342,12 @@ test("depois de salvar o perfil, sair não mostra aviso", async ({ page }) => {
   await page.getByRole("button", { name: "Salvar perfil" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Perfil salvo" })).toBeVisible();
 
+  let abriu = false;
   page.on("dialog", (d) => {
+    abriu = true;
     void d.dismiss();
-    throw new Error("diálogo inesperado");
   });
   await page.getByRole("link", { name: "Minhas vagas" }).first().click();
   await expect(page).toHaveURL(/\/minhas-vagas$/);
+  expect(abriu).toBe(false);
 });

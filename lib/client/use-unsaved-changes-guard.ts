@@ -10,7 +10,17 @@ export function useUnsavedChangesGuard(dirty: boolean, message: string): void {
   useEffect(() => {
     if (!dirty) return;
 
+    // Depois de aceitar o `confirm`, a navegação completa dispara `beforeunload`: não pergunta de novo.
+    let leaving = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const clearLeaving = () => {
+      leaving = false;
+      if (timer !== undefined) clearTimeout(timer);
+      timer = undefined;
+    };
+
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (leaving) return;
       e.preventDefault();
       e.returnValue = "";
     };
@@ -30,13 +40,22 @@ export function useUnsavedChangesGuard(dirty: boolean, message: string): void {
         return;
       }
       if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
-      if (!window.confirm(message)) e.preventDefault();
+      if (window.confirm(message)) {
+        leaving = true;
+        timer = setTimeout(clearLeaving, 1000);
+      } else {
+        e.preventDefault();
+        e.stopPropagation();
+      }
     };
 
     window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener("pagehide", clearLeaving);
     document.addEventListener("click", onClick, { capture: true });
     return () => {
       window.removeEventListener("beforeunload", onBeforeUnload);
+      window.removeEventListener("pagehide", clearLeaving);
+      clearLeaving();
       document.removeEventListener("click", onClick, { capture: true });
     };
   }, [dirty, message]);

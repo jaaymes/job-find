@@ -34,6 +34,45 @@ describe("useUnsavedChangesGuard", () => {
     expect(ev.defaultPrevented).toBe(true);
   });
 
+  it("ao cancelar, barra a propagação para handlers do link e do container", () => {
+    vi.spyOn(window, "confirm").mockReturnValue(false);
+    const onClick = vi.fn();
+    render(
+      <div onClick={onClick}>
+        <Harness dirty />
+      </div>,
+    );
+    const handler = vi.fn();
+    link("interno").addEventListener("click", handler);
+    fireEvent.click(link("interno"));
+    expect(handler).not.toHaveBeenCalled();
+    expect(onClick).not.toHaveBeenCalled();
+  });
+
+  it("depois de aceitar o confirm, o beforeunload não bloqueia de novo", () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(<Harness dirty />);
+    fireEvent.click(link("interno"));
+    const ev = new Event("beforeunload", { cancelable: true });
+    window.dispatchEvent(ev);
+    expect(ev.defaultPrevented).toBe(false);
+  });
+
+  it("a liberação do beforeunload expira se a navegação não acontecer", () => {
+    vi.useFakeTimers();
+    try {
+      vi.spyOn(window, "confirm").mockReturnValue(true);
+      render(<Harness dirty />);
+      fireEvent.click(link("interno"));
+      vi.advanceTimersByTime(1100);
+      const ev = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(ev);
+      expect(ev.defaultPrevented).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("deixa seguir se o usuário aceitar", () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
     render(<Harness dirty />);

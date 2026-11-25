@@ -1,7 +1,7 @@
 import { invalidateByTag } from "@vercel/functions";
 import { after } from "next/server";
 import { runCollection } from "@/lib/server/collect/run";
-import { verifyCronSecret } from "@/lib/server/cron-auth";
+import { rejectCronRequest } from "@/lib/server/cron-auth";
 import { getPoolDb } from "@/lib/server/db/client";
 import { CONNECTORS } from "@/lib/server/sources/registry";
 import type { SourceId } from "@/lib/shared/types/job";
@@ -10,8 +10,6 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 const NO_STORE = { "Cache-Control": "no-store" };
-
-let warnedMissingSecret = false;
 
 function json(status: number, body: unknown): Response {
   return Response.json(body, { status, headers: NO_STORE });
@@ -53,17 +51,8 @@ async function collectInBackground(sources: SourceId[]): Promise<void> {
 }
 
 async function handler(req: Request): Promise<Response> {
-  const secret = process.env.CRON_SECRET;
-  if (!secret) {
-    if (!warnedMissingSecret) {
-      warnedMissingSecret = true;
-      console.error("[cron/collect] CRON_SECRET não está definida: todas as chamadas serão recusadas.");
-    }
-    return json(401, { error: { code: "unauthorized", message: "Não autorizado." } });
-  }
-  if (!verifyCronSecret(req.headers.get("authorization"), secret)) {
-    return json(401, { error: { code: "unauthorized", message: "Não autorizado." } });
-  }
+  const rejected = rejectCronRequest(req, "cron/collect");
+  if (rejected) return rejected;
 
   const sources = parseSources(new URL(req.url).searchParams.get("sources"));
   if (!sources) {

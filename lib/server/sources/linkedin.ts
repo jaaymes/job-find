@@ -10,20 +10,20 @@ import type { Connector, ConnectorContext, NormalizedJob } from "@/lib/server/so
  * até 1.000 por execução). O plano grátis do Apify dá US$ 5 por mês e bloqueia o uso, sem cobrar,
  * quando o crédito acaba. Sem `APIFY_TOKEN` a fonte não faz nada.
  *
- * Cada coleta (cron de hora em hora): lista as execuções do actor, ingere o dataset da última que
- * terminou com sucesso (uma vez só, pelo cursor) e, se a última começou há mais de
+ * Cada coleta (cron de hora em hora; uma execução do actor a cada 2 h): lista as execuções do actor, ingere os datasets das execuções
+ * bem-sucedidas mais novas que o cursor (cada uma uma vez só) e, se a última começou há mais de
  * `RUN_EVERY_HOURS`, inicia outra. Assim a coleta nunca espera o actor terminar.
  */
 export const APIFY_HOST = "api.apify.com";
 export const LINKEDIN_ACTOR = "valig~linkedin-jobs-scraper";
 const ACTOR_URL = `https://${APIFY_HOST}/v2/acts/${LINKEDIN_ACTOR}`;
 
-/** Duas execuções por dia. */
-export const RUN_EVERY_HOURS = 12;
-/** Vagas por execução: 2 × 30 × 200 = 12.000 vagas/mês, cerca de US$ 4,80 dos US$ 5 grátis. */
-export const RESULTS_PER_RUN = 200;
-/** Teto de gasto por execução, cobrado pelo Apify mesmo que o actor traga mais itens. */
-export const MAX_CHARGE_PER_RUN_USD = 0.08;
+/** Doze execuções por dia; com 8 buscas em rodízio, cada palavra-chave volta a cada 16 h (< 24 h da janela). */
+export const RUN_EVERY_HOURS = 2;
+/** Vagas por execução: 12 × 31 × 32 = 11.904 vagas/mês. */
+export const RESULTS_PER_RUN = 32;
+/** Teto de gasto por execução: 12 × 31 × US$ 0,013 = US$ 4,84 dos US$ 5 grátis, mesmo que o actor traga mais itens. */
+export const MAX_CHARGE_PER_RUN_USD = 0.013;
 
 /** Buscas em rodízio, uma por execução; o filtro RN-01 descarta o que não for de tecnologia. */
 export const LINKEDIN_KEYWORDS = [
@@ -63,7 +63,16 @@ export const jobSchema = z.object({
   postedDate: z.string().nullish(),
 });
 
-const ACTIVE_STATUSES = new Set(["READY", "RUNNING"]);
+const ACTIVE_STATUSES = new Set(["READY", "RUNNING", "TIMING-OUT", "ABORTING"]);
+
+/**
+ * Tolerância da checagem "está na hora": `ctx.now` é o início da coleta, mas o `startedAt` da execução
+ * anterior é quando o POST de fato aconteceu, às vezes minutos depois (o LinkedIn é um dos últimos
+ * conectores da fila). Sem folga, duas coletas depois `agora - startedAt` fica um pouco abaixo de 2 h e
+ * a execução escorrega para 3 h. Com o cron de hora em hora (minuto 17), qualquer tolerância abaixo de
+ * 1 h nunca inicia execuções em horas seguidas, então o orçamento de US$ 5 continua seguro.
+ */
+const DUE_TOLERANCE_MS = 30 * 60_000;
 
 const SENIORITY: Record<string, Seniority> = {
   internship: "intern",
@@ -80,7 +89,10 @@ export function keywordFor(now: Date): string {
 
 async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   const token = process.env.APIFY_TOKEN?.trim();
-  if (!token) return;
+  if (!token) {
+    console.warn("[coleta] linkedin: APIFY_TOKEN ausente, a fonte não coleta nada.");
+    return;
+  }
   const auth = { Authorization: `Bearer ${token}` };
 
   const listUrl = new URL(`${ACTOR_URL}/runs`);
@@ -91,9 +103,15 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   if (!runs.success) throw new Error("Apify: lista de execuções fora do formato esperado");
   const items = runs.data.data.items;
 
-  const done = items.find((r) => r.status === "SUCCEEDED" && r.defaultDatasetId);
-  if (done && done.defaultDatasetId !== ctx.cursor) {
-    const dsUrl = new URL(`https://${APIFY_HOST}/v2/datasets/${encodeURIComponent(done.defaultDatasetId!)}/items`);
+  // Execuções mais novas que o cursor (a lista vem da mais nova para a mais antiga); sem cursor
+  // na lista, todas. Ingeridas da mais antiga para a mais nova, com o cursor avançando a cada dataset.
+  const seen = items.findIndex((r) => r.defaultDatasetId === ctx.cursor);
+  const pending = (seen === -1 ? items : items.slice(0, seen))
+    .filter((r) => r.status === "SUCCEEDED" && r.defaultDatasetId)
+    .reverse();
+  for (const run of pending) {
+    const datasetId = run.defaultDatasetId!;
+    const dsUrl = new URL(`https://${APIFY_HOST}/v2/datasets/${encodeURIComponent(datasetId)}/items`);
     dsUrl.searchParams.set("clean", "true");
     dsUrl.searchParams.set("format", "json");
     dsUrl.searchParams.set("limit", "1000");
@@ -101,7 +119,7 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
     const data = await dsRes.json();
     if (!Array.isArray(data)) throw new Error("Apify: dataset fora do formato esperado");
     for (const raw of data) yield raw;
-    ctx.setCursor(done.defaultDatasetId!);
+    ctx.setCursor(datasetId);
   }
 
   const latest = items[0];
@@ -109,19 +127,24 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   const due =
     !latest ||
     (!ACTIVE_STATUSES.has(latest.status) &&
-      (Number.isNaN(startedAt) || ctx.now.getTime() - startedAt >= RUN_EVERY_HOURS * 3_600_000 - 60_000));
+      (Number.isNaN(startedAt) || ctx.now.getTime() - startedAt >= RUN_EVERY_HOURS * 3_600_000 - DUE_TOLERANCE_MS));
   if (!due) return;
 
   const startUrl = new URL(`${ACTOR_URL}/runs`);
   startUrl.searchParams.set("maxItems", String(RESULTS_PER_RUN));
   startUrl.searchParams.set("maxTotalChargeUsd", String(MAX_CHARGE_PER_RUN_USD));
   const input = { keywords: keywordFor(ctx.now), location: "Brazil", datePosted: "r86400", limit: RESULTS_PER_RUN };
-  await ctx.fetchJson(startUrl.toString(), {
-    method: "POST",
-    headers: { ...auth, "content-type": "application/json" },
-    body: JSON.stringify(input),
-    signal: ctx.signal,
-  });
+  try {
+    await ctx.fetchJson(startUrl.toString(), {
+      method: "POST",
+      headers: { ...auth, "content-type": "application/json" },
+      body: JSON.stringify(input),
+      signal: ctx.signal,
+    });
+  } catch (e) {
+    // Falhar ao iniciar (ex.: crédito esgotado) não pode perder as vagas já lidas nem travar o cursor.
+    ctx.reportPartial("apify:start", e);
+  }
 }
 
 function isLinkedinUrl(url: string): boolean {

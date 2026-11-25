@@ -284,16 +284,19 @@ test.describe("Configurações de IA", () => {
       model: "deepseek/deepseek-v4.1-flash",
     });
 
+    requestedHosts.length = 0;
     await page.reload();
     const again = page.getByRole("group", { name: "Gerar CV e carta" });
-    // Após recarregar, a linha só lê o cache (vazio até abrir o modal): mostra o id salvo, sem custo.
-    await expect(again.getByText("deepseek/deepseek-v4.1-flash · OpenRouter", { exact: true })).toBeVisible();
+    // Após recarregar, a linha busca a lista só do provedor da escolha: nome e custo sem abrir o modal.
+    await expect(again.getByText("DeepSeek V4.1 Flash · OpenRouter", { exact: true })).toBeVisible();
+    await expect(again.getByText(/≈ US\$ [\d,]+ por CV/)).toBeVisible();
+    // A OpenAI (conectada, mas fora das escolhas) não é consultada até abrir o modal.
+    expect(requestedHosts).not.toContain("api.openai.com");
     await again.getByRole("button", { name: "Trocar modelo" }).click();
     const reopened = page.getByRole("dialog", { name: "Modelo para Gerar CV e carta" });
     await expect(reopened.getByRole("option", { name: /DeepSeek V4\.1 Flash/ })).toContainText("Atual");
     await reopened.getByRole("button", { name: "Cancelar" }).click();
     await expect(reopened).toBeHidden();
-    await expect(again.getByText("DeepSeek V4.1 Flash · OpenRouter", { exact: true })).toBeVisible();
     // As outras tarefas continuam no padrão automático.
     await expect(page.getByRole("group", { name: "Analisar vaga" }).getByText("Automático", { exact: true })).toBeVisible();
     expect((await stored(page))?.tasks.analyze).toBeNull();
@@ -343,7 +346,10 @@ test.describe("Configurações de IA", () => {
       /Modelo Caro/,
       /Modelo Misterioso/,
     ]);
-    await expect(options.nth(1)).toContainText("grátis");
+    // Linha grátis: só o selo "Grátis", sem repetir "grátis" no lugar do preço.
+    await expect(options.nth(1)).toContainText("Grátis");
+    await expect(options.nth(1)).not.toContainText("US$");
+    expect((await options.nth(1).textContent())?.match(/grátis/gi)).toHaveLength(1);
     for (const i of [2, 3, 4]) await expect(options.nth(i)).toContainText(/≈ US\$ [\d,]+ por currículo/);
     const last = options.nth(5);
     await expect(last).not.toContainText("US$");

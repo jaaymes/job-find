@@ -1,13 +1,13 @@
 "use client";
 
-import { useDeferredValue, useId, useMemo, useRef, useState, type RefObject } from "react";
+import { memo, useDeferredValue, useId, useMemo, useRef, useState, type RefObject } from "react";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { isFreeModel, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
 import type { AiSettings } from "@/lib/client/ai/settings";
-import { matchesModel, optionKey, type ModelOption } from "./model-search";
+import { foldQuery, matchesSearchText, optionKey, searchText, type ModelOption } from "./model-search";
 import { useConnectedModels, type ConnectedModelsState } from "./use-connected-models";
 import { operationCost, priceLabel, sortModelsByCost } from "./cost";
 
@@ -56,7 +56,17 @@ const ROW =
 export function ModelPickerDialog({ task, settings, open, onOpenChange, onSelect }: Props) {
   // As consultas só começam na primeira abertura (a resposta do OpenRouter é grande) e ficam no cache depois.
   const [everOpened, setEverOpened] = useState(open);
-  if (open && !everOpened) setEverOpened(true);
+  // Cada abertura ganha um corpo novo (`key`): busca, filtros e o "Só gratuitos" inicial recomeçam do zero.
+  // O corpo continua montado ao fechar, para não sumir antes do fim da animação.
+  const [session, setSession] = useState(open ? 1 : 0);
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) {
+      setEverOpened(true);
+      setSession((n) => n + 1);
+    }
+  }
   const { options, states } = useConnectedModels(settings, everOpened);
   const copy = TASK_COPY[task];
   const inputRef = useRef<HTMLInputElement>(null);
@@ -68,8 +78,9 @@ export function ModelPickerDialog({ task, settings, open, onOpenChange, onSelect
           <DialogTitle>Modelo para {copy.name}</DialogTitle>
           <DialogDescription>{copy.desc}</DialogDescription>
         </DialogHeader>
-        {open && (
+        {everOpened && (
           <PickerBody
+            key={session}
             task={task}
             settings={settings}
             options={options}
@@ -97,7 +108,12 @@ type BodyProps = {
   onPick: (choice: ModelChoice | null) => void;
 };
 
-/** Montado a cada abertura: busca e filtros recomeçam do zero. */
+function countText(n: number): string {
+  if (n === 0) return "Nenhum modelo encontrado";
+  return n === 1 ? "1 modelo" : `${n} modelos`;
+}
+
+/** Montado de novo a cada abertura (`key`): busca e filtros recomeçam do zero. */
 function PickerBody({ task, settings, options, states, inputRef, onCancel, onPick }: BodyProps) {
   const searchId = useId();
   const saved = settings.tasks[task];
@@ -116,25 +132,30 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
   });
 
   const sorted = useMemo(() => sortModelsByCost(task, options), [task, options]);
+  // Texto de busca dobrado uma vez por lista (não a cada tecla), indexado pela própria opção.
+  const index = useMemo(
+    () => new Map(options.map((o) => [o, searchText(o, PROVIDERS[o.provider].label)] as const)),
+    [options],
+  );
   const counts = useMemo(() => {
     const out = new Map<ProviderId, number>();
     for (const o of options) out.set(o.provider, (out.get(o.provider) ?? 0) + 1);
     return out;
   }, [options]);
-  const visible = useMemo(
-    () =>
-      sorted.filter(
-        (o) =>
-          (providerFilter === null || o.provider === providerFilter) &&
-          (!freeOnly || isFreeOption(task, o)) &&
-          matchesModel(o, deferredQuery, PROVIDERS[o.provider].label),
-      ),
-    [sorted, providerFilter, freeOnly, task, deferredQuery],
-  );
+  const visible = useMemo(() => {
+    const q = foldQuery(deferredQuery);
+    return sorted.filter(
+      (o) =>
+        (providerFilter === null || o.provider === providerFilter) &&
+        (!freeOnly || isFreeOption(task, o)) &&
+        matchesSearchText(index.get(o) ?? "", q),
+    );
+  }, [sorted, providerFilter, freeOnly, task, deferredQuery, index]);
   // Identidades estáveis: o Base UI recalcula a navegação quando a referência da lista muda.
   const items = useMemo<PickerItem[]>(() => [AUTO, ...sorted], [sorted]);
   const filteredItems = useMemo<PickerItem[]>(() => [AUTO, ...visible], [visible]);
   const loading = states.some((s) => s.status === "pending");
+  const failed = states.filter((s) => s.status === "error");
 
   return (
     <>
@@ -171,7 +192,7 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
           <button type="button" className={CHIP} aria-pressed={providerFilter === null} onClick={() => setProviderFilter(null)}>
             Todos
           </button>
-          {states.map(({ provider }) => (
+          {states.map(({ provider, status }) => (
             <button
               key={provider}
               type="button"
@@ -179,29 +200,42 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
               aria-pressed={providerFilter === provider}
               onClick={() => setProviderFilter(provider)}
             >
-              {PROVIDERS[provider].label} ({counts.get(provider) ?? 0})
+              {PROVIDERS[provider].label}
+              {/* Sem a lista (carregando ou com erro), a contagem seria só dos modelos injetados: enganaria. */}
+              {status === "success" && ` (${counts.get(provider) ?? 0})`}
             </button>
           ))}
           <button type="button" className={CHIP} aria-pressed={freeOnly} onClick={() => setFreeOnly((v) => !v)}>
             Só gratuitos
           </button>
         </div>
-        <div aria-live="polite" className="flex flex-col gap-1 empty:hidden">
+        {/* Região viva sempre no DOM (anuncia o que entra nela) e só com textos; os botões ficam fora, como irmãos. */}
+        <div aria-live="polite" className="flex min-h-0 flex-col gap-1">
           {states.map((s) =>
             s.status === "pending" ? (
               <p key={s.provider} className="text-[13px] text-jf-ink-3">
                 Carregando modelos de {PROVIDERS[s.provider].label}…
               </p>
             ) : s.status === "error" ? (
-              <div key={s.provider} className="flex flex-wrap items-center gap-x-3 text-[13px] text-jf-danger-fg">
-                <span>Não foi possível carregar os modelos de {PROVIDERS[s.provider].label}.</span>
-                <Button type="button" variant="outline" className="min-h-11" onClick={() => s.refetch()}>
-                  Tentar de novo
-                </Button>
-              </div>
+              <p key={s.provider} className="text-[13px] text-jf-danger-fg">
+                Não foi possível carregar os modelos de {PROVIDERS[s.provider].label}.
+              </p>
             ) : null,
           )}
         </div>
+        {failed.length > 0 && (
+          <div className="flex flex-wrap gap-2">
+            {failed.map((s) => (
+              <Button key={s.provider} type="button" variant="outline" className="min-h-11" onClick={() => s.refetch()}>
+                Tentar de novo
+                {failed.length > 1 && <span className="sr-only"> ({PROVIDERS[s.provider].label})</span>}
+              </Button>
+            ))}
+          </div>
+        )}
+        <p role="status" className="sr-only">
+          {loading && visible.length === 0 ? "" : countText(visible.length)}
+        </p>
         <ComboboxPrimitive.List
           aria-label="Modelos"
           className="-mx-1 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain px-1 outline-none"
@@ -234,10 +268,12 @@ function PickerBody({ task, settings, options, states, inputRef, onCancel, onPic
   );
 }
 
-function ModelRow({ task, item, current }: { task: AiTask; item: ModelOption; current: boolean }) {
-  const price = priceLabel(task, item);
+/** `memo`: com 380 linhas, só re-renderiza a linha cujas props mudaram (item e task estáveis, `current` booleano). */
+const ModelRow = memo(function ModelRow({ task, item, current }: { task: AiTask; item: ModelOption; current: boolean }) {
   const recommended = item.id === PROVIDERS[item.provider].defaultModels[task];
   const free = isFreeOption(task, item);
+  // Com o selo "Grátis", o preço "grátis" repetiria a mesma informação.
+  const price = free ? "" : priceLabel(task, item);
   return (
     <ComboboxPrimitive.Item value={item} className={ROW}>
       <span className="min-w-0 flex-1">
@@ -255,4 +291,4 @@ function ModelRow({ task, item, current }: { task: AiTask; item: ModelOption; cu
       {price !== "" && <span className="flex-none pt-0.5 text-[13px] text-jf-ink-3">{price}</span>}
     </ComboboxPrimitive.Item>
   );
-}
+});

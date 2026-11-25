@@ -135,6 +135,18 @@ describe("useConnectedModels", () => {
     ]);
   });
 
+  it("enabled com lista de provedores busca só esses", async () => {
+    const fn = stubFetch(ok(["a/b"]), ok(["deepseek-chat"]));
+    const { result } = renderHook(
+      () => useConnectedModels(settingsWith(["openrouter", "deepseek"]), ["deepseek"]),
+      { wrapper: wrap() },
+    );
+    await waitFor(() => expect(result.current.states[1].status).toBe("success"));
+    expect(result.current.states[0].status).toBe("pending");
+    expect(fn.mock.calls.map((c) => String(c[0])).every((u) => u.startsWith("https://api.deepseek.com/"))).toBe(true);
+    expect(result.current.options.some((o) => o.provider === "deepseek" && o.id === "deepseek-chat")).toBe(true);
+  });
+
   it("injeta os defaultModels que a API não devolveu", async () => {
     stubFetch(ok(["a/b"]), ok(["deepseek-chat"]));
     const { result } = renderHook(

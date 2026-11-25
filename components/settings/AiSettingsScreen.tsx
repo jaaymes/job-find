@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FREE_MODELS_NOTE, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
 import { startOAuth, type OAuthIntent } from "@/lib/client/ai/oauth";
 import { isConnected } from "@/lib/client/ai/model";
@@ -47,6 +47,14 @@ export function AiSettingsScreen() {
     focusProvidersHeading.current = false;
     providersHeadingRef.current?.focus();
   });
+  // Salvar a chave (o card sai da grade) ou aceitar o aviso pelo "Revisar aviso" (o botão some) desmonta o elemento que
+  // abriu o diálogo. O foco de retorno do diálogo roda depois do nosso efeito, então o destino vai no `finalFocus`.
+  const dialogFocusHeading = useRef(false);
+  const dialogFinalFocus = useCallback(() => {
+    if (!dialogFocusHeading.current) return true;
+    dialogFocusHeading.current = false;
+    return providersHeadingRef.current ?? true;
+  }, []);
 
   if (!settings) {
     return <div aria-busy="true" aria-label="Carregando configurações" className="h-96 animate-pulse rounded-2xl bg-jf-chip" />;
@@ -79,7 +87,10 @@ export function AiSettingsScreen() {
         },
       },
     }));
-    if (ok) setKeyTarget(null);
+    if (ok) {
+      dialogFocusHeading.current = true;
+      setKeyTarget(null);
+    }
   }
 
   function remove(id: ProviderId) {
@@ -104,7 +115,7 @@ export function AiSettingsScreen() {
       setKeyTarget({ id, privacyAccepted: true });
       return;
     }
-    update((s) => {
+    dialogFocusHeading.current = update((s) => {
       const cfg = s.providers[id];
       if (!cfg) return s;
       const ack = id === "openrouter" ? { freeConsent: true } : { privacyAccepted: true };
@@ -292,8 +303,14 @@ export function AiSettingsScreen() {
         note={privacy?.id === "openrouter" ? FREE_MODELS_NOTE : undefined}
         onConfirm={confirmPrivacy}
         onCancel={() => setPrivacy(null)}
+        finalFocus={dialogFinalFocus}
       />
-      <AddKeyDialog provider={keyTarget ? PROVIDERS[keyTarget.id] : null} onSave={saveKey} onClose={() => setKeyTarget(null)} />
+      <AddKeyDialog
+        provider={keyTarget ? PROVIDERS[keyTarget.id] : null}
+        onSave={saveKey}
+        onClose={() => setKeyTarget(null)}
+        finalFocus={dialogFinalFocus}
+      />
     </div>
   );
 }

@@ -40,9 +40,12 @@ function combine(results: UseQueryResult<ModelInfo[]>[]): Slice[] {
   }));
 }
 
+/**
+ * `enabled`: `true` busca todos os conectados; uma lista busca só esses provedores (os outros só leem o cache).
+ */
 export function useConnectedModels(
   settings: AiSettings,
-  enabled: boolean,
+  enabled: boolean | readonly ProviderId[],
 ): { options: ModelOption[]; states: ConnectedModelsState[] } {
   const connected = PROVIDER_IDS.filter((id) => isConnected(settings, id));
   const connectedKey = connected.join(",");
@@ -55,7 +58,7 @@ export function useConnectedModels(
         queryKey: ["ai-models", id, cfg?.addedAt],
         queryFn: () =>
           PROVIDERS[id].listModels({ apiKey: cfg?.key, baseURL: cfg?.baseURL }),
-        enabled,
+        enabled: typeof enabled === "boolean" ? enabled : enabled.includes(id),
         staleTime: 30 * 60_000,
         retry: false,
       };

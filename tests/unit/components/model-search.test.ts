@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchesModel, optionKey, type ModelOption } from "@/components/settings/model-search";
+import { foldQuery, matchesModel, matchesSearchText, optionKey, searchText, type ModelOption } from "@/components/settings/model-search";
 
 const m = (over: Partial<ModelOption> = {}): ModelOption => ({
   id: "google/gemini-flash",
@@ -29,5 +29,13 @@ describe("matchesModel", () => {
 
   it("optionKey combina provedor e id", () => {
     expect(optionKey(m({ id: "a", provider: "deepseek" }))).toBe("deepseek:a");
+  });
+
+  it("searchText pré-dobra nome, id e provedor; matchesSearchText bate com matchesModel", () => {
+    const text = searchText(m(), "OpenRouter");
+    expect(text).toBe("gemini flash google/gemini-flash openrouter");
+    for (const q of ["gemini", "GÊMINI", "google/", "openrouter", "anthropic", "   "]) {
+      expect(matchesSearchText(text, foldQuery(q))).toBe(matchesModel(m(), q, "OpenRouter"));
+    }
   });
 });

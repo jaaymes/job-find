@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { isConnected } from "@/lib/client/ai/model";
 import { isFreeModel, PROVIDER_IDS, PROVIDERS, type AiTask } from "@/lib/client/ai/providers";
@@ -26,8 +26,18 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
   const active = choice && isConnected(settings, choice.provider) ? choice : null;
   // Escolha salva cujo provedor foi desconectado: `resolveTaskModel` falha com `no_provider`, não cai no automático.
   const stale = choice && !active ? choice : null;
-  // Só lê o cache (sem buscar): a lista é baixada quando o modal abre pela primeira vez.
-  const { options } = useConnectedModels(settings, false);
+  // Busca só a lista do provedor da escolha ativa (nome e custo no resumo); a dos outros vem quando o modal abre.
+  const { options } = useConnectedModels(settings, active ? [active.provider] : false);
+  const changeRef = useRef<HTMLButtonElement>(null);
+  const titleRef = useRef<HTMLParagraphElement>(null);
+
+  // "Usar automático" some depois do clique: o foco vai para "Trocar modelo" ou, se ele estiver desabilitado (nenhum
+  // provedor conectado), para o nome da tarefa.
+  function chooseAuto() {
+    onChange(null);
+    if (hasConnected) changeRef.current?.focus();
+    else titleRef.current?.focus();
+  }
   const current = active ? options.find((o) => optionKey(o) === `${active.provider}:${active.model}`) : undefined;
   const cost = estimateCost(task, current);
   const isFree = active?.provider === "openrouter" && isFreeModel(active.model);
@@ -36,7 +46,7 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
     <div role="group" aria-labelledby={titleId} className="flex flex-col gap-3 border-t border-jf-chip pt-3.5">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
         <div className="min-w-[200px] flex-[1_1_240px]">
-          <p id={titleId} className="font-semibold">
+          <p id={titleId} ref={titleRef} tabIndex={-1} className="font-semibold outline-none">
             {copy.name}
           </p>
           <p className="mt-0.5 text-[13px] text-jf-ink-3">{copy.desc}</p>
@@ -52,11 +62,18 @@ export function TaskModelRow({ task, settings, onChange }: Props) {
         <div className="flex flex-none flex-wrap gap-2">
           {/* Sem isto, uma escolha com provedor desconectado e nenhum outro conectado não tem como voltar ao automático. */}
           {stale && (
-            <Button type="button" variant="ghost" className="min-h-11" onClick={() => onChange(null)}>
+            <Button type="button" variant="ghost" className="min-h-11" onClick={chooseAuto}>
               Usar automático
             </Button>
           )}
-          <Button type="button" variant="outline" className="min-h-11" disabled={!hasConnected} onClick={() => setOpen(true)}>
+          <Button
+            ref={changeRef}
+            type="button"
+            variant="outline"
+            className="min-h-11"
+            disabled={!hasConnected}
+            onClick={() => setOpen(true)}
+          >
             Trocar modelo
           </Button>
         </div>

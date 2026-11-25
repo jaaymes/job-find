@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { ProviderDef } from "@/lib/client/ai/providers";
+import type { DialogFinalFocus } from "./AddKeyDialog";
 
 type Props = {
   /** Provedor com `privacyNote`; `null` fecha o diálogo. */
@@ -12,13 +13,15 @@ type Props = {
   note?: string;
   onConfirm: () => void;
   onCancel: () => void;
+  /** Para onde vai o foco ao fechar (repassado ao `DialogContent`); sem ele, volta ao elemento que abriu o diálogo. */
+  finalFocus?: DialogFinalFocus;
 };
 
 /** Aviso de privacidade que o usuário precisa aceitar antes de usar o provedor. */
-export function PrivacyConsentDialog({ provider, title, note, onConfirm, onCancel }: Props) {
+export function PrivacyConsentDialog({ provider, title, note, onConfirm, onCancel, finalFocus }: Props) {
   return (
     <Dialog open={provider !== null} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent>
+      <DialogContent finalFocus={finalFocus}>
         {provider && (
           <>
             <DialogHeader>

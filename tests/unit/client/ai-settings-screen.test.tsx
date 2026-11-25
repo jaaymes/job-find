@@ -1,12 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AiSettingsScreen } from "@/components/settings/AiSettingsScreen";
 import { PROVIDER_IDS, PROVIDERS } from "@/lib/client/ai/providers";
 import { aiSettingsStore, defaultAiSettings } from "@/lib/client/ai/settings";
 
 beforeEach(() => localStorage.clear());
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
 function renderScreen() {
   render(
@@ -111,5 +114,56 @@ describe("AiSettingsScreen: foco após reordenar", () => {
     await waitFor(() => expect(document.activeElement).toBe(heading));
     expect(heading.getAttribute("tabindex")).toBe("-1");
     expect(screen.queryByRole("list", { name: "Provedores conectados" })).toBeNull();
+  });
+
+  it("ao salvar uma chave colada, o card some da grade e o foco vai para o título 'Provedores'", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response(JSON.stringify({ data: [{ id: "gpt-5-mini" }] }), { status: 200 })),
+    );
+    renderScreen();
+    const grid = screen.getByRole("list", { name: "Provedores para conectar" });
+    const add = within(within(grid).getByRole("article", { name: "OpenAI" })).getByRole("button", { name: "Adicionar chave" });
+    add.focus();
+    fireEvent.click(add);
+    const dialog = await screen.findByRole("dialog", { name: /Adicionar chave/ });
+    fireEvent.change(within(dialog).getByLabelText("Chave de API"), { target: { value: "sk-test-abcd1234" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Testar e salvar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(within(screen.getByRole("list", { name: "Provedores conectados" })).getByRole("heading", { name: "OpenAI" })).toBeTruthy();
+    const heading = screen.getByRole("heading", { level: 2, name: "Provedores" });
+    await waitFor(() => expect(document.activeElement).toBe(heading));
+  });
+
+  it("ao aceitar o aviso pelo 'Revisar aviso', o botão some e o foco vai para o título 'Provedores'", async () => {
+    aiSettingsStore.set({
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "sk-or-abcd9876", addedAt: "2026-11-24T00:00:00.000Z", source: "oauth" } },
+    });
+    renderScreen();
+    const review = screen.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" });
+    review.focus();
+    fireEvent.click(review);
+    const dialog = await screen.findByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Entendi e aceito" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    expect(screen.queryByRole("button", { name: "Revisar aviso dos modelos gratuitos" })).toBeNull();
+    const heading = screen.getByRole("heading", { level: 2, name: "Provedores" });
+    await waitFor(() => expect(document.activeElement).toBe(heading));
+  });
+
+  it("cancelar o aviso devolve o foco ao botão que o abriu", async () => {
+    aiSettingsStore.set({
+      ...defaultAiSettings(),
+      providers: { openrouter: { key: "sk-or-abcd9876", addedAt: "2026-11-24T00:00:00.000Z", source: "oauth" } },
+    });
+    renderScreen();
+    const review = screen.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" });
+    review.focus();
+    fireEvent.click(review);
+    const dialog = await screen.findByRole("dialog", { name: /Aviso dos modelos gratuitos/ });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cancelar" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(review));
   });
 });

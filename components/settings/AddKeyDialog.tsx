@@ -1,5 +1,6 @@
 "use client";
 
+import type { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { Eye, EyeOff } from "lucide-react";
 import { useEffect, useId, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
@@ -13,6 +14,7 @@ import { isLoopbackBaseURL } from "@/lib/client/ai/settings";
 import { testConnection } from "@/lib/client/ai/test-connection";
 
 export type KeyDraft = { key?: string; baseURL?: string };
+export type DialogFinalFocus = DialogPrimitive.Popup.Props["finalFocus"];
 
 type Props = {
   /** Provedor que está recebendo a chave; `null` fecha o diálogo. */
@@ -20,6 +22,8 @@ type Props = {
   /** Recebe a chave já testada (ou que não deu para testar agora); a recusada nunca chega aqui. */
   onSave: (draft: KeyDraft) => void;
   onClose: () => void;
+  /** Para onde vai o foco ao fechar (repassado ao `DialogContent`); sem ele, volta ao elemento que abriu o diálogo. */
+  finalFocus?: DialogFinalFocus;
 };
 
 const REJECTED = "O provedor recusou essa chave.";
@@ -182,10 +186,10 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
 }
 
 /** Colar a chave de API (ou o endereço, na IA local). A chave só sai deste diálogo para o teste e o localStorage. */
-export function AddKeyDialog({ provider, onSave, onClose }: Props) {
+export function AddKeyDialog({ provider, onSave, onClose, finalFocus }: Props) {
   return (
     <Dialog open={provider !== null} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent>
+      <DialogContent finalFocus={finalFocus}>
         {provider && (
           <>
             <DialogHeader>

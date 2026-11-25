@@ -90,7 +90,8 @@ describe("ModelPickerDialog", () => {
     search(input, "gemini");
     await waitFor(() => expect(modelRows().map((o) => o.textContent)).toEqual([expect.stringContaining("Gêmini Flash")]));
     search(input, "zzz");
-    expect(await screen.findByText("Nenhum modelo encontrado")).toBeTruthy();
+    await waitFor(() => expect(screen.getByRole("status").textContent).toBe("Nenhum modelo encontrado"));
+    expect(screen.getAllByText("Nenhum modelo encontrado")).toHaveLength(2);
     expect(modelRows()).toHaveLength(0);
     expect(options()[0].textContent).toContain("Automático");
   });
@@ -193,9 +194,62 @@ describe("ModelPickerDialog", () => {
       }),
     );
     setup(bothSettings(), { cache: false });
-    expect(await screen.findByText("Não foi possível carregar os modelos de OpenRouter.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Tentar de novo" })).toBeTruthy();
+    const msg = await screen.findByText("Não foi possível carregar os modelos de OpenRouter.");
+    const retry = screen.getByRole("button", { name: "Tentar de novo" });
+    // A região viva só tem textos; o botão fica fora dela.
+    const live = msg.closest("[aria-live]")!;
+    expect(live).toBeTruthy();
+    expect(live.contains(retry)).toBe(false);
+    expect(live.querySelector("button")).toBeNull();
+    // Chip do provedor com erro não mostra contagem.
+    expect(screen.getByRole("button", { name: "OpenRouter" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /OpenRouter \(/ })).toBeNull();
     await waitFor(() => expect(modelRows().some((o) => o.textContent?.includes("deepseek-reasoner"))).toBe(true));
+  });
+
+  it("a região aria-live fica no DOM mesmo sem nada carregando ou com erro", () => {
+    setup();
+    const live = document.querySelector("[role=dialog] [aria-live=polite]");
+    expect(live).toBeTruthy();
+    expect(live!.textContent).toBe("");
+    expect(live!.className).not.toContain("empty:hidden");
+  });
+
+  it("anuncia a quantidade de modelos num status visualmente oculto", async () => {
+    const { input } = setup();
+    const status = screen.getByRole("status");
+    expect(status.className).toContain("sr-only");
+    expect(status.textContent).toBe("6 modelos");
+    search(input, "gemini");
+    await waitFor(() => expect(status.textContent).toBe("1 modelo"));
+    fireEvent.click(screen.getByRole("button", { name: "Só gratuitos" }));
+    await waitFor(() => expect(status.textContent).toBe("Nenhum modelo encontrado"));
+  });
+
+  it("linha grátis mostra só o selo 'Grátis', sem repetir 'grátis' no preço", () => {
+    setup();
+    const router = modelRows().find((o) => o.textContent?.includes("Free Models Router"))!;
+    expect(router.textContent!.match(/grátis/gi)).toHaveLength(1);
+    expect(router.textContent).toContain("Grátis");
+  });
+
+  it("reabrir zera a busca e recalcula o 'Só gratuitos' com o modelo salvo de agora", async () => {
+    const client = new QueryClient();
+    client.setQueryData(["ai-models", "openrouter", ADDED_AT], MODELS);
+    const view = (open: boolean, settings: AiSettings) => (
+      <QueryClientProvider client={client}>
+        <ModelPickerDialog task="extract" settings={settings} open={open} onOpenChange={vi.fn()} onSelect={vi.fn()} />
+      </QueryClientProvider>
+    );
+    const { rerender } = render(view(true, openRouterSettings()));
+    search(screen.getByLabelText("Buscar modelo") as HTMLInputElement, "gemini");
+    expect(screen.getByRole("button", { name: "Só gratuitos" }).getAttribute("aria-pressed")).toBe("false");
+    rerender(view(false, openRouterSettings("acme/livre:free")));
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+    rerender(view(true, openRouterSettings("acme/livre:free")));
+    const input = (await screen.findByLabelText("Buscar modelo")) as HTMLInputElement;
+    expect(input.value).toBe("");
+    expect(screen.getByRole("button", { name: "Só gratuitos" }).getAttribute("aria-pressed")).toBe("true");
   });
 
   it("Esc fecha sem chamar onSelect", async () => {

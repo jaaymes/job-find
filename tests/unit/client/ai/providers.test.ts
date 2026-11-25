@@ -148,9 +148,13 @@ describe("listModels (fetch mockado)", () => {
   it.each([
     "text-embedding-3-small", "whisper-1", "tts-1-hd", "gpt-4o-transcribe", "dall-e-3", "gpt-image-1",
     "omni-moderation-latest", "gpt-4o-audio-preview", "gpt-4o-realtime-preview", "llama-guard-4", "rerank-v3",
+    "mistral-embed",
   ])("isTextModelId(%s) é false", (id) => expect(isTextModelId(id)).toBe(false));
 
-  it.each(["gpt-5-mini", "llama-3.3-70b-versatile", "mistral-large-latest", "grok-4", "deepseek-chat"])(
+  it.each([
+    "gpt-5-mini", "llama-3.3-70b-versatile", "mistral-large-latest", "grok-4", "deepseek-chat",
+    "gpt-4o", "o3", "gemini-2.5-flash", "qwen3-coder",
+  ])(
     "isTextModelId(%s) é true",
     (id) => expect(isTextModelId(id)).toBe(true),
   );

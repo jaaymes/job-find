@@ -3,7 +3,7 @@
 
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ChevronLeft, ExternalLink as ExternalLinkIcon } from "lucide-react";
-import { consumeListReturn } from "@/lib/client/jobs/list-href";
+import { bindListReturn, consumeListReturn } from "@/lib/client/jobs/list-href";
 import { buildGlassdoorUrl } from "@/lib/client/jobs/glassdoor";
 import { syncSnapshots } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
@@ -463,6 +463,10 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
 export function JobDetail({ id: rawId }: { id: string }) {
   const id = parseJobId(rawId);
   const { data, error, isPending, refetch } = useJob(id);
+  // Prende a marca "veio da lista" a esta entrada do histórico já na montagem, antes de a vaga carregar (RF-12).
+  useEffect(() => {
+    if (id !== null) bindListReturn(id);
+  }, [id]);
 
   if (id === null || error instanceof JobNotFoundError) return <NotFound />;
   if (error) return <LoadError onRetry={() => void refetch()} />;

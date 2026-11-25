@@ -23,7 +23,7 @@ export function BackToJobsLink({
   const router = useRouter();
   const onClick = (e: MouseEvent<HTMLAnchorElement>) => {
     if (e.button !== 0 || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey) return;
-    if (consumeListReturn(jobId) && window.history.length > 1) {
+    if (consumeListReturn(jobId)) {
       e.preventDefault();
       router.back();
     }

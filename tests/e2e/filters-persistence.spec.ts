@@ -78,6 +78,26 @@ test("abrir uma vaga e clicar em 'Voltar para as vagas' mantém filtros e o prim
   expect(await firstTitle(page)).toBe(before);
 });
 
+test("vaga reaberta por Minhas vagas: 'Voltar para as vagas' vai à lista com filtros, não a Minhas vagas", async ({
+  page,
+}) => {
+  await openList(page, START);
+  const title = await firstTitle(page);
+  await page.getByRole("button", { name: `Favoritar ${title}` }).click();
+  await cards(page).first().getByRole("link").first().click();
+  await expect(page).toHaveURL(/\/vagas\/\d+/);
+  const jobUrl = page.url();
+
+  await page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: /Minhas vagas/ }).click();
+  await expect(page).toHaveURL(/\/minhas-vagas/);
+  await page.locator("article").getByRole("link", { name: title, exact: true }).click();
+  await expect(page).toHaveURL(jobUrl);
+
+  await page.getByRole("link", { name: /Voltar para as vagas/ }).filter({ visible: true }).click();
+  await expectBackOnList(page);
+  await expect(page).not.toHaveURL(/\/minhas-vagas/);
+});
+
 test("'Carregar mais' e voltar de uma vaga da 2ª página mantém o número de cards", async ({ page }) => {
   // Filtro que não reduz a lista abaixo de uma página (40 vagas semeadas, 30 por página).
   await openList(page, "/?since=30d");

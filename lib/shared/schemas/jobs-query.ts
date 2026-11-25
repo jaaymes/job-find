@@ -1,24 +1,7 @@
 import { z } from "@/lib/shared/zod";
 import { normalizeSkill } from "@/lib/shared/stacks";
-import type { SourceId } from "@/lib/shared/types/job";
+import { SOURCE_IDS } from "@/lib/shared/sources";
 
-const SOURCE_IDS = [
-  "himalayas",
-  "greenhouse",
-  "ashby",
-  "lever",
-  "jobicy",
-  "github",
-  "wwr",
-  "remoteok",
-  "hn",
-  "smartrecruiters",
-  "fourdayweek",
-  "getonboard",
-  "arbeitnow",
-  "gupy",
-  "linkedin",
-] as const satisfies readonly SourceId[];
 
 /**
  * Nomes desconhecidos são descartados. Se nenhum sobra, fica `[]` (não `undefined`): a consulta

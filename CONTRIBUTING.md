@@ -31,15 +31,19 @@ Antes de abrir um PR, rode `pnpm lint && pnpm typecheck && pnpm test`. Não crie
 ## Adicionar uma fonte de vagas
 
 1. Abra uma issue com o modelo "Nova fonte de vagas" e preencha o checklist de Termos de Uso.
-2. Registre a checagem de ToS da fonte em `docs/fontes.md` (termos, robots.txt, limites, atribuição).
-3. Implemente a interface `Connector` (definida na Tarefa 10 do plano) em um novo conector, seguindo os existentes.
-4. Adicione fixtures com respostas reais (anonimizadas, se preciso) em `tests/fixtures/sources/<id>/` e escreva testes que usem essas fixtures, sem chamar a rede.
-5. Abra o PR usando o modelo e marque "Nova fonte de vagas".
+2. Registre a análise de ToS da fonte em `docs/fontes.md` (termos, robots.txt, limites, atribuição).
+3. Adicione a entrada em `lib/shared/sources.ts` com `id`, `label` e `trust` (3 = ATS da própria empresa, 2 = agregador ou job board, 1 = conteúdo livre de usuário).
+4. Implemente o conector em `lib/server/sources/<id>.ts`, seguindo a interface `Connector` de `lib/server/sources/types.ts`; `jobicy.ts` é um exemplo simples.
+5. Registre o conector em `lib/server/sources/registry.ts` (o TypeScript acusa se faltar).
+6. Adicione fixtures com respostas reais (anonimizadas, se preciso) em `tests/fixtures/sources/<id>/` e escreva um teste unitário que use essas fixtures, sem chamar a rede.
+7. Abra o PR usando o modelo e marque "Nova fonte de vagas".
+
+A deduplicação entre fontes é automática: o conector só precisa entregar empresa, título e URL corretos.
 
 ## Adicionar um provedor de IA
 
 1. Abra uma issue com o modelo "Novo provedor de IA" e confirme CORS para chamadas do navegador e suporte a saída estruturada.
-2. Adicione a entrada do provedor em `lib/client/ai/providers.ts` (criado na Tarefa 23 do plano). O host da API é incluído automaticamente na CSP.
+2. Adicione a entrada do provedor em `lib/client/ai/providers.ts`. O host da API é incluído automaticamente na CSP.
 3. Cubra o novo provedor com testes unitários.
 4. Abra o PR usando o modelo e marque "Novo provedor de IA".
 

@@ -4,7 +4,7 @@ import { acquireLock, releaseLock } from "@/lib/server/collect/lock";
 import type { Db } from "@/lib/server/db/client";
 import { jobSources, jobs, sourceRuns, sourceState } from "@/lib/server/db/schema";
 import { computeContentHash, enrichJob } from "@/lib/server/jobs/enrich-job";
-import { expireJobs, markMissedRuns, purgeExpired } from "@/lib/server/jobs/expire";
+import { expireJobs, markMissedRuns } from "@/lib/server/jobs/expire";
 import { upsertJob } from "@/lib/server/jobs/upsert";
 import { AllBoardsFailedError } from "@/lib/server/sources/boards";
 import { createSafeFetch } from "@/lib/server/sources/http";
@@ -36,8 +36,6 @@ const MAX_ERROR_LENGTH = 500;
 /** Quantas falhas (boards ou vagas) entram, com detalhe, no resumo de `source_runs.error`. */
 const MAX_LISTED_FAILURES = 5;
 const MAX_FAILURE_DETAIL = 120;
-/** A retenção (DELETE diário) roda na execução das 03:17 UTC (cron da Vercel é UTC). */
-const PURGE_HOUR_UTC = 3;
 
 export type SourceRunResult = {
   source: SourceId;
@@ -451,9 +449,8 @@ export async function runCollection(opts: RunCollectionOptions): Promise<SourceR
   let changed = results.some((r) => r.inserted > 0 || r.updated > 0);
   try {
     if ((await expireJobs(db, now)) > 0) changed = true;
-    if (now.getUTCHours() === PURGE_HOUR_UTC && (await purgeExpired(db, now)) > 0) changed = true;
   } catch (e) {
-    console.error(`[coleta] falha na expiração/retenção: ${describeError(e)}`);
+    console.error(`[coleta] falha na expiração: ${describeError(e)}`);
   }
 
   if (changed) {

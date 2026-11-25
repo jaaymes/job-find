@@ -615,28 +615,19 @@ describe("runCollection", () => {
     expect(peak).toBe(2);
   });
 
-  it("expira vagas ao final e só apaga (retenção) na execução das 03h UTC", async () => {
+  it("expira vagas ao final e não apaga nada, nem às 03h UTC (a retenção é da rota de limpeza)", async () => {
     const db = await testDb();
     const old = await insertJobRaw(db, { published_at: addDays(T0, -100), expired_at: addDays(T0, -40) });
     const fresh = await insertJobRaw(db, { published_at: addDays(T0, -50) });
-    const spy = vi.spyOn(expire, "purgeExpired");
-    try {
-      const invalidate = vi.fn().mockResolvedValue(undefined);
-      await runCollection({ db, sources: [], now: T0, connectors: {}, invalidate }); // 12:00 UTC
-      expect(spy).not.toHaveBeenCalled();
-      const [f] = await db.select().from(jobs).where(eq(jobs.id, fresh.id));
-      expect(f.expiredAt).not.toBeNull(); // > 45 dias
-      expect(invalidate).toHaveBeenCalledWith("jobs");
+    const invalidate = vi.fn().mockResolvedValue(undefined);
+    await runCollection({ db, sources: [], now: T0, connectors: {}, invalidate }); // 12:00 UTC
+    const [f] = await db.select().from(jobs).where(eq(jobs.id, fresh.id));
+    expect(f.expiredAt).not.toBeNull(); // > 45 dias
+    expect(invalidate).toHaveBeenCalledWith("jobs");
 
-      const at = new Date("2026-06-02T03:17:00.000Z");
-      const inv2 = vi.fn().mockResolvedValue(undefined);
-      await runCollection({ db, sources: [], now: at, connectors: {}, invalidate: inv2 });
-      expect(spy).toHaveBeenCalledTimes(1);
-      expect(await db.select().from(jobs).where(eq(jobs.id, old.id))).toHaveLength(0);
-      expect(inv2).toHaveBeenCalledWith("jobs");
-    } finally {
-      spy.mockRestore();
-    }
+    const at = new Date("2026-06-02T03:17:00.000Z");
+    await runCollection({ db, sources: [], now: at, connectors: {}, invalidate: vi.fn().mockResolvedValue(undefined) });
+    expect(await db.select().from(jobs).where(eq(jobs.id, old.id))).toHaveLength(1);
   });
 
   it("falha na invalidação é registrada, não lançada", async () => {

@@ -1,7 +1,7 @@
 import "server-only";
 import { and, eq, inArray, isNotNull, isNull, like, lt, or, sql } from "drizzle-orm";
 import type { Db } from "@/lib/server/db/client";
-import { jobSources, jobs } from "@/lib/server/db/schema";
+import { jobSources, jobs, sourceRuns } from "@/lib/server/db/schema";
 import type { SourceId } from "@/lib/shared/types/job";
 
 const DAY_MS = 86_400_000;
@@ -9,8 +9,16 @@ const DAY_MS = 86_400_000;
 export const MAX_AGE_DAYS = 45;
 /** RF-07: 3 coletas seguidas sem aparecer em nenhuma fonte. */
 export const MAX_MISSED_RUNS = 3;
+/** D-02: nenhuma vaga fica guardada por mais de 60 dias desde a publicação, ativa ou não. */
+export const MAX_STORED_AGE_DAYS = 60;
 /** D-04: vagas expiradas são apagadas depois de 30 dias. */
 export const RETENTION_DAYS = 30;
+/** Histórico de coletas (`source_runs`) é guardado por 30 dias. */
+export const SOURCE_RUNS_RETENTION_DAYS = 30;
+/** Linhas apagadas por DELETE na limpeza (mantém cada comando curto). */
+export const PURGE_BATCH_SIZE = 2000;
+/** Prazo total da limpeza; passou disso, devolve o que já apagou e o resto fica para o próximo dia. */
+export const PURGE_TIME_LIMIT_MS = 50_000;
 /** Teto do contador (smallint) para vagas que seguem presas a outra fonte. */
 const MISSED_RUNS_CAP = 1000;
 
@@ -91,12 +99,61 @@ export async function expireJobs(db: Db, now: Date): Promise<number> {
   return rows.length;
 }
 
-/** Retenção: apaga (com as `job_sources`, em cascata) vagas expiradas há mais de 30 dias. */
-export async function purgeExpired(db: Db, now: Date): Promise<number> {
-  const cutoff = new Date(now.getTime() - RETENTION_DAYS * DAY_MS);
-  const rows = await db
-    .delete(jobs)
-    .where(and(isNotNull(jobs.expiredAt), lt(jobs.expiredAt, cutoff)))
-    .returning({ id: jobs.id });
-  return rows.length;
+export type PurgeResult = { jobs: number; sourceRuns: number };
+
+/**
+ * Retenção diária, em lotes: apaga (com as `job_sources`, em cascata) vagas publicadas há mais de
+ * 60 dias ou expiradas há mais de 30, e `source_runs` com mais de 30 dias (inclusive as presas em
+ * `running`). Para ao passar de `timeLimitMs` e devolve o que já apagou.
+ */
+export async function purgeOld(
+  db: Db,
+  now: Date,
+  opts: { batchSize?: number; clock?: () => number; timeLimitMs?: number } = {},
+): Promise<PurgeResult> {
+  const batchSize = opts.batchSize ?? PURGE_BATCH_SIZE;
+  const clock = opts.clock ?? Date.now;
+  const timeLimitMs = opts.timeLimitMs ?? PURGE_TIME_LIMIT_MS;
+  const start = clock();
+  const outOfTime = () => clock() - start > timeLimitMs;
+
+  const cutoffStored = new Date(now.getTime() - MAX_STORED_AGE_DAYS * DAY_MS);
+  const cutoffExpired = new Date(now.getTime() - RETENTION_DAYS * DAY_MS);
+  const cutoffRuns = new Date(now.getTime() - SOURCE_RUNS_RETENTION_DAYS * DAY_MS);
+
+  let deletedJobs = 0;
+  while (!outOfTime()) {
+    const rows = await db
+      .delete(jobs)
+      .where(
+        inArray(
+          jobs.id,
+          db
+            .select({ id: jobs.id })
+            .from(jobs)
+            .where(or(lt(jobs.publishedAt, cutoffStored), and(isNotNull(jobs.expiredAt), lt(jobs.expiredAt, cutoffExpired))))
+            .limit(batchSize),
+        ),
+      )
+      .returning({ id: jobs.id });
+    deletedJobs += rows.length;
+    if (rows.length < batchSize) break;
+  }
+
+  let deletedRuns = 0;
+  while (!outOfTime()) {
+    const rows = await db
+      .delete(sourceRuns)
+      .where(
+        inArray(
+          sourceRuns.id,
+          db.select({ id: sourceRuns.id }).from(sourceRuns).where(lt(sourceRuns.startedAt, cutoffRuns)).limit(batchSize),
+        ),
+      )
+      .returning({ id: sourceRuns.id });
+    deletedRuns += rows.length;
+    if (rows.length < batchSize) break;
+  }
+
+  return { jobs: deletedJobs, sourceRuns: deletedRuns };
 }

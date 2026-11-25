@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
-import { jobs, jobSources } from "@/lib/server/db/schema";
-import { expireJobs, markMissedRuns, purgeExpired } from "@/lib/server/jobs/expire";
+import { jobs, jobSources, sourceRuns } from "@/lib/server/db/schema";
+import { expireJobs, markMissedRuns, purgeOld } from "@/lib/server/jobs/expire";
 import { insertJobRaw, resetDb, testDb } from "../setup";
 import { addDays, T0 } from "./helpers";
 
@@ -95,18 +95,52 @@ describe("expireJobs", () => {
   });
 });
 
-describe("purgeExpired", () => {
+describe("purgeOld", () => {
   beforeEach(resetDb);
 
-  it("apaga expiradas há mais de 30 dias (e suas job_sources)", async () => {
+  it("apaga vaga publicada há mais de 60 dias, ativa ou não, e preserva a de 59", async () => {
     const db = await testDb();
-    const old = await insertJobRaw(db, { expired_at: addDays(T0, -31) });
-    const recent = await insertJobRaw(db, { expired_at: addDays(T0, -29) });
-    const active = await insertJobRaw(db, { expired_at: null });
+    const old = await insertJobRaw(db, { published_at: addDays(T0, -61) });
+    const keep = await insertJobRaw(db, { published_at: addDays(T0, -59) });
     await addSource(db, old.id, "greenhouse", "x", T0);
-    expect(await purgeExpired(db, T0)).toBe(1);
-    const ids = (await db.select({ id: jobs.id }).from(jobs)).map((r) => r.id).sort((a, b) => a - b);
-    expect(ids).toEqual([Number(recent.id), Number(active.id)].sort((a, b) => a - b));
+    expect(await purgeOld(db, T0)).toEqual({ jobs: 1, sourceRuns: 0 });
+    expect((await db.select({ id: jobs.id }).from(jobs)).map((r) => Number(r.id))).toEqual([Number(keep.id)]);
     expect(await db.select().from(jobSources).where(eq(jobSources.externalId, "x"))).toHaveLength(0);
+  });
+
+  it("apaga expirada há mais de 30 dias e preserva a expirada há 29", async () => {
+    const db = await testDb();
+    await insertJobRaw(db, { published_at: addDays(T0, -50), expired_at: addDays(T0, -31) });
+    const recent = await insertJobRaw(db, { published_at: addDays(T0, -50), expired_at: addDays(T0, -29) });
+    expect((await purgeOld(db, T0)).jobs).toBe(1);
+    expect((await db.select({ id: jobs.id }).from(jobs)).map((r) => Number(r.id))).toEqual([Number(recent.id)]);
+  });
+
+  it("apaga source_runs com mais de 30 dias, inclusive presas em running", async () => {
+    const db = await testDb();
+    await db.insert(sourceRuns).values([
+      { source: "greenhouse", startedAt: addDays(T0, -31), status: "running" },
+      { source: "greenhouse", startedAt: addDays(T0, -31), status: "ok" },
+      { source: "greenhouse", startedAt: addDays(T0, -29), status: "ok" },
+    ]);
+    expect(await purgeOld(db, T0)).toEqual({ jobs: 0, sourceRuns: 2 });
+    expect(await db.select().from(sourceRuns)).toHaveLength(1);
+  });
+
+  it("apaga em lotes até acabar", async () => {
+    const db = await testDb();
+    for (let i = 0; i < 5; i++) await insertJobRaw(db, { published_at: addDays(T0, -70) });
+    expect((await purgeOld(db, T0, { batchSize: 2 })).jobs).toBe(5);
+    expect(await db.select().from(jobs)).toHaveLength(0);
+  });
+
+  it("para no prazo e devolve o que já apagou", async () => {
+    const db = await testDb();
+    for (let i = 0; i < 5; i++) await insertJobRaw(db, { published_at: addDays(T0, -70) });
+    let t = 0;
+    const clock = () => (t += 1000); // cada leitura avança 1 s
+    const r = await purgeOld(db, T0, { batchSize: 2, clock, timeLimitMs: 1500 });
+    expect(r.jobs).toBe(2);
+    expect(await db.select().from(jobs)).toHaveLength(3);
   });
 });

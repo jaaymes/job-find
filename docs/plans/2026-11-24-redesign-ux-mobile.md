@@ -57,7 +57,7 @@
 
 ## Fase 1 — Fundação
 
-### Tarefa 1: Tokens unificados e contraste AA
+### Task 1: Tokens unificados e contraste AA
 
 **Arquivos:**
 - Modificar: `app/globals.css` (`:root`, `.dark`, `@theme inline`)
@@ -97,7 +97,7 @@ it("tokens shadcn apontam para a paleta jf", () => {
 - [ ] **Passo 4:** `pnpm test` passa. Em seguida, `pnpm test:e2e tests/e2e/theme.spec.ts`.
 - [ ] **Passo 5:** commit `feat(ui): unifica tokens shadcn na paleta jf e corrige contraste AA`.
 
-### Tarefa 2: Viewport, safe-area e "Pular para o conteúdo"
+### Task 2: Viewport, safe-area e "Pular para o conteúdo"
 
 **Arquivos:**
 - Modificar: `app/layout.tsx`, `app/(local)/layout.tsx`, `app/(site)/page.tsx`, `app/(site)/vagas/[id]/page.tsx` (`<main id="conteudo">`)
@@ -115,7 +115,7 @@ it("tokens shadcn apontam para a paleta jf", () => {
 - [ ] **Passo 4:** `pnpm test && pnpm build` passam.
 - [ ] **Passo 5:** commit `feat(ui): viewport-fit cover, theme-color e link para pular ao conteúdo`.
 
-### Tarefa 3: Primitivo `Sheet`
+### Task 3: Primitivo `Sheet`
 
 **Arquivos:**
 - Criar: `components/ui/sheet.tsx`
@@ -145,7 +145,7 @@ export function SheetClose(props: React.ComponentProps<"button">): JSX.Element;
 - [ ] **Passo 4:** o teste passa.
 - [ ] **Passo 5:** commit `feat(ui): primitivo Sheet sobre base-ui Dialog`.
 
-### Tarefa 4: Varredura de acessibilidade
+### Task 4: Varredura de acessibilidade
 
 **Arquivos:**
 - Criar: `components/ui/skeleton.tsx`
@@ -168,7 +168,7 @@ export function SheetClose(props: React.ComponentProps<"button">): JSX.Element;
 
 ## Fase 2 — Navegação mobile
 
-### Tarefa 5: Navegação compartilhada (`nav.ts` + `NavLink`)
+### Task 5: Navegação compartilhada (`nav.ts` + `NavLink`)
 
 **Arquivos:**
 - Criar: `components/layout/nav.ts`, `components/layout/NavLink.tsx`
@@ -199,7 +199,7 @@ export function NavLink(props: { href: string; current?: boolean } & AnchorHTMLA
 - [ ] **Passo 4:** `pnpm test` passa e `site-header.test.tsx` continua verde.
 - [ ] **Passo 5:** commit `refactor(layout): navegação compartilhada com regra Link/HardLink`.
 
-### Tarefa 6: Barra de abas, "Mais", `AppShell` e toasts acima da barra
+### Task 6: Barra de abas, "Mais", `AppShell` e toasts acima da barra
 
 **Arquivos:**
 - Criar: `components/layout/MobileTabBar.tsx`, `components/layout/MoreSheet.tsx`, `components/layout/AppShell.tsx`
@@ -228,7 +228,7 @@ export function NavLink(props: { href: string; current?: boolean } & AnchorHTMLA
 - [ ] **Passo 4:** `pnpm test && pnpm build` passam.
 - [ ] **Passo 5:** commit `feat(mobile): barra de abas inferior, menu Mais e AppShell`.
 
-### Tarefa 7: Projetos Playwright mobile e spec de navegação
+### Task 7: Projetos Playwright mobile e spec de navegação
 
 **Arquivos:**
 - Modificar: `playwright.config.ts`
@@ -249,7 +249,7 @@ export function NavLink(props: { href: string; current?: boolean } & AnchorHTMLA
 
 ## Fase 3 — Lista de vagas
 
-### Tarefa 8: Progresso de setup e retorno seguro à vaga
+### Task 8: Progresso de setup e retorno seguro à vaga
 
 **Arquivos:**
 - Criar: `lib/client/setup/progress.ts`, `components/onboarding/SetupProgress.tsx`
@@ -281,7 +281,7 @@ export function SetupProgress(props: { variant: "banner" | "card" | "inline"; re
 - [ ] **Passo 4:** os testes passam.
 - [ ] **Passo 5:** commit `feat(setup): progresso de setup com retorno seguro à vaga`.
 
-### Tarefa 9: Lista sem CTA repetido e indicador de setup no header
+### Task 9: Lista sem CTA repetido e indicador de setup no header
 
 **Arquivos:**
 - Modificar:
@@ -302,7 +302,7 @@ export function SetupProgress(props: { variant: "banner" | "card" | "inline"; re
 - [ ] **Passo 4:** `pnpm test && pnpm test:e2e tests/e2e/chance.spec.ts` passam. Atualizar os seletores do E2E que procuravam a pílula.
 - [ ] **Passo 5:** commit `feat(jobs): convite único de setup no lugar da pílula por card`.
 
-### Tarefa 10: Card de vaga com uma ação e menu "⋯"
+### Task 10: Card de vaga com uma ação e menu "⋯"
 
 **Arquivos:**
 - Criar: `components/jobs/JobCardMenu.tsx`
@@ -325,7 +325,7 @@ export function SetupProgress(props: { variant: "banner" | "card" | "inline"; re
 - [ ] **Passo 4:** `pnpm test && pnpm test:e2e tests/e2e/home-extras.spec.ts tests/e2e/my-jobs.spec.ts` passam, com os seletores atualizados para abrir o menu.
 - [ ] **Passo 5:** commit `feat(jobs): card clicável com estrela e menu de ações`.
 
-### Tarefa 11: Topo compacto, filtros em sheet e barra de resultados
+### Task 11: Topo compacto, filtros em sheet e barra de resultados
 
 **Arquivos:**
 - Criar: `components/jobs/ResultsToolbar.tsx`, `components/jobs/ActiveFilterChips.tsx`
@@ -357,7 +357,7 @@ export function SetupProgress(props: { variant: "banner" | "card" | "inline"; re
 
 ## Fase 4 — Vaga e gerador
 
-### Tarefa 12: Detalhe da vaga com "Sua aderência" e barra de ação
+### Task 12: Detalhe da vaga com "Sua aderência" e barra de ação
 
 **Arquivos:**
 - Criar: `components/jobs/JobDetailActionBar.tsx`
@@ -383,7 +383,7 @@ export function SetupProgress(props: { variant: "banner" | "card" | "inline"; re
 - [ ] **Passo 4:** `pnpm test && pnpm test:e2e tests/e2e/job-detail.spec.ts tests/e2e/analysis.spec.ts` passam.
 - [ ] **Passo 5:** commit `feat(vaga): card Sua aderência, CTA claro e barra de ação no celular`.
 
-### Tarefa 13: Gerador no celular com pré-visualização em canvas
+### Task 13: Gerador no celular com pré-visualização em canvas
 
 **Arquivos:**
 - Modificar:
@@ -409,7 +409,7 @@ export function SetupProgress(props: { variant: "banner" | "card" | "inline"; re
 
 Pode rodar em paralelo à Fase 3: os arquivos são diferentes.
 
-### Tarefa 14: Minhas vagas como funil
+### Task 14: Minhas vagas como funil
 
 **Arquivos:**
 - Modificar: `components/my-jobs/Board.tsx:10-17,56`, `components/my-jobs/Column.tsx`, `components/my-jobs/JobMiniCard.tsx`
@@ -431,7 +431,7 @@ Pode rodar em paralelo à Fase 3: os arquivos são diferentes.
 - [ ] **Passo 4:** `pnpm test && pnpm test:e2e tests/e2e/my-jobs.spec.ts` passam.
 - [ ] **Passo 5:** commit `feat(minhas-vagas): funil Salvas → Aplicadas → Entrevista → Proposta`.
 
-### Tarefa 15: Configurações em lista e diálogos em sheet no celular
+### Task 15: Configurações em lista e diálogos em sheet no celular
 
 **Arquivos:**
 - Modificar: `components/settings/AiSettingsScreen.tsx`, `ProviderCard.tsx`, `AddKeyDialog.tsx`, `ModelPickerDialog.tsx`, `BackupSection.tsx`, `components/ui/dialog.tsx`
@@ -449,7 +449,7 @@ Pode rodar em paralelo à Fase 3: os arquivos são diferentes.
 - [ ] **Passo 4:** `pnpm test && pnpm test:e2e tests/e2e/settings.spec.ts` passam.
 - [ ] **Passo 5:** commit `feat(configuracoes): provedor recomendado em destaque e diálogos em sheet no celular`.
 
-### Tarefa 16: Perfil, Fontes e Apoie
+### Task 16: Perfil, Fontes e Apoie
 
 **Arquivos:**
 - Modificar: `components/profile/ImportPanel.tsx`, `components/sources/SourcesPage.tsx`, `app/(site)/apoie/page.tsx`
@@ -466,7 +466,7 @@ Pode rodar em paralelo à Fase 3: os arquivos são diferentes.
 
 ## Fase 6 — Botões unificados
 
-### Tarefa 17: `buttonVariants` como fonte única
+### Task 17: `buttonVariants` como fonte única
 
 **Arquivos:**
 - Modificar: `components/ui/button.tsx`, `components/ui/styles.ts`

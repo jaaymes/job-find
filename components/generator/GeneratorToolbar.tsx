@@ -2,6 +2,8 @@
 
 import { BTN_OUTLINE, BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import type { CvLang } from "@/lib/client/cv/period";
+import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
+import { TemplatePicker } from "./TemplatePicker";
 
 export type ToolbarProps = {
   lang: CvLang;
@@ -15,6 +17,9 @@ export type ToolbarProps = {
   /** A carta tem trecho em revisão: o download fica bloqueado. */
   letterBlocked: boolean;
   downloading: boolean;
+  templateId: CvTemplateId;
+  recommendedTemplate: CvTemplateId;
+  onTemplate: (id: CvTemplateId, makeDefault: boolean) => void;
   onLang: (l: CvLang) => void;
   onLetter: (checked: boolean) => void;
   onGenerate: () => void;
@@ -29,7 +34,6 @@ const LANGS: { id: CvLang; label: string }[] = [
   { id: "es", label: "Español" },
 ];
 
-/** Só há um modelo de CV (coluna única, legível por ATS), então não há seletor de modelo. */
 export function GeneratorToolbar(p: ToolbarProps) {
   return (
     <section aria-label="Opções de geração" className={`${CARD} flex flex-wrap items-end gap-x-5 gap-y-3 p-4 sm:p-5`}>
@@ -48,6 +52,7 @@ export function GeneratorToolbar(p: ToolbarProps) {
           ))}
         </select>
       </label>
+      <TemplatePicker value={p.templateId} recommended={p.recommendedTemplate} onChange={p.onTemplate} />
       <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm font-medium">
         <input
           type="checkbox"

@@ -627,3 +627,23 @@ test("'Regenerar' pede confirmação também quando só há aprovações (sem ed
   await expect.poll(() => mock.bodies.length).toBeGreaterThan(calls);
   await expect(banner(page)).toHaveText(/^1 trecho precisa da sua revisão/, FIRST);
 });
+
+test("trocar o modelo do CV refaz só o PDF (sem nova chamada à IA) e a escolha sobrevive ao reload", async ({ page }) => {
+  await generate(page);
+  const calls = mock.bodies.length;
+
+  await page.getByRole("button", { name: /^Modelo do CV: / }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("radio")).toHaveCount(10);
+  await expect(dialog.getByText("Recomendado para você")).toHaveCount(1);
+  await dialog.getByRole("radio", { name: /Harvard/ }).check();
+
+  await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
+  expect(mock.bodies).toHaveLength(calls);
+  await expect.poll(async () => (await storedRec(page))?.templateId).toBe("harvard");
+
+  await page.reload();
+  await expect(headline(page)).toBeVisible(FIRST);
+  await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
+  expect(mock.bodies).toHaveLength(calls);
+});

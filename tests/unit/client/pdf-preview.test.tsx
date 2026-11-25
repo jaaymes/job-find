@@ -43,14 +43,14 @@ afterEach(() => {
 
 describe("PdfPreview em modo canvas", () => {
   it("modo canvas renderiza 2 canvas com rótulos Página 1 e Página 2 do PDF", async () => {
-    render(<PdfPreview cv={cv} letter={null} mode="canvas" />);
+    render(<PdfPreview cv={cv} templateId="classico" letter={null} mode="canvas" />);
     expect(await screen.findByLabelText("Página 1 do PDF", {}, { timeout: 3000 })).toBeInstanceOf(HTMLCanvasElement);
     expect(screen.getByLabelText("Página 2 do PDF")).toBeInstanceOf(HTMLCanvasElement);
     await waitFor(() => expect(pdfjs.render).toHaveBeenCalledTimes(2));
   });
 
   it("modo canvas oferece Abrir PDF em tela cheia", async () => {
-    render(<PdfPreview cv={cv} letter={null} mode="canvas" />);
+    render(<PdfPreview cv={cv} templateId="classico" letter={null} mode="canvas" />);
     const link = await screen.findByRole("link", { name: /Abrir PDF em tela cheia/ }, { timeout: 3000 });
     expect(link.getAttribute("href")).toBe("blob:http://localhost/pdf-1");
     expect(link.getAttribute("target")).toBe("_blank");
@@ -59,14 +59,14 @@ describe("PdfPreview em modo canvas", () => {
 
   it("falha do pdfjs cai para o link de abrir o PDF com aviso", async () => {
     pdfjs.getDocument.mockImplementation(() => ({ promise: Promise.reject(new Error("boom")), destroy: async () => {} }));
-    render(<PdfPreview cv={cv} letter={null} mode="canvas" />);
+    render(<PdfPreview cv={cv} templateId="classico" letter={null} mode="canvas" />);
     expect(await screen.findByRole("alert", {}, { timeout: 3000 })).toBeTruthy();
     expect(screen.queryByLabelText("Página 1 do PDF")).toBeNull();
     expect(screen.getByRole("link", { name: /Abrir PDF em tela cheia/ }).getAttribute("href")).toBe("blob:http://localhost/pdf-1");
   });
 
   it("modo iframe mantém o iframe", async () => {
-    render(<PdfPreview cv={cv} letter={null} mode="iframe" />);
+    render(<PdfPreview cv={cv} templateId="classico" letter={null} mode="iframe" />);
     const frame = await screen.findByTitle("Pré-visualização do PDF", {}, { timeout: 3000 });
     expect(frame.tagName).toBe("IFRAME");
   });

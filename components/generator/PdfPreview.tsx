@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AssembledCv } from "@/lib/client/cv/assemble";
+import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 import { useMediaQuery } from "@/lib/client/use-media-query";
 
 const DEBOUNCE_MS = 500;
@@ -136,11 +137,13 @@ function CanvasPreview({ blob, url }: { blob: Blob; url: string }) {
  */
 export function PdfPreview({
   cv,
+  templateId,
   letter,
   onPages,
   mode,
 }: {
   cv: AssembledCv;
+  templateId: CvTemplateId;
   letter: string | null;
   onPages?: (pages: number) => void;
   /** Padrão: `canvas` abaixo de `lg` (iframe de PDF não rola direito no celular) e `iframe` a partir de `lg`. */
@@ -158,7 +161,7 @@ export function PdfPreview({
       void (async () => {
         try {
           const render = await import("@/lib/client/pdf/render");
-          const result = letter !== null ? await render.renderLetterPdf(letter, cv) : await render.renderCvPdf(cv, "classico");
+          const result = letter !== null ? await render.renderLetterPdf(letter, cv) : await render.renderCvPdf(cv, templateId);
           if (stale) return;
           const next = URL.createObjectURL(result.blob);
           const old = urlRef.current;
@@ -176,7 +179,7 @@ export function PdfPreview({
       stale = true;
       clearTimeout(timer);
     };
-  }, [cv, letter, onPages]);
+  }, [cv, templateId, letter, onPages]);
 
   useEffect(
     () => () => {

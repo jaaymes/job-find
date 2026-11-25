@@ -19,6 +19,9 @@ import { useMediaQuery } from "@/lib/client/use-media-query";
 import { safeExternalUrl } from "@/lib/shared/safe-url";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { cvFileName } from "@/lib/client/pdf/filename";
+import { cvPrefsStore, resolveTemplateId } from "@/lib/client/pdf/templates/prefs";
+import { recommendTemplate } from "@/lib/client/pdf/templates/recommend";
+import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 import { profileStore } from "@/lib/client/profile/store";
 import { useStore } from "@/lib/client/storage/store";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
@@ -204,6 +207,9 @@ function Generator({ job }: { job: JobDetail }) {
   const profile = useStore(profileStore);
   const settings = useStore(aiSettingsStore);
   const saved = useStore(generatedStore);
+  const prefs = useStore(cvPrefsStore);
+  // Modelo escolhido antes de existir um registro: entra no registro quando a geração termina.
+  const [draftTemplate, setDraftTemplate] = useState<CvTemplateId | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   const [running, setRunning] = useState<RunArgs | null>(null);
   const [partial, setPartial] = useState<unknown>(null);
@@ -268,6 +274,8 @@ function Generator({ job }: { job: JobDetail }) {
     async (args: RunArgs, snap: string) => {
       if (abortRef.current || !profile || !settings) return;
       flush();
+      // Gerar de novo mantém o modelo já escolhido para esta vaga.
+      const keepTemplate = draftTemplate ?? generatedStore.get()[String(job.id)]?.templateId ?? null;
       const ctrl = new AbortController();
       abortRef.current = ctrl;
       setRunning(args);
@@ -290,7 +298,13 @@ function Generator({ job }: { job: JobDetail }) {
           },
         });
         if (ctrl.signal.aborted) return;
-        setFresh({ jobId: job.id, record: next });
+        const withTemplate = keepTemplate ? { ...next, templateId: keepTemplate } : next;
+        setFresh({ jobId: job.id, record: withTemplate });
+        if (keepTemplate) {
+          setDraftTemplate(null);
+          pendingRef.current = withTemplate;
+          timerRef.current = setTimeout(flush, SAVE_DEBOUNCE_MS);
+        }
         setSaveFailed(!result.ok);
         setDraft(args);
         setTab("cv");
@@ -308,7 +322,7 @@ function Generator({ job }: { job: JobDetail }) {
         }
       }
     },
-    [job, profile, settings, flush],
+    [job, profile, settings, flush, draftTemplate],
   );
 
   // Trabalho do usuário que uma nova geração descarta: edições e aprovações ("Aprovar mesmo assim").
@@ -350,6 +364,17 @@ function Generator({ job }: { job: JobDetail }) {
     else request({ lang: record.lang, includeLetter: true });
   };
 
+  const recommendedTemplate = useMemo(() => (profile ? recommendTemplate(profile, job) : "classico"), [profile, job]);
+  const templateId: CvTemplateId = profile
+    ? resolveTemplateId(record?.templateId ?? draftTemplate, prefs ?? { templateId: null }, profile, job)
+    : "classico";
+  /** Trocar o modelo só refaz o PDF a partir do mesmo CV: não chama a IA. */
+  const onTemplate = (id: CvTemplateId, makeDefault: boolean) => {
+    if (record) update((r) => ({ ...r, templateId: id }));
+    else setDraftTemplate(id);
+    if (makeDefault) cvPrefsStore.set({ templateId: id });
+  };
+
   const download = async (kind: "cv" | "letter") => {
     if (!profile || !record || !docs || !review) return;
     setDownloading(true);
@@ -361,7 +386,7 @@ function Generator({ job }: { job: JobDetail }) {
         if (docs.coverLetter === null || review.letter.flagged) return;
         saveBlob((await render.renderLetterPdf(docs.coverLetter, review.cv)).blob, name.replace(/^CV/, "Carta"));
       } else {
-        saveBlob((await render.renderCvPdf(review.cv, "classico")).blob, name);
+        saveBlob((await render.renderCvPdf(review.cv, templateId)).blob, name);
       }
     } catch {
       setDownloadFailed(true);
@@ -420,6 +445,9 @@ function Generator({ job }: { job: JobDetail }) {
             letterAvailable={showLetterTab}
             letterBlocked={review?.letter.flagged ?? false}
             downloading={downloading}
+            templateId={templateId}
+            recommendedTemplate={recommendedTemplate}
+            onTemplate={onTemplate}
             onLang={onLang}
             onLetter={onLetter}
             onGenerate={() => request(record ? { lang: record.lang, includeLetter: shown.includeLetter } : draft)}
@@ -553,6 +581,7 @@ function Generator({ job }: { job: JobDetail }) {
                       ) : (
                         <PdfPreview
                           cv={review.cv}
+                          templateId={templateId}
                           letter={activeTab === "letter" ? docs.coverLetter : null}
                           onPages={setPages}
                         />

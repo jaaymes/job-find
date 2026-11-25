@@ -158,7 +158,7 @@ export function PdfPreview({
       void (async () => {
         try {
           const render = await import("@/lib/client/pdf/render");
-          const result = letter !== null ? await render.renderLetterPdf(letter, cv) : await render.renderCvPdf(cv);
+          const result = letter !== null ? await render.renderLetterPdf(letter, cv) : await render.renderCvPdf(cv, "classico");
           if (stale) return;
           const next = URL.createObjectURL(result.blob);
           const old = urlRef.current;

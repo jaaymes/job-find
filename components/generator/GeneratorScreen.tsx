@@ -361,7 +361,7 @@ function Generator({ job }: { job: JobDetail }) {
         if (docs.coverLetter === null || review.letter.flagged) return;
         saveBlob((await render.renderLetterPdf(docs.coverLetter, review.cv)).blob, name.replace(/^CV/, "Carta"));
       } else {
-        saveBlob((await render.renderCvPdf(review.cv)).blob, name);
+        saveBlob((await render.renderCvPdf(review.cv, "classico")).blob, name);
       }
     } catch {
       setDownloadFailed(true);

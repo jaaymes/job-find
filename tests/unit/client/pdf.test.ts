@@ -47,7 +47,7 @@ async function textOf(blob: Blob): Promise<string> {
 
 describe("renderCvPdf", () => {
   it("gera PDF legível pelo ATS, sem trechos sinalizados", async () => {
-    const { blob, pages } = await renderCvPdf(cvFixture(), FONTS);
+    const { blob, pages } = await renderCvPdf(cvFixture(), "classico", FONTS);
     const text = await textOf(blob);
     expect(text).toContain("Experiência");
     expect(text).toContain("Resumo");
@@ -62,7 +62,7 @@ describe("renderCvPdf", () => {
   });
 
   it("separa o nome do título no texto extraído (ATS)", async () => {
-    const text = await textOf((await renderCvPdf(cvFixture(), FONTS)).blob);
+    const text = await textOf((await renderCvPdf(cvFixture(), "classico", FONTS)).blob);
     expect(text).toMatch(/Ana Souza\s+Engenheira Frontend Sênior/);
   });
 
@@ -77,7 +77,7 @@ describe("renderCvPdf", () => {
         { ...base.experiences[0], bullets: [{ key: "b1", text: "Liderou a migração.", sources: [], flagged: false, violations: [] }, { key: "b3", text: "   ", sources: [], flagged: false, violations: [] }] },
       ],
     });
-    const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
+    const text = await textOf((await renderCvPdf(cv, "classico", FONTS)).blob);
     expect(text).not.toContain("Resumo");
     expect(text).toContain("React, TypeScript");
     expect(text).not.toMatch(/-\s*$/m);
@@ -94,7 +94,7 @@ describe("renderCvPdf", () => {
         { ...base, expId: "exp_2", company: "Outra Repetida", bullets: [{ key: "x1", text: "Bullet inválido", sources: [], flagged: false, violations: [expViolation] }] },
       ],
     });
-    const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
+    const text = await textOf((await renderCvPdf(cv, "classico", FONTS)).blob);
     expect(text.match(/Lumen Pay/g)).toHaveLength(1);
     expect(text).not.toContain("Bullet da repetição");
     expect(text).not.toContain("Outra Repetida");
@@ -102,7 +102,7 @@ describe("renderCvPdf", () => {
 
   it("deixa de fora summary e headline sinalizados, e seção vazia", async () => {
     const cv = cvFixture({ flags: { headline: { ...OK_FLAG, flagged: true }, summary: { ...OK_FLAG, flagged: true }, skills: [] }, skills: [] });
-    const text = await textOf((await renderCvPdf(cv, FONTS)).blob);
+    const text = await textOf((await renderCvPdf(cv, "classico", FONTS)).blob);
     expect(text).not.toContain("Oito anos");
     expect(text).not.toContain("Engenheira Frontend");
     expect(text).not.toContain("Resumo");
@@ -114,11 +114,11 @@ describe("renderCvPdf", () => {
     const bullets = Array.from({ length: 60 }, (_, i) => ({ key: `b${i}`, text: `Entrega número ${i} com impacto mensurável no produto.`, sources: [] as string[], flagged: false, violations: [] }));
     const base = cvFixture();
     const cv = cvFixture({ experiences: [{ ...base.experiences[0], bullets }] });
-    expect((await renderCvPdf(cv, FONTS)).pages).toBeGreaterThanOrEqual(2);
+    expect((await renderCvPdf(cv, "classico", FONTS)).pages).toBeGreaterThanOrEqual(2);
   });
 
   it("usa os cabeçalhos do idioma do CV", async () => {
-    const text = await textOf((await renderCvPdf(cvFixture({ lang: "en" }), FONTS)).blob);
+    const text = await textOf((await renderCvPdf(cvFixture({ lang: "en" }), "classico", FONTS)).blob);
     expect(text).toContain("Experience");
     expect(text).toContain("Skills");
   });

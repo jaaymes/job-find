@@ -58,6 +58,7 @@ const OPTION_1 = "Desenvolvedora que trabalha com React e TypeScript.";
 const OPTION_2 = "Desenvolvedora que trabalha com React e TypeScript e cuida do desempenho das interfaces.";
 const BULLETS_OLD = ["Reduziu o tempo de carregamento em 40% com React", "Liderou a migração do front-end para Next.js"];
 const BULLETS_NEW = ["Reduziu o carregamento em 40% com React.", "Liderou a migração do front-end para Next.js."];
+const BULLETS_DIRECT = ["Cortou o carregamento em 40% com React.", "Liderou a migração do front-end para Next.js."];
 const INVENTED_BULLETS = ["Aumentou a conversão do checkout em 85%."];
 
 type Mock = { bodies: string[]; invent: boolean };
@@ -85,7 +86,7 @@ function sse(content: string): string {
 function answerFor(body: string, m: Mock): unknown {
   if (body.includes("faça de 3 a 5 perguntas")) return { questions: QUESTIONS };
   if (body.includes("escreva exatamente 2 opções")) return { options: [{ text: OPTION_1, bullets: null }, { text: OPTION_2, bullets: null }] };
-  if (body.includes("reescreva o texto atual")) return { draft: { text: null, bullets: m.invent ? INVENTED_BULLETS : BULLETS_NEW } };
+  if (body.includes("reescreva o texto atual")) return { draft: { text: null, bullets: m.invent ? INVENTED_BULLETS : body.includes("(mais direto)") ? BULLETS_DIRECT : BULLETS_NEW } };
   throw new Error("chamada de IA inesperada");
 }
 
@@ -184,13 +185,16 @@ test("bullets: 'Melhorar com IA' com tom 'Mais direto' insere e 'Desfazer' resta
   await expect(dialog(page).getByRole("textbox", { name: "Realização 1" })).toHaveValue(BULLETS_NEW[0], FIRST);
   await dialog(page).getByLabel("Tom").selectOption({ label: "Mais direto" });
   await dialog(page).getByRole("button", { name: "Gerar de novo" }).click();
-  await expect(dialog(page).getByRole("textbox", { name: "Realização 1" })).toHaveValue(BULLETS_NEW[0], FIRST);
-  expect(mock.bodies.at(-1)).toContain("direct");
+  // O valor novo só aparece se a 2ª chamada pediu o tom escolhido ("Tom: direct (mais direto)").
+  await expect(dialog(page).getByRole("textbox", { name: "Realização 1" })).toHaveValue(BULLETS_DIRECT[0], FIRST);
+  expect(mock.bodies).toHaveLength(2);
+  expect(mock.bodies[0]).not.toContain("(mais direto)");
+  expect(mock.bodies[1]).toContain("(mais direto)");
   await dialog(page).getByRole("button", { name: "Inserir no perfil" }).click();
 
   await expect(dialog(page)).toHaveCount(0);
-  await expect(page.getByLabel("Realização 1", { exact: true })).toHaveValue(BULLETS_NEW[0]);
-  await expect(page.getByLabel("Realização 2", { exact: true })).toHaveValue(BULLETS_NEW[1]);
+  await expect(page.getByLabel("Realização 1", { exact: true })).toHaveValue(BULLETS_DIRECT[0]);
+  await expect(page.getByLabel("Realização 2", { exact: true })).toHaveValue(BULLETS_DIRECT[1]);
   await page.getByRole("button", { name: "Desfazer" }).click();
   await expect(page.getByLabel("Realização 1", { exact: true })).toHaveValue(BULLETS_OLD[0]);
   await expect(page.getByLabel("Realização 2", { exact: true })).toHaveValue(BULLETS_OLD[1]);
@@ -206,6 +210,11 @@ test("número inventado nas 2 chamadas mostra a mensagem do RN-20 e não insere 
   expect(mock.bodies).toHaveLength(2);
   await expect(dialog(page).getByRole("button", { name: "Inserir no perfil" })).toBeDisabled();
   await expect(dialog(page).getByRole("button", { name: "Tentar de novo" })).toBeVisible();
+
+  await page.keyboard.press("Escape");
+  await expect(dialog(page)).toHaveCount(0);
+  await expect(page.getByLabel("Realização 1", { exact: true })).toHaveValue(BULLETS_OLD[0]);
+  await expect(page.getByLabel("Realização 2", { exact: true })).toHaveValue(BULLETS_OLD[1]);
 });
 
 test("RNF-04: responder e fechar o painel sem inserir não grava nada no localStorage", async ({ page }) => {

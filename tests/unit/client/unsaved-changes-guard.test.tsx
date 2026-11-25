@@ -73,6 +73,28 @@ describe("useUnsavedChangesGuard", () => {
     }
   });
 
+  it("dois cliques aceitos em menos de 1 s: a liberação conta a partir do último", () => {
+    vi.useFakeTimers();
+    try {
+      vi.spyOn(window, "confirm").mockReturnValue(true);
+      render(<Harness dirty />);
+      fireEvent.click(link("interno"));
+      vi.advanceTimersByTime(600);
+      fireEvent.click(link("interno"));
+      // 1100 ms depois do primeiro clique, 500 ms depois do segundo: o timer do primeiro não pode zerar a flag.
+      vi.advanceTimersByTime(500);
+      const early = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(early);
+      expect(early.defaultPrevented).toBe(false);
+      vi.advanceTimersByTime(600);
+      const late = new Event("beforeunload", { cancelable: true });
+      window.dispatchEvent(late);
+      expect(late.defaultPrevented).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("deixa seguir se o usuário aceitar", () => {
     vi.spyOn(window, "confirm").mockReturnValue(true);
     render(<Harness dirty />);

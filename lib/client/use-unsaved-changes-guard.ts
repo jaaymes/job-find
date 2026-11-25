@@ -41,6 +41,7 @@ export function useUnsavedChangesGuard(dirty: boolean, message: string): void {
       }
       if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
       if (window.confirm(message)) {
+        clearLeaving();
         leaving = true;
         timer = setTimeout(clearLeaving, 1000);
       } else {

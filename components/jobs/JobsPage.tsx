@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useId, useMemo, useState } from "react";
-import { CLEAR_FILTERS, serializeFilters, useJobsFilters } from "@/lib/client/jobs/use-jobs";
+import { CLEAR_FILTERS, useJobsFilters } from "@/lib/client/jobs/use-jobs";
 import { syncSnapshots, setHidden, useJobStates } from "@/lib/client/jobs/job-state";
 import type { JobSummary } from "@/lib/shared/types/job";
 import { isNewSince, usePreviousVisit, useRecordVisit } from "@/lib/client/jobs/last-visit";
@@ -20,7 +20,7 @@ import { ActiveFilterChips, buildActiveChips } from "./ActiveFilterChips";
 import { FiltersPanel } from "./FiltersPanel";
 import { JobCard } from "./JobCard";
 import { ModeTabs } from "./ModeTabs";
-import { RestoredNotice, clearRestoredSearch } from "./RestoredNotice";
+import { RestoredNotice, clearRestoredSearch, useRestoredNoticeVisible } from "./RestoredNotice";
 import { LinkedInSearchLink } from "./LinkedInSearchLink";
 import { ResultsToolbar } from "./ResultsToolbar";
 import { SearchBar } from "./SearchBar";
@@ -96,13 +96,7 @@ export function JobsPage() {
   const [filters, setFilters] = useJobsFilters();
   const { chance, showHidden, ...apiFilters } = filters;
   const { ready: searchReady, restored } = useRestoreFilters(filters, setFilters);
-  // Guarda uma única vez os filtros restaurados: o aviso vale enquanto eles não mudarem.
-  const [noticeKey, setNoticeKey] = useState<string | null>(null);
-  const [noticeCaptured, setNoticeCaptured] = useState(false);
-  if (searchReady && !noticeCaptured) {
-    setNoticeCaptured(true);
-    if (restored === "last") setNoticeKey(serializeFilters("", filters));
-  }
+  const noticeVisible = useRestoredNoticeVisible(filters, restored, searchReady);
   useRememberFilters(filters, searchReady);
   const query = useJobsWithChance(apiFilters, chance ?? null, searchReady);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -225,7 +219,7 @@ export function JobsPage() {
             onChange={(workMode) => setFilters({ workMode })}
             panelId={panelId}
           />
-          {noticeKey !== null && serializeFilters("", filters) === noticeKey && <RestoredNotice onClear={() => clearRestoredSearch(setFilters)} />}
+          <RestoredNotice visible={noticeVisible} onClear={() => clearRestoredSearch(setFilters)} />
           <div className={cn("flex flex-wrap items-center gap-x-3 gap-y-2", chips.length === 0 && "max-lg:hidden")}>
             <ActiveFilterChips chips={chips} onClearAll={clear} />
             {total !== null && (

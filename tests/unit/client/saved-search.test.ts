@@ -1,15 +1,17 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import {
   clearSavedSearch,
   hasFilterParams,
   lastFiltersStore,
   useRememberFilters,
+  readLastFilters,
   readSavedSearch,
   saveSearch,
   savedFiltersStore,
   toSavedFilters,
 } from "@/lib/client/jobs/saved-search";
+import type { PageFilters } from "@/lib/client/jobs/use-jobs";
 
 const KEY = "jobfind:v1:savedFilters";
 const raw = (data: unknown, v = 1) => localStorage.setItem(KEY, JSON.stringify({ v, data }));
@@ -38,7 +40,7 @@ describe("toSavedFilters", () => {
   });
 
   it("não carrega cursor nem limit, mesmo que venham no objeto", () => {
-    const saved = toSavedFilters({ q: "dev", cursor: "abc", limit: 90 } as never);
+    const saved = toSavedFilters({ q: "dev", cursor: "abc", limit: 90 } as PageFilters);
     expect(saved).toEqual({ q: "dev" });
   });
 });
@@ -122,11 +124,47 @@ describe("useRememberFilters", () => {
     expect(JSON.parse(localStorage.getItem(LAST_KEY)!)).toEqual({ v: 1, data: null });
   });
 
+  it("filtros só com showHidden não apagam a última busca salva", () => {
+    localStorage.setItem(LAST_KEY, JSON.stringify({ v: 1, data: { filters: { lang: "en" }, savedAt: new Date().toISOString() } }));
+    renderHook(() => useRememberFilters({ showHidden: true } satisfies PageFilters, true));
+    expect(lastFiltersStore.get()?.filters).toEqual({ lang: "en" });
+  });
+
+  it("renova savedAt expirado quando os filtros mudam de verdade", () => {
+    localStorage.setItem(LAST_KEY, seed);
+    renderHook(() => useRememberFilters({ lang: "pt" } satisfies PageFilters, true));
+    const last = lastFiltersStore.get();
+    expect(last?.filters).toEqual({ lang: "pt" });
+    expect(Date.parse(last!.savedAt)).toBeGreaterThan(Date.parse("2026-01-02T00:00:00.000Z"));
+  });
+
   it("não regrava savedAt se os filtros não mudaram", () => {
-    const { rerender } = renderHook(({ f }) => useRememberFilters(f, true), { initialProps: { f: { lang: "pt" } as never } });
+    const { rerender } = renderHook(({ f }) => useRememberFilters(f, true), { initialProps: { f: { lang: "pt" } satisfies PageFilters as PageFilters } });
     const first = lastFiltersStore.get()?.savedAt;
     expect(first).toBeDefined();
-    rerender({ f: { lang: "pt" } as never });
+    rerender({ f: { lang: "pt" } satisfies PageFilters as PageFilters });
     expect(lastFiltersStore.get()?.savedAt).toBe(first);
+  });
+});
+
+describe("validade da última busca (7 dias)", () => {
+  afterEach(() => vi.useRealTimers());
+  const NOW = Date.parse("2026-06-10T12:00:00.000Z");
+  const DAYMS = 7 * 24 * 60 * 60 * 1000;
+  const seedAt = (ms: number) =>
+    lastFiltersStore.set({ filters: { lang: "pt" }, savedAt: new Date(NOW - ms).toISOString() });
+
+  it("exatamente 7 dias ainda é fresca", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    seedAt(DAYMS);
+    expect(readLastFilters()).toEqual({ lang: "pt" });
+  });
+
+  it("7 dias + 1 ms já expirou", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(NOW);
+    seedAt(DAYMS + 1);
+    expect(readLastFilters()).toBeNull();
   });
 });

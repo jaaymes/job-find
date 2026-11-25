@@ -1,7 +1,7 @@
 "use client";
 
 import { Menu } from "@base-ui/react/menu";
-import { Check, ChevronRight, MoreHorizontal } from "lucide-react";
+import { Check, ChevronRight, ExternalLink, MoreHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import { JOB_STATUSES, STATUS_LABELS, type JobStatus } from "@/lib/client/jobs/job-state";
 import { cn } from "@/lib/utils";
@@ -93,6 +93,7 @@ export function JobCardMenu({
                 target="_blank"
                 rel="noopener noreferrer nofollow"
               >
+                <ExternalLink aria-hidden="true" className="size-3.5" />
                 Ver empresa no Glassdoor
                 <span className="sr-only"> (abre em nova aba)</span>
               </Menu.LinkItem>

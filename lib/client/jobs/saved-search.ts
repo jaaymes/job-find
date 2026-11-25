@@ -99,12 +99,16 @@ export function readLastFilters(now: number = Date.now()): SavedFilters | null {
  */
 export function useRememberFilters(filters: PageFilters, ready: boolean): void {
   const serialized = JSON.stringify(toSavedFilters(filters));
+  const onlyHidden =
+    filters.showHidden === true &&
+    Object.entries(filters).every(([key, value]) => key === "showHidden" || value === undefined);
   useEffect(() => {
     if (!ready) return;
     const next: SavedFilters | null = JSON.parse(serialized);
     const current = lastFiltersStore.get();
     if (next === null) {
-      if (current !== null) lastFiltersStore.set(null);
+      // Só limpa se a URL tinha um filtro salvável que foi removido; URL sem nenhum (só `ocultas`) não toca na store.
+      if (current !== null && !onlyHidden) lastFiltersStore.set(null);
       return;
     }
     const unchanged =
@@ -112,7 +116,7 @@ export function useRememberFilters(filters: PageFilters, ready: boolean): void {
       JSON.stringify(toSavedFilters(current.filters)) === serialized &&
       isFresh(current.savedAt, Date.now());
     if (!unchanged) lastFiltersStore.set({ filters: next, savedAt: new Date().toISOString() });
-  }, [ready, serialized]);
+  }, [ready, serialized, onlyHidden]);
 }
 
 type Restored = { filters: SavedFilters; source: "last" | "saved" };

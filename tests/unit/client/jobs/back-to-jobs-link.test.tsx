@@ -68,10 +68,25 @@ describe("BackToJobsLink", () => {
     expect(back).not.toHaveBeenCalled();
   });
 
-  it("com ctrl, deixa o navegador abrir o link", () => {
+  it.each([
+    ["meta", { metaKey: true }],
+    ["shift", { shiftKey: true }],
+    ["alt", { altKey: true }],
+    ["ctrl", { ctrlKey: true }],
+    ["botão do meio", { button: 1 }],
+  ])("com %s, deixa o navegador abrir o link", (_name, init) => {
     markListReturn(5);
     bindListReturn(5);
-    fireEvent.click(setup(), { ctrlKey: true });
+    fireEvent.click(setup(), init);
+    expect(back).not.toHaveBeenCalled();
+  });
+
+  it("clique já cancelado por outro handler não volta pelo histórico", () => {
+    markListReturn(5);
+    bindListReturn(5);
+    const link = setup();
+    link.addEventListener("click", (e) => e.preventDefault(), true);
+    fireEvent.click(link);
     expect(back).not.toHaveBeenCalled();
   });
 });

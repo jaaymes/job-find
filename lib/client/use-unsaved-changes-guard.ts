@@ -2,6 +2,9 @@
 
 import { useEffect } from "react";
 
+/** Remove a barra final (exceto na raiz) para `/perfil` e `/perfil/` valerem como a mesma tela. */
+const trimSlash = (path: string) => (path.length > 1 ? path.replace(/\/+$/, "") || "/" : path);
+
 /**
  * Avisa antes de sair da página com alterações não salvas: `beforeunload` para fechar/recarregar
  * e um `confirm` para cliques em links internos (os links do app fazem navegação completa).
@@ -39,7 +42,7 @@ export function useUnsavedChangesGuard(dirty: boolean, message: string): void {
       } catch {
         return;
       }
-      if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
+      if (url.origin !== window.location.origin || trimSlash(url.pathname) === trimSlash(window.location.pathname)) return;
       if (window.confirm(message)) {
         clearLeaving();
         leaving = true;

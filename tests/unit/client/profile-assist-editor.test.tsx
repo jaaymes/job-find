@@ -162,3 +162,33 @@ describe("inserir e desfazer", () => {
     expect(saved.highlights).toEqual([]);
   });
 });
+
+describe("alterações não salvas calculadas do rascunho", () => {
+  const headline = () => screen.getByLabelText("Título profissional") as HTMLInputElement;
+
+  it("digitar e voltar ao valor salvo deixa de avisar", () => {
+    render(<ProfileEditor profile={profile({ headline: "Dev" })} onSave={() => true} />);
+    expect(beforeUnloadBlocked()).toBe(false);
+    fireEvent.change(headline(), { target: { value: "Dev Sênior" } });
+    expect(beforeUnloadBlocked()).toBe(true);
+    fireEvent.change(headline(), { target: { value: "Dev" } });
+    expect(beforeUnloadBlocked()).toBe(false);
+  });
+
+  it("editar e salvar deixa de avisar; editar de novo volta a avisar", () => {
+    render(<ProfileEditor profile={profile({ headline: "Dev" })} onSave={() => true} />);
+    fireEvent.change(headline(), { target: { value: "Outro" } });
+    expect(beforeUnloadBlocked()).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
+    expect(beforeUnloadBlocked()).toBe(false);
+    fireEvent.change(headline(), { target: { value: "Dev" } });
+    expect(beforeUnloadBlocked()).toBe(true);
+  });
+
+  it("se a gravação falhar, continua avisando", () => {
+    render(<ProfileEditor profile={profile({ headline: "Dev" })} onSave={() => false} />);
+    fireEvent.change(headline(), { target: { value: "Outro" } });
+    fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
+    expect(beforeUnloadBlocked()).toBe(true);
+  });
+});

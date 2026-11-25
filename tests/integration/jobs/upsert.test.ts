@@ -1,4 +1,4 @@
-import { sql } from "drizzle-orm";
+import { isNull, sql } from "drizzle-orm";
 import { beforeEach, describe, expect, it } from "vitest";
 import { enrichJob } from "@/lib/server/jobs/enrich-job";
 import type { NormalizedJob } from "@/lib/server/sources/types";
@@ -257,5 +257,72 @@ describe("upsertJob", () => {
     expect(await db.select().from(jobSources)).toHaveLength(0);
     const ok = await upsertJob(db, makeJob({ publishedAt: addDays(T0, -44) }), ref, T0);
     expect(ok.status).toBe("inserted");
+  });
+
+  it("colisão de chave na atualização funde as duas vagas", async () => {
+    const db = await testDb();
+    await upsertJob(db, makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1" }), ref, T0);
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      ref2,
+      T0,
+    );
+    const r = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://a.example/1", contentHash: "h-new" }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(r.status).toBe("updated");
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].id).toBe(r.jobId);
+    expect(active[0].dedupeKey).toBe("dk-b");
+    expect(active[0].urlCanonical).toBe("https://a.example/1");
+    expect(active[0].sources).toEqual(["greenhouse", "himalayas"]);
+  });
+
+  it("colisão de URL na atualização funde as duas vagas", async () => {
+    const db = await testDb();
+    await upsertJob(db, makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1" }), ref, T0);
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      ref2,
+      T0,
+    );
+    const r = await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: "https://b.example/1", contentHash: "h-new" }),
+      ref,
+      addDays(T0, 1),
+    );
+    expect(r.status).toBe("updated");
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(1);
+    expect(active[0].dedupeKey).toBe("dk-a");
+    expect(active[0].urlCanonical).toBe("https://b.example/1");
+    expect(active[0].sources).toEqual(["greenhouse", "himalayas"]);
+  });
+
+  it("fonte menos confiável colidindo não funde nem lança erro", async () => {
+    const db = await testDb();
+    const ref3 = { source: "hn", externalId: "hn-1", url: "https://news.ycombinator.com/item?id=1" } as const;
+    await upsertJob(db, makeJob({ dedupeKey: "dk-a", urlCanonical: "https://a.example/1" }), ref, T0);
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-b", urlCanonical: "https://b.example/1", contentHash: "hb" }),
+      ref3,
+      T0,
+    );
+    await upsertJob(
+      db,
+      makeJob({ dedupeKey: "dk-a", urlCanonical: "https://b.example/1", contentHash: "h-new" }),
+      ref3,
+      addDays(T0, 1),
+    );
+    const active = await db.select().from(jobs).where(isNull(jobs.expiredAt));
+    expect(active).toHaveLength(2);
   });
 });

@@ -8,7 +8,7 @@ const sha1 = (value: string) => createHash("sha1").update(value).digest("hex");
 /** Troca pontuação por espaço (não toca em `+` nem `#`, que distinguem C++ e C#) e colapsa espaços. */
 const stripPunctuation = (value: string) =>
   value
-    .replace(/[.,;:!?()[\]/\\\-_|"']/g, " ")
+    .replace(/[.,;:!?()[\]/\\\-—–_|"']/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
@@ -88,31 +88,51 @@ function isModeRegionSegment(segment: string): boolean {
   return words.length > 0 && words.every((word) => MODE_REGION_WORDS.has(word));
 }
 
-/** Remove um segmento final entre parênteses ou após ` - `, ` – ` ou ` | ` se for só modo/região. */
-function stripTrailingSegment(title: string): string {
-  const parenthesized = /\(([^()]*)\)\s*$/.exec(title);
-  if (parenthesized && isModeRegionSegment(parenthesized[1])) {
-    return title.slice(0, parenthesized.index).trim();
+/**
+ * Remove, numa passada só (linear), os segmentos finais entre parênteses ou após
+ * ` - `, ` – `, ` — ` ou ` | ` que sejam apenas modo/região.
+ */
+function stripTrailingSegments(title: string): string {
+  const separators = [...title.matchAll(/\s[-–—|]\s/g)];
+  let end = title.length;
+  for (;;) {
+    while (end > 0 && /\s/.test(title[end - 1])) end--;
+    if (title[end - 1] === ")") {
+      const open = title.lastIndexOf("(", end - 1);
+      const inner = open >= 0 ? title.slice(open + 1, end - 1) : "";
+      if (open >= 0 && !inner.includes(")") && isModeRegionSegment(inner)) {
+        end = open;
+        continue;
+      }
+      break;
+    }
+    // Descarta separadores que ficaram dentro de trechos já removidos.
+    while (separators.length > 0 && separators[separators.length - 1].index + 3 > end) {
+      separators.pop();
+    }
+    const last = separators[separators.length - 1];
+    if (last && isModeRegionSegment(title.slice(last.index + 3, end))) {
+      end = last.index;
+      separators.pop();
+      continue;
+    }
+    break;
   }
-  const last = [...title.matchAll(/\s[-–|]\s/g)].at(-1);
-  if (last?.index !== undefined && isModeRegionSegment(title.slice(last.index + last[0].length))) {
-    return title.slice(0, last.index).trim();
-  }
-  return title;
+  return title.slice(0, end).trim();
+}
+
+/** Abreviação só vale como palavra isolada (`PL/SQL` não vira "pleno sql"). */
+function expandSeniority(title: string): string {
+  return title
+    .split(" ")
+    .map((token) => SENIORITY[token.replace(/^[.,;:!?()[\]"']+|[.,;:!?()[\]"']+$/g, "")] ?? token)
+    .join(" ");
 }
 
 /** Tira marcador de gênero, modo/região no fim e iguala abreviações de senioridade. */
 export function normalizeTitle(value: string): string {
   const base = normalizeText(value).replace(GENDER_MARKER, " ").replace(/\s+/g, " ").trim();
-  let title = base;
-  for (let previous = ""; previous !== title; ) {
-    previous = title;
-    title = stripTrailingSegment(title);
-  }
-  const result = stripPunctuation(title)
-    .split(" ")
-    .map((word) => SENIORITY[word] ?? word)
-    .join(" ");
+  const result = stripPunctuation(expandSeniority(stripTrailingSegments(base)));
   // Título que só tinha modo/região não pode ficar vazio.
   return result || stripPunctuation(base);
 }

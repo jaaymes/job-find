@@ -73,6 +73,19 @@ describe("normalizeTitle", () => {
     expect(normalizeTitle("C# Developer")).not.toBe(normalizeTitle("C++ Developer"));
     expect(normalizeTitle(".NET Developer")).not.toBe(normalizeTitle("Developer"));
   });
+  it("tolera título gigante com muitos segmentos finais em tempo linear", () => {
+    const title = "x" + " - remote".repeat(5000);
+    const start = performance.now();
+    expect(normalizeTitle(title)).toBe("x");
+    expect(performance.now() - start).toBeLessThan(50);
+  });
+  it("PL só vira pleno como palavra isolada", () => {
+    expect(normalizeTitle("PL/SQL Developer")).not.toBe(normalizeTitle("Pleno SQL Developer"));
+    expect(normalizeTitle("Dev PL")).toBe("dev pleno");
+  });
+  it("trata travessão como separador", () => {
+    expect(normalizeTitle("Dev — Remote")).toBe("dev");
+  });
   it("só remove a/o entre parênteses, nunca a palavra solta", () => {
     expect(normalizeTitle("Analista a Distância")).toBe("analista a distancia");
     expect(normalizeTitle("Engenheiro (a)")).toBe("engenheiro");

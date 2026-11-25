@@ -89,7 +89,7 @@ describe("JobCard", () => {
   it("menu ⋯ oferece o link da empresa no Glassdoor, em nova aba", async () => {
     render(<JobCard job={{ ...job, company: "Nubank", origin: "national" }} now={Date.now()} />);
     await openMenu();
-    const item = await screen.findByRole("menuitem", { name: "Ver empresa no Glassdoor" });
+    const item = await screen.findByRole("menuitem", { name: /^Ver empresa no Glassdoor/ });
     expect(item.getAttribute("href")).toBe("https://www.glassdoor.com.br/Search/results.htm?keyword=Nubank");
     expect(item.getAttribute("target")).toBe("_blank");
     expect(item.getAttribute("rel")).toBe("noopener noreferrer nofollow");
@@ -99,6 +99,6 @@ describe("JobCard", () => {
     render(<JobCard job={{ ...job, company: "Confidencial" }} now={Date.now()} />);
     await openMenu();
     await screen.findByRole("menu");
-    expect(screen.queryByRole("menuitem", { name: "Ver empresa no Glassdoor" })).toBeNull();
+    expect(screen.queryByRole("menuitem", { name: /^Ver empresa no Glassdoor/ })).toBeNull();
   });
 });

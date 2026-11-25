@@ -94,6 +94,7 @@ export function JobCardMenu({
                 rel="noopener noreferrer nofollow"
               >
                 Ver empresa no Glassdoor
+                <span className="sr-only"> (abre em nova aba)</span>
               </Menu.LinkItem>
             )}
             <Menu.Item className={ITEM} onClick={onHide}>

@@ -80,7 +80,10 @@ export function keywordFor(now: Date): string {
 
 async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   const token = process.env.APIFY_TOKEN?.trim();
-  if (!token) return;
+  if (!token) {
+    console.warn("[coleta] linkedin: APIFY_TOKEN ausente, a fonte não coleta nada.");
+    return;
+  }
   const auth = { Authorization: `Bearer ${token}` };
 
   const listUrl = new URL(`${ACTOR_URL}/runs`);
@@ -116,12 +119,17 @@ async function* fetchLinkedin(ctx: ConnectorContext): AsyncGenerator<unknown> {
   startUrl.searchParams.set("maxItems", String(RESULTS_PER_RUN));
   startUrl.searchParams.set("maxTotalChargeUsd", String(MAX_CHARGE_PER_RUN_USD));
   const input = { keywords: keywordFor(ctx.now), location: "Brazil", datePosted: "r86400", limit: RESULTS_PER_RUN };
-  await ctx.fetchJson(startUrl.toString(), {
-    method: "POST",
-    headers: { ...auth, "content-type": "application/json" },
-    body: JSON.stringify(input),
-    signal: ctx.signal,
-  });
+  try {
+    await ctx.fetchJson(startUrl.toString(), {
+      method: "POST",
+      headers: { ...auth, "content-type": "application/json" },
+      body: JSON.stringify(input),
+      signal: ctx.signal,
+    });
+  } catch (e) {
+    // Falhar ao iniciar (ex.: crédito esgotado) não pode perder as vagas já lidas nem travar o cursor.
+    ctx.reportPartial("apify:start", e);
+  }
 }
 
 function isLinkedinUrl(url: string): boolean {

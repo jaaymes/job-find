@@ -86,6 +86,31 @@ describe("conector LinkedIn (Apify)", () => {
     });
   });
 
+  it("falha ao iniciar a execução não perde o dataset: entrega as vagas, grava o cursor e reporta parcial", async () => {
+    const due = runs.data.items.map((r, i) => ({ ...r, startedAt: i === 0 ? "2026-11-23T09:00:00.000Z" : r.startedAt }));
+    const base = serveWith(due);
+    const ctx = fakeCtx({
+      serve: (url, init) => {
+        if (init?.method === "POST") throw new Error("resposta HTTP 402 de api.apify.com");
+        return base(url, init);
+      },
+      cursor: "dsOld",
+    });
+    const raws = (await collect(linkedin.fetch(ctx))) as { id: string }[];
+    expect(raws.map((r) => r.id)).toEqual(dataset.map((d) => d.id));
+    expect(ctx.cursors.at(-1)).toBe("dsNew");
+    expect(ctx.partials).toHaveLength(1);
+    expect(ctx.partials[0]!.label).toBe("apify:start");
+  });
+
+  it("sem APIFY_TOKEN avisa no log", async () => {
+    vi.stubEnv("APIFY_TOKEN", "");
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    await collect(linkedin.fetch(fakeCtx({ serve: serveWith(runs.data.items) })));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining("APIFY_TOKEN"));
+    warn.mockRestore();
+  });
+
   it("orçamento cabe nos US$ 5 com execução a cada 2 h", () => {
     expect(RUN_EVERY_HOURS).toBe(2);
     expect(RESULTS_PER_RUN).toBe(32);

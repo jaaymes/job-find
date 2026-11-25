@@ -6,7 +6,7 @@ import { ThemeToggle } from "./ThemeToggle";
 export function SiteHeader({ current }: { current?: NavId }) {
   return (
     <header className="border-b border-jf-line bg-jf-surface">
-      <div className="mx-auto flex h-14 w-full max-w-[1280px] items-center gap-x-6 px-4 sm:px-6 md:h-auto md:flex-wrap md:gap-y-2 md:py-3.5">
+      <div className="mx-auto flex h-[55px] w-full max-w-[1280px] items-center gap-x-6 px-4 sm:px-6 md:h-auto md:flex-wrap md:gap-y-2 md:py-3.5">
         <Link href="/" className="flex items-center gap-2.5 text-jf-ink no-underline">
           {/* Símbolo da marca (lupa cujo cabo forma o J); mesmo desenho de public/brand/jobfind-mark.svg. */}
           <svg aria-hidden="true" viewBox="7 3 43 59" className="h-8 w-auto" fill="none" strokeWidth={6}>

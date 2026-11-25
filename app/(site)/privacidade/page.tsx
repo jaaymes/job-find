@@ -30,7 +30,7 @@ export default function PrivacidadePage() {
 
       <Section title="Onde ficam os seus dados">
         <p>
-          Seu currículo, perfil, vagas salvas, candidaturas e configurações ficam apenas no armazenamento local do seu
+          Seu currículo, perfil, vagas salvas, candidaturas, configurações e a última busca que você fez na lista de vagas ficam apenas no armazenamento local do seu
           navegador (localStorage). O servidor guarda somente o índice público de vagas, coletado de fontes abertas, e
           nunca recebe o seu currículo nem o seu perfil.
         </p>

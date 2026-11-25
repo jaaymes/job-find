@@ -118,8 +118,8 @@ describe("ProviderCard compact", () => {
   it("'Revisar aviso' é um botão com contorno (variant outline)", () => {
     setup("openrouter", { ...OAUTH, freeConsent: undefined }, { variant: "compact" });
     const btn = screen.getByRole("button", { name: "Revisar aviso dos modelos gratuitos" });
-    // Classe exclusiva do `variant="outline"` do Button (o ghost não tem fundo nem borda).
-    expect(btn.classList.contains("bg-background")).toBe(true);
+    // Classes exclusivas do `variant="outline"` do Button (o ghost não tem fundo nem borda).
+    expect(btn.classList.contains("bg-jf-surface")).toBe(true);
   });
 
   it("mostra o erro de OAuth", () => {

@@ -73,27 +73,30 @@
   --color-jf-warn-line: var(--jf-warn-line);
   --color-jf-warn-fg: var(--jf-warn-fg);
   --color-jf-warn-fg-strong: var(--jf-warn-fg-strong);
+  --color-jf-on-brand: var(--jf-on-brand);
+  --color-jf-field-border: var(--jf-field-border);
+  --color-jf-fav: var(--jf-fav);
 }
 
 :root {
-  --background: oklch(1 0 0);
+  --background: var(--jf-surface);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: var(--jf-surface);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: var(--jf-surface);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary: var(--jf-brand);
+  --primary-foreground: var(--jf-on-brand);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted: var(--jf-chip);
+  --muted-foreground: var(--jf-ink-3);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --destructive: var(--jf-danger-fg);
+  --border: var(--jf-line);
+  --input: var(--jf-field-border);
+  --ring: var(--jf-brand);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -134,27 +137,19 @@
   --jf-warn-line: #e0b060;
   --jf-warn-fg: #7a4500;
   --jf-warn-fg-strong: #5a3400;
+  --jf-on-brand: #ffffff;
+  --jf-field-border: #8f8b82;
+  --jf-fav: #b45309;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -194,6 +189,9 @@
   --jf-warn-line: #a8792c;
   --jf-warn-fg: #f2c27a;
   --jf-warn-fg-strong: #f7d49c;
+  --jf-on-brand: #121418;
+  --jf-field-border: #6b7280;
+  --jf-fav: #f59e0b;
 }
 
 @layer base {
@@ -206,5 +204,27 @@
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+}
+/* Espaço para a barra de abas inferior (só abaixo de md); no desktop volta ao respiro padrão. */
+@utility pb-tabbar {
+  padding-bottom: 4rem;
+  @media (width < 48rem) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+}
+
+/* O sonner só aplica `mobileOffset` abaixo de 600px; a barra de abas aparece até 767px, então o toast sobe até md. */
+@media (width < 48rem) {
+  [data-sonner-toaster][data-y-position="bottom"] {
+    bottom: calc(80px + env(safe-area-inset-bottom)) !important;
   }
 }

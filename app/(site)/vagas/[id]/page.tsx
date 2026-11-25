@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { JobDetail } from "@/components/jobs/JobDetail";
-import { SiteFooter } from "@/components/layout/SiteFooter";
-import { SiteHeader } from "@/components/layout/SiteHeader";
+import { AppShell } from "@/components/layout/AppShell";
 
 // Fora do índice dos buscadores: o conteúdo é das fontes, e algumas proíbem repassá-lo ao Google (D-07).
 export const metadata: Metadata = { title: "Job Find — Detalhe da vaga", robots: { index: false } };
@@ -15,12 +14,8 @@ export function generateStaticParams(): { id: string }[] {
 export default async function JobPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   return (
-    <>
-      <SiteHeader current="vagas" />
-      <main className="mx-auto flex w-full max-w-[1280px] flex-1 flex-col gap-5 px-4 pt-4 pb-16 sm:px-6 sm:pt-6">
-        <JobDetail id={id} />
-      </main>
-      <SiteFooter />
-    </>
+    <AppShell current="vagas" tabBar={false} className="pt-4 sm:pt-6 pb-[calc(88px+env(safe-area-inset-bottom))] md:pb-16">
+      <JobDetail id={id} />
+    </AppShell>
   );
 }

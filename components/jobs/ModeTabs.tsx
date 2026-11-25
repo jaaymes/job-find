@@ -35,7 +35,7 @@ export function ModeTabs({ value, counts, onChange, panelId }: Props) {
   };
 
   return (
-    <div role="tablist" aria-label="Modelo de trabalho" className="flex gap-0.5 border-b border-jf-line sm:flex-wrap sm:gap-1.5">
+    <div role="tablist" aria-label="Modelo de trabalho" className="flex gap-0.5 overflow-x-auto border-b border-jf-line sm:flex-wrap sm:gap-1.5 sm:overflow-visible">
       {TABS.map((tab, i) => {
         const selected = i === activeIndex;
         const count = counts?.[tab.count];
@@ -54,13 +54,13 @@ export function ModeTabs({ value, counts, onChange, panelId }: Props) {
             onClick={() => onChange(tab.mode)}
             onKeyDown={(e) => onKeyDown(e, i)}
             className={cn(
-              "min-h-11 flex-1 border-b-[3px] px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-jf-brand sm:flex-none sm:px-4 sm:text-[15px]",
+              "min-h-11 flex-1 whitespace-nowrap border-b-[3px] px-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-jf-brand sm:flex-none sm:px-4 sm:text-[15px]",
               selected ? "border-jf-ink font-semibold text-jf-ink" : "border-transparent text-jf-ink-2 hover:text-jf-ink",
             )}
           >
             {tab.label}
             {count !== undefined && (
-              <span className={cn("ml-1.5 hidden text-jf-ink-3 sm:inline", selected ? "font-medium" : "")}> {count}</span>
+              <span className={cn("ml-1.5 text-jf-ink-3 tabular-nums", selected ? "font-medium" : "")}> {count}</span>
             )}
           </button>
         );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { ReturnToJobLink } from "@/components/onboarding/SetupProgress";
 import { NoProviderCta } from "@/components/settings/NoProviderCta";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,7 @@ import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 import { ImportPanel, type ImportMeta } from "./ImportPanel";
 import { ProfileEditor } from "./ProfileEditor";
 import { CARD } from "@/components/ui/styles";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const noop = () => () => {};
 
@@ -34,7 +36,7 @@ export function ProfileScreen() {
   const [manual, setManual] = useState(false);
 
   if (!hydrated || !settings) {
-    return <div aria-busy="true" className={`${CARD} h-64 animate-pulse`} />;
+    return <Skeleton label="Carregando perfil" className={`${CARD} h-64`} />;
   }
 
   const canUseAi = hasUsableProvider(settings, "extract");
@@ -61,11 +63,14 @@ export function ProfileScreen() {
   return (
     <>
       <div>
-        <h1 className="text-[32px] leading-tight font-bold">Seu perfil</h1>
+        <h1 className="font-display text-[32px] leading-tight font-bold">Seu perfil</h1>
         <p className="mt-1.5 max-w-[720px] text-jf-ink-3">
           É a base para calcular suas chances e gerar currículos. Fica salvo só neste navegador e nunca é enviado aos
           nossos servidores.
         </p>
+        <div className="mt-3 empty:hidden">
+          <ReturnToJobLink />
+        </div>
       </div>
       <NoProviderCta task="extract" />
       {saveError && (

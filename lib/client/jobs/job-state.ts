@@ -115,6 +115,9 @@ export function setStatus(job: SnapshotSource, status: JobStatus): SetResult {
   }));
 }
 
+/** Etapa "Salvas" do funil de Minhas vagas: status Salva, ou favorita ainda sem status. */
+export const isSavedStage = (s: JobState): boolean => s.status === "saved" || (s.status === "none" && s.favorite);
+
 /** ISO da última mudança para "Aplicada"; `null` se o status atual não é esse. */
 export function appliedAt(s: JobState | undefined): string | null {
   if (!s || s.status !== "applied") return null;

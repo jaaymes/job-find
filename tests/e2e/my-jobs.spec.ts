@@ -68,6 +68,28 @@ async function openHome(page: Page, path = "/") {
   await expect(cards(page).first()).toBeVisible();
 }
 
+/** Abre o menu "⋯" do card e escolhe um item (o status fica num submenu). */
+async function menuAction(page: Page, title: string, item: string, status?: string) {
+  await page.getByRole("button", { name: `Mais ações: ${title}` }).click();
+  if (status) {
+    await page.getByRole("menuitem", { name: "Mudar status" }).click();
+    await page.getByRole("menuitemradio", { name: status, exact: true }).click();
+  } else {
+    await page.getByRole("menuitem", { name: item }).click();
+  }
+  // O próximo menu só abre depois que este fecha por completo.
+  await expect(page.getByRole("menu")).toHaveCount(0);
+}
+
+const column = (page: Page, name: string) => page.getByRole("region", { name });
+
+/** Botão "Mover" do card em Minhas vagas: escolhe o novo status. */
+async function moveTo(page: Page, title: string, status: string) {
+  await page.getByRole("button", { name: `Mover ${title}` }).click();
+  await page.getByRole("menuitemradio", { name: status, exact: true }).click();
+  await expect(page.getByRole("menu")).toHaveCount(0);
+}
+
 const todayBr = () => new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date());
 
 test("avisa quando o navegador não deixa gravar o favorito, o status ou ocultar", async ({ page }) => {
@@ -83,10 +105,12 @@ test("avisa quando o navegador não deixa gravar o favorito, o status ou ocultar
   const first = cards(page).first();
   await first.getByRole("button", { name: /^Favoritar/ }).click();
   await expect(first.getByRole("alert").filter({ hasText: "Não foi possível salvar neste navegador." })).toBeVisible();
-  await first.getByRole("combobox", { name: /^Status da candidatura/ }).selectOption({ label: "Salva" });
+  const firstTitle = (await first.getByRole("heading", { level: 3 }).textContent()) ?? "";
+  await menuAction(page, firstTitle, "", "Salva");
   await expect(first.getByRole("alert")).toHaveCount(2);
-  await first.getByRole("button", { name: /^Ocultar/ }).click();
-  await expect(first.getByRole("alert")).toHaveCount(3);
+  await menuAction(page, firstTitle, "Ocultar vaga");
+  // Status e ocultar compartilham o mesmo aviso do menu: continuam 2 avisos (estrela + menu).
+  await expect(first.getByRole("alert")).toHaveCount(2);
   // Sem gravação, a vaga continua na lista e não ganha o "Desfazer".
   await expect(first).toBeVisible();
   await expect(page.getByRole("button", { name: "Desfazer" })).toHaveCount(0);
@@ -101,18 +125,19 @@ test("favoritar na home e ver a vaga em Minhas vagas", async ({ page }) => {
 
   await page.goto("/minhas-vagas");
   await expect(page.getByRole("heading", { level: 1, name: "Minhas vagas" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: /Favoritas\s*1/ })).toHaveAttribute("aria-selected", "true");
+  // Favorita sem status entra na etapa Salvas do funil.
+  await expect(column(page, "Salvas").locator("article")).toHaveCount(1);
   await expect(card(page, 0)).toBeVisible();
-  await expect(page.getByRole("tab", { name: /Aplicadas\s*0/ })).toBeVisible();
+  await expect(column(page, "Aplicadas").locator("article")).toHaveCount(0);
 
-  // Desfavoritar na própria tela tira a vaga da aba.
+  // Desfavoritar na própria tela tira a vaga do funil.
   await page.getByRole("button", { name: `Favoritar ${TITLE(0)}` }).click();
-  await expect(page.getByText("Você ainda não favoritou nenhuma vaga.")).toBeVisible();
+  await expect(page.getByText(/Nenhuma vaga salva\./)).toBeVisible();
 });
 
 test("mudar o status para Aplicada registra a data e mostra o selo na listagem", async ({ page }) => {
   await openHome(page);
-  await card(page, 1).getByLabel(`Status da candidatura: ${TITLE(1)}`).selectOption("applied");
+  await menuAction(page, TITLE(1), "", "Aplicada");
   const badge = card(page, 1).getByTestId("status-badge");
   await expect(badge).toHaveText(`Aplicada em ${todayBr()}`);
 
@@ -125,17 +150,20 @@ test("mudar o status para Aplicada registra a data e mostra o selo na listagem",
   await page.reload();
   await expect(card(page, 1).getByTestId("status-badge")).toHaveText(`Aplicada em ${todayBr()}`);
   await page.goto("/minhas-vagas");
-  await page.getByRole("tab", { name: /Aplicadas\s*1/ }).click();
-  await expect(card(page, 1)).toBeVisible();
+  await expect(column(page, "Aplicadas").locator("article")).toHaveCount(1);
+  await expect(column(page, "Aplicadas").getByText(`Aplicada em ${todayBr()}`)).toBeVisible();
 
-  // Qualquer transição vale, inclusive voltar para "Sem status" (o selo some).
-  await card(page, 1).getByLabel(`Status da candidatura: ${TITLE(1)}`).selectOption("none");
-  await expect(page.getByRole("tab", { name: /Aplicadas\s*0/ })).toBeVisible();
+  // Mover para Entrevista troca de coluna; voltar para "Sem status" tira a vaga do funil.
+  await moveTo(page, TITLE(1), "Entrevista");
+  await expect(column(page, "Entrevista").locator("article")).toHaveCount(1);
+  await expect(column(page, "Aplicadas").locator("article")).toHaveCount(0);
+  await moveTo(page, TITLE(1), "Sem status");
+  await expect(page.locator("article")).toHaveCount(0);
 });
 
 test("ocultar tira a vaga da home (com Desfazer) e Mostrar vagas ocultas a traz de volta", async ({ page }) => {
   await openHome(page);
-  await page.getByRole("button", { name: `Ocultar ${TITLE(2)}` }).click();
+  await menuAction(page, TITLE(2), "Ocultar vaga");
   await expect(card(page, 2)).toHaveCount(0);
   await expect(page.getByTestId("undo-region").getByText("Vaga oculta")).toBeVisible();
 
@@ -144,7 +172,7 @@ test("ocultar tira a vaga da home (com Desfazer) e Mostrar vagas ocultas a traz 
   await expect(card(page, 2)).toBeVisible();
 
   // Oculta de novo, recarrega: continua fora da lista.
-  await page.getByRole("button", { name: `Ocultar ${TITLE(2)}` }).click();
+  await menuAction(page, TITLE(2), "Ocultar vaga");
   await page.reload();
   await expect(cards(page).first()).toBeVisible();
   await expect(card(page, 2)).toHaveCount(0);
@@ -156,7 +184,7 @@ test("ocultar tira a vaga da home (com Desfazer) e Mostrar vagas ocultas a traz 
 
   // Em Minhas vagas, a aba Ocultas oferece "Mostrar de novo".
   await page.goto("/minhas-vagas");
-  await page.getByRole("tab", { name: /Ocultas\s*1/ }).click();
+  await page.getByRole("button", { name: "Ocultas (1)" }).click();
   await page.getByRole("button", { name: `Mostrar de novo ${TITLE(2)}` }).click();
   await expect(page.getByText("Você não ocultou nenhuma vaga.")).toBeVisible();
   await openHome(page);
@@ -210,22 +238,25 @@ test("do cabeçalho público para Minhas vagas sem violar a CSP, e as abas funci
     "page",
   );
 
+  // No celular o funil vira um seletor segmentado.
+  await page.setViewportSize({ width: 390, height: 844 });
   // Hidratou sob a CSP de nonce: a navegação por setas troca a aba selecionada.
   // O título vem do HTML do servidor e aparece antes da hidratação; uma seta antes dela se perde (CI lento).
   // Repete foco + seta até o React responder, em vez de supor que já hidratou.
-  const first = page.getByRole("tab", { name: /Favoritas/ });
+  const first = page.getByRole("tab", { name: /Salvas/ });
   await expect(async () => {
     await first.focus();
     await page.keyboard.press("ArrowRight");
-    await expect(page.getByRole("tab", { name: /Salvas/ })).toHaveAttribute("aria-selected", "true", { timeout: 1000 });
+    await expect(page.getByRole("tab", { name: /Aplicadas/ })).toHaveAttribute("aria-selected", "true", { timeout: 1000 });
   }).toPass({ timeout: 15_000 });
   await page.keyboard.press("End");
-  await expect(page.getByRole("tab", { name: /Ocultas/ })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: /Proposta/ })).toHaveAttribute("aria-selected", "true");
   await page.keyboard.press("Home");
   await expect(first).toHaveAttribute("aria-selected", "true");
   await expect(card(page, 0)).toBeVisible();
 
-  // Do detalhe público também.
+  // Do detalhe público também (de volta ao desktop, onde há o cabeçalho completo).
+  await page.setViewportSize({ width: 1280, height: 720 });
   await page.goto("/vagas/1");
   await expect(page.getByRole("heading", { level: 1, name: TITLE(0) })).toBeVisible();
   await page.getByRole("navigation", { name: "Principal" }).getByRole("link", { name: "Minhas vagas" }).click();

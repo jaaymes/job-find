@@ -97,13 +97,13 @@ test("mostra título, empresa, chips, descrição e atribuição com links para 
   await expect(origin).toHaveAttribute("target", "_blank");
   await expect(origin).toHaveAttribute("rel", /noopener/);
 
-  const apply = page.getByRole("link", { name: /Candidatar na página da vaga/ });
+  const apply = page.getByRole("link", { name: /Candidatar-se na/ });
   await expect(apply).toHaveAttribute("href", "https://boards.example.com/e2e/00");
   await expect(apply).toHaveAttribute("target", "_blank");
   await expect(apply).toHaveAttribute("rel", /noopener/);
   await expect(apply).toHaveAttribute("rel", /noreferrer/);
 
-  await expect(page.getByRole("heading", { level: 2, name: "Sua chance" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Sua aderência" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Análise com IA" })).toBeVisible();
   await expect(page.getByRole("link", { name: /Voltar para as vagas/ })).toHaveAttribute("href", "/");
 });
@@ -111,7 +111,7 @@ test("mostra título, empresa, chips, descrição e atribuição com links para 
 test("o botão Candidatar mantém a URL da fonte intacta, com utm_source (Himalayas, D-07)", async ({ page }) => {
   await page.goto(`/vagas/${himalayasId}`);
   await expect(page.getByRole("heading", { level: 1, name: "Vaga Himalayas Desenvolvedor" })).toBeVisible();
-  const apply = page.getByRole("link", { name: /Candidatar na página da vaga/ });
+  const apply = page.getByRole("link", { name: /Candidatar-se na/ });
   await expect(apply).toHaveAttribute("href", HIMALAYAS_APPLY_URL);
   await expect(apply).toContainText("(abre em nova aba)");
 });
@@ -157,4 +157,32 @@ test("id não numérico mostra 'Vaga não encontrada' sem chamar a API", async (
   await page.goto("/vagas/abc");
   await expect(page.getByRole("heading", { name: "Vaga não encontrada" })).toBeVisible();
   expect(calls).toBe(0);
+});
+
+test("sem perfil: Gerar CV desabilitado com o motivo e um único pedido de currículo", async ({ page }) => {
+  await page.goto("/vagas/1");
+  await expect(page.getByRole("button", { name: "Gerar CV + carta · precisa do currículo" })).toBeDisabled();
+  const aderencia = page.getByRole("region", { name: "Sua aderência" });
+  await expect(aderencia.getByRole("link", { name: "Conectar IA" })).toHaveAttribute("href", "/configuracoes?voltar=%2Fvagas%2F1");
+  await expect(page.getByRole("link", { name: /Importar currículo/ })).toHaveCount(0);
+});
+
+test.describe("celular", () => {
+  test.use({ viewport: { width: 390, height: 844 } });
+
+  test("barra de ação fixa, abas e CTA em uma linha", async ({ page }) => {
+    await page.goto("/vagas/1");
+    const bar = page.getByRole("group", { name: "Ações da vaga" });
+    await expect(bar).toBeVisible();
+    const cta = bar.getByRole("link", { name: /Candidatar-se na/ });
+    await expect(cta).toBeVisible();
+    const box = await cta.boundingBox();
+    expect(box!.height).toBeLessThanOrEqual(56);
+    await expect(page.getByRole("navigation", { name: "Navegação inferior" })).toHaveCount(0);
+
+    await expect(page.getByRole("heading", { level: 2, name: "Análise com IA" })).toBeHidden();
+    await page.getByRole("tab", { name: "Análise com IA" }).click();
+    await expect(page.getByRole("heading", { level: 2, name: "Análise com IA" })).toBeVisible();
+    await expect(page.getByText("Descrição 00", { exact: true })).toBeHidden();
+  });
 });

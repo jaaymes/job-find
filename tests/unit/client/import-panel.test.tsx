@@ -199,3 +199,27 @@ describe("ImportPanel: modal de progresso", () => {
     expect(dialog()).toBeNull();
   });
 });
+
+describe("ImportPanel: textos por tipo de ponteiro", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  it("com ponteiro de toque o texto é Toque para escolher o PDF ou DOCX", () => {
+    vi.stubGlobal(
+      "matchMedia",
+      vi.fn((query: string) => ({
+        matches: query === "(pointer: coarse)",
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })),
+    );
+    setup();
+    expect(screen.getByText("Toque para escolher o PDF ou DOCX")).toBeTruthy();
+    expect(screen.queryByText("Arraste o arquivo ou clique para escolher")).toBeNull();
+  });
+
+  it("com mouse mantém o texto de arrastar", () => {
+    setup();
+    expect(screen.getByText("Arraste o arquivo ou clique para escolher")).toBeTruthy();
+  });
+});

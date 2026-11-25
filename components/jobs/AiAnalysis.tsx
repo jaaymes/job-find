@@ -189,14 +189,9 @@ export function AiAnalysis({ job }: { job: JobDetail }) {
       )}
 
       {!record && !profile && (
-        <div className="flex flex-col gap-2">
-          <p className="text-[13px] text-jf-ink-3">
-            Importe o seu currículo para ver pontos fortes, lacunas e palavras-chave que faltam para esta vaga.
-          </p>
-          <HardLink href="/perfil" className={`${BTN_PRIMARY} w-fit no-underline`}>
-            Importar currículo
-          </HardLink>
-        </div>
+        <p className="text-[13px] text-jf-ink-3">
+          Pontos fortes, lacunas e palavras-chave que faltam aparecem aqui assim que o seu perfil estiver pronto.
+        </p>
       )}
 
       {profile && !hasProvider && settings !== null && <NoProviderCta task="analyze" />}

@@ -39,13 +39,24 @@ function DialogOverlay({
   )
 }
 
+const MOBILE_CLASSES = {
+  // Mesmas classes do `Sheet side="full"`; de `sm` em diante volta a ser um diálogo centralizado.
+  sheet:
+    "inset-0 flex h-dvh max-h-dvh flex-col overflow-y-auto pb-[max(1rem,env(safe-area-inset-bottom))] duration-200 data-open:slide-in-from-bottom data-closed:slide-out-to-bottom motion-reduce:duration-0 motion-reduce:data-open:animate-none motion-reduce:data-closed:animate-none sm:inset-auto sm:top-1/2 sm:left-1/2 sm:grid sm:h-auto sm:max-h-none sm:w-full sm:max-w-sm sm:-translate-x-1/2 sm:-translate-y-1/2 sm:overflow-visible sm:rounded-xl sm:pb-4 sm:ring-1 sm:ring-foreground/10 sm:duration-100 sm:data-open:slide-in-from-bottom-0 sm:data-open:zoom-in-95 sm:data-closed:slide-out-to-bottom-0 sm:data-closed:zoom-out-95",
+  center:
+    "top-1/2 left-1/2 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-xl ring-1 ring-foreground/10 duration-100 sm:max-w-sm data-open:zoom-in-95 data-closed:zoom-out-95",
+} as const
+
 function DialogContent({
   className,
   children,
   showCloseButton = true,
+  mobile = "sheet",
   ...props
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean
+  /** Abaixo de `sm`: `"sheet"` (padrão) ocupa a tela toda, com o conteúdo no topo; `"center"` mantém o diálogo centralizado. */
+  mobile?: "sheet" | "center"
 }) {
   return (
     <DialogPortal>
@@ -53,7 +64,8 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed z-50 gap-4 bg-popover p-4 text-sm text-popover-foreground outline-none data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+          MOBILE_CLASSES[mobile],
           className
         )}
         {...props}
@@ -65,8 +77,8 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-2 right-2"
-                size="icon-sm"
+                className="absolute top-0.5 right-0.5 size-11 md:size-11"
+                size="icon"
               />
             }
           >

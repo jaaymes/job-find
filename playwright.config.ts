@@ -1,4 +1,4 @@
-import { defineConfig } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test";
 import { ONBOARDING_SEEN } from "./tests/e2e/onboarding-seen";
 
 export default defineConfig({
@@ -10,6 +10,12 @@ export default defineConfig({
   reporter: process.env.CI ? "github" : "list",
   // O guia de primeira visita abre um diálogo modal; os testes começam com ele já visto (onboarding.spec cobre o guia).
   use: { baseURL: "http://localhost:3100", storageState: ONBOARDING_SEEN },
+  projects: [
+    { name: "desktop", testIgnore: /mobile-.*\.spec\.ts/ },
+    { name: "mobile-pixel", testMatch: /mobile-.*\.spec\.ts/, use: { ...devices["Pixel 7"] } },
+    // Chromium com o perfil do iPhone: não exige o WebKit instalado.
+    { name: "mobile-iphone", testMatch: /mobile-.*\.spec\.ts/, use: { ...devices["iPhone 13"], browserName: "chromium" } },
+  ],
   // Porta própria (3100): evita reaproveitar, por engano, outro servidor de desenvolvimento na 3000.
   // Em CI o workflow já rodou `pnpm build` no passo anterior: aqui só sobe o servidor (um build só).
   webServer: {

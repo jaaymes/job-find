@@ -4,6 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { isAbortError } from "@/lib/client/ai/errors";
 import type { AiSettings } from "@/lib/client/ai/settings";
+import { useMediaQuery } from "@/lib/client/use-media-query";
 import { extractText } from "@/lib/client/extract";
 import {
   formatFound,
@@ -37,6 +38,8 @@ const TICK_MS = 200;
 const NOTHING_FOUND: FoundSummary = { experiences: 0, skills: 0, education: 0, headline: null };
 
 export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfile, lastImport }: Props) {
+  // Com toque não há arrastar: o texto muda (o pré-render usa o texto de mouse).
+  const coarse = useMediaQuery("(pointer: coarse)");
   const fileId = useId();
   const textId = useId();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -190,8 +193,10 @@ export function ImportPanel({ settings, canUseAi, onImported, onManual, hasProfi
             <path d="M12 15V4M7 9l5-5 5 5" />
             <path d="M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4" />
           </svg>
-          <span className="font-semibold">Arraste o arquivo ou clique para escolher</span>
-          <span className="text-[13px] text-jf-ink-3">PDF ou DOCX, até 5 MB</span>
+          <span className="font-semibold">
+            {coarse ? "Toque para escolher o PDF ou DOCX" : "Arraste o arquivo ou clique para escolher"}
+          </span>
+          <span className="text-[13px] text-jf-ink-3">{coarse ? "Até 5 MB" : "PDF ou DOCX, até 5 MB"}</span>
           <input
             ref={fileRef}
             id={fileId}

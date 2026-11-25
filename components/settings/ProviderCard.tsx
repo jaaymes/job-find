@@ -1,6 +1,6 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { ChevronRight, Star } from "lucide-react";
 import { useId, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
 import { Button } from "@/components/ui/button";
@@ -230,8 +230,14 @@ export function ProviderCard({
           </>
         ) : (
           <>
+            {/* Só o OpenRouter (recomendado) tem o botão primário; os demais usam contorno. */}
             <Button
-              className="min-h-11 bg-jf-brand px-3.5 text-sm font-semibold text-jf-surface hover:bg-jf-brand-dark"
+              variant={isOpenRouter ? "primary" : "outline"}
+              className={
+                isOpenRouter
+                  ? "h-auto rounded-lg px-3.5"
+                  : "min-h-11 border-jf-line-strong px-3 text-sm"
+              }
               onClick={def.auth.kind === "oauth" ? onConnectOAuth : onAdd}
             >
               {def.auth.kind === "oauth"
@@ -259,5 +265,24 @@ export function ProviderCard({
       {oauthAlert}
       {isLocal && showGuide && <LocalAiGuide />}
     </article>
+  );
+}
+
+/** Linha de 56px de um provedor ainda não conectado: nome, estado e "›". Abre o sheet com a ação (`onOpen`). */
+export function ProviderRow({ def, onOpen }: { def: ProviderDef; onOpen: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      className="flex min-h-14 w-full items-center gap-3 px-[18px] py-2 text-left outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-jf-brand"
+    >
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="text-base font-semibold text-jf-ink">{def.label}</span>
+        <span className="text-[13px] text-jf-ink-3">
+          Não conectado{def.id === "local" ? " · Experimental" : ""}
+        </span>
+      </span>
+      <ChevronRight aria-hidden="true" className="size-5 shrink-0 text-jf-ink-3" />
+    </button>
   );
 }

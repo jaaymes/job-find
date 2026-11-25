@@ -77,7 +77,7 @@ export function FavoriteButton({ job, className }: { job: SnapshotSource; classN
         onClick={() => feedback.track(setFavorite(job, !favorite))}
         className={cn(
           "inline-flex size-11 items-center justify-center rounded-lg border border-jf-line-strong bg-jf-surface outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand",
-          favorite ? "text-amber-500" : "text-jf-ink-2",
+          favorite ? "text-jf-fav" : "text-jf-ink-2",
           className,
         )}
       >
@@ -115,6 +115,24 @@ export function HideButton({
       {feedback.message}
     </>
   );
+}
+
+/** Ligações do menu "⋯" do card com o estado salvo; `feedback` é o aviso de gravação recusada. */
+export function useJobMenuActions(job: SnapshotSource, onHidden?: (job: SnapshotSource) => void) {
+  const state = useJobState(job.id);
+  const feedback = useSaveFeedback();
+  const hidden = state?.hidden ?? false;
+  return {
+    status: state?.status ?? null,
+    hidden,
+    changeStatus: (status: JobStatus) => {
+      feedback.track(setStatus(job, status));
+    },
+    toggleHidden: () => {
+      if (feedback.track(setHidden(job, !hidden)) && !hidden) onHidden?.(job);
+    },
+    feedback: feedback.message,
+  };
 }
 
 export function StatusSelect({ job, className }: { job: SnapshotSource; className?: string }) {

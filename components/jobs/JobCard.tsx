@@ -4,10 +4,12 @@
 import Link from "next/link";
 import { useState } from "react";
 import type { ScoreResult } from "@/lib/client/score/score";
+import { cn } from "@/lib/utils";
 import { STACKS } from "@/lib/shared/stacks";
 import type { JobSummary } from "@/lib/shared/types/job";
 import { ChanceBadge } from "./ChanceBadge";
-import { FavoriteButton, HideButton, StatusBadge, StatusSelect, useJobState } from "./JobActions";
+import { FavoriteButton, StatusBadge, useJobMenuActions, useJobState } from "./JobActions";
+import { JobCardMenu } from "./JobCardMenu";
 import {
   LANGUAGE_LABELS,
   SENIORITY_LABELS,
@@ -21,6 +23,8 @@ import {
 const STACK_LABEL = new Map(STACKS.map((s) => [s.id, s.label]));
 const PILL = "rounded-full bg-jf-chip px-2.5 py-1 text-[13px] text-jf-ink-2";
 const MAX_STACKS = 6;
+/** No celular o card mostra só estes chips; o resto vira "+n". */
+const MOBILE_MAX_TAGS = 3;
 
 function Logo({ job }: { job: JobSummary }) {
   const [failed, setFailed] = useState(false);
@@ -28,7 +32,7 @@ function Logo({ job }: { job: JobSummary }) {
   return (
     <div
       aria-hidden="true"
-      className="hidden size-12 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-jf-chip font-display text-lg font-bold text-jf-ink-2 sm:flex"
+      className="flex size-10 shrink-0 sm:size-12 items-center justify-center overflow-hidden rounded-[10px] bg-jf-chip font-display text-lg font-bold text-jf-ink-2"
     >
       {job.companyLogoUrl && !failed ? (
         <img
@@ -48,13 +52,14 @@ function Logo({ job }: { job: JobSummary }) {
   );
 }
 
-/** `chance` é null sem perfil (e no pré-render): o selo convida a importar o currículo. */
+/** `chance` é null sem perfil (e no pré-render): sem faixa, o selo não aparece (o convite vive no banner da lista). */
 export function JobCard({
   job,
   now,
   chance = null,
   isNew = false,
   onHidden,
+  maxTags = MOBILE_MAX_TAGS,
 }: {
   job: JobSummary;
   now: number;
@@ -63,15 +68,24 @@ export function JobCard({
   isNew?: boolean;
   /** Chamado depois de ocultar: a tela pode oferecer "Desfazer". */
   onHidden?: (job: JobSummary) => void;
+  /** Chips visíveis no celular; do `sm` em diante aparecem todos. */
+  maxTags?: number;
 }) {
   const state = useJobState(job.id);
+  const menu = useJobMenuActions(job, () => onHidden?.(job));
   const salary = formatSalary(job);
-  const stacks = job.stacks.slice(0, MAX_STACKS);
+
+  const tags: { key: string; label: string; outline?: boolean }[] = [];
+  if (job.workMode !== "unknown") tags.push({ key: "mode", label: WORK_MODE_LABELS[job.workMode] });
+  if (job.seniority) tags.push({ key: "seniority", label: SENIORITY_LABELS[job.seniority] });
+  tags.push({ key: "lang", label: LANGUAGE_LABELS[job.language] ?? job.language.toUpperCase() });
+  for (const id of job.stacks.slice(0, MAX_STACKS)) tags.push({ key: `s-${id}`, label: STACK_LABEL.get(id) ?? id, outline: true });
+  const overflow = tags.length - maxTags;
 
   return (
-    <article className="flex flex-wrap items-start gap-x-5 gap-y-3 rounded-2xl border border-jf-line bg-jf-surface p-4 sm:p-5">
+    <article className="relative flex items-start gap-3 rounded-2xl border border-jf-line bg-jf-surface p-4 has-[h3_a:focus-visible]:ring-2 has-[h3_a:focus-visible]:ring-jf-brand sm:gap-5 sm:p-5">
       <Logo job={job} />
-      <div className="flex min-w-0 flex-[999_1_240px] flex-col gap-2 sm:basis-[380px]">
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 sm:gap-2">
         <div className="flex flex-wrap items-center gap-2">
           {isNew && (
             <span className="rounded-md bg-jf-new-bg px-2 py-0.5 text-xs font-semibold text-jf-new-fg">Nova</span>
@@ -87,7 +101,7 @@ export function JobCard({
         <h3 className="text-base leading-snug font-semibold sm:text-lg">
           <Link
             href={`/vagas/${job.id}`}
-            className="text-jf-ink no-underline outline-none hover:text-jf-brand-dark hover:underline focus-visible:ring-2 focus-visible:ring-jf-brand"
+            className="text-jf-ink no-underline outline-none after:absolute after:inset-0 after:rounded-2xl hover:text-jf-brand-dark hover:underline"
           >
             {job.title}
           </Link>
@@ -97,23 +111,38 @@ export function JobCard({
         </p>
         {salary && <p className="text-sm font-medium text-jf-ink sm:text-[15px]">{salary}</p>}
         <div className="flex flex-wrap gap-1.5">
-          {job.workMode !== "unknown" && <span className={PILL}>{WORK_MODE_LABELS[job.workMode]}</span>}
-          {job.seniority && <span className={PILL}>{SENIORITY_LABELS[job.seniority]}</span>}
-          <span className={PILL}>{LANGUAGE_LABELS[job.language] ?? job.language.toUpperCase()}</span>
-          {stacks.map((id) => (
-            <span key={id} className="rounded-full border border-jf-line px-2.5 py-1 text-[13px] text-jf-ink-2">
-              {STACK_LABEL.get(id) ?? id}
+          {tags.map((t, i) => (
+            <span
+              key={t.key}
+              className={cn(
+                t.outline ? "rounded-full border border-jf-line px-2.5 py-1 text-[13px] text-jf-ink-2" : PILL,
+                i >= maxTags && "hidden sm:inline",
+              )}
+            >
+              {t.label}
             </span>
           ))}
+          {overflow > 0 && <span className={cn(PILL, "sm:hidden")}>+{overflow}</span>}
         </div>
+        {menu.feedback}
       </div>
-      <div className="flex flex-1 basis-full flex-col items-start gap-3 sm:basis-[220px] sm:items-end">
-        <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
-        <div className="flex flex-wrap items-center gap-2">
-          <FavoriteButton job={job} />
-          <StatusSelect job={job} />
-          <HideButton job={job} onHidden={() => onHidden?.(job)} />
+      <div className="flex shrink-0 flex-col items-end gap-3">
+        <div className="-mt-2 -mr-2 flex max-w-40 flex-wrap items-center justify-end sm:mt-0 sm:mr-0 sm:gap-1">
+          <FavoriteButton
+            job={job}
+            className="relative z-10 border-0 bg-transparent md:size-10"
+          />
+          <JobCardMenu
+            jobId={job.id}
+            title={job.title}
+            jobUrl={`/vagas/${job.id}`}
+            status={menu.status}
+            hidden={menu.hidden}
+            onHide={menu.toggleHidden}
+            onStatusChange={menu.changeStatus}
+          />
         </div>
+        <ChanceBadge band={chance?.band ?? null} score={chance?.score} />
       </div>
     </article>
   );

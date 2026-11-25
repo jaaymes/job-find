@@ -52,7 +52,7 @@ export function StackChips({ filters, onChange }: Props) {
             aria-pressed={pressed}
             onClick={() => toggle(id)}
             className={cn(
-              "min-h-10 shrink-0 rounded-full border px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2 sm:min-h-9",
+              "min-h-11 shrink-0 rounded-full border px-3.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-jf-brand focus-visible:ring-offset-2 md:min-h-9",
               pressed
                 ? "border-jf-ink bg-jf-ink font-medium text-jf-surface"
                 : "border-jf-line-strong bg-jf-surface text-jf-ink hover:bg-jf-chip",
@@ -66,11 +66,11 @@ export function StackChips({ filters, onChange }: Props) {
         type="button"
         aria-expanded={expanded}
         onClick={() => setExpanded((v) => !v)}
-        className="min-h-10 shrink-0 rounded-full border border-dashed border-jf-line-strong px-3 text-sm text-jf-ink-2 outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand sm:min-h-9"
+        className="min-h-11 shrink-0 rounded-full border border-dashed border-jf-line-strong px-3 text-sm text-jf-ink-2 outline-none hover:bg-jf-chip focus-visible:ring-2 focus-visible:ring-jf-brand md:min-h-9"
       >
         {expanded ? "Mostrar menos" : `+ ${hidden} tecnologias`}
       </button>
-      <label className="ml-2 flex shrink-0 items-center gap-1.5 text-sm text-jf-ink-2">
+      <label className="ml-2 flex min-h-11 shrink-0 items-center gap-1.5 text-sm text-jf-ink-2">
         <input
           type="checkbox"
           checked={filters.stacksMode === "all"}

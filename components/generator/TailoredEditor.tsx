@@ -7,6 +7,9 @@ import type { Violation } from "@/lib/client/cv/validate";
 import type { TailoredDocs } from "@/lib/shared/schemas/tailored";
 import { describeViolation } from "./violation-text";
 
+/** Campos do editor: 16px no celular (abaixo disso o iOS dá zoom ao focar). */
+const EDIT_FIELD = FIELD;
+
 export type EditorTab = "cv" | "letter";
 
 type Props = {
@@ -129,7 +132,7 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
             <label className={FIELD_LABEL}>
               Texto da carta
               <textarea
-                className={`${FIELD} resize-y leading-relaxed`}
+                className={`${EDIT_FIELD} resize-y leading-relaxed`}
                 rows={Math.max(8, rowsFor(docs.coverLetter, 80))}
                 value={docs.coverLetter}
                 onChange={(e) => onChange({ ...docs, coverLetter: e.target.value })}
@@ -142,14 +145,14 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
           <Item state={cv.flags.headline} onApprove={onApprove}>
             <label className={FIELD_LABEL}>
               Título profissional
-              <input className={FIELD} value={docs.cv.headline} onChange={(e) => setCv({ headline: e.target.value })} />
+              <input className={EDIT_FIELD} value={docs.cv.headline} onChange={(e) => setCv({ headline: e.target.value })} />
             </label>
           </Item>
           <Item state={cv.flags.summary} onApprove={onApprove}>
             <label className={FIELD_LABEL}>
               Resumo
               <textarea
-                className={`${FIELD} resize-y leading-relaxed`}
+                className={`${EDIT_FIELD} resize-y leading-relaxed`}
                 rows={rowsFor(docs.cv.summary)}
                 value={docs.cv.summary}
                 onChange={(e) => setCv({ summary: e.target.value })}
@@ -164,7 +167,7 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
                 <div className="flex gap-2">
                   <input
                     aria-label={`Competência ${i + 1}`}
-                    className={FIELD}
+                    className={EDIT_FIELD}
                     value={s}
                     onChange={(e) => setCv({ skills: docs.cv.skills.map((x, j) => (j === i ? e.target.value : x)) })}
                   />
@@ -214,7 +217,7 @@ export function TailoredEditor({ docs, review, tab, showLetterTab, onTab, onChan
                       <div className="flex gap-2">
                         <textarea
                           aria-label={`Bullet ${bi + 1} de ${exp.company}`}
-                          className={`${FIELD} resize-y leading-relaxed`}
+                          className={`${EDIT_FIELD} resize-y leading-relaxed`}
                           rows={rowsFor(b.text)}
                           value={b.text}
                           onChange={(e) => setBullets(x.bullets.map((y, j) => (j === bi ? { ...y, text: e.target.value } : y)))}

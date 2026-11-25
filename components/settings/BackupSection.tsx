@@ -81,9 +81,9 @@ export function BackupSection() {
   const hints = pending ? (Object.entries(pending.keyHints) as [ProviderId, string][]) : [];
 
   return (
-    <section aria-labelledby="bk-t" className={`${SECTION} flex-[1_1_420px]`}>
+    <section id="dados-e-backup" aria-labelledby="bk-t" className={`${SECTION} flex-[1_1_420px]`}>
       <h2 id="bk-t" className="text-lg font-semibold">
-        Seus dados neste navegador
+        Dados e backup
       </h2>
       <p className="text-sm text-jf-ink-2">
         Perfil, favoritos, status e CVs ocupam {usedMb} MB de 5 MB. Faça backup: limpar o navegador apaga tudo.

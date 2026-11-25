@@ -1,7 +1,7 @@
 import type { AnchorHTMLAttributes } from "react";
 
 /** Rotas do grupo `(local)`: servidas com a CSP de nonce (com `'wasm-unsafe-eval'` e `data:` no `connect-src`). */
-export type LocalRoute = "/perfil" | "/configuracoes" | `/gerador/${string}` | "/minhas-vagas";
+export type LocalRoute = "/perfil" | "/configuracoes" | `/configuracoes#${string}` | `/gerador/${string}` | "/minhas-vagas";
 
 /**
  * Link para uma rota `(local)` com navegação COMPLETA (um `<a>` comum, sem `next/link`).

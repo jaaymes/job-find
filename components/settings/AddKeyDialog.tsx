@@ -120,6 +120,7 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
           </label>
           <Input
             id={urlId}
+            className="min-h-11"
             value={baseURL}
             onChange={(e) => setBaseURL(e.target.value)}
             inputMode="url"
@@ -138,6 +139,7 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
             <Input
               ref={keyRef}
               id={keyId}
+              className="min-h-11"
               type={reveal ? "text" : "password"}
               value={key}
               onChange={(e) => {
@@ -154,7 +156,7 @@ function KeyForm({ provider, onSave, onClose }: { provider: ProviderDef; onSave:
             <Button
               type="button"
               variant="outline"
-              size="icon" className="size-11"
+              size="icon" className="size-11 md:size-11"
               aria-label={reveal ? "Ocultar chave" : "Mostrar chave"}
               aria-pressed={reveal}
               onClick={() => setReveal((v) => !v)}
@@ -192,7 +194,7 @@ export function AddKeyDialog({ provider, onSave, onClose, finalFocus }: Props) {
       <DialogContent finalFocus={finalFocus}>
         {provider && (
           <>
-            <DialogHeader>
+            <DialogHeader className="pr-10">
               <DialogTitle>Adicionar chave — {provider.label}</DialogTitle>
               <DialogDescription render={<div />}>
                 <p>

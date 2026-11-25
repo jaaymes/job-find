@@ -227,11 +227,12 @@ test("erro 401 não oferece 'Tentar de novo': leva às Configurações", async (
   await expect(panel(page).getByRole("link", { name: "Abrir Configurações" })).toHaveAttribute("href", "/configuracoes");
 });
 
-test("sem perfil, convida a importar o currículo", async ({ page }) => {
+test("sem perfil, o único convite para importar o currículo está em Sua aderência", async ({ page }) => {
   await seedStorage(page, { [AI_KEY]: AI_SETTINGS });
   await page.goto("/vagas/1");
-  const link = panel(page).getByRole("link", { name: "Importar currículo" });
-  await expect(link).toHaveAttribute("href", "/perfil");
+  const link = page.getByRole("region", { name: "Sua aderência" }).getByRole("link", { name: "Importar currículo" });
+  await expect(link).toHaveAttribute("href", "/perfil?voltar=%2Fvagas%2F1");
+  await expect(panel(page).getByRole("link", { name: "Importar currículo" })).toHaveCount(0);
   await expect(panel(page).getByRole("button", { name: "Analisar com IA" })).toHaveCount(0);
 });
 

@@ -5,6 +5,11 @@
       "schedule": "17 * * * *",
       "path": "/api/cron/collect",
       "requestMethod": "GET"
+    },
+    "purge": {
+      "schedule": "37 4 * * *",
+      "path": "/api/cron/purge",
+      "requestMethod": "GET"
     }
   }
 }

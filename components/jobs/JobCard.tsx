@@ -9,6 +9,7 @@ import { STACKS } from "@/lib/shared/stacks";
 import type { JobSummary } from "@/lib/shared/types/job";
 import { ChanceBadge } from "./ChanceBadge";
 import { FavoriteButton, StatusBadge, useJobMenuActions, useJobState } from "./JobActions";
+import { buildGlassdoorUrl } from "@/lib/client/jobs/glassdoor";
 import { JobCardMenu } from "./JobCardMenu";
 import {
   LANGUAGE_LABELS,
@@ -138,6 +139,7 @@ export function JobCard({
             jobUrl={`/vagas/${job.id}`}
             status={menu.status}
             hidden={menu.hidden}
+            glassdoorUrl={buildGlassdoorUrl(job.company, job.origin)}
             onHide={menu.toggleHidden}
             onStatusChange={menu.changeStatus}
           />

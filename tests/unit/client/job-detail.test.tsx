@@ -70,6 +70,23 @@ describe("JobDetailView", () => {
   });
 });
 
+describe("JobDetailView: Glassdoor", () => {
+  it("mostra o link da empresa no Glassdoor, em nova aba e com nofollow", () => {
+    const host = render(job({ company: "Nubank" }));
+    const a = [...host.querySelectorAll("a")].find((l) => /Ver Nubank no Glassdoor/.test(l.getAttribute("aria-label") ?? ""));
+    expect(a?.getAttribute("href")).toBe("https://www.glassdoor.com.br/Search/results.htm?keyword=Nubank");
+    expect(a?.getAttribute("target")).toBe("_blank");
+    expect(a?.getAttribute("rel")).toContain("nofollow");
+    expect(a?.getAttribute("aria-label")).toContain("(abre em nova aba)");
+    expect(a?.textContent).toContain("Glassdoor");
+  });
+
+  it("empresa confidencial não mostra o link", () => {
+    const host = render(job({ company: "Confidencial" }));
+    expect(host.innerHTML).not.toContain("glassdoor");
+  });
+});
+
 describe("JobDetailView: aderência e barra de ação", () => {
   beforeEach(() => {
     localStorage.clear();

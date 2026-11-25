@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ExternalLink as ExternalLinkIcon } from "lucide-react";
+import { buildGlassdoorUrl } from "@/lib/client/jobs/glassdoor";
 import { syncSnapshots } from "@/lib/client/jobs/job-state";
 import { JobNotFoundError, parseJobId, useJob } from "@/lib/client/jobs/use-job";
 import { profileStore } from "@/lib/client/profile/store";
@@ -335,6 +336,7 @@ function MobileTopBar({ job }: { job: JobDetailData }) {
         jobUrl={`/vagas/${job.id}`}
         status={actions.status}
         hidden={actions.hidden}
+        glassdoorUrl={buildGlassdoorUrl(job.company, job.origin)}
         onHide={actions.toggleHidden}
         onStatusChange={actions.changeStatus}
       />
@@ -353,6 +355,7 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
     [profile, job, now],
   );
   const salary = formatSalary(job);
+  const glassdoorUrl = buildGlassdoorUrl(job.company, job.origin);
   // URL bruta da fonte, sem tirar parâmetros (D-07); `urlCanonical` serve só à deduplicação.
   const applyUrl = job.applyUrl ? safeExternalUrl(job.applyUrl) : null;
   const sourceName = job.attribution[0]?.label ?? "página da vaga";
@@ -377,7 +380,25 @@ export function JobDetailView({ job }: { job: JobDetailData }) {
             {job.title}
           </h1>
           <p className="text-base text-jf-ink-2 sm:text-[17px]">
-            {job.company} · {placeLabel(job)}
+            {job.company}
+            {glassdoorUrl && (
+              <>
+                {" "}
+                <a
+                  href={glassdoorUrl}
+                  target="_blank"
+                  rel="noopener noreferrer nofollow"
+                  aria-label={`Ver ${job.company} no Glassdoor (abre em nova aba)`}
+                  className={cn(LINK, "inline-flex min-h-11 items-center gap-1")}
+                >
+                  <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
+                  Glassdoor
+                  <span className="sr-only"> (abre em nova aba)</span>
+                </a>
+              </>
+            )}
+            {" · "}
+            {placeLabel(job)}
           </p>
           <div className="flex flex-wrap gap-1.5">
             {job.workMode !== "unknown" && <span className={PILL}>{WORK_MODE_LABELS[job.workMode]}</span>}

@@ -6,6 +6,7 @@ import type { SourceId } from "@/lib/shared/types/job";
 import { trustOf } from "@/lib/server/sources/trust";
 import type { EnrichedJob } from "./enrich-job";
 import { MAX_AGE_DAYS } from "./expire";
+import { mergeJobs } from "./merge";
 
 const DAY_MS = 86_400_000;
 /** RN-05: janela de deduplicação. */
@@ -32,6 +33,9 @@ function clampPublished(publishedAt: Date | null, now: Date): Date {
  * fonte é nova para ela; `job_sources` sempre recebe `last_seen_at = now`.
  * O conteúdo só é reescrito se a fonte for ao menos tão confiável quanto todas as que a vaga já tem
  * (`SOURCE_TRUST`): uma vaga postada no HN não troca a descrição de uma vaga vinda do ATS da empresa.
+ * Se a atualização faria a chave ou a URL colidir com outra vaga ativa, as duas são a mesma vaga e
+ * são fundidas (`mergeJobs`), desde que a fonte seja ao menos tão confiável quanto as de ambas;
+ * senão a vaga mantém a chave/URL antiga e nada é fundido.
  */
 export async function upsertJob(
   db: Db,
@@ -131,26 +135,38 @@ export async function upsertJob(
 
   if (targetId !== undefined) {
     // Vaga já conhecida (mesma publicação ou mesma URL): atualização direta por id.
-    // dedupe_key/url_canonical só mudam se isso não colidir com outra vaga ativa.
+    // Se a nova chave ou URL já pertence a outra vaga ativa, as duas são a mesma vaga: funde.
     const [keyOwner] = await db
-      .select({ id: jobs.id })
+      .select({ id: jobs.id, sources: jobs.sources })
       .from(jobs)
       .where(and(eq(jobs.dedupeKey, job.dedupeKey), isNull(jobs.expiredAt)));
     const [urlOwner] = await db
-      .select({ id: jobs.id })
+      .select({ id: jobs.id, sources: jobs.sources })
       .from(jobs)
       .where(and(eq(jobs.urlCanonical, job.urlCanonical), isNull(jobs.expiredAt)));
+    const colliding = [keyOwner, urlOwner].filter((o) => o !== undefined && o.id !== targetId);
+    // Só funde se esta fonte é ao menos tão confiável quanto as de todas as vagas envolvidas.
+    const incomingTrust = trustOf(ref.source);
+    const canMerge =
+      canOverwrite && colliding.every((o) => o.sources.every((s) => trustOf(s) <= incomingTrust));
+    const merged = canMerge && colliding.length > 0;
+    if (merged) {
+      // O sobrevivente pode ser outra vaga que não a original; a atualização segue nele.
+      targetId = await mergeJobs(db, [targetId, ...colliding.map((o) => o.id)], now);
+    }
+    const keyFree = canMerge || !keyOwner || keyOwner.id === targetId;
+    const urlFree = canMerge || !urlOwner || urlOwner.id === targetId;
     const rows = await db
       .update(jobs)
       .set({
         ...contentSet,
-        ...(canOverwrite && (!keyOwner || keyOwner.id === targetId) ? { dedupeKey: job.dedupeKey } : {}),
-        ...(canOverwrite && (!urlOwner || urlOwner.id === targetId) ? { urlCanonical: job.urlCanonical } : {}),
+        ...(canOverwrite && keyFree ? { dedupeKey: job.dedupeKey } : {}),
+        ...(canOverwrite && urlFree ? { urlCanonical: job.urlCanonical } : {}),
         sources: sourcesUnion,
         publishedAt: sql`LEAST(${jobs.publishedAt}, ${published.toISOString()}::timestamptz)`,
         updatedAt: now,
       })
-      .where(and(eq(jobs.id, targetId), isNull(jobs.expiredAt), sql`(${changed})`))
+      .where(and(eq(jobs.id, targetId), isNull(jobs.expiredAt), merged ? sql`true` : sql`(${changed})`))
       .returning({ id: jobs.id });
     jobId = targetId;
     status = rows.length > 0 ? "updated" : "unchanged";

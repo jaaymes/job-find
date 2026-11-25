@@ -158,6 +158,28 @@ describe("AssistantDialog: entrevista", () => {
   });
 });
 
+describe("AssistantDialog: modo congelado", () => {
+  it("inserir preenche `current` mas o painel não vira reescrita nem chama rewriteDraft", async () => {
+    mocks.writeDrafts.mockResolvedValue([
+      { text: "Opção um", bullets: null },
+      { text: "Opção dois", bullets: null },
+    ]);
+    const onInsert = vi.fn();
+    const props = { open: true, onOpenChange: vi.fn(), profile: emptyProfile(), target: { kind: "summary" } as AssistTarget, onInsert };
+    const { rerender } = render(<AssistantDialog {...props} current={EMPTY} />);
+    fireEvent.click(await screen.findByRole("button", { name: "Gerar" }));
+    await screen.findByRole("radiogroup");
+    fireEvent.click(screen.getByRole("button", { name: "Inserir no perfil" }));
+
+    rerender(<AssistantDialog {...props} current={{ text: "Opção um", bullets: null }} />);
+    await act(async () => {
+      await new Promise((r) => setTimeout(r, 20));
+    });
+    expect(mocks.rewriteDraft).not.toHaveBeenCalled();
+    expect(screen.queryByText("Melhorar com IA")).toBeNull();
+  });
+});
+
 describe("AssistantDialog: reescrita", () => {
   const current: Draft = { text: "Texto antigo", bullets: null };
 

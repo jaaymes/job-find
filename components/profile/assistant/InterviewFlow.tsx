@@ -30,7 +30,8 @@ export function InterviewFlow({ profile, target, settings, gen, onInsert }: Prop
   };
 
   useEffect(() => {
-    // Adiado um tick: a geração atualiza estado e não deve rodar dentro do corpo do efeito.
+    // Adiado um tick (e cancelado no cleanup) para a geração não rodar no corpo do efeito (set-state-in-effect)
+    // nem disparar duas vezes no StrictMode.
     const t = setTimeout(() => void loadQuestions(), 0);
     return () => clearTimeout(t);
     // Só na abertura do painel.

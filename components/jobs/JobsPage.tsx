@@ -9,7 +9,8 @@ import { isNewSince, usePreviousVisit, useRecordVisit } from "@/lib/client/jobs/
 import {
   clearSavedSearch,
   saveSearch,
-  useApplySavedSearch,
+  useRememberFilters,
+  useRestoreFilters,
   toSavedFilters,
   useSavedFilters,
 } from "@/lib/client/jobs/saved-search";
@@ -93,7 +94,8 @@ function Heading({ lastCollectedAt, now }: { lastCollectedAt: string | null; now
 export function JobsPage() {
   const [filters, setFilters] = useJobsFilters();
   const { chance, showHidden, ...apiFilters } = filters;
-  const searchReady = useApplySavedSearch(filters, setFilters);
+  const { ready: searchReady } = useRestoreFilters(filters, setFilters);
+  useRememberFilters(filters, searchReady);
   const query = useJobsWithChance(apiFilters, chance ?? null, searchReady);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const isLg = useMediaQuery(LG_QUERY);

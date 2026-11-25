@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { renderHook } from "@testing-library/react";
 import {
   clearSavedSearch,
   hasFilterParams,
+  lastFiltersStore,
+  useRememberFilters,
   readSavedSearch,
   saveSearch,
   savedFiltersStore,
@@ -94,5 +97,36 @@ describe("hasFilterParams", () => {
     expect(has("workMode=remote")).toBe(true);
     expect(has("ocultas=1")).toBe(true);
     expect(has("stacks=react&utm=1")).toBe(true);
+  });
+});
+
+describe("useRememberFilters", () => {
+  const LAST_KEY = "jobfind:v1:lastFilters";
+  const seed = JSON.stringify({ v: 1, data: { filters: { lang: "en" }, savedAt: "2026-01-01T00:00:00.000Z" } });
+
+  it("não grava antes de ready", () => {
+    localStorage.setItem(LAST_KEY, seed);
+    renderHook(() => useRememberFilters({}, false));
+    expect(localStorage.getItem(LAST_KEY)).toBe(seed);
+  });
+
+  it("grava sem showHidden", () => {
+    renderHook(() => useRememberFilters({ lang: "pt", showHidden: true }, true));
+    expect(lastFiltersStore.get()?.filters).toEqual({ lang: "pt" });
+  });
+
+  it("filtros vazios gravam null", () => {
+    localStorage.setItem(LAST_KEY, seed);
+    renderHook(() => useRememberFilters({}, true));
+    expect(lastFiltersStore.get()).toBeNull();
+    expect(JSON.parse(localStorage.getItem(LAST_KEY)!)).toEqual({ v: 1, data: null });
+  });
+
+  it("não regrava savedAt se os filtros não mudaram", () => {
+    const { rerender } = renderHook(({ f }) => useRememberFilters(f, true), { initialProps: { f: { lang: "pt" } as never } });
+    const first = lastFiltersStore.get()?.savedAt;
+    expect(first).toBeDefined();
+    rerender({ f: { lang: "pt" } as never });
+    expect(lastFiltersStore.get()?.savedAt).toBe(first);
   });
 });

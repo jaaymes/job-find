@@ -20,7 +20,7 @@ import { ActiveFilterChips, buildActiveChips } from "./ActiveFilterChips";
 import { FiltersPanel } from "./FiltersPanel";
 import { JobCard } from "./JobCard";
 import { ModeTabs } from "./ModeTabs";
-import { RestoredNotice } from "./RestoredNotice";
+import { RestoredNotice, clearRestoredSearch } from "./RestoredNotice";
 import { LinkedInSearchLink } from "./LinkedInSearchLink";
 import { ResultsToolbar } from "./ResultsToolbar";
 import { SearchBar } from "./SearchBar";
@@ -225,7 +225,7 @@ export function JobsPage() {
             onChange={(workMode) => setFilters({ workMode })}
             panelId={panelId}
           />
-          {noticeKey !== null && serializeFilters("", filters) === noticeKey && <RestoredNotice onClear={clear} />}
+          {noticeKey !== null && serializeFilters("", filters) === noticeKey && <RestoredNotice onClear={() => clearRestoredSearch(setFilters)} />}
           <div className={cn("flex flex-wrap items-center gap-x-3 gap-y-2", chips.length === 0 && "max-lg:hidden")}>
             <ActiveFilterChips chips={chips} onClearAll={clear} />
             {total !== null && (

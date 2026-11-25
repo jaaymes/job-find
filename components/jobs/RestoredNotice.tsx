@@ -1,3 +1,10 @@
+import { CLEAR_FILTERS, type PageFilters } from "@/lib/client/jobs/use-jobs";
+
+/** Desfaz a busca restaurada inteira, inclusive o texto (`q`), ao contrário do "Limpar tudo" dos chips. */
+export function clearRestoredSearch(setFilters: (patch: PageFilters) => void) {
+  setFilters(CLEAR_FILTERS);
+}
+
 /** Aviso discreto de que os filtros da última visita foram restaurados. */
 export function RestoredNotice({ onClear }: { onClear: () => void }) {
   return (

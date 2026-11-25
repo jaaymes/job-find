@@ -203,32 +203,49 @@ async function listVercelGateway(cfg: ProviderCfg): Promise<ModelInfo[]> {
   });
 }
 
+const NON_CHAT_MODEL = /(embed|whisper|tts|transcribe|dall-e|gpt-image|moderation|rerank|-audio|realtime|guard)/i;
+
+/** Modelo de texto/chat: descarta embeddings, voz, imagem, moderação, rerank e afins. */
+export function isTextModelId(id: string): boolean {
+  return !NON_CHAT_MODEL.test(id);
+}
+
 function listOpenAIStyle(baseURL: string) {
   return async (cfg: ProviderCfg): Promise<ModelInfo[]> => {
     const body = OpenAIList.safeParse(await getJson(`${cfg.baseURL ?? baseURL}/models`, bearer(cfg)));
     if (!body.success) return [];
     return body.data.data.flatMap((e) => {
       const m = Entry.safeParse(e);
-      return m.success ? [{ id: m.data.id, label: m.data.id }] : [];
+      return m.success && isTextModelId(m.data.id) ? [{ id: m.data.id, label: m.data.id }] : [];
     });
   };
 }
 
 async function listOpenRouter(cfg: ProviderCfg): Promise<ModelInfo[]> {
-  const body = OpenAIList.safeParse(await getJson(`${PROVIDERS_BASE.openrouter}/models`, bearer(cfg)));
-  if (!body.success) return [];
-  return body.data.data.flatMap((e) => {
-    const m = OpenRouterEntry.safeParse(e);
-    if (!m.success) return [];
-    return [
-      {
-        id: m.data.id,
-        label: m.data.name ?? m.data.id,
-        priceIn: perMillion(m.data.pricing?.prompt),
-        priceOut: perMillion(m.data.pricing?.completion),
-      },
-    ];
-  });
+  const parse = (json: unknown, dropBatch: boolean): ModelInfo[] => {
+    const body = OpenAIList.safeParse(json);
+    if (!body.success) return [];
+    return body.data.data.flatMap((e) => {
+      const m = OpenRouterEntry.safeParse(e);
+      if (!m.success || (dropBatch && m.data.id.endsWith(":batch"))) return [];
+      return [
+        {
+          id: m.data.id,
+          label: m.data.name ?? m.data.id,
+          priceIn: perMillion(m.data.pricing?.prompt),
+          priceOut: perMillion(m.data.pricing?.completion),
+        },
+      ];
+    });
+  };
+  const url = `${PROVIDERS_BASE.openrouter}/models`;
+  const filtered = parse(
+    await getJson(`${url}?output_modalities=text&endpoints=/api/v1/chat/completions`, bearer(cfg)),
+    false,
+  );
+  if (filtered.length > 0) return filtered;
+  // Os filtros podem não ser aceitos: uma única repetição sem query, sem as variantes :batch.
+  return parse(await getJson(url, bearer(cfg)), true);
 }
 
 async function listAnthropic(cfg: ProviderCfg): Promise<ModelInfo[]> {
@@ -322,6 +339,7 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     structured: "json_schema",
     auth: { kind: "oauth", flow: openRouterFlow },
     keyDocsUrl: "https://openrouter.ai/docs/guides/overview/auth/oauth",
+    keyHint: { prefix: "sk-or-", example: "sk-or-v1-…" },
     privacyNote: null,
     cspHosts: ["https://openrouter.ai"],
     // Padrão gratuito: quem conecta o OpenRouter já usa IA sem gastar. Modelos pagos continuam na lista.
@@ -347,6 +365,11 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     structured: "json_schema",
     auth: { kind: "paste" },
     keyDocsUrl: "https://platform.openai.com/api-keys",
+    keyHint: { prefix: "sk-", example: "sk-proj-…" },
+    keySteps: [
+      "Na página de chaves da OpenAI, crie uma nova chave secreta e copie-a.",
+      "A API da OpenAI é paga com crédito pré-pago: sem saldo na conta, os pedidos falham.",
+    ],
     privacyNote: null,
     cspHosts: ["https://api.openai.com"],
     defaultModels: { extract: "gpt-5-mini", analyze: "gpt-5-mini", cv: "gpt-5" },
@@ -366,7 +389,13 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     // structuredOutputMode 'auto' do SDK usa o formato nativo (json_schema) quando o modelo suporta.
     structured: "json_schema",
     auth: { kind: "paste" },
-    keyDocsUrl: "https://console.anthropic.com/settings/keys",
+    keyDocsUrl: "https://platform.claude.com/settings/keys",
+    keyHint: { prefix: "sk-ant-", example: "sk-ant-api03-…" },
+    keySteps: [
+      "No Claude Console, abra API keys e clique em Create key.",
+      "Vincule a chave a um workspace e copie-a: ela aparece uma vez só.",
+      "A API é paga com crédito pré-pago (Settings > Billing): sem saldo, os pedidos falham.",
+    ],
     privacyNote: null,
     cspHosts: ["https://api.anthropic.com"],
     defaultModels: { extract: "claude-haiku-5-5", analyze: "claude-haiku-5-5", cv: "claude-sonnet-5-5" },
@@ -385,7 +414,12 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     cors: "yes",
     structured: "json_schema",
     auth: { kind: "paste" },
-    keyDocsUrl: "https://aistudio.google.com/app/apikey",
+    keyDocsUrl: "https://aistudio.google.com/apikey",
+    // Sem `keyHint`: o Google está trocando as chaves "AIza…" por um formato novo ("AQ."), então o prefixo enganaria.
+    keySteps: [
+      "No Google AI Studio, crie uma chave de API e copie-a.",
+      "Há um plano gratuito com limites; o faturamento só é necessário no plano pago.",
+    ],
     privacyNote:
       "No plano gratuito da API do Gemini, o Google pode usar os dados enviados para melhorar seus produtos.",
     cspHosts: ["https://generativelanguage.googleapis.com"],
@@ -396,17 +430,23 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     },
     listModels: listGoogle,
   },
-  deepseek: compat(
-    "deepseek",
-    "DeepSeek",
-    "must",
-    "https://api.deepseek.com/v1",
-    "https://api.deepseek.com",
-    "https://platform.deepseek.com/api_keys",
-    same("deepseek-chat"),
-    "json_mode",
-    "A API direta da DeepSeek processa os dados em servidores na China. Confirme que aceita enviar seu currículo e as vagas para lá antes do primeiro uso.",
-  ),
+  deepseek: {
+    ...compat(
+      "deepseek",
+      "DeepSeek",
+      "must",
+      "https://api.deepseek.com/v1",
+      "https://api.deepseek.com",
+      "https://platform.deepseek.com/api_keys",
+      same("deepseek-chat"),
+      "json_mode",
+      "A API direta da DeepSeek processa os dados em servidores na China. Confirme que aceita enviar seu currículo e as vagas para lá antes do primeiro uso.",
+    ),
+    keySteps: [
+      "Na plataforma da DeepSeek, abra API keys, crie uma chave e copie-a.",
+      "O uso é descontado do saldo recarregado na conta: sem saldo, os pedidos falham.",
+    ],
+  },
   local: {
     id: "local",
     label: "IA local (Ollama / LM Studio) - experimental",
@@ -444,15 +484,18 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
       });
     },
   },
-  groq: compat(
-    "groq",
-    "Groq",
-    "should",
-    "https://api.groq.com/openai/v1",
-    "https://api.groq.com",
-    "https://console.groq.com/keys",
-    same("llama-3.3-70b-versatile"),
-  ),
+  groq: {
+    ...compat(
+      "groq",
+      "Groq",
+      "should",
+      "https://api.groq.com/openai/v1",
+      "https://api.groq.com",
+      "https://console.groq.com/keys",
+      same("llama-3.3-70b-versatile"),
+    ),
+    keyHint: { prefix: "gsk_", example: "gsk_…" },
+  },
   mistral: {
     id: "mistral",
     label: "Mistral",
@@ -478,25 +521,28 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     "should",
     "https://api.cerebras.ai/v1",
     "https://api.cerebras.ai",
-    "https://cloud.cerebras.ai/platform",
+    "https://cloud.cerebras.ai",
     same("llama-3.3-70b"),
   ),
-  xai: compat(
-    "xai",
-    "xAI (Grok)",
-    "should",
-    "https://api.x.ai/v1",
-    "https://api.x.ai",
-    "https://console.x.ai",
-    same("grok-4-fast"),
-  ),
+  xai: {
+    ...compat(
+      "xai",
+      "xAI (Grok)",
+      "should",
+      "https://api.x.ai/v1",
+      "https://api.x.ai",
+      "https://console.x.ai/team/default/api-keys",
+      same("grok-4-fast"),
+    ),
+    keyHint: { prefix: "xai-", example: "xai-…" },
+  },
   together: compat(
     "together",
     "Together AI",
     "should",
     "https://api.together.xyz/v1",
     "https://api.together.xyz",
-    "https://api.together.ai/settings/api-keys",
+    "https://api.together.ai/settings/projects/~current/api-keys",
     same("meta-llama/Llama-3.3-70B-Instruct-Turbo"),
     "json_mode",
     null,
@@ -508,25 +554,28 @@ export const PROVIDERS: Record<ProviderId, ProviderDef> = {
     "should",
     "https://api.fireworks.ai/inference/v1",
     "https://api.fireworks.ai",
-    "https://fireworks.ai/account/api-keys",
+    "https://app.fireworks.ai/settings/users/api-keys",
     same("accounts/fireworks/models/llama-v3p3-70b-instruct"),
   ),
-  huggingface: compat(
-    "huggingface",
-    "Hugging Face",
-    "should",
-    "https://router.huggingface.co/v1",
-    "https://router.huggingface.co",
-    "https://huggingface.co/settings/tokens",
-    same("meta-llama/Llama-3.3-70B-Instruct"),
-  ),
+  huggingface: {
+    ...compat(
+      "huggingface",
+      "Hugging Face",
+      "should",
+      "https://router.huggingface.co/v1",
+      "https://router.huggingface.co",
+      "https://huggingface.co/settings/tokens",
+      same("meta-llama/Llama-3.3-70B-Instruct"),
+    ),
+    keyHint: { prefix: "hf_", example: "hf_…" },
+  },
   "vercel-gateway": compat(
     "vercel-gateway",
     "Vercel AI Gateway",
     "should",
     "https://ai-gateway.vercel.sh/v1",
     "https://ai-gateway.vercel.sh",
-    "https://vercel.com/docs/ai-gateway",
+    "https://vercel.com/d?to=%2F%5Bteam%5D%2F%7E%2Fai-gateway%2Fapi-keys&title=AI+Gateway+API+Keys",
     same("openai/gpt-5-mini"),
     "json_mode",
     null,

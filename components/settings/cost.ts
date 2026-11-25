@@ -21,10 +21,10 @@ export function operationCost(task: AiTask, model: Priced | undefined): number |
   return (tokensIn * model.priceIn + tokensOut * model.priceOut) / 1e6;
 }
 
-/** Custo estimado por operação a partir dos preços (USD por milhão de tokens) do `listModels`. */
-export function estimateCost(task: AiTask, model: Priced | undefined): string {
+/** Custo estimado por operação (`undefined` sem preço) a partir dos preços (USD por milhão de tokens) do `listModels`. */
+export function estimateCost(task: AiTask, model: Priced | undefined): string | undefined {
   const usd = operationCost(task, model);
-  if (usd === undefined) return "custo não informado pelo provedor";
+  if (usd === undefined) return undefined;
   const { unit } = USAGE[task];
   if (usd === 0) return `grátis por ${unit}`;
   return `≈ US$ ${formatUsd(usd)} por ${unit}`;
@@ -34,7 +34,7 @@ const byLabel = (a: ModelInfo, b: ModelInfo) =>
   a.label.localeCompare(b.label, "pt-BR", { sensitivity: "base" }) || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
 
 /** Grátis primeiro, depois do mais barato ao mais caro; sem preço no fim. Devolve uma nova lista. */
-export function sortModelsByCost(task: AiTask, models: ModelInfo[]): ModelInfo[] {
+export function sortModelsByCost<T extends ModelInfo>(task: AiTask, models: T[]): T[] {
   return models
     .map((m) => ({ m, cost: operationCost(task, m) }))
     .sort((a, b) => {
@@ -49,7 +49,7 @@ export function sortModelsByCost(task: AiTask, models: ModelInfo[]): ModelInfo[]
 /** Rótulo curto de preço para a lista de modelos. */
 export function priceLabel(task: AiTask, model: ModelInfo): string {
   const usd = operationCost(task, model);
-  if (usd === undefined) return "sem preço";
+  if (usd === undefined) return "";
   if (usd === 0) return "grátis";
   return `≈ US$ ${formatUsd(usd)} por ${USAGE[task].unit}`;
 }

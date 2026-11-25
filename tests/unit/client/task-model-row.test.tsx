@@ -1,163 +1,189 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { TaskModelRow } from "@/components/settings/TaskModelRow";
-import type { ModelInfo } from "@/lib/client/ai/providers";
+import type { ModelChoice } from "@/components/settings/ModelPickerDialog";
+import type { AiTask } from "@/lib/client/ai/providers";
 import { defaultAiSettings, type AiSettings } from "@/lib/client/ai/settings";
+import { ADDED_AT, MODELS, openRouterSettings } from "./model-fixtures";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+});
 
-function setup(settings = defaultAiSettings()) {
+function setup(settings: AiSettings = defaultAiSettings(), task: AiTask = "extract", onChange = vi.fn()) {
+  const client = new QueryClient();
+  client.setQueryData(["ai-models", "openrouter", ADDED_AT], MODELS);
   render(
-    <QueryClientProvider client={new QueryClient()}>
-      <TaskModelRow task="analyze" settings={settings} onChange={() => {}} />
+    <QueryClientProvider client={client}>
+      <TaskModelRow task={task} settings={settings} onChange={onChange} />
     </QueryClientProvider>,
   );
+  return { onChange };
 }
 
-describe("TaskModelRow", () => {
+describe("TaskModelRow: resumo da tarefa", () => {
   it("provedor salvo que não está mais conectado mostra o aviso, não 'Automático' em silêncio", () => {
-    setup({
-      ...defaultAiSettings(),
-      tasks: { extract: null, analyze: { provider: "anthropic", model: "m" }, cv: null },
-    });
-    expect(screen.getByText(/Provedor escolhido não está conectado/)).toBeTruthy();
-    expect((screen.getByLabelText("Provedor") as HTMLSelectElement).selectedOptions[0].textContent).toBe(
-      "Anthropic (Claude) (não conectado)",
+    setup(
+      { ...defaultAiSettings(), tasks: { extract: null, analyze: { provider: "anthropic", model: "m" }, cv: null } },
+      "analyze",
     );
+    expect(screen.getByRole("alert").textContent).toMatch(/Provedor escolhido não está conectado/);
   });
 
   it("sem escolha salva, não mostra o aviso", () => {
     setup();
     expect(screen.queryByText(/Provedor escolhido não está conectado/)).toBeNull();
   });
+
+  it("sem provedor conectado, o botão 'Trocar modelo' fica desabilitado", () => {
+    setup();
+    expect((screen.getByRole("button", { name: "Trocar modelo" }) as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("sem escolha salva mostra 'Automático'", () => {
+    setup(openRouterSettings(null));
+    expect(screen.getByText("Automático")).toBeTruthy();
+    expect((screen.getByRole("button", { name: "Trocar modelo" }) as HTMLButtonElement).disabled).toBe(false);
+  });
+
+  it("escolha salva mostra modelo · provedor e o custo", () => {
+    setup(openRouterSettings("anthropic/claude-haiku"));
+    expect(screen.getByText("Claude Haiku · OpenRouter")).toBeTruthy();
+    expect(screen.getByText(/≈ US\$ 0,\d+ por currículo/)).toBeTruthy();
+  });
+
+  it("modelo sem preço não mostra custo", () => {
+    setup(openRouterSettings("x/sem-preco"));
+    expect(screen.getByText("Outro Modelo · OpenRouter")).toBeTruthy();
+    expect(screen.queryByText(/US\$/)).toBeNull();
+    expect(screen.queryByText(/grátis por/)).toBeNull();
+    expect(screen.queryByText(/sem preço|não informado/)).toBeNull();
+  });
+
+  it("modelo ':free' mostra o aviso de modelos gratuitos", () => {
+    setup(openRouterSettings("acme/livre:free"));
+    expect(screen.getByRole("note").textContent).toMatch(/Modelos gratuitos têm limite de uso por dia/);
+  });
+
+  it("modelo pago não mostra o aviso de gratuitos", () => {
+    setup(openRouterSettings("anthropic/claude-haiku"));
+    expect(screen.queryByRole("note")).toBeNull();
+  });
+
+  it("'Trocar modelo' abre o modal; escolher um modelo chama onChange e fecha", async () => {
+    const { onChange } = setup(openRouterSettings("anthropic/claude-haiku"));
+    fireEvent.click(screen.getByRole("button", { name: "Trocar modelo" }));
+    const dialog = await screen.findByRole("dialog", { name: "Modelo para Ler currículo" });
+    const row = within(dialog)
+      .getAllByRole("option")
+      .find((o) => o.textContent?.includes("Gêmini Flash"))!;
+    fireEvent.click(row);
+    expect(onChange).toHaveBeenCalledWith({ provider: "openrouter", model: "google/gemini-flash" });
+    await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  });
 });
 
-const ADDED_AT = "2026-11-24T00:00:00.000Z";
-
-const MODELS: ModelInfo[] = [
-  { id: "anthropic/claude-haiku", label: "Claude Haiku", priceIn: 1, priceOut: 5 },
-  { id: "x/sem-preco", label: "Outro Modelo" },
-  { id: "deepseek/deepseek-v4.1-flash", label: "DeepSeek Flash", priceIn: 0.2, priceOut: 0.8 },
-  { id: "acme/livre:free", label: "Livre", priceIn: 0, priceOut: 0 },
-  { id: "openrouter/free", label: "Free Models Router", priceIn: 0, priceOut: 0 },
-  { id: "google/gemini-flash", label: "Gêmini Flash", priceIn: 0.1, priceOut: 0.4 },
-];
-
-function openRouterSettings(model = "deepseek/deepseek-v4.1-flash"): AiSettings {
-  return {
+describe("TaskModelRow: voltar ao automático", () => {
+  const STALE: AiSettings = {
     ...defaultAiSettings(),
-    providers: { openrouter: { key: "sk-or-test", addedAt: ADDED_AT, source: "paste" } },
-    tasks: { extract: { provider: "openrouter", model }, analyze: null, cv: null },
+    tasks: { extract: { provider: "anthropic", model: "m" }, analyze: null, cv: null },
   };
-}
 
-function setupModel(settings = openRouterSettings(), onChange = vi.fn()) {
-  const client = new QueryClient();
-  client.setQueryData(["ai-models", "openrouter", ADDED_AT], MODELS);
-  const ui = (s: AiSettings) => (
-    <QueryClientProvider client={client}>
-      <TaskModelRow task="extract" settings={s} onChange={onChange} />
-    </QueryClientProvider>
-  );
-  const { rerender } = render(ui(settings));
-  return {
-    onChange,
-    input: screen.getByRole("combobox", { name: "Modelo" }) as HTMLInputElement,
-    rerender: (s: AiSettings) => rerender(ui(s)),
-  };
-}
-
-/** Digitação real: o Base UI só abre o popup quando o evento traz `inputType` (autofill não abre). */
-function type(input: HTMLInputElement, text: string) {
-  fireEvent.focus(input);
-  fireEvent.input(input, { target: { value: text }, inputType: "insertText" });
-}
-
-/** Opções do popup (em portal); o `<select>` do Provedor também tem options, por isso a busca fica no listbox. */
-async function modelOptions() {
-  return within(await screen.findByRole("listbox")).queryAllByRole("option");
-}
-
-async function openList() {
-  fireEvent.click(screen.getByRole("button", { name: "Abrir lista de modelos" }));
-  return modelOptions();
-}
-
-describe("TaskModelRow: campo Modelo pesquisável", () => {
-  it("o campo Modelo é um combobox com o rótulo 'Modelo'", () => {
-    setupModel();
-    expect(screen.getByRole("combobox", { name: "Modelo" })).toBeTruthy();
+  it("escolha com provedor desconectado mostra 'Usar automático', que grava null", () => {
+    const { onChange } = setup(STALE);
+    fireEvent.click(screen.getByRole("button", { name: "Usar automático" }));
+    expect(onChange).toHaveBeenCalledWith(null);
   });
 
-  it("lista do mais barato ao mais caro, com o preço em cada item", async () => {
-    setupModel();
-    const options = (await openList()).map((o) => o.textContent ?? "");
-    expect(options).toHaveLength(6);
-    expect(options[0]).toContain("Free Models Router (recomendado)");
-    expect(options[0]).toContain("grátis");
-    expect(options[1]).toContain("Livre");
-    expect(options[1]).toContain("grátis");
-    expect(options[2]).toContain("Gêmini Flash");
-    expect(options[2]).toMatch(/≈ US\$ 0,\d+ por currículo/);
-    expect(options[3]).toContain("DeepSeek Flash");
-    expect(options[3]).toMatch(/≈ US\$ 0,\d+ por currículo/);
-    expect(options[4]).toContain("Claude Haiku");
-    expect(options[4]).toMatch(/≈ US\$ 0,\d+ por currículo/);
-    expect(options[5]).toContain("Outro Modelo");
-    expect(options[5]).toContain("sem preço");
-  });
-
-  it("filtra ignorando caixa e acento", async () => {
-    const { input } = setupModel();
-    type(input, "gemini");
-    let options = await modelOptions();
-    expect(options.map((o) => o.textContent)).toEqual([expect.stringContaining("Gêmini Flash")]);
-    type(input, "CLAUDE");
-    options = await modelOptions();
-    expect(options.map((o) => o.textContent)).toEqual([expect.stringContaining("Claude Haiku")]);
-    type(input, "deepseek/");
-    options = await modelOptions();
-    expect(options.map((o) => o.textContent)).toEqual([expect.stringContaining("DeepSeek Flash")]);
-  });
-
-  it("sem resultado mostra 'Nenhum modelo encontrado'", async () => {
-    const { input } = setupModel();
-    type(input, "zzz-inexistente");
-    expect(await screen.findByText("Nenhum modelo encontrado")).toBeTruthy();
-    expect(screen.queryByRole("listbox") ? await modelOptions() : []).toHaveLength(0);
-  });
-
-  it("modelo salvo fora da lista do provedor continua visível e selecionado", async () => {
-    const { input } = setupModel(openRouterSettings("meu/modelo-antigo"));
-    expect(input.value).toBe("meu/modelo-antigo");
-    const options = await openList();
-    const saved = options.find((o) => o.textContent?.includes("meu/modelo-antigo"));
-    expect(saved).toBeTruthy();
-    expect(saved?.getAttribute("aria-selected")).toBe("true");
-  });
-
-  it("re-render com as mesmas props não apaga o que o usuário digitou (modelo salvo fora da lista)", async () => {
-    const { input, rerender } = setupModel(openRouterSettings("meu/modelo-antigo"));
-    type(input, "gemini");
-    await modelOptions();
-    expect(input.value).toBe("gemini");
-    rerender(openRouterSettings("meu/modelo-antigo"));
-    expect(input.value).toBe("gemini");
-  });
-
-  it("escolher um item chama onChange com provider e model", async () => {
-    const { input, onChange } = setupModel();
-    expect(input.value).toBe("DeepSeek Flash");
-    const options = await openList();
-    fireEvent.click(options.find((o) => o.textContent?.includes("Claude Haiku"))!);
-    expect(onChange).toHaveBeenCalledWith({ provider: "openrouter", model: "anthropic/claude-haiku" });
-  });
-
-  it("sem provedor ativo, o campo fica desabilitado com o texto 'Modelo padrão do provedor'", () => {
+  it("sem escolha desconectada, não mostra 'Usar automático'", () => {
+    setup(openRouterSettings("anthropic/claude-haiku"));
+    expect(screen.queryByRole("button", { name: "Usar automático" })).toBeNull();
+    cleanup();
     setup();
-    const input = screen.getByRole("combobox", { name: "Modelo" }) as HTMLInputElement;
-    expect(input.disabled).toBe(true);
-    expect(input.placeholder).toBe("Modelo padrão do provedor");
+    expect(screen.queryByRole("button", { name: "Usar automático" })).toBeNull();
+  });
+});
+
+
+describe("TaskModelRow: cache frio", () => {
+  it("busca a lista só do provedor da escolha ativa e mostra nome e custo sem abrir o modal", async () => {
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      if (url.startsWith("https://openrouter.ai/"))
+        return new Response(
+          JSON.stringify({
+            data: [{ id: "anthropic/claude-haiku", name: "Claude Haiku", pricing: { prompt: "0.000001", completion: "0.000005" } }],
+          }),
+          { status: 200 },
+        );
+      return new Response(JSON.stringify({ data: [{ id: "deepseek-chat" }] }), { status: 200 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    const s = openRouterSettings("anthropic/claude-haiku");
+    s.providers.deepseek = { key: "sk-ds", addedAt: ADDED_AT, source: "paste" };
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <TaskModelRow task="extract" settings={s} onChange={vi.fn()} />
+      </QueryClientProvider>,
+    );
+    expect(await screen.findByText("Claude Haiku · OpenRouter")).toBeTruthy();
+    expect(screen.getByText(/≈ US\$ 0,\d+ por currículo/)).toBeTruthy();
+    expect(fetchMock.mock.calls.every((c) => String(c[0]).startsWith("https://openrouter.ai/"))).toBe(true);
+  });
+
+  it("no automático não busca nada", async () => {
+    const fetchMock = vi.fn(async () => new Response("{}", { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+    render(
+      <QueryClientProvider client={new QueryClient()}>
+        <TaskModelRow task="extract" settings={openRouterSettings(null)} onChange={vi.fn()} />
+      </QueryClientProvider>,
+    );
+    await new Promise((r) => setTimeout(r, 50));
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+});
+
+/** Linha com estado: `onChange` grava nas settings, como na tela. */
+function Stateful({ initial }: { initial: AiSettings }) {
+  const [settings, setSettings] = useState(initial);
+  return (
+    <TaskModelRow
+      task="extract"
+      settings={settings}
+      onChange={(choice: ModelChoice | null) => setSettings((s) => ({ ...s, tasks: { ...s.tasks, extract: choice } }))}
+    />
+  );
+}
+
+describe("TaskModelRow: foco depois de 'Usar automático'", () => {
+  function renderStateful(initial: AiSettings) {
+    const client = new QueryClient();
+    client.setQueryData(["ai-models", "openrouter", ADDED_AT], MODELS);
+    render(
+      <QueryClientProvider client={client}>
+        <Stateful initial={initial} />
+      </QueryClientProvider>,
+    );
+  }
+
+  it("com outro provedor conectado, o foco vai para 'Trocar modelo'", async () => {
+    const s = openRouterSettings(null);
+    s.tasks.extract = { provider: "anthropic", model: "m" };
+    renderStateful(s);
+    const btn = screen.getByRole("button", { name: "Usar automático" });
+    btn.focus();
+    fireEvent.click(btn);
+    expect(screen.queryByRole("button", { name: "Usar automático" })).toBeNull();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("button", { name: "Trocar modelo" })));
+  });
+
+  it("sem provedor conectado ('Trocar modelo' desabilitado), o foco vai para o nome da tarefa", async () => {
+    renderStateful({ ...defaultAiSettings(), tasks: { extract: { provider: "anthropic", model: "m" }, analyze: null, cv: null } });
+    fireEvent.click(screen.getByRole("button", { name: "Usar automático" }));
+    await waitFor(() => expect(document.activeElement?.textContent).toBe("Ler currículo"));
   });
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FREE_MODELS_NOTE, PROVIDER_IDS, PROVIDERS, type AiTask, type ProviderId } from "@/lib/client/ai/providers";
 import { startOAuth, type OAuthIntent } from "@/lib/client/ai/oauth";
 import { isConnected } from "@/lib/client/ai/model";
@@ -17,6 +17,13 @@ const MUST = PROVIDER_IDS.filter((id) => PROVIDERS[id].tier === "must");
 const SHOULD = PROVIDER_IDS.filter((id) => PROVIDERS[id].tier === "should");
 const SAVE_ERROR = "Não foi possível salvar neste navegador.";
 const SECTION = "flex flex-col gap-3 rounded-2xl border border-jf-line bg-jf-surface p-6";
+const GRID = "grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-3.5";
+const GROUP_LABEL = "text-sm font-semibold text-jf-ink-2";
+
+function statusText(n: number): string {
+  if (n === 0) return "Nenhuma IA conectada";
+  return n === 1 ? "1 provedor conectado" : `${n} provedores conectados`;
+}
 
 /**
  * O aviso de privacidade antecede a chave (`then: "key"`), o login do OpenRouter (`then: "oauth"`, aviso dos modelos
@@ -32,6 +39,22 @@ export function AiSettingsScreen() {
   const [keyTarget, setKeyTarget] = useState<KeyTarget | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [oauthError, setOAuthError] = useState<OAuthError | null>(null);
+  // Remover desmonta a linha (e o botão focado) e pode reordenar as seções: o foco vai para o título "Provedores".
+  const providersHeadingRef = useRef<HTMLHeadingElement>(null);
+  const focusProvidersHeading = useRef(false);
+  useEffect(() => {
+    if (!focusProvidersHeading.current) return;
+    focusProvidersHeading.current = false;
+    providersHeadingRef.current?.focus();
+  });
+  // Salvar a chave (o card sai da grade) ou aceitar o aviso pelo "Revisar aviso" (o botão some) desmonta o elemento que
+  // abriu o diálogo. O foco de retorno do diálogo roda depois do nosso efeito, então o destino vai no `finalFocus`.
+  const dialogFocusHeading = useRef(false);
+  const dialogFinalFocus = useCallback(() => {
+    if (!dialogFocusHeading.current) return true;
+    dialogFocusHeading.current = false;
+    return providersHeadingRef.current ?? true;
+  }, []);
 
   if (!settings) {
     return <div aria-busy="true" aria-label="Carregando configurações" className="h-96 animate-pulse rounded-2xl bg-jf-chip" />;
@@ -64,11 +87,14 @@ export function AiSettingsScreen() {
         },
       },
     }));
-    if (ok) setKeyTarget(null);
+    if (ok) {
+      dialogFocusHeading.current = true;
+      setKeyTarget(null);
+    }
   }
 
   function remove(id: ProviderId) {
-    update((s) => {
+    focusProvidersHeading.current = update((s) => {
       const rest = { ...s.providers };
       delete rest[id];
       const tasks = { ...s.tasks };
@@ -89,7 +115,7 @@ export function AiSettingsScreen() {
       setKeyTarget({ id, privacyAccepted: true });
       return;
     }
-    update((s) => {
+    dialogFocusHeading.current = update((s) => {
       const cfg = s.providers[id];
       if (!cfg) return s;
       const ack = id === "openrouter" ? { freeConsent: true } : { privacyAccepted: true };
@@ -115,9 +141,9 @@ export function AiSettingsScreen() {
     }
   }
 
-  const card = (id: ProviderId) => (
+  const card = (id: ProviderId, variant: "card" | "compact" = "card") => (
     <ProviderCard
-      key={id}
+      variant={variant}
       def={PROVIDERS[id]}
       entry={settings.providers[id]}
       connected={isConnected(settings, id)}
@@ -129,13 +155,113 @@ export function AiSettingsScreen() {
     />
   );
 
+  const connected = PROVIDER_IDS.filter((id) => isConnected(settings, id));
+  const mustOpen = MUST.filter((id) => !connected.includes(id));
+  const shouldOpen = SHOULD.filter((id) => !connected.includes(id));
+  const hasConnected = connected.length > 0;
+
+  const providers = (
+    <section key="prov" aria-labelledby="prov-t" className="flex flex-col gap-4">
+      <div>
+        <h2 id="prov-t" ref={providersHeadingRef} tabIndex={-1} className="text-xl font-semibold outline-none">
+          Provedores
+        </h2>
+        {!hasConnected && (
+          <p className="mt-1.5 text-sm text-jf-ink-3">
+            Conecte pelo menos um para usar a IA. O OpenRouter é o caminho mais rápido: login com a sua conta e modelos
+            gratuitos.
+          </p>
+        )}
+      </div>
+      {hasConnected && (
+        <div className="flex flex-col gap-2">
+          <p aria-hidden="true" className={GROUP_LABEL}>
+            Conectados
+          </p>
+          <ul
+            role="list"
+            aria-label="Provedores conectados"
+            className="divide-y divide-jf-line rounded-[14px] border border-jf-line bg-jf-surface"
+          >
+            {connected.map((id) => (
+              <li key={id}>{card(id, "compact")}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {mustOpen.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {hasConnected && (
+            <p aria-hidden="true" className={`${GROUP_LABEL} mt-2`}>
+              Conectar outro provedor
+            </p>
+          )}
+          <ul role="list" aria-label="Provedores para conectar" className={GRID}>
+            {mustOpen.map((id) => (
+              <li key={id} className="flex flex-col [&>article]:flex-1">
+                {card(id)}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      {shouldOpen.length > 0 && (
+        <details className="rounded-[14px] border border-jf-line bg-jf-surface px-[18px] py-4">
+          <summary className="flex min-h-11 cursor-pointer items-center font-semibold">
+            Mais provedores ({shouldOpen.length})
+          </summary>
+          <ul role="list" aria-label="Mais provedores para conectar" className={`mt-3 ${GRID}`}>
+            {shouldOpen.map((id) => (
+              <li key={id} className="flex flex-col [&>article]:flex-1">
+                {card(id)}
+              </li>
+            ))}
+          </ul>
+        </details>
+      )}
+    </section>
+  );
+
+  const tasks = (
+    <section key="task" aria-labelledby="task-t" className={`${SECTION} gap-4`}>
+      <div>
+        <h2 id="task-t" className="text-xl font-semibold">
+          Modelo para cada tarefa
+        </h2>
+        <p className="mt-1.5 text-sm text-jf-ink-3">
+          {hasConnected
+            ? "Escolha entre os modelos dos provedores conectados. Tarefas de extração podem usar um modelo mais barato. Em “Automático”, o app usa o primeiro provedor conectado com o modelo recomendado."
+            : "Depois de conectar um provedor, você escolhe aqui o modelo de cada tarefa. Sem provedor conectado, as tarefas de IA não rodam."}
+        </p>
+      </div>
+      {TASKS.map((task) => (
+        <TaskModelRow
+          key={task}
+          task={task}
+          settings={settings}
+          onChange={(choice) => update((s) => ({ ...s, tasks: { ...s.tasks, [task]: choice } }))}
+        />
+      ))}
+    </section>
+  );
+
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <div>
         <h1 className="font-display text-[32px] font-bold">Configurações de IA</h1>
         <p className="mt-1.5 max-w-[760px] text-jf-ink-3">
           Use a IA que preferir com a sua própria chave. As chaves ficam só neste navegador, e as chamadas vão direto do
           seu navegador para o provedor, sem passar pelos nossos servidores.
+        </p>
+        <p
+          role="status"
+          className="mt-3 inline-flex items-center gap-2 rounded-full bg-jf-chip px-3 py-1 text-sm font-semibold text-jf-ink-2"
+        >
+          <span
+            aria-hidden="true"
+            className={`size-2 shrink-0 rounded-full ${hasConnected ? "bg-jf-alta" : "bg-jf-ink-3"}`}
+          />
+          {statusText(connected.length)}
         </p>
       </div>
 
@@ -145,38 +271,7 @@ export function AiSettingsScreen() {
         </p>
       )}
 
-      <section aria-labelledby="prov-t" className="flex flex-col gap-3.5">
-        <h2 id="prov-t" className="text-xl font-semibold">
-          Provedores
-        </h2>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-3.5">{MUST.map(card)}</div>
-        <details className="rounded-[14px] border border-jf-line bg-jf-surface px-[18px] py-4">
-          <summary className="flex min-h-11 cursor-pointer items-center font-semibold">Mais provedores ({SHOULD.length})</summary>
-          <div className="mt-3 grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-3.5">
-            {SHOULD.map(card)}
-          </div>
-        </details>
-      </section>
-
-      <section aria-labelledby="task-t" className={`${SECTION} gap-4`}>
-        <div>
-          <h2 id="task-t" className="text-xl font-semibold">
-            Modelo para cada tarefa
-          </h2>
-          <p className="mt-1.5 text-sm text-jf-ink-3">
-            Escolha entre os provedores conectados. Tarefas de extração podem usar um modelo mais barato. Em
-            &ldquo;Automático&rdquo;, o app usa o primeiro provedor conectado com o modelo recomendado.
-          </p>
-        </div>
-        {TASKS.map((task) => (
-          <TaskModelRow
-            key={task}
-            task={task}
-            settings={settings}
-            onChange={(choice) => update((s) => ({ ...s, tasks: { ...s.tasks, [task]: choice } }))}
-          />
-        ))}
-      </section>
+      {hasConnected ? [tasks, providers] : [providers, tasks]}
 
       <div className="flex flex-wrap gap-6">
         <section aria-labelledby="priv-t" className={`${SECTION} flex-[1_1_420px]`}>
@@ -208,8 +303,14 @@ export function AiSettingsScreen() {
         note={privacy?.id === "openrouter" ? FREE_MODELS_NOTE : undefined}
         onConfirm={confirmPrivacy}
         onCancel={() => setPrivacy(null)}
+        finalFocus={dialogFinalFocus}
       />
-      <AddKeyDialog provider={keyTarget ? PROVIDERS[keyTarget.id] : null} onSave={saveKey} onClose={() => setKeyTarget(null)} />
+      <AddKeyDialog
+        provider={keyTarget ? PROVIDERS[keyTarget.id] : null}
+        onSave={saveKey}
+        onClose={() => setKeyTarget(null)}
+        finalFocus={dialogFinalFocus}
+      />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { Star } from "lucide-react";
 import { useId, useState } from "react";
 import { aiFailure } from "@/components/ai/messages";
 import { Button } from "@/components/ui/button";
@@ -51,9 +52,21 @@ type Props = {
   onRemove: () => void;
   onReviewPrivacy: () => void;
   oauthError?: string | null;
+  /** `"compact"`: uma linha para provedor conectado (nome, forma de conexão e ações), sem a descrição longa. */
+  variant?: "card" | "compact";
 };
 
-export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onRemove, onReviewPrivacy, oauthError }: Props) {
+export function ProviderCard({
+  def,
+  entry,
+  connected,
+  onAdd,
+  onConnectOAuth,
+  onRemove,
+  onReviewPrivacy,
+  oauthError,
+  variant = "card",
+}: Props) {
   const titleId = useId();
   const [test, setTest] = useState<Test>({ state: "idle" });
   const [showGuide, setShowGuide] = useState(false);
@@ -88,16 +101,103 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
         ? `Conectado pelo login do ${def.label} em ${date}. Chave terminada em ${last4}.`
         : `Chave colada em ${date}. Chave terminada em ${last4}.`;
 
+  const removeLabel = def.auth.kind === "paste" ? "Remover chave" : "Desconectar";
+  const reviewLabel = isOpenRouter ? "Revisar aviso dos modelos gratuitos" : "Revisar aviso de privacidade";
+  const testStatus = test.state !== "idle" && (
+    <p
+      role="status"
+      aria-live="polite"
+      className={cn("text-[13px] font-semibold", test.state === "error" ? "text-jf-danger-fg" : "text-jf-alta")}
+    >
+      {test.state === "loading" ? "Testando…" : test.state === "ok" ? "Conectado" : test.text}
+    </p>
+  );
+  const oauthAlert = oauthError && (
+    <p role="alert" className="text-[13px] text-jf-danger-fg">
+      {oauthError}
+    </p>
+  );
+
+  const guideButton = (
+    <Button
+      variant="outline"
+      className="min-h-11 border-jf-line-strong px-3 text-sm"
+      aria-expanded={showGuide}
+      onClick={() => setShowGuide((v) => !v)}
+    >
+      Ver guia
+    </Button>
+  );
+
+  if (variant === "compact") {
+    // Na linha compacta o guia só aparece quando o teste falha: é quando ele ajuda (CORS, servidor desligado).
+    // Depois de aberto, fica até ser fechado (não some enquanto um novo teste roda).
+    const showGuideButton = isLocal && (test.state === "error" || showGuide);
+    const how = isLocal
+      ? `Servidor em ${entry?.baseURL ?? def.baseURL}`
+      : entry?.source === "oauth"
+        ? "Conectado com OAuth"
+        : "Chave colada";
+    return (
+      <article aria-labelledby={titleId} className="flex flex-col gap-2 px-[18px] py-3.5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
+          <div className="min-w-0 flex-[1_1_220px]">
+            <h3 id={titleId} className="flex items-center gap-2 text-base font-semibold">
+              <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-jf-alta" />
+              {def.label}
+            </h3>
+            <p className="mt-0.5 pl-4 text-[13px] text-jf-ink-3">
+              <span>{how}</span>
+              {last4 && !isLocal && <span className="tabular-nums"> · termina em {last4}</span>}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {needsReview && (
+              <Button
+                variant="outline"
+                className="min-h-11 border-jf-line-strong px-3 text-sm text-jf-warn-fg-strong"
+                onClick={onReviewPrivacy}
+              >
+                {reviewLabel}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              className="min-h-11 border-jf-line-strong px-3 text-sm"
+              onClick={runTest}
+              disabled={test.state === "loading"}
+            >
+              Testar conexão
+            </Button>
+            <Button variant="ghost" className="min-h-11 px-3 text-sm text-jf-ink-2" onClick={remove}>
+              {removeLabel}
+            </Button>
+            {showGuideButton && guideButton}
+          </div>
+        </div>
+        {testStatus}
+        {oauthAlert}
+        {showGuideButton && showGuide && <LocalAiGuide />}
+      </article>
+    );
+  }
+
   return (
     <article
       aria-labelledby={titleId}
       className="flex flex-col gap-2.5 rounded-[14px] border border-jf-line bg-jf-surface p-[18px]"
     >
-      <div className="flex items-center justify-between gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1.5">
         <h3 id={titleId} className="text-base font-semibold">
           {def.label}
         </h3>
-        <span className="flex shrink-0 gap-1.5">
+        <span className="flex flex-wrap gap-1.5">
+          {isOpenRouter && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-jf-brand-soft px-2.5 py-1 text-xs font-semibold text-jf-brand-dark">
+              <Star aria-hidden="true" className="size-3 fill-current" />
+              Recomendado
+            </span>
+          )}
           {isLocal && <span className="rounded-full bg-jf-new-bg px-2.5 py-1 text-xs font-semibold text-jf-new-fg">Experimental</span>}
           <span
             className={cn(
@@ -120,11 +220,11 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
               Testar conexão
             </Button>
             <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={remove}>
-              {def.auth.kind === "paste" ? "Remover chave" : "Desconectar"}
+              {removeLabel}
             </Button>
             {needsReview && (
               <Button variant="outline" className="min-h-11 border-jf-line-strong px-3 text-sm" onClick={onReviewPrivacy}>
-                {isOpenRouter ? "Revisar aviso dos modelos gratuitos" : "Revisar aviso de privacidade"}
+                {reviewLabel}
               </Button>
             )}
           </>
@@ -153,31 +253,10 @@ export function ProviderCard({ def, entry, connected, onAdd, onConnectOAuth, onR
             )}
           </>
         )}
-        {isLocal && (
-          <Button
-            variant="outline"
-            className="min-h-11 border-jf-line-strong px-3 text-sm"
-            aria-expanded={showGuide}
-            onClick={() => setShowGuide((v) => !v)}
-          >
-            Ver guia
-          </Button>
-        )}
+        {isLocal && guideButton}
       </div>
-      {test.state !== "idle" && (
-        <p
-          role="status"
-          aria-live="polite"
-          className={cn("text-[13px] font-semibold", test.state === "error" ? "text-jf-danger-fg" : "text-jf-alta")}
-        >
-          {test.state === "loading" ? "Testando…" : test.state === "ok" ? "Conectado" : test.text}
-        </p>
-      )}
-      {oauthError && (
-        <p role="alert" className="text-[13px] text-jf-danger-fg">
-          {oauthError}
-        </p>
-      )}
+      {testStatus}
+      {oauthAlert}
       {isLocal && showGuide && <LocalAiGuide />}
     </article>
   );

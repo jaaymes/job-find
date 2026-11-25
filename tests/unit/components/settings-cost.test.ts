@@ -31,9 +31,19 @@ describe("sortModelsByCost / priceLabel", () => {
     expect(input).toEqual(copy);
     expect(input.map((m) => m.id)).toEqual(["c", "f"]);
   });
+  it("ordena modelos de provedores diferentes juntos: grátis, mais barato, mais caro, sem preço em ordem alfabética", () => {
+    const ids = sortModelsByCost("analyze", [
+      { id: "b", label: "Beta" },
+      { id: "a", label: "Alfa" },
+      { id: "caro", label: "Caro", priceIn: 5, priceOut: 15 },
+      { id: "barato", label: "Barato", priceIn: 0.1, priceOut: 0.4 },
+      { id: "gratis", label: "Grátis", priceIn: 0, priceOut: 0 },
+    ]).map((m) => m.id);
+    expect(ids).toEqual(["gratis", "barato", "caro", "a", "b"]);
+  });
   it("priceLabel", () => {
     expect(priceLabel("extract", { id: "f", label: "F", priceIn: 0, priceOut: 0 })).toBe("grátis");
-    expect(priceLabel("extract", { id: "z", label: "Z" })).toBe("sem preço");
+    expect(priceLabel("extract", { id: "z", label: "Z" })).toBe("");
     expect(priceLabel("analyze", { id: "b", label: "B", priceIn: 0.1, priceOut: 0.4 })).toBe("≈ US$ 0,0006 por vaga");
   });
 });
@@ -50,9 +60,9 @@ describe("estimateCost", () => {
   it("usa 2 casas a partir de 1 centavo", () => {
     expect(estimateCost("cv", { priceIn: 5, priceOut: 15 })).toBe("≈ US$ 0,05 por CV");
   });
-  it("preço zero é grátis; sem preço, informa que não há dado", () => {
+  it("preço zero é grátis; sem preço, devolve undefined", () => {
     expect(estimateCost("extract", { priceIn: 0, priceOut: 0 })).toBe("grátis por currículo");
-    expect(estimateCost("cv", { })).toBe("custo não informado pelo provedor");
-    expect(estimateCost("cv", undefined)).toBe("custo não informado pelo provedor");
+    expect(estimateCost("cv", {})).toBeUndefined();
+    expect(estimateCost("cv", undefined)).toBeUndefined();
   });
 });

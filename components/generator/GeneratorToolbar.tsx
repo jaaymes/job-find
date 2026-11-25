@@ -1,6 +1,7 @@
 "use client";
 
 import { BTN_OUTLINE, BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
+import type { AssembledCv } from "@/lib/client/cv/assemble";
 import type { CvLang } from "@/lib/client/cv/period";
 import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 import { TemplatePicker } from "./TemplatePicker";
@@ -19,6 +20,8 @@ export type ToolbarProps = {
   downloading: boolean;
   templateId: CvTemplateId;
   recommendedTemplate: CvTemplateId;
+  /** CV atual (prévia dos modelos); sem ele, o seletor usa um perfil de exemplo. */
+  previewCv?: AssembledCv;
   onTemplate: (id: CvTemplateId, makeDefault: boolean) => void;
   onLang: (l: CvLang) => void;
   onLetter: (checked: boolean) => void;
@@ -52,7 +55,7 @@ export function GeneratorToolbar(p: ToolbarProps) {
           ))}
         </select>
       </label>
-      <TemplatePicker value={p.templateId} recommended={p.recommendedTemplate} onChange={p.onTemplate} disabled={p.running} />
+      <TemplatePicker value={p.templateId} recommended={p.recommendedTemplate} onChange={p.onTemplate} disabled={p.running} previewCv={p.previewCv} />
       <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm font-medium">
         <input
           type="checkbox"

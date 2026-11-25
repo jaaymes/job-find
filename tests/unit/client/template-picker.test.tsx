@@ -30,17 +30,32 @@ describe("TemplatePicker", () => {
     const radios = within(group).getAllByRole("radio");
     expect(radios).toHaveLength(10);
     for (const t of CV_TEMPLATES) {
-      expect(within(dialog).getAllByText(t.description).length).toBeGreaterThan(0);
-      expect(within(dialog).getAllByText(`Indicado para: ${t.bestFor}`).length).toBeGreaterThan(0);
+      const radio = within(group).getByRole("radio", { name: new RegExp(t.name) });
+      expect(radio.closest("label")?.textContent).toContain(`${t.description} Indicado para: ${t.bestFor}`);
     }
     expect((within(group).getByRole("radio", { name: /Clássico/ }) as HTMLInputElement).checked).toBe(true);
   });
 
-  it("marca só o recomendado com 'Recomendado para você'", async () => {
+  it("marca só o cartão do recomendado com 'Recomendado'", async () => {
     const { dialog } = await open();
-    expect(within(dialog).getAllByText("Recomendado para você")).toHaveLength(1);
-    const moderno = within(dialog).getByRole("radio", { name: /Moderno/ });
-    expect(moderno.closest("label")?.textContent).toContain("Recomendado para você");
+    const group = within(dialog).getByRole("radiogroup");
+    const marked = within(group).getAllByRole("radio").filter((r) => r.closest("label")?.textContent?.includes("Recomendado"));
+    expect(marked).toHaveLength(1);
+    expect(marked[0].closest("label")?.textContent).toContain("Moderno com acento");
+  });
+
+  it("o painel ao lado mostra o modelo marcado, com descrição e indicação", async () => {
+    const { dialog } = await open();
+    expect(within(dialog).getByText("Layout equilibrado em Inter, com linhas sob os títulos.", { selector: "p" })).toBeTruthy();
+    fireEvent.click(within(dialog).getByRole("radio", { name: /Moderno/ }));
+    expect(within(dialog).getByText("Recomendado para você")).toBeTruthy();
+    expect(within(dialog).getByText("Indicado para: Produto, front-end e startups", { selector: "p" })).toBeTruthy();
+  });
+
+  it("cada modelo tem uma miniatura com a cor de acento do modelo", async () => {
+    const { dialog } = await open();
+    const moderno = within(dialog).getByRole("radio", { name: /Moderno/ }).closest("label")!;
+    expect(moderno.innerHTML).toContain("rgb(31, 58, 95)");
   });
 
   it("trocar o radio (ou usar as setas) não chama onChange e o dialog continua aberto", async () => {

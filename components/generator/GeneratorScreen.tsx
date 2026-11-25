@@ -447,6 +447,7 @@ function Generator({ job }: { job: JobDetail }) {
             downloading={downloading}
             templateId={templateId}
             recommendedTemplate={recommendedTemplate}
+            previewCv={review?.cv}
             onTemplate={onTemplate}
             onLang={onLang}
             onLetter={onLetter}

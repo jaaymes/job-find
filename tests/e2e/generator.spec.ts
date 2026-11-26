@@ -670,11 +670,15 @@ test("'Regenerar' mantém o modelo escolhido e o registro salvo guarda o modelo"
   await page.getByRole("dialog").getByRole("button", { name: "Usar este modelo" }).click();
   await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
   const calls = mock.bodies.length;
+  const before = (await storedRec(page))?.createdAt;
+  expect(before).toBeTruthy();
 
   // Sem edições, "Regenerar" não pede confirmação.
   await page.getByRole("button", { name: "Regenerar" }).click();
   await expect.poll(() => mock.bodies.length).toBeGreaterThan(calls);
   await expect(headline(page)).toBeVisible(FIRST);
+  // O registro novo foi gravado (createdAt mudou): só então vale afirmar o modelo salvo.
+  await expect.poll(async () => (await storedRec(page))?.createdAt).not.toBe(before);
   await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
   await expect.poll(async () => (await storedRec(page))?.templateId).toBe("harvard");
 });

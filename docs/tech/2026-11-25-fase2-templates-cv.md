@@ -111,6 +111,7 @@
 ### D-04. Fontes sob demanda e subconjunto latino (RF-36, R-06)
 
 - **Famílias:** a Inter, que já existe, mais Source Serif 4, JF Sans e JF Grotesk, em regular 400 e bold 700, TTF estático, licença OFL.
+- **Nomes:** JF Sans é o Source Sans 3 e JF Grotesk é o IBM Plex Sans, renomeados por serem subconjuntos modificados (Reserved Font Name da OFL). Os arquivos são `JFSans-*.ttf` e `JFGrotesk-*.ttf`.
 - **Origem:** os repositórios oficiais (google/fonts, adobe-fonts e IBM/plex). As licenças ficam em `public/fonts/LICENSE-<Família>.txt`.
 - **Subconjunto:** `pyftsubset` (fonttools, só na máquina de quem gera e nunca em runtime) com Basic Latin, Latin-1 Supplement, Latin Extended-A, pontuação geral e os símbolos `–—•·€£`. Isso cobre pt/en/es. O script fica em `scripts/subset-fonts.sh`, para ser reproduzível.
   - **Meta:** fontes novas ≤ 1,5 MB no total (teste lê o tamanho dos arquivos).

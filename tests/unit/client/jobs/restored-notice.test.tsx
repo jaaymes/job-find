@@ -48,6 +48,12 @@ describe("RestoredNotice: região de status", () => {
     render(<RestoredNotice visible={false} onClear={() => {}} />);
     expect(screen.getByRole("status").textContent).toBe("");
     expect(screen.queryByRole("button", { name: "Limpar" })).toBeNull();
+    expect(screen.getByRole("status").className).toContain("sr-only");
+  });
+
+  it("visível: a região deixa de ser sr-only", () => {
+    render(<RestoredNotice visible onClear={() => {}} />);
+    expect(screen.getByRole("status").className).not.toContain("sr-only");
   });
 });
 

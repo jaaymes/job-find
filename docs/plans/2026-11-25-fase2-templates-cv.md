@@ -113,7 +113,8 @@
 **Arquivos:**
 - Criar:
   - `scripts/subset-fonts.sh`;
-  - `public/fonts/SourceSerif4-{Regular,Bold}.ttf`, `SourceSans3-{Regular,Bold}.ttf`, `IBMPlexSans-{Regular,Bold}.ttf`;
+  - `public/fonts/SourceSerif4-{Regular,Bold}.ttf`, `JFSans-{Regular,Bold}.ttf`, `JFGrotesk-{Regular,Bold}.ttf`;
+  - nota: JF Sans é o Source Sans 3 e JF Grotesk é o IBM Plex Sans, renomeados por serem subconjuntos modificados (Reserved Font Name da OFL);
   - `public/fonts/LICENSE-SourceSerif4.txt`, `LICENSE-SourceSans3.txt`, `LICENSE-IBMPlexSans.txt`.
 - Modificar: `lib/client/pdf/fonts.ts`
 - Teste: `tests/unit/client/pdf-fonts.test.ts` (node)

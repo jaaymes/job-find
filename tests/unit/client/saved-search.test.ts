@@ -117,11 +117,29 @@ describe("useRememberFilters", () => {
     expect(lastFiltersStore.get()?.filters).toEqual({ lang: "pt" });
   });
 
-  it("filtros vazios gravam null", () => {
-    localStorage.setItem(LAST_KEY, seed);
-    renderHook(() => useRememberFilters({}, true));
+  it("limpar os filtros (havia filtro, ficou vazio) grava null", () => {
+    const { rerender } = renderHook(({ f }) => useRememberFilters(f, true), {
+      initialProps: { f: { lang: "pt" } as PageFilters },
+    });
+    expect(lastFiltersStore.get()?.filters).toEqual({ lang: "pt" });
+    rerender({ f: {} });
     expect(lastFiltersStore.get()).toBeNull();
     expect(JSON.parse(localStorage.getItem(LAST_KEY)!)).toEqual({ v: 1, data: null });
+  });
+
+  it("montar sem filtros não apaga a última busca salva", () => {
+    localStorage.setItem(LAST_KEY, seed);
+    renderHook(() => useRememberFilters({}, true));
+    expect(localStorage.getItem(LAST_KEY)).toBe(seed);
+  });
+
+  it("desligar ocultas numa página sem filtros não apaga a última busca salva", () => {
+    localStorage.setItem(LAST_KEY, seed);
+    const { rerender } = renderHook(({ f }) => useRememberFilters(f, true), {
+      initialProps: { f: { showHidden: true } as PageFilters },
+    });
+    rerender({ f: {} });
+    expect(lastFiltersStore.get()?.filters).toEqual({ lang: "en" });
   });
 
   it("filtros só com showHidden não apagam a última busca salva", () => {

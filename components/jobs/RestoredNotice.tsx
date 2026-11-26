@@ -34,14 +34,17 @@ export function useRestoredNoticeVisible(
 }
 
 /**
- * Aviso discreto de que os filtros da última visita foram restaurados. A região de status existe sempre (vazia) e o
+ * Aviso discreto de que os filtros da última visita foram restaurados. A região de status existe sempre (vazia e `sr-only`, para não abrir espaço no layout) e o
  * texto entra num efeito depois da montagem, para o leitor de tela anunciá-lo.
  */
 export function RestoredNotice({ visible, onClear }: { visible: boolean; onClear: () => void }) {
   const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
   const shown = mounted && visible;
   return (
-    <p role="status" className="m-0 flex flex-wrap items-center gap-x-2 text-[13px] text-jf-ink-2">
+    <p
+      role="status"
+      className={shown ? "m-0 flex flex-wrap items-center gap-x-2 text-[13px] text-jf-ink-2" : "sr-only"}
+    >
       {shown && (
         <>
           {MESSAGE}

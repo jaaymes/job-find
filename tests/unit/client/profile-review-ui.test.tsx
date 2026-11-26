@@ -75,6 +75,14 @@ describe("Revisar perfil", () => {
 });
 
 describe("Sugestão de skills", () => {
+  it("sem sugestões, só a região de status sr-only (sem wrapper que some espaço)", () => {
+    render(<ProfileEditor profile={profile({ experiences: [] })} onSave={() => true} />);
+    const status = screen.getByRole("status");
+    expect(status.className).toContain("sr-only");
+    expect(status.textContent).toBe("");
+    expect(screen.queryByRole("list", { name: "Competências sugeridas" })).toBeNull();
+  });
+
   it("o chip adiciona a skill com years null ao rascunho e some", () => {
     const onSave = vi.fn(() => true);
     render(<ProfileEditor profile={profile()} onSave={onSave} />);

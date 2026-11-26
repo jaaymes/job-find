@@ -100,7 +100,6 @@ export function readLastFilters(now: number = Date.now()): SavedFilters | null {
 export function useRememberFilters(filters: PageFilters, ready: boolean): void {
   const serialized = JSON.stringify(toSavedFilters(filters));
   const previous = useRef<string | undefined>(undefined);
-  const showHidden = filters.showHidden === true;
   useEffect(() => {
     if (!ready) return;
     const next: SavedFilters | null = JSON.parse(serialized);
@@ -108,9 +107,11 @@ export function useRememberFilters(filters: PageFilters, ready: boolean): void {
     const before = previous.current;
     previous.current = serialized;
     if (next === null) {
-      // URL sem filtro salvável desde o início (só `ocultas`) não toca na store; já limpar um filtro que existia, sim.
-      const neverHadFilter = before === undefined || before === "null";
-      if (current !== null && !(showHidden && neverHadFilter)) lastFiltersStore.set(null);
+      // Só apaga na transição "tinha filtro salvável -> ficou vazio" (limpar de verdade). Montar sem filtros ou
+      // alternar "ocultas" numa página sem filtros não toca na última busca. (`ready` é de mão única, então
+      // `previous` só começa a valer depois da restauração.)
+      const hadFilter = before !== undefined && before !== "null";
+      if (current !== null && hadFilter) lastFiltersStore.set(null);
       return;
     }
     const unchanged =
@@ -118,7 +119,7 @@ export function useRememberFilters(filters: PageFilters, ready: boolean): void {
       JSON.stringify(toSavedFilters(current.filters)) === serialized &&
       isFresh(current.savedAt, Date.now());
     if (!unchanged) lastFiltersStore.set({ filters: next, savedAt: new Date().toISOString() });
-  }, [ready, serialized, showHidden]);
+  }, [ready, serialized]);
 }
 
 type Restored = { filters: SavedFilters; source: "last" | "saved" };

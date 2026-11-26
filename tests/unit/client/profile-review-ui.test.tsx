@@ -79,6 +79,7 @@ describe("Sugestão de skills", () => {
     const onSave = vi.fn(() => true);
     render(<ProfileEditor profile={profile()} onSave={onSave} />);
     fireEvent.click(screen.getByRole("button", { name: "+ Kubernetes" }));
+    expect(screen.getByRole("status").textContent).toBe("Kubernetes adicionada às competências");
     expect(screen.queryByRole("button", { name: "+ Kubernetes" })).toBeNull();
     expect(within(screen.getByRole("list", { name: "Competências" })).getByText("Kubernetes")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));

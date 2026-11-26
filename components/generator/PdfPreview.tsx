@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { AssembledCv } from "@/lib/client/cv/assemble";
+import { drawPdfPage } from "@/lib/client/pdf/draw-page";
 import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 import { useMediaQuery } from "@/lib/client/use-media-query";
 
@@ -33,18 +34,12 @@ function PageCanvases({ doc, url, onFail }: { doc: PdfDoc; url: string; onFail: 
     const tasks: { cancel: () => void }[] = [];
     void (async () => {
       try {
-        const dpr = window.devicePixelRatio || 1;
         for (let n = 1; n <= total; n++) {
           const canvas = canvasRefs.current[n - 1];
           if (!canvas || stale) return;
           const page = await doc.getPage(n);
           if (stale) return;
-          const base = page.getViewport({ scale: 1 });
-          const width = wrapRef.current?.clientWidth || base.width;
-          const viewport = page.getViewport({ scale: (width / base.width) * dpr });
-          canvas.width = Math.floor(viewport.width);
-          canvas.height = Math.floor(viewport.height);
-          const task = page.render({ canvas, viewport });
+          const task = drawPdfPage(page, canvas, wrapRef.current?.clientWidth || page.getViewport({ scale: 1 }).width);
           tasks.push(task);
           await task.promise;
         }

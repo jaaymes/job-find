@@ -12,6 +12,7 @@ import { hasUsableProvider } from "@/lib/client/ai/model";
 import { pickLanguage } from "@/lib/client/ai/prompts/cv.tailor.v1";
 import { aiSettingsStore } from "@/lib/client/ai/settings";
 import { docsOf, generatedStore, type GeneratedRecord } from "@/lib/client/cv/generated-store";
+import { assembleBaseCv } from "@/lib/client/cv/assemble";
 import type { CvLang } from "@/lib/client/cv/period";
 import { reviewDocs } from "@/lib/client/cv/review";
 import { useJobStates } from "@/lib/client/jobs/job-state";
@@ -364,6 +365,11 @@ function Generator({ job }: { job: JobDetail }) {
     else request({ lang: record.lang, includeLetter: true });
   };
 
+  // Miniatura do botão do modelo: o CV do perfil no idioma escolhido. Não muda a cada edição do CV gerado (cada
+  // pausa custaria um PDF inteiro só para a miniatura de 56px).
+  const triggerCv = useMemo(() => (profile ? assembleBaseCv(profile, shown.lang) : null), [profile, shown.lang]);
+  // Galeria e prévia grande do seletor de modelo: o CV gerado, ou o do perfil enquanto não há geração.
+  const previewCv = review ? review.cv : triggerCv;
   const recommendedTemplate = useMemo(() => (profile ? recommendTemplate(profile, job) : "classico"), [profile, job]);
   const templateId: CvTemplateId = profile
     ? resolveTemplateId(record?.templateId ?? draftTemplate, prefs ?? { templateId: null }, profile, job)
@@ -433,7 +439,7 @@ function Generator({ job }: { job: JobDetail }) {
             Importar currículo
           </HardLink>
         </section>
-      ) : (
+      ) : previewCv === null ? null : (
         <>
           {!hasProvider && <NoProviderCta task="cv" />}
           <GeneratorToolbar
@@ -447,6 +453,8 @@ function Generator({ job }: { job: JobDetail }) {
             downloading={downloading}
             templateId={templateId}
             recommendedTemplate={recommendedTemplate}
+            previewCv={previewCv}
+            triggerCv={triggerCv ?? previewCv}
             onTemplate={onTemplate}
             onLang={onLang}
             onLetter={onLetter}

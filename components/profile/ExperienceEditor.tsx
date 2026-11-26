@@ -157,7 +157,7 @@ function Row({
             >
               + Realização
             </button>
-            <AssistButton empty={exp.bullets.every((b) => b.text.trim() === "")} onClick={onAssist} />
+            <AssistButton empty={exp.bullets.every((b) => b.text.trim() === "")} label={title} onClick={onAssist} />
             </div>
           </fieldset>
         </div>
@@ -172,6 +172,9 @@ function Row({
           {open ? "Concluir edição" : "Editar experiência"}
           <span className="sr-only"> {title}</span>
         </button>
+        {!open && (
+          <AssistButton empty={exp.bullets.every((b) => b.text.trim() === "")} label={title} onClick={onAssist} />
+        )}
         <button
           type="button"
           className="min-h-11 rounded-lg px-3 text-sm font-medium text-jf-danger-fg outline-none hover:bg-jf-danger-bg focus-visible:ring-2 focus-visible:ring-jf-brand"

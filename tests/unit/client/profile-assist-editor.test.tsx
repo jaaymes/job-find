@@ -71,23 +71,23 @@ afterEach(cleanup);
 describe("botões do assistente no editor", () => {
   it("rótulos mudam entre vazio e preenchido (título, resumo e bullets)", () => {
     const { unmount } = render(<ProfileEditor profile={profile()} onSave={() => true} />);
-    expect(screen.getAllByRole("button", { name: "Escrever com IA" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /^Escrever com IA/ })).toHaveLength(2);
     unmount();
     render(
       <ProfileEditor profile={profile({ headline: "Dev", summary: "Resumo" })} onSave={() => true} />,
     );
-    expect(screen.getAllByRole("button", { name: "Melhorar com IA" })).toHaveLength(2);
-    expect(screen.queryByRole("button", { name: "Escrever com IA" })).toBeNull();
+    expect(screen.getAllByRole("button", { name: /^Melhorar com IA/ })).toHaveLength(3);
+    expect(screen.queryByRole("button", { name: /^Escrever com IA/ })).toBeNull();
   });
 
-  it("bullets: só com a experiência aberta; 'Melhorar' com bullets e 'Escrever' sem eles", () => {
+  it("bullets: a experiência fechada já tem o botão; 'Melhorar' com bullets e 'Escrever' sem eles", () => {
     render(<ProfileEditor profile={profile({ headline: "x", summary: "y" })} onSave={() => true} />);
-    expect(screen.getAllByRole("button", { name: "Melhorar com IA" })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /^Melhorar com IA/ })).toHaveLength(3);
     fireEvent.click(screen.getByRole("button", { name: /Editar experiência/ }));
-    expect(screen.getAllByRole("button", { name: "Melhorar com IA" })).toHaveLength(3);
+    expect(screen.getAllByRole("button", { name: /^Melhorar com IA/ })).toHaveLength(3);
     fireEvent.click(screen.getByRole("button", { name: "Remover realização 2" }));
     fireEvent.click(screen.getByRole("button", { name: "Remover realização 1" }));
-    expect(screen.getAllByRole("button", { name: "Escrever com IA" })).toHaveLength(1);
+    expect(screen.getAllByRole("button", { name: /^Escrever com IA/ })).toHaveLength(1);
   });
 });
 
@@ -97,7 +97,7 @@ describe("inserir e desfazer", () => {
     render(<ProfileEditor profile={profile({ headline: "x", summary: "Antigo" })} onSave={() => true} />);
     expect(beforeUnloadBlocked()).toBe(false);
     mocks.insert = { text: "Novo resumo", bullets: null };
-    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[1]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Melhorar com IA/ })[1]);
     expect(mocks.targets.at(-1)).toEqual({ kind: "summary" });
     fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
     expect(summary().value).toBe("Novo resumo");
@@ -113,7 +113,7 @@ describe("inserir e desfazer", () => {
   it("título: insere e desfaz", () => {
     render(<ProfileEditor profile={profile()} onSave={() => true} />);
     mocks.insert = { text: "Engenheira de Software", bullets: null };
-    fireEvent.click(screen.getAllByRole("button", { name: "Escrever com IA" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Escrever com IA/ })[0]);
     expect(mocks.targets.at(-1)).toEqual({ kind: "headline" });
     fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
     const input = screen.getByLabelText("Título profissional") as HTMLInputElement;
@@ -127,7 +127,7 @@ describe("inserir e desfazer", () => {
     render(<ProfileEditor profile={profile({ headline: "x", summary: "y" })} onSave={() => true} />);
     fireEvent.click(screen.getByRole("button", { name: /Editar experiência/ }));
     mocks.insert = { text: null, bullets: ["Novo 1", "Novo 2"] };
-    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[2]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Melhorar com IA/ })[2]);
     expect(mocks.targets.at(-1)).toEqual({ kind: "bullets", expId: "exp_1" });
     fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
 
@@ -154,7 +154,7 @@ describe("inserir e desfazer", () => {
     render(<ProfileEditor profile={profile({ headline: "x", summary: "y" })} onSave={onSave} />);
     fireEvent.click(screen.getByRole("button", { name: /Editar experiência/ }));
     mocks.insert = { text: null, bullets: ["N1", "N2"] };
-    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[2]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Melhorar com IA/ })[2]);
     fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
     fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
     const saved = (onSave.mock.calls[0] as unknown as [Profile])[0];
@@ -188,7 +188,7 @@ describe("desfazer e limite de destaques", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: /Editar experiência\s*Dev · Acme/ }));
     mocks.insert = { text: null, bullets: ["Novo 1", "Novo 2"] };
-    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[2]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Melhorar com IA/ })[2]);
     fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
     // Libera 2 vagas e as ocupa com bullets de exp_2.
     fireEvent.click(screen.getByRole("button", { name: /Editar experiência\s*Dev2/ }));
@@ -218,7 +218,7 @@ describe("desfazer e limite de destaques", () => {
     fireEvent.click(screen.getByRole("button", { name: /Editar experiência/ }));
     fireEvent.click(screen.getByRole("button", { name: "Remover realização 4" }));
     mocks.insert = { text: null, bullets: ["N1", "N2", "N3", "N4"] };
-    fireEvent.click(screen.getAllByRole("button", { name: "Melhorar com IA" })[2]);
+    fireEvent.click(screen.getAllByRole("button", { name: /^Melhorar com IA/ })[2]);
     fireEvent.click(screen.getByRole("button", { name: "Inserir (mock)" }));
     fireEvent.click(screen.getByRole("button", { name: "Salvar perfil" }));
     const saved = (onSave.mock.calls[0] as unknown as [Profile])[0];

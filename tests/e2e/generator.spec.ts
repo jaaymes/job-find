@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
-import { expect, test, type Page, type Route } from "@playwright/test";
+import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
 import { extractText, getDocumentProxy } from "unpdf";
 import { cvFileName } from "@/lib/client/pdf/filename";
 import { getJob, listJobs } from "@/lib/server/jobs/query";
@@ -688,7 +688,7 @@ test("vaga nova sem registro: o modelo recomendado já vem selecionado e marcado
   await page.goto("/gerador/1");
   // Perfil sênior e vaga em português: a recomendação é "Foco em resultados".
   const picker = page.getByRole("button", { name: /^Modelo do CV: / });
-  await expect(picker).toHaveText("Modelo do CV: Foco em resultados", FIRST);
+  await expect(picker).toHaveAccessibleName("Modelo do CV: Foco em resultados", FIRST);
   expect(await storedRec(page)).toBeNull();
 
   await picker.click();
@@ -697,4 +697,76 @@ test("vaga nova sem registro: o modelo recomendado já vem selecionado e marcado
   const recommended = dialog.locator("label").filter({ hasText: "Recomendado para você" });
   await expect(recommended).toContainText("Foco em resultados");
   await expect(recommended.getByRole("radio")).toBeChecked();
+});
+
+test("no celular (375px), o botão do modelo quebra o texto e não vaza da barra de opções", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  await page.goto("/gerador/1");
+  const picker = page.getByRole("button", { name: /^Modelo do CV: / });
+  await expect(picker).toHaveAccessibleName("Modelo do CV: Foco em resultados", FIRST);
+  await expect(picker).toHaveText("Modelo do CV: Foco em resultados");
+  const fits = await picker.evaluate((el) => {
+    const bar = el.closest("section")!.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    return el.scrollWidth <= el.clientWidth && box.right <= bar.right + 0.5;
+  });
+  expect(fits).toBe(true);
+});
+
+/** A miniatura de cada modelo só vira `img` ao entrar na tela (IntersectionObserver): rola até cada uma e espera carregar. */
+async function expectAllThumbnailsLoaded(group: Locator) {
+  await expect(group.getByRole("radio")).toHaveCount(10, FIRST);
+  const cards = group.locator("label");
+  await expect(cards).toHaveCount(10);
+  for (let i = 0; i < 10; i++) {
+    const card = cards.nth(i);
+    await card.scrollIntoViewIfNeeded();
+    const img = card.locator("img");
+    await expect(img).toHaveCount(1, FIRST);
+    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0), FIRST).toBe(true);
+  }
+}
+
+/** Espera o canvas da prévia ter tamanho e, se `inked`, algum pixel não branco (a página foi desenhada). */
+async function expectPreviewCanvas(dialog: Locator, inked: boolean) {
+  const canvas = dialog.getByRole("region", { name: "Prévia do modelo" }).locator("canvas").first();
+  await expect.poll(() => canvas.evaluate((c: HTMLCanvasElement) => c.width > 0 && c.height > 0), FIRST).toBe(true);
+  if (!inked) return;
+  await expect
+    .poll(
+      () =>
+        canvas.evaluate((c: HTMLCanvasElement) => {
+          const d = c.getContext("2d")?.getImageData(0, 0, c.width, c.height).data;
+          if (!d) return false;
+          for (let i = 0; i < d.length; i += 4) if (d[i + 3] > 0 && (d[i] < 200 || d[i + 1] < 200 || d[i + 2] < 200)) return true;
+          return false;
+        }),
+      FIRST,
+    )
+    .toBe(true);
+}
+
+test("o seletor do gerador mostra 10 miniaturas A4 e a prévia grande", async ({ page }) => {
+  await generate(page);
+  await page.getByRole("button", { name: /^Modelo do CV: / }).click();
+  const dialog = page.getByRole("dialog");
+  await expectAllThumbnailsLoaded(dialog.getByRole("radiogroup", { name: "Modelos de CV" }));
+  await expectPreviewCanvas(dialog, false);
+});
+
+test("sem CV gerado, o seletor do gerador já mostra as miniaturas com o currículo do perfil", async ({ page }) => {
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  await page.goto("/gerador/1");
+  // Ainda não há CV gerado: o botão é "Gerar" (não "Regenerar") e nada foi salvo.
+  await expect(page.getByRole("button", { name: GENERATE })).toBeVisible(FIRST);
+  await expect(page.getByRole("button", { name: "Regenerar" })).toHaveCount(0);
+  const picker = page.getByRole("button", { name: /^Modelo do CV: / });
+  await expect(picker).toBeVisible(FIRST);
+  await picker.click();
+  const dialog = page.getByRole("dialog");
+  await expectAllThumbnailsLoaded(dialog.getByRole("radiogroup", { name: "Modelos de CV" }));
+  // O fallback (currículo do perfil) desenhou uma página com conteúdo: se quebrar, o canvas fica em branco ou ausente.
+  await expectPreviewCanvas(dialog, true);
+  expect(await storedRec(page)).toBeNull();
 });

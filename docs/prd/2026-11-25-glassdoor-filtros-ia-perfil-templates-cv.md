@@ -183,7 +183,7 @@ As personas são as do PRD pai: dev buscando vaga nacional ou internacional, de 
 | RF-35 | Seções novas no PDF (Projetos, Certificações, Idiomas) com rótulos em pt/en/es | Must | Vêm do perfil, sem passar pela IA de adaptação (RN-07 camada 1) |
 | RF-36 | Fontes adicionais embutidas (TTF, licença OFL) em `public/fonts` | Must | Licenças versionadas ao lado dos arquivos; peso total de fontes novas ≤ 1,5 MB |
 | RF-37 | Baixar "CV base" pelo perfil, sem vaga, em qualquer template | Should | Usa o texto do perfil como está |
-| RF-38 | Miniaturas PNG estáticas dos templates, geradas por script com um perfil fictício | Should | Script em `scripts/`; imagens ≤ 40 KB cada |
+| RF-38 | Miniaturas PNG estáticas dos templates, geradas por script com um perfil fictício | Should | Sem PNGs estáticos. **Atendido pela galeria renderizada no navegador** (spec `docs/tech/2026-11-26-galeria-modelos-cv-e-assistente-visivel.md`): as miniaturas A4 usam o currículo do próprio usuário |
 
 ## 8. Regras de negócio
 

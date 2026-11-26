@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TemplatePicker } from "@/components/generator/TemplatePicker";
 import { BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import { assembleBaseCv } from "@/lib/client/cv/assemble";
@@ -39,6 +39,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
+  const cv = useMemo(() => assembleBaseCv(profile, lang), [profile, lang]);
   const templateId = resolveTemplateId(null, prefs ?? { templateId: null }, profile, null);
   const choose = (id: CvTemplateId) => cvPrefsStore.set({ templateId: id });
 
@@ -47,7 +48,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
     setFailed(false);
     try {
       const render = await import("@/lib/client/pdf/render");
-      const { blob } = await render.renderCvPdf(assembleBaseCv(profile, lang), templateId);
+      const { blob } = await render.renderCvPdf(cv, templateId);
       saveBlob(blob, cvFileName(profile.name ?? "", "", ""));
     } catch {
       setFailed(true);
@@ -57,7 +58,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
   }
 
   return (
-    <section id="modelos-de-cv" aria-labelledby="base-cv-t" className={`${CARD} mb-6 flex flex-col gap-3 p-4 sm:p-6`}>
+    <section id="modelos-de-cv" aria-labelledby="base-cv-t" className={`${CARD} mt-6 flex flex-col gap-3 p-4 sm:p-6`}>
       <h2 id="base-cv-t" className="text-lg font-semibold">
         Modelos de CV
       </h2>
@@ -66,16 +67,18 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
         base é um PDF só com os dados do perfil salvo, sem vaga e sem IA: salve o perfil antes para incluir as
         últimas edições.
       </p>
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="flex flex-col items-stretch gap-3">
         <TemplatePicker
           value={templateId}
           recommended={recommendTemplate(profile, null)}
           onChange={(id) => choose(id)}
+          cv={cv}
           showDefaultOption={false}
+          triggerClassName="w-full"
         />
         <label className={FIELD_LABEL}>
           Idioma dos rótulos do CV
-          <select className={`${FIELD} sm:w-auto`} value={lang} onChange={(e) => setLang(e.target.value as CvLang)}>
+          <select className={`${FIELD}`} value={lang} onChange={(e) => setLang(e.target.value as CvLang)}>
             {LANGS.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.label}

@@ -1,15 +1,19 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BaseCvDownload } from "@/components/profile/BaseCvDownload";
 import { CertificationsEditor } from "@/components/profile/CertificationsEditor";
 import { ExperienceEditor } from "@/components/profile/ExperienceEditor";
 import { LanguagesEditor } from "@/components/profile/LanguagesEditor";
+import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { ProjectsEditor } from "@/components/profile/ProjectsEditor";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 
 const mocks = vi.hoisted(() => ({ renderCvPdf: vi.fn() }));
 vi.mock("@/lib/client/pdf/render", () => ({ renderCvPdf: mocks.renderCvPdf }));
+// Miniaturas e prévia do seletor de modelo não entram na contagem de renderCvPdf do download.
+vi.mock("@/lib/client/pdf/thumbnail", () => ({ renderCvThumbnail: async () => "blob:x", peekThumbnail: () => null }));
+vi.mock("@/components/generator/PdfPreview", () => ({ PdfPreview: () => null }));
 
 afterEach(cleanup);
 
@@ -221,5 +225,47 @@ describe("BaseCvDownload", () => {
       templateId: "minimalista",
     });
     window.localStorage.clear();
+  });
+});
+
+describe("assistente visível no perfil", () => {
+  const withExp = (): Profile => ({
+    ...emptyProfile(),
+    experiences: [
+      { id: "exp_1", company: "Acme", title: "Dev", startDate: null, endDate: null, bullets: [{ id: "exp_1.b1", text: "Fiz A" }] },
+    ],
+  });
+
+  it("experiência fechada já mostra Melhorar com IA", () => {
+    render(<ExperienceEditor profile={withExp()} experiences={withExp().experiences} onChange={() => {}} highlights={[]} onHighlightsChange={() => {}} />);
+    expect(screen.getByRole("button", { name: /^Melhorar com IA/ })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Realizações" })).toBeNull();
+  });
+
+  it("o botão de IA dentro da experiência aberta tem o título da experiência no nome acessível", () => {
+    render(<ExperienceEditor profile={withExp()} experiences={withExp().experiences} onChange={() => {}} highlights={[]} onHighlightsChange={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Editar experiência/ }));
+    const grupo = screen.getByRole("group", { name: "Realizações" });
+    expect(within(grupo).getByRole("button", { name: "Melhorar com IA: Dev · Acme" })).toBeTruthy();
+  });
+
+  it("o botão de IA do campo quebra linha (sem whitespace-nowrap)", () => {
+    render(<ExperienceEditor profile={withExp()} experiences={withExp().experiences} onChange={() => {}} highlights={[]} onHighlightsChange={() => {}} />);
+    const b = screen.getByRole("button", { name: /^Melhorar com IA/ });
+    expect(b.className).toContain("max-w-full");
+    expect(b.className).toContain("whitespace-normal");
+    expect(b.className).not.toContain("whitespace-nowrap");
+  });
+
+  it("experiência mais recente sem realizações: o atalho do hub diz Escrever", () => {
+    const vazia: Profile = { ...withExp(), experiences: [{ ...withExp().experiences[0], bullets: [] }] };
+    render(<ProfileEditor profile={vazia} onSave={() => true} />);
+    expect(screen.getByRole("button", { name: "Escrever a experiência mais recente com IA" })).toBeTruthy();
+  });
+
+  it("o atalho de experiências abre a experiência fechada e o assistente dela", async () => {
+    render(<ProfileEditor profile={withExp()} onSave={() => true} />);
+    fireEvent.click(screen.getByRole("button", { name: "Melhorar a experiência mais recente com IA" }));
+    expect(await screen.findByRole("dialog")).toBeTruthy();
   });
 });

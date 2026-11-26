@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { AssembledCv } from "@/lib/client/cv/assemble";
+import { peekThumbnail, renderCvThumbnail } from "@/lib/client/pdf/thumbnail";
 import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 import { cn } from "@/lib/utils";
 
@@ -37,48 +38,77 @@ export function CvThumbnail({ cv, templateId, width, className }: Props) {
     return () => io.disconnect();
   }, [visible]);
 
-  // Já há imagem deste modelo e largura: troca de CV (edição no gerador) espera uma pausa antes de renderizar de novo.
-  const hasImage = result !== null && result.templateId === templateId && result.width === width;
-  const hasImageRef = useRef(hasImage);
+  const matches = (r: Result | null): r is Result =>
+    r !== null && r.cv === cv && r.templateId === templateId && r.width === width;
+  // Já no cache (ex.: voltou ao idioma anterior): aparece na hora, sem renderizar nem esperar.
+  const cached = visible && !matches(result) ? peekThumbnail(cv, templateId, width) : null;
+  // Já houve imagem deste modelo e largura: troca de CV (edição no gerador) espera uma pausa antes de renderizar.
+  const hadImage = result !== null && result.templateId === templateId && result.width === width;
+  const hadImageRef = useRef(hadImage);
   useEffect(() => {
-    hasImageRef.current = hasImage;
+    hadImageRef.current = hadImage;
   });
 
+  const latest = useRef({ cv, templateId, width });
   useEffect(() => {
-    if (!visible) return;
+    latest.current = { cv, templateId, width };
+  });
+  const retriedFor = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!visible || cached !== null) return;
     let stale = false;
     const done = (url: string | null) => {
       if (!stale) setResult({ cv, templateId, width, url });
     };
     const timer = setTimeout(
       () => {
-        // O renderizador é pesado: só carrega quando a primeira miniatura aparece.
-        import("@/lib/client/pdf/thumbnail")
-          .then((m) => m.renderCvThumbnail(cv, templateId, width))
-          .then(done, () => done(null));
+        renderCvThumbnail(cv, templateId, width).then(done, () => done(null));
       },
-      hasImageRef.current ? EDIT_DEBOUNCE_MS : 0,
+      hadImageRef.current ? EDIT_DEBOUNCE_MS : 0,
     );
     return () => {
       stale = true;
       clearTimeout(timer);
     };
-  }, [visible, cv, templateId, width]);
+  }, [visible, cv, templateId, width, cached]);
 
-  // Outro modelo ou largura conta como "carregando"; outro CV mantém a imagem anterior até a nova ficar pronta.
-  const current = hasImage ? result : null;
+  /** O cache pode revogar o URL de uma imagem ainda na tela: renderiza de novo uma única vez. */
+  const onImageError = () => {
+    const failing = cached ?? (matches(result) ? result.url : null);
+    const key = `${templateId}:${width}:${failing}`;
+    const own = { cv, templateId, width };
+    const settle = (url: string | null) => {
+      const now = latest.current;
+      if (now.cv === own.cv && now.templateId === own.templateId && now.width === own.width) setResult({ ...own, url });
+    };
+    if (retriedFor.current === key) {
+      settle(null);
+      return;
+    }
+    renderCvThumbnail(cv, templateId, width).then(
+      (url) => {
+        retriedFor.current = `${templateId}:${width}:${url}`;
+        // Mesmo URL de novo: a imagem não recarregaria, então não há o que tentar.
+        settle(url === failing ? null : url);
+      },
+      () => settle(null),
+    );
+  };
+
+  const url: string | null | undefined = matches(result) ? result.url : (cached ?? undefined);
 
   return (
     <div ref={ref} aria-hidden="true" className={cn("relative", className)}>
-      {current === null ? (
+      {url === undefined ? (
         <Skeleton label="Carregando prévia" className={cn(SHEET, "bg-jf-chip")} />
-      ) : current.url === null ? (
+      ) : url === null ? (
         <div className={cn(SHEET, "flex items-center justify-center p-2 text-center text-xs text-jf-ink-3")}>
           Prévia indisponível
         </div>
       ) : (
         // eslint-disable-next-line @next/next/no-img-element -- object URL local; next/image não serve para blob:
-        <img src={current.url} alt="" className={cn(SHEET, "object-cover object-top")} />
+        <img src={url} alt="" onError={onImageError} className={cn(SHEET, "object-cover object-top")} />
       )}
     </div>
   );

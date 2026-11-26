@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { BTN_OUTLINE, BTN_PRIMARY } from "@/components/ui/styles";
 import type { AssembledCv } from "@/lib/client/cv/assemble";
 import { CV_TEMPLATES, getTemplate } from "@/lib/client/pdf/templates/registry";
 import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
+import { useMediaQuery } from "@/lib/client/use-media-query";
 import { CvThumbnail } from "./CvThumbnail";
 import { PdfPreview } from "./PdfPreview";
 
@@ -31,6 +32,14 @@ export function TemplatePicker({ value, recommended, onChange, cv, showDefaultOp
   const current = getTemplate(value);
   const [selected, setSelected] = useState<CvTemplateId>(value);
   const chosen = getTemplate(selected);
+  const previewRef = useRef<HTMLElement>(null);
+  // Abaixo de `sm` a prévia fica embaixo da grade: ao escolher, rola até ela para o toque ter resposta visível.
+  const wide = useMediaQuery("(min-width: 640px)");
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const select = (id: CvTemplateId) => {
+    setSelected(id);
+    if (!wide) previewRef.current?.scrollIntoView?.({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
+  };
   // A seleção é local: setas do teclado só movem o foco entre os modelos; quem confirma é o botão.
   const onOpenChange = (next: boolean) => {
     if (next) {
@@ -83,7 +92,7 @@ export function TemplatePicker({ value, recommended, onChange, cv, showDefaultOp
                       aria-describedby={`cv-template-desc-${t.id}`}
                       className="size-4 flex-none accent-[var(--color-jf-brand)]"
                       checked={t.id === selected}
-                      onChange={() => setSelected(t.id)}
+                      onChange={() => select(t.id)}
                     />
                     <span className="min-w-0">{t.name}</span>
                   </span>
@@ -99,7 +108,7 @@ export function TemplatePicker({ value, recommended, onChange, cv, showDefaultOp
               </div>
             ))}
           </div>
-          <section aria-label="Prévia do modelo" className="flex flex-col gap-2 sm:min-h-0 sm:overflow-y-auto sm:pr-1">
+          <section ref={previewRef} aria-label="Prévia do modelo" className="scroll-mt-4 flex flex-col gap-2 sm:min-h-0 sm:overflow-y-auto sm:pr-1">
             <h3 className="text-base font-semibold">{chosen.name}</h3>
             <p className="text-jf-ink-2">{chosen.description}</p>
             <p className="text-xs text-jf-ink-3">Indicado para: {chosen.bestFor}</p>

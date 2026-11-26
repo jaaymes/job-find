@@ -12,7 +12,7 @@ import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 const mocks = vi.hoisted(() => ({ renderCvPdf: vi.fn() }));
 vi.mock("@/lib/client/pdf/render", () => ({ renderCvPdf: mocks.renderCvPdf }));
 // Miniaturas e prévia do seletor de modelo não entram na contagem de renderCvPdf do download.
-vi.mock("@/lib/client/pdf/thumbnail", () => ({ renderCvThumbnail: async () => "blob:x" }));
+vi.mock("@/lib/client/pdf/thumbnail", () => ({ renderCvThumbnail: async () => "blob:x", peekThumbnail: () => null }));
 vi.mock("@/components/generator/PdfPreview", () => ({ PdfPreview: () => null }));
 
 afterEach(cleanup);

@@ -1,7 +1,6 @@
 import "client-only";
 
 import type { AssembledCv } from "@/lib/client/cv/assemble";
-import { renderCvPdf } from "./render";
 import type { CvTemplateId } from "./templates/types";
 
 const MAX_CACHE = 20;
@@ -24,6 +23,8 @@ export function thumbnailKey(cv: AssembledCv, templateId: CvTemplateId, widthPx:
 }
 
 async function renderPng(cv: AssembledCv, templateId: CvTemplateId, widthPx: number): Promise<string> {
+  // O renderizador (@react-pdf) é pesado: só carrega na primeira miniatura, e este módulo fica leve.
+  const { renderCvPdf } = await import("./render");
   const { blob } = await renderCvPdf(cv, templateId);
   const { getDocument } = await import("unpdf/pdfjs");
   const { drawPdfPage } = await import("./draw-page");
@@ -41,6 +42,11 @@ async function renderPng(cv: AssembledCv, templateId: CvTemplateId, widthPx: num
   } finally {
     void task.destroy().catch(() => undefined);
   }
+}
+
+/** URL da miniatura se já estiver no cache, sem renderizar (nem mexer na recência). */
+export function peekThumbnail(cv: AssembledCv, templateId: CvTemplateId, widthPx: number): string | null {
+  return cache.get(thumbnailKey(cv, templateId, widthPx)) ?? null;
 }
 
 /**

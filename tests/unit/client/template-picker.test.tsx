@@ -6,7 +6,7 @@ import { CV_TEMPLATES, getTemplate } from "@/lib/client/pdf/templates/registry";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 
 const mocks = vi.hoisted(() => ({ renderCvThumbnail: vi.fn() }));
-vi.mock("@/lib/client/pdf/thumbnail", () => ({ renderCvThumbnail: mocks.renderCvThumbnail }));
+vi.mock("@/lib/client/pdf/thumbnail", () => ({ renderCvThumbnail: mocks.renderCvThumbnail, peekThumbnail: () => null }));
 vi.mock("@/components/generator/PdfPreview", () => ({
   PdfPreview: ({ templateId }: { templateId: string }) => <div data-testid="preview-grande" data-template={templateId} />,
 }));
@@ -146,5 +146,41 @@ describe("TemplatePicker", () => {
     expect(harvard.checked).toBe(true);
     fireEvent.click(within(dialog).getByRole("button", { name: "Usar este modelo" }));
     expect(onChange).toHaveBeenCalledWith("harvard", false);
+  });
+
+  describe("no celular (abaixo de sm)", () => {
+    afterEach(() => {
+      delete (Element.prototype as { scrollIntoView?: unknown }).scrollIntoView;
+      delete (window as { matchMedia?: unknown }).matchMedia;
+    });
+
+    const mockViewport = (wide: boolean) => {
+      window.matchMedia = ((query: string) => ({
+        matches: query.includes("min-width") ? wide : false,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      })) as unknown as typeof window.matchMedia;
+    };
+
+    it("selecionar um modelo leva a prévia grande para a tela", async () => {
+      mockViewport(false);
+      const scroll = vi.fn();
+      Element.prototype.scrollIntoView = scroll;
+      const { dialog } = await open();
+      expect(scroll).not.toHaveBeenCalled();
+      fireEvent.click(within(dialog).getByRole("radio", { name: /Harvard/ }));
+      expect(scroll).toHaveBeenCalledTimes(1);
+      expect(scroll.mock.contexts[0]).toBe(within(dialog).getByRole("region", { name: "Prévia do modelo" }));
+    });
+
+    it("no desktop a prévia já está ao lado: não rola", async () => {
+      mockViewport(true);
+      const scroll = vi.fn();
+      Element.prototype.scrollIntoView = scroll;
+      const { dialog } = await open();
+      fireEvent.click(within(dialog).getByRole("radio", { name: /Harvard/ }));
+      expect(scroll).not.toHaveBeenCalled();
+    });
   });
 });

@@ -15,7 +15,7 @@ vi.mock("@/lib/client/pdf/draw-page", () => ({
   drawPdfPage: () => ({ promise: Promise.resolve(), cancel: () => undefined }),
 }));
 
-import { __resetThumbnailCache, renderCvThumbnail, thumbnailKey } from "@/lib/client/pdf/thumbnail";
+import { __resetThumbnailCache, peekThumbnail, renderCvThumbnail, thumbnailKey } from "@/lib/client/pdf/thumbnail";
 
 const cv = { name: "Ana" } as unknown as AssembledCv;
 const modelos = ["classic", "modern", "compact", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s"] as unknown as CvTemplateId[];
@@ -79,6 +79,14 @@ describe("miniatura do CV", () => {
     expect(revoke).toHaveBeenCalledTimes(1);
     expect(revoke).toHaveBeenCalledWith(segundo);
     expect(revoke).not.toHaveBeenCalledWith(primeiro);
+  });
+
+  it("peekThumbnail devolve o URL em cache sem renderizar, e null quando não há", async () => {
+    expect(peekThumbnail(cv, modelos[0], 200)).toBeNull();
+    const url = await renderCvThumbnail(cv, modelos[0], 200);
+    expect(peekThumbnail(cv, modelos[0], 200)).toBe(url);
+    expect(peekThumbnail(cv, modelos[1], 200)).toBeNull();
+    expect(renderCvPdf).toHaveBeenCalledTimes(1);
   });
 
   it("falha na renderização rejeita e não fica no cache", async () => {

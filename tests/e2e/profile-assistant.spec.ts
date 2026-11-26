@@ -177,6 +177,13 @@ test("entrevista do resumo: escolhe a opção 2, insere só no rascunho, avisa a
   await expect(summary(page)).toHaveValue(OPTION_2);
 });
 
+test("o hub do assistente abre o painel da experiência mesmo fechada", async ({ page }) => {
+  await page.goto("/perfil");
+  await expect(page.getByRole("heading", { name: "Assistente de IA" })).toBeVisible();
+  await page.getByRole("button", { name: "Melhorar experiências com IA" }).click();
+  await expect(dialog(page).getByRole("textbox", { name: "Realização 1" })).toHaveValue(BULLETS_NEW[0], FIRST);
+});
+
 test("bullets: 'Melhorar com IA' com tom 'Mais direto' insere e 'Desfazer' restaura", async ({ page }) => {
   await page.goto("/perfil");
   await page.getByRole("button", { name: /^Editar experiência/ }).click();

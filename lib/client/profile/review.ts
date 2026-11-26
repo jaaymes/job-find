@@ -30,6 +30,7 @@ const ACTION_VERBS = new Set([
   "delivered", "launched", "wrote", "ran", "drove", "shipped", "owned", "optimized", "automated", "migrated",
   "architected", "mentored", "analyzed", "integrated", "maintained", "scaled", "refactored", "deployed", "established", "set",
 ]);
+// Limite conhecido: "Marketing", "Seed" também contam como verbo; falso negativo só suprime um aviso.
 const VERB_ENDING = /(ei|ou|iu|amos|emos|imos|ed|ing)$/;
 
 function firstWord(text: string): string {

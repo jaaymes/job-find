@@ -6,7 +6,7 @@ import { AiError } from "@/lib/client/ai/errors";
 import type { AssistTarget, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
 
-const mocks = vi.hoisted(() => ({ askQuestions: vi.fn(), writeDrafts: vi.fn(), rewriteDraft: vi.fn(), usable: vi.fn() }));
+const mocks = vi.hoisted(() => ({ askQuestions: vi.fn(), writeDrafts: vi.fn(), rewriteDraft: vi.fn(), usable: vi.fn(), nullStore: { on: false } }));
 vi.mock("@/lib/client/profile/assist", async () => {
   const actual = await vi.importActual<typeof import("@/lib/client/profile/assist")>("@/lib/client/profile/assist");
   return {
@@ -15,6 +15,14 @@ vi.mock("@/lib/client/profile/assist", async () => {
     rewriteDraft: mocks.rewriteDraft,
     ASSIST_INVENTED_MESSAGE: actual.ASSIST_INVENTED_MESSAGE,
   };
+});
+vi.mock("@/lib/client/storage/store", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/client/storage/store")>("@/lib/client/storage/store");
+  // Só devolve null quando o teste liga a flag (SSR/hidratação); a chamada real mantém a ordem dos hooks.
+  return { ...actual, useStore: (s: Parameters<typeof actual.useStore>[0]) => {
+    const v = actual.useStore(s);
+    return mocks.nullStore.on ? null : v;
+  } };
 });
 vi.mock("@/lib/client/ai/model", () => ({ hasUsableProvider: mocks.usable }));
 
@@ -49,6 +57,7 @@ beforeEach(() => {
   mocks.writeDrafts.mockReset();
   mocks.rewriteDraft.mockReset();
   mocks.usable.mockReset().mockReturnValue(true);
+  mocks.nullStore.on = false;
 });
 afterEach(cleanup);
 
@@ -62,12 +71,13 @@ describe("AssistantDialog: sem provedor", () => {
   });
 });
 
-describe("AssistantDialog: sem configuração de IA", () => {
-  it("com as configurações padrão (sem provedor) mostra o aviso e não chama a IA", async () => {
-    const { hasUsableProvider } = await vi.importActual<typeof import("@/lib/client/ai/model")>("@/lib/client/ai/model");
-    mocks.usable.mockImplementation(hasUsableProvider);
+describe("AssistantDialog: configurações ainda não lidas", () => {
+  it("com a store nula só o corpo some: título presente, sem aviso e sem chamada de IA", async () => {
+    mocks.nullStore.on = true;
     setup();
-    expect(await screen.findByText("Conecte uma IA para usar o assistente")).toBeTruthy();
+    expect(await screen.findByText("Escrever com IA")).toBeTruthy();
+    expect(screen.queryByText("Conecte uma IA para usar o assistente")).toBeNull();
+    expect(screen.queryAllByRole("textbox")).toHaveLength(0);
     expect(mocks.askQuestions).not.toHaveBeenCalled();
     expect(mocks.writeDrafts).not.toHaveBeenCalled();
     expect(mocks.rewriteDraft).not.toHaveBeenCalled();

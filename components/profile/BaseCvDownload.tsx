@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { TemplatePicker } from "@/components/generator/TemplatePicker";
 import { BTN_PRIMARY, CARD, FIELD, FIELD_LABEL } from "@/components/ui/styles";
 import { assembleBaseCv } from "@/lib/client/cv/assemble";
@@ -39,6 +39,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
   const [busy, setBusy] = useState(false);
   const [failed, setFailed] = useState(false);
 
+  const cv = useMemo(() => assembleBaseCv(profile, lang), [profile, lang]);
   const templateId = resolveTemplateId(null, prefs ?? { templateId: null }, profile, null);
   const choose = (id: CvTemplateId) => cvPrefsStore.set({ templateId: id });
 
@@ -47,7 +48,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
     setFailed(false);
     try {
       const render = await import("@/lib/client/pdf/render");
-      const { blob } = await render.renderCvPdf(assembleBaseCv(profile, lang), templateId);
+      const { blob } = await render.renderCvPdf(cv, templateId);
       saveBlob(blob, cvFileName(profile.name ?? "", "", ""));
     } catch {
       setFailed(true);
@@ -71,6 +72,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
           value={templateId}
           recommended={recommendTemplate(profile, null)}
           onChange={(id) => choose(id)}
+          cv={cv}
           showDefaultOption={false}
         />
         <label className={FIELD_LABEL}>

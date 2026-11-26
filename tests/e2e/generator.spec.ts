@@ -688,7 +688,7 @@ test("vaga nova sem registro: o modelo recomendado já vem selecionado e marcado
   await page.goto("/gerador/1");
   // Perfil sênior e vaga em português: a recomendação é "Foco em resultados".
   const picker = page.getByRole("button", { name: /^Modelo do CV: / });
-  await expect(picker).toHaveText("Modelo do CV: Foco em resultados", FIRST);
+  await expect(picker).toHaveAccessibleName("Modelo do CV: Foco em resultados", FIRST);
   expect(await storedRec(page)).toBeNull();
 
   await picker.click();

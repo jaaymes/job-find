@@ -1,26 +1,55 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { TemplatePicker } from "@/components/generator/TemplatePicker";
-import { CV_TEMPLATES } from "@/lib/client/pdf/templates/registry";
+import { assembleBaseCv } from "@/lib/client/cv/assemble";
+import { CV_TEMPLATES, getTemplate } from "@/lib/client/pdf/templates/registry";
+import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 
+const mocks = vi.hoisted(() => ({ renderCvThumbnail: vi.fn() }));
+vi.mock("@/lib/client/pdf/thumbnail", () => ({ renderCvThumbnail: mocks.renderCvThumbnail }));
+vi.mock("@/components/generator/PdfPreview", () => ({
+  PdfPreview: ({ templateId }: { templateId: string }) => <div data-testid="preview-grande" data-template={templateId} />,
+}));
+
+const profile: Profile = {
+  ...emptyProfile(),
+  name: "Ana Exemplo",
+  headline: "Dev full stack",
+  experiences: [
+    {
+      id: "exp_1",
+      company: "Empresa Ficticia",
+      title: "Dev Sênior",
+      startDate: "2021-01",
+      endDate: null,
+      bullets: [{ id: "exp_1.b1", text: "Liderou a migração para React" }],
+    },
+  ],
+};
+const cv = assembleBaseCv(profile, "pt");
+
+beforeEach(() => {
+  mocks.renderCvThumbnail.mockReset();
+  mocks.renderCvThumbnail.mockResolvedValue("blob:x");
+});
 afterEach(cleanup);
 
 async function open(props: Partial<React.ComponentProps<typeof TemplatePicker>> = {}) {
   const onChange = vi.fn();
-  render(<TemplatePicker value="classico" recommended="moderno" onChange={onChange} {...props} />);
+  render(<TemplatePicker value="classico" recommended="moderno" onChange={onChange} cv={cv} {...props} />);
   fireEvent.click(screen.getByRole("button", { name: "Modelo do CV: Clássico" }));
   return { onChange, dialog: await screen.findByRole("dialog") };
 }
 
 describe("TemplatePicker", () => {
   it("com disabled, o botão do modelo fica desabilitado", () => {
-    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} disabled />);
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} disabled />);
     expect((screen.getByRole("button", { name: "Modelo do CV: Clássico" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
 
   it("o botão tem o nome acessível com o modelo atual", () => {
-    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} />);
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} />);
     expect(screen.getByRole("button", { name: "Modelo do CV: Clássico" })).toBeTruthy();
   });
 
@@ -78,5 +107,44 @@ describe("TemplatePicker", () => {
   it("showDefaultOption=false esconde a caixa de padrão", async () => {
     const { dialog } = await open({ showDefaultOption: false });
     expect(within(dialog).queryByRole("checkbox")).toBeNull();
+  });
+
+  it("o gatilho mostra a miniatura do modelo atual e mantém o nome acessível", async () => {
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} />);
+    const trigger = screen.getByRole("button", { name: "Modelo do CV: Clássico" });
+    await waitFor(() => expect(trigger.querySelector("img")).toBeTruthy());
+    expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, "classico", expect.any(Number));
+  });
+
+  it("cada um dos 10 modelos tem uma miniatura A4", async () => {
+    const { dialog } = await open();
+    const group = within(dialog).getByRole("radiogroup");
+    await waitFor(() => expect(group.querySelectorAll("img")).toHaveLength(10));
+    for (const t of CV_TEMPLATES) expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, t.id, 150);
+  });
+
+  it("a prévia grande acompanha o modelo selecionado", async () => {
+    const { dialog } = await open();
+    expect(within(dialog).getByTestId("preview-grande").getAttribute("data-template")).toBe("classico");
+    fireEvent.click(within(dialog).getByRole("radio", { name: /Harvard/ }));
+    const preview = within(dialog).getByTestId("preview-grande");
+    expect(preview.getAttribute("data-template")).toBe("harvard");
+    const area = within(dialog).getByRole("region", { name: "Prévia do modelo" });
+    expect(within(area).getByText(getTemplate("harvard").description)).toBeTruthy();
+    expect(area.contains(preview)).toBe(true);
+  });
+
+  it("miniatura que falha mostra Prévia indisponível e o modelo continua selecionável", async () => {
+    mocks.renderCvThumbnail.mockImplementation(async (_cv: unknown, id: string) => {
+      if (id === "harvard") throw new Error("falhou");
+      return "blob:x";
+    });
+    const { dialog, onChange } = await open();
+    const harvard = within(dialog).getByRole("radio", { name: /Harvard/ }) as HTMLInputElement;
+    await waitFor(() => expect(harvard.closest("label")?.textContent).toContain("Prévia indisponível"));
+    fireEvent.click(harvard);
+    expect(harvard.checked).toBe(true);
+    fireEvent.click(within(dialog).getByRole("button", { name: "Usar este modelo" }));
+    expect(onChange).toHaveBeenCalledWith("harvard", false);
   });
 });

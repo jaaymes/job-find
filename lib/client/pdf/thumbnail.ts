@@ -45,12 +45,17 @@ async function renderPng(cv: AssembledCv, templateId: CvTemplateId, widthPx: num
 
 /**
  * Miniatura (PNG da página 1) do CV no modelo pedido. Renderiza uma por vez (fila) e guarda até 20
- * no cache (o mais antigo tem o URL revogado). Falhas rejeitam e não ficam no cache.
+ * no cache (o menos usado tem o URL revogado). Falhas rejeitam e não ficam no cache.
  */
 export function renderCvThumbnail(cv: AssembledCv, templateId: CvTemplateId, widthPx: number): Promise<string> {
   const key = thumbnailKey(cv, templateId, widthPx);
   const hit = cache.get(key);
-  if (hit) return Promise.resolve(hit);
+  if (hit) {
+    // Reinsere para marcar como usado agora: o despejo sai do menos usado (LRU), não do mais antigo.
+    cache.delete(key);
+    cache.set(key, hit);
+    return Promise.resolve(hit);
+  }
 
   const job = tail.then(async () => {
     const cached = cache.get(key);

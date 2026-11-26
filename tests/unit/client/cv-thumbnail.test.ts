@@ -70,6 +70,17 @@ describe("miniatura do CV", () => {
     expect(revoke).toHaveBeenCalledWith(primeiro);
   });
 
+  it("acerto no cache renova a recência: o despejo é do menos usado (LRU)", async () => {
+    const primeiro = await renderCvThumbnail(cv, modelos[0], 200);
+    const segundo = await renderCvThumbnail(cv, modelos[1], 200);
+    for (let i = 2; i < 20; i++) await renderCvThumbnail(cv, modelos[i], 200);
+    await renderCvThumbnail(cv, modelos[0], 200);
+    await renderCvThumbnail(cv, modelos[20], 200);
+    expect(revoke).toHaveBeenCalledTimes(1);
+    expect(revoke).toHaveBeenCalledWith(segundo);
+    expect(revoke).not.toHaveBeenCalledWith(primeiro);
+  });
+
   it("falha na renderização rejeita e não fica no cache", async () => {
     renderCvPdf.mockRejectedValueOnce(new Error("falhou"));
     await expect(renderCvThumbnail(cv, modelos[0], 200)).rejects.toThrow("falhou");

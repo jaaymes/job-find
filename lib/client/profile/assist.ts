@@ -77,7 +77,7 @@ export async function askQuestions(a: Common): Promise<string[]> {
   const { data } = await generateStructured({
     ...questionsCall(a),
     validate: (v, ctx) => {
-      if (v.questions.every((q) => !q.trim())) return ["as perguntas vieram vazias; faça de 3 a 5 perguntas sobre o trabalho"];
+      if (v.questions.filter((q) => q.trim()).length < MIN_QUESTIONS) return ["há perguntas vazias; faça de 3 a 5 perguntas preenchidas sobre o trabalho"];
       const bad = v.questions.filter(sensitiveQuestion);
       if (bad.length === 0) return [];
       // Na última chamada, descartar só as sensíveis basta se sobrarem perguntas suficientes.

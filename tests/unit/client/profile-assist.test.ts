@@ -65,9 +65,13 @@ describe("entradas vazias (#20)", () => {
     const two = { questions: ["", "  "] };
     await expect(askQuestions(common(mockModel(two, two)))).rejects.toMatchObject({ code: "invalid_output" });
   });
+  it("sobrando menos de 3 perguntas preenchidas: invalid_output", async () => {
+    const few = { questions: ["a", "", ""] };
+    await expect(askQuestions(common(mockModel(few, few)))).rejects.toMatchObject({ code: "invalid_output" });
+  });
   it("pergunta vazia entre válidas é descartada", async () => {
-    const model = mockModel({ questions: [clean[0], "  ", clean[1], clean[2]] });
-    await expect(askQuestions(common(model))).resolves.toEqual(clean.slice(0, 3));
+    const model = mockModel({ questions: [clean[0], "  ", clean[1], clean[2], clean[3]] });
+    await expect(askQuestions(common(model))).resolves.toEqual(clean.slice(0, 4));
   });
 });
 

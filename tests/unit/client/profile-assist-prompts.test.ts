@@ -134,7 +134,7 @@ describe("system do rewrite", () => {
 });
 
 describe("sensitiveQuestion (RN-22)", () => {
-  it.each(["Qual a sua idade?", "Você é casado?", "Qual seu CPF?", "What is your religion?", "¿Cuál es tu estado civil?", "Qual seu salário atual?", "Você tem filhos?", "Do you have kids?", "Qual a sua data de nascimento?", "Qual o seu endereço?", "How is your health?", "Qual a sua idade?", "Tem filhos?", "Você é solteiro?", "Is she married?", "Qual a cor da sua pele?"])(
+  it.each(["Qual a sua idade?", "Você é casado?", "Qual seu CPF?", "What is your religion?", "¿Cuál es tu estado civil?", "Qual seu salário atual?", "Você tem filhos?", "Do you have kids?", "Qual a sua data de nascimento?", "Qual o seu endereço?", "How is your health?", "Qual a sua idade?", "Tem filhos?", "Você é solteiro?", "Is she married?", "Tell me about your kids?", "How are your children?", "Qual a cor da sua pele?"])(
     "bloqueia %s",
     (q) => expect(sensitiveQuestion(q)).toBe(true),
   );

@@ -173,6 +173,7 @@ const SENSITIVE_PATTERNS = [
   // "children"/"kids" só como pergunta pessoal (fim da frase): "children prop" e "kids mode" são vocabulário técnico.
   `(?:${HAVE}|${POSS})(?: \\w+){0,3} (?:filh[oa]s?|hij[oa]s?)`,
   `${HAVE}(?: \\w+){0,3} (?:children|kids)(?=\\s*[?.!,]|\\s*$)`,
+  `${POSS}(?: \\w+){0,2} (?:children|kids)(?=\\s*[?.!,]|\\s*$)`,
   "tem filh\\w*",
   "idade(?=\\s*[?.!]?\\s*$)",
   "gravidez|gravida|pregnan\\w*|embarazo|embarazada",

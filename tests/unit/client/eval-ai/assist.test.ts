@@ -54,7 +54,11 @@ describe("runAssistSuite com modelo falso (sem rede)", () => {
       settings: defaultAiSettings(),
       resolveModelFor: (p) => assistMockResolverFor(p.profile, { emptyField: true }),
     });
-    expect(report.failures.filter((f) => f.step === "write")).toHaveLength(2);
-    expect(report.failures.filter((f) => f.step === "rewrite")).toHaveLength(2);
+    const write = report.failures.filter((f) => f.step === "write");
+    const rewrite = report.failures.filter((f) => f.step === "rewrite");
+    expect(write).toHaveLength(2);
+    expect(rewrite).toHaveLength(2);
+    for (const f of write) expect(f.detail).toContain("saída sem texto");
+    for (const f of rewrite) expect(f.detail).toContain("saída sem bullets");
   });
 });

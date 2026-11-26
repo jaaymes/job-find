@@ -276,7 +276,7 @@ test("se o localStorage recusar a gravação, mostra 'Não foi possível salvar'
 test("headline e links de contato são editáveis (só http/https)", async ({ page }) => {
   await page.goto("/perfil");
   await page.getByRole("button", { name: "Preencher manualmente" }).click();
-  await page.getByLabel("Título profissional").fill("Dev Full Stack");
+  await page.getByRole("textbox", { name: "Título profissional" }).fill("Dev Full Stack");
   await page.getByLabel(/Novo link/).fill("javascript:alert(1)");
   await page.getByRole("button", { name: "Adicionar link" }).click();
   await expect(page.getByText("Use um endereço http ou https válido.")).toBeVisible();
@@ -385,6 +385,9 @@ test("projeto, certificação e idioma são editáveis e continuam lá depois do
   expect((saved?.projects as { id: string; bullets: { id: string }[] }[])[0].id).toBe("proj_1");
   expect(saved?.certifications).toEqual([{ name: "AWS SAA", issuer: null, year: null }]);
   expect(saved?.languages).toEqual([{ name: "Inglês", level: "fluent" }]);
-  // Com perfil salvo, o card do CV base aparece.
+  // Com perfil salvo, o card do CV base aparece, abaixo do "Importar currículo", na mesma coluna.
   await expect(page.getByRole("button", { name: "Baixar CV base" })).toBeVisible();
+  const importBox = await page.getByRole("heading", { name: /Importar currículo/ }).boundingBox();
+  const modelsBox = await page.getByRole("heading", { name: "Modelos de CV" }).boundingBox();
+  expect(modelsBox!.y).toBeGreaterThan(importBox!.y);
 });

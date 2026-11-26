@@ -92,9 +92,9 @@ export function ProfileScreen() {
             hasProfile={profile !== null || manual}
             lastImport={lastImport}
           />
+          {profile && <BaseCvDownload profile={profile} />}
         </div>
         <div className="min-w-0 flex-[999_1_560px]">
-          {profile && <BaseCvDownload profile={profile} />}
           {profile || manual ? (
             <ProfileEditor key={revision} profile={profile ?? emptyProfile()} onSave={(p) => persist(p, false)} />
           ) : (

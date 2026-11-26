@@ -58,7 +58,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
   }
 
   return (
-    <section id="modelos-de-cv" aria-labelledby="base-cv-t" className={`${CARD} mb-6 flex flex-col gap-3 p-4 sm:p-6`}>
+    <section id="modelos-de-cv" aria-labelledby="base-cv-t" className={`${CARD} mt-6 flex flex-col gap-3 p-4 sm:p-6`}>
       <h2 id="base-cv-t" className="text-lg font-semibold">
         Modelos de CV
       </h2>
@@ -67,7 +67,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
         base é um PDF só com os dados do perfil salvo, sem vaga e sem IA: salve o perfil antes para incluir as
         últimas edições.
       </p>
-      <div className="flex flex-wrap items-end gap-3">
+      <div className="flex flex-col items-stretch gap-3">
         <TemplatePicker
           value={templateId}
           recommended={recommendTemplate(profile, null)}
@@ -77,7 +77,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
         />
         <label className={FIELD_LABEL}>
           Idioma dos rótulos do CV
-          <select className={`${FIELD} sm:w-auto`} value={lang} onChange={(e) => setLang(e.target.value as CvLang)}>
+          <select className={`${FIELD}`} value={lang} onChange={(e) => setLang(e.target.value as CvLang)}>
             {LANGS.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.label}

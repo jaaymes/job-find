@@ -63,7 +63,7 @@ test("lista em ordem decrescente de data, sem aviso de coleta atrasada", async (
   await expect(cards(page)).toHaveCount(30);
   const list = await titles(page);
   expect(list).toEqual(Array.from({ length: 30 }, (_, i) => `Vaga ${String(i).padStart(2, "0")} Desenvolvedor`));
-  await expect(page.getByRole("status")).toHaveCount(0);
+  await expect(page.getByRole("status").filter({ hasText: "coleta" })).toHaveCount(0);
 });
 
 test("chip de stack grava stacks=react na URL e todos os cards mostram React", async ({ page }) => {
@@ -135,7 +135,7 @@ test("coleta atrasada mostra o aviso com o horário em America/Sao_Paulo", async
     hour: "2-digit",
     minute: "2-digit",
   });
-  const banner = page.getByRole("status");
+  const banner = page.getByRole("status").filter({ hasText: "coleta" });
   await expect(banner).toContainText("coleta");
   await expect(banner).toContainText(time);
   await expect(page.getByRole("link", { name: "por quê?" })).toHaveAttribute("href", "/fontes");

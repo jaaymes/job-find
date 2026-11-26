@@ -86,28 +86,53 @@ function numberTokens(text: string): NumToken[] {
     const raw = m[0];
     const { value, plain } = canonicalNumber(raw);
     const n = Number(value);
-    out.push({ raw, value, yearLike: plain && !raw.endsWith("%") && raw.length === 4 && n >= 1950 && n <= 2100 });
+    out.push({ raw, value, yearLike: plain && !raw.endsWith("%") && raw.length === 4 && n >= 1900 && n <= 2099 });
   }
   return out;
 }
 
 const MONTH_AFTER =
   /^(?:jan|fev|feb|mar|abr|apr|mai|may|jun|jul|ago|aug|set|sep|out|oct|nov|dez|dec|janeiro|fevereiro|marco|março|abril|maio|junho|julho|agosto|setembro|outubro|novembro|dezembro|january|february|march|april|june|july|august|september|october|november|december)\b/iu;
-const DATE_BEFORE = /(?:^|[^\p{L}])(?:em|in|desde|since|até|ate|until|from|de|en|hasta|desde)\s+$/iu;
+// Para quantidades: "de" sozinho ("plataforma de 2000 usuários") é ambíguo e não conta; "de 2015 a 2017" cai no RANGE_AFTER.
+const DATE_BEFORE_STRICT = /(?:^|[^\p{L}])(?:em|in|desde|since|até|ate|until|from|en|hasta)\s+$/iu;
 const AMOUNT_BEFORE = /(?:mais|menos|cerca|quase|over|than|about|around|nearly|más|casi)\s+(?:de|of)?\s*$/iu;
-const RANGE_AFTER = /^\s*(?:[-–—]|a\b|à\b|até\b|to\b|and\b|e\b|hasta\b|y\b)/iu;
+const RANGE_AFTER = /^\s*(?:[-–—]|a\b|à\b|até\b|to\b|and\b|e(?=\s|$)|hasta\b|y\b)/iu;
 
-/** Alguma ocorrência de `raw` em `text` está em contexto de data (em 2019, desde 2018, 2019 - 2021, 2019 janeiro)? */
-function usedAsDate(text: string, raw: string): boolean {
-  for (const m of text.matchAll(new RegExp(`(?<![\\d.,])${raw}(?![\\d]|[.,]\\d)`, "g"))) {
-    const before = text.slice(0, m.index);
-    const after = text.slice(m.index + raw.length);
-    if (DATE_BEFORE.test(before) && !AMOUNT_BEFORE.test(before)) return true;
-    if (RANGE_AFTER.test(after)) return true;
-    const word = /^\s+(\p{L}[\p{L}\p{N}]*)/u.exec(after);
-    if (!word || MONTH_AFTER.test(word[1])) return true; // sem substantivo depois: parece data
+/** Palavra que vem logo depois de `raw` em `text`, sem acento e sem caixa (ou `null` se não houver). */
+function wordAfter(text: string, end: number): string | null {
+  const w = /^\s+(\p{L}[\p{L}\p{N}]*)/u.exec(text.slice(end));
+  return w ? fold(w[1]) : null;
+}
+
+/**
+ * `raw` (número de 4 dígitos que não está no perfil) é uma quantidade dita pelo usuário? Vale quando TODA ocorrência
+ * no texto gerado tem uma palavra depois, que não é mês, sem preposição de data antes, sem cara de intervalo, e o par
+ * "número + palavra" aparece igual nas respostas ("2000 usuários"). Qualquer outra posição ("Durante 2019...",
+ * "2019 marcou...") ou par diferente é tratado como data inventada.
+ */
+function typedQuantity(text: string, sourceText: string, raw: string): boolean {
+  const re = new RegExp(`(?<![\\d.,])${raw}(?![\\d]|[.,]\\d)`, "g");
+  // Só vale como fonte a ocorrência que também é quantidade: "em 2019 entreguei" nas respostas é uma data.
+  const quantityWord = (t: string, index: number): string | null => {
+    const before = t.slice(0, index);
+    const after = t.slice(index + raw.length);
+    if (DATE_BEFORE_STRICT.test(before) && !AMOUNT_BEFORE.test(before)) return null;
+    if (RANGE_AFTER.test(after)) return null;
+    const w = wordAfter(t, index + raw.length);
+    return !w || MONTH_AFTER.test(w) ? null : w;
+  };
+  const sourcePairs = new Set<string>();
+  for (const m of sourceText.matchAll(re)) {
+    const w = quantityWord(sourceText, m.index);
+    if (w) sourcePairs.add(w);
   }
-  return false;
+  let found = false;
+  for (const m of text.matchAll(re)) {
+    found = true;
+    const w = quantityWord(text, m.index);
+    if (!w || !sourcePairs.has(w)) return false;
+  }
+  return found;
 }
 
 function yearsIn(text: string): string[] {
@@ -459,9 +484,9 @@ function checkText(env: CheckEnv, text: string, where: Where, key: string, sourc
   const sourceNumbers = new Set(numberTokens(sourceText).map((t) => t.value));
   for (const t of numberTokens(text)) {
     if (t.yearLike) {
-      // Texto livre (assistente): datas vêm só do perfil. Um número de 4 dígitos que o usuário digitou
-      // ("2000 usuários") vale quando não aparece como data no texto gerado.
-      const typed = assist && sourceNumbers.has(t.value) && !usedAsDate(text, t.raw);
+      // Texto livre (assistente): o ano só passa se estiver no perfil. Um número de 4 dígitos que vem só das
+      // respostas ("2000 usuários") vale quando é quantidade em todas as ocorrências (ver `typedQuantity`).
+      const typed = assist && sourceNumbers.has(t.value) && typedQuantity(text, sourceText, t.raw);
       if (!facts.years.has(t.raw) && (assist ? !typed : !sourceNumbers.has(t.value))) add("unknown_year", t.raw, where, key);
     } else if (!sourceNumbers.has(t.value)) {
       add("unknown_number", t.raw, where, key);

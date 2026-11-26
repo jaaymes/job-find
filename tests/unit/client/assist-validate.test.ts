@@ -74,3 +74,35 @@ describe("validateAssistOutput (RN-20)", () => {
     expect(run("Reduziu o tempo de build em 60%")).toEqual([]);
   });
 });
+
+describe("anos no modo assist (#18)", () => {
+  const noYears: Profile = { ...profile, experiences: [{ ...profile.experiences[0], startDate: "2020-01", endDate: "2021-01" }] };
+  const kinds = (text: string, source: string, p: Profile = noYears) => validateAssistOutput(p, source, [text]).map((x) => x.kind);
+
+  it("ano inventado em qualquer posição da frase é barrado", () => {
+    expect(kinds("Durante 2019 entreguei a migração", "entreguei a migração")).toEqual(["unknown_year"]);
+    expect(kinds("2019 marcou a migração", "a migração")).toEqual(["unknown_year"]);
+    expect(kinds("Durante 2019 entreguei a migração", "em 2019 entreguei a migração")).toEqual(["unknown_year"]);
+    expect(kinds("2019 marcou a migração", "2019 foi o ano")).toEqual(["unknown_year"]);
+  });
+  it("ano que só vem das respostas e é usado como data continua barrado", () => {
+    expect(kinds("Em 2019 liderei a migração", "em 2019 eu liderei a migração")).toEqual(["unknown_year"]);
+  });
+  it("quantidade das respostas (número + palavra iguais) passa", () => {
+    expect(kinds("Mantive uma plataforma de 2000 usuários", "2000 usuários")).toEqual([]);
+    expect(kinds("Enviei 1500 e-mails por dia", "1500 e-mails")).toEqual([]);
+  });
+  it("quantidade com palavra diferente da resposta é barrada", () => {
+    expect(kinds("Atendi 2000 clientes", "2000 usuários")).toEqual(["unknown_year"]);
+  });
+  it("ano do perfil passa", () => {
+    expect(kinds("Desde 2021 atuo com front-end", "", { ...noYears, experiences: [{ ...noYears.experiences[0], startDate: "2021-03" }] })).toEqual([]);
+  });
+});
+
+describe("restoreName e o marcador [NOME] (#30)", () => {
+  it("o validador marca [NOME] que sobrou na saída", () => {
+    expect(run("[NOME] lidera times").map((x) => x.kind)).toEqual(["unknown_name"]);
+  });
+});
+

@@ -77,14 +77,15 @@ export async function askQuestions(a: Common): Promise<string[]> {
   const { data } = await generateStructured({
     ...questionsCall(a),
     validate: (v, ctx) => {
+      if (v.questions.every((q) => !q.trim())) return ["as perguntas vieram vazias; faça de 3 a 5 perguntas sobre o trabalho"];
       const bad = v.questions.filter(sensitiveQuestion);
       if (bad.length === 0) return [];
       // Na última chamada, descartar só as sensíveis basta se sobrarem perguntas suficientes.
-      if (ctx.last && v.questions.length - bad.length >= MIN_QUESTIONS) return [];
+      if (ctx.last && v.questions.filter((q) => q.trim()).length - bad.length >= MIN_QUESTIONS) return [];
       return bad.map((q) => `a pergunta "${q}" toca em dado sensível; troque por uma pergunta sobre o trabalho, as tecnologias ou os resultados`);
     },
   });
-  return data.questions.filter((q) => !sensitiveQuestion(q));
+  return data.questions.filter((q) => q.trim() && !sensitiveQuestion(q));
 }
 
 /** Chamada das 2 opções de texto, sem o `validate` (ver `questionsCall`). */

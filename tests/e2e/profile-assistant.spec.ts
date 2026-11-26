@@ -184,6 +184,22 @@ test("o hub do assistente abre o painel da experiência mesmo fechada", async ({
   await expect(dialog(page).getByRole("textbox", { name: "Realização 1" })).toHaveValue(BULLETS_NEW[0], FIRST);
 });
 
+test("no celular (375px), os botões do assistente quebram linha e a página não alarga", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/perfil");
+  const hub = page.getByRole("button", { name: "Melhorar a experiência mais recente com IA" });
+  await expect(hub).toBeVisible();
+  await expect(page.getByRole("button", { name: /^Melhorar com IA/ }).first()).toBeVisible();
+  const width = await page.evaluate(() => ({ doc: document.documentElement.scrollWidth, vw: window.innerWidth }));
+  expect(width.doc).toBeLessThanOrEqual(width.vw);
+  const fits = await hub.evaluate((el) => {
+    const card = el.closest("section")!.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    return el.scrollWidth <= el.clientWidth && box.right <= card.right + 0.5;
+  });
+  expect(fits).toBe(true);
+});
+
 test("bullets: 'Melhorar com IA' com tom 'Mais direto' insere e 'Desfazer' restaura", async ({ page }) => {
   await page.goto("/perfil");
   await page.getByRole("button", { name: /^Editar experiência/ }).click();

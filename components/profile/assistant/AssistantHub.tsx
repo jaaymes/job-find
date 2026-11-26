@@ -2,6 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 import { BTN_PRIMARY } from "@/components/ui/styles";
+import { cn } from "@/lib/utils";
 
 type Props = {
   headlineEmpty: boolean;
@@ -14,7 +15,8 @@ type Props = {
   onExperience: (expId: string) => void;
 };
 
-const SHORTCUT = `${BTN_PRIMARY} min-h-11 gap-2 px-4 text-sm`;
+// Quebra linha dentro do card no celular (o botão base é `whitespace-nowrap` e alargaria a página).
+const SHORTCUT = cn(BTN_PRIMARY, "h-auto min-h-11 max-w-full gap-2 px-4 py-2 text-left text-sm whitespace-normal");
 
 /** Atalhos em destaque para o assistente de IA: título, resumo e experiências. */
 export function AssistantHub({ headlineEmpty, summaryEmpty, firstExpId, firstExpEmpty, onField, onExperience }: Props) {

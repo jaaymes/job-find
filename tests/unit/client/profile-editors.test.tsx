@@ -249,6 +249,14 @@ describe("assistente visível no perfil", () => {
     expect(within(grupo).getByRole("button", { name: "Melhorar com IA: Dev · Acme" })).toBeTruthy();
   });
 
+  it("o botão de IA do campo quebra linha (sem whitespace-nowrap)", () => {
+    render(<ExperienceEditor profile={withExp()} experiences={withExp().experiences} onChange={() => {}} highlights={[]} onHighlightsChange={() => {}} />);
+    const b = screen.getByRole("button", { name: /^Melhorar com IA/ });
+    expect(b.className).toContain("max-w-full");
+    expect(b.className).toContain("whitespace-normal");
+    expect(b.className).not.toContain("whitespace-nowrap");
+  });
+
   it("experiência mais recente sem realizações: o atalho do hub diz Escrever", () => {
     const vazia: Profile = { ...withExp(), experiences: [{ ...withExp().experiences[0], bullets: [] }] };
     render(<ProfileEditor profile={vazia} onSave={() => true} />);

@@ -70,4 +70,15 @@ describe("AssistantHub", () => {
     hub();
     expect(screen.getByRole("button", { name: "Melhorar a experiência mais recente com IA" }).hasAttribute("aria-describedby")).toBe(false);
   });
+  it("os atalhos quebram linha dentro do card (sem whitespace-nowrap)", () => {
+    hub();
+    for (const b of screen.getAllByRole("button")) {
+      expect(b.className).toContain("max-w-full");
+      expect(b.className).toContain("whitespace-normal");
+      expect(b.className).toContain("text-left");
+      expect(b.className).toContain("h-auto");
+      expect(b.className).toContain("min-h-11");
+      expect(b.className).not.toContain("whitespace-nowrap");
+    }
+  });
 });

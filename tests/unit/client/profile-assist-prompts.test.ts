@@ -3,6 +3,7 @@ import {
   ASSIST_QUESTIONS_V1,
   ASSIST_REWRITE_V1,
   ASSIST_WRITE_V1,
+  PROFILE_MAX_CHARS,
   sensitiveQuestion,
   type AssistTarget,
 } from "@/lib/client/ai/prompts/profile.assist.v1";
@@ -57,6 +58,11 @@ describe("schemas", () => {
     expect(ASSIST_QUESTIONS_V1.schema.safeParse(q(3, 161)).success).toBe(false);
     expect(ASSIST_QUESTIONS_V1.schema.safeParse(q(3, 160)).success).toBe(true);
   });
+  it("perguntas: aparam espaços e rejeitam só espaços", () => {
+    const r = ASSIST_QUESTIONS_V1.schema.safeParse({ questions: ["  a  ", "b", "c"] });
+    expect(r.success && r.data.questions).toEqual(["a", "b", "c"]);
+    expect(ASSIST_QUESTIONS_V1.schema.safeParse({ questions: ["", "  "] }).success).toBe(false);
+  });
   it("opções: exatamente 2", () => {
     const d = { text: "a", bullets: null };
     expect(ASSIST_WRITE_V1.schema.safeParse({ options: [d] }).success).toBe(false);
@@ -81,15 +87,37 @@ describe("buildUser", () => {
       }
     });
   }
-  it("bullets cita só o id da experiência fora do bloco do perfil; título e empresa ficam dentro dele", () => {
+  it("bullets: id, título e empresa ficam dentro do bloco do perfil, nenhum fora dele", () => {
     for (const user of Object.values(builders(bullets))) {
       const outside = user.replace(/<profile id="[a-z0-9]{8}">[\s\S]*?<\/profile id="[a-z0-9]{8}">/, "");
       expect(outside).not.toContain("Lumen Pay");
       expect(outside).not.toContain("Frontend Sênior");
-      expect(outside).toContain("exp_1");
+      expect(outside).not.toContain("exp_1");
+      expect(user).toMatch(/"targetExperienceId":"exp_1"/);
       expect(user).toContain("Lumen Pay");
       expect(user).toContain("Frontend Sênior");
     }
+  });
+  it("expId inexistente lança Error", () => {
+    expect(() => ASSIST_QUESTIONS_V1.buildUser({ profile, target: { kind: "bullets", expId: "nao_existe" } })).toThrow(Error);
+  });
+  it("perfil acima do limite vira JSON válido com bullets podados, dos mais antigos aos mais novos", () => {
+    const big = (id: string, startDate: string) => ({
+      id,
+      company: "Acme",
+      title: "Dev",
+      startDate,
+      endDate: null,
+      bullets: Array.from({ length: 40 }, (_, i) => ({ id: `${id}.b${i}`, text: `Entregou o item ${i} ${"x".repeat(400)}` })),
+    });
+    const huge: Profile = { ...profile, experiences: [big("exp_new", "2022-01"), big("exp_old", "2010-01")] };
+    const user = ASSIST_QUESTIONS_V1.buildUser({ profile: huge, target: { kind: "summary" } });
+    const inner = /<profile id="[a-z0-9]{8}">\n([\s\S]*)\n<\/profile id="[a-z0-9]{8}">/.exec(user)?.[1] ?? "";
+    expect(inner.length).toBeLessThanOrEqual(PROFILE_MAX_CHARS);
+    const parsed = JSON.parse(inner) as { experiences: { id: string; bullets: unknown[] }[] };
+    const count = (id: string) => parsed.experiences.find((e) => e.id === id)?.bullets.length ?? -1;
+    expect(count("exp_old")).toBeLessThan(40);
+    expect(count("exp_new")).toBeGreaterThan(count("exp_old"));
   });
   it("respostas e texto atual vão em blocos delimitados", () => {
     expect(builders(bullets).write).toMatch(/<answers id="[a-z0-9]{8}">/);
@@ -106,7 +134,7 @@ describe("system do rewrite", () => {
 });
 
 describe("sensitiveQuestion (RN-22)", () => {
-  it.each(["Qual a sua idade?", "Você é casado?", "Qual seu CPF?", "What is your religion?", "¿Cuál es tu estado civil?", "Qual seu salário atual?", "Você tem filhos?", "Do you have kids?", "Qual a sua data de nascimento?", "Qual o seu endereço?", "How is your health?"])(
+  it.each(["Qual a sua idade?", "Você é casado?", "Qual seu CPF?", "What is your religion?", "¿Cuál es tu estado civil?", "Qual seu salário atual?", "Você tem filhos?", "Do you have kids?", "Qual a sua data de nascimento?", "Qual o seu endereço?", "How is your health?", "Qual a sua idade?", "Tem filhos?", "Você é solteiro?", "Is she married?", "Tell me about your kids?", "How are your children?", "Qual a cor da sua pele?"])(
     "bloqueia %s",
     (q) => expect(sensitiveQuestion(q)).toBe(true),
   );
@@ -117,6 +145,10 @@ describe("sensitiveQuestion (RN-22)", () => {
     "Usou children props no React?",
     "Configurou o IP address do balanceador?",
     "Qual a idade média do sistema legado?",
+    "Qual sua cor favorita?",
+    "Você tem kids mode?",
+    "o componente has children",
+    "seu children prop",
     "Como você tratou o endereço de e-mail duplicado?",
   ])(
     "libera %s",

@@ -1,4 +1,4 @@
-import { cleanup, render as rtlRender, screen } from "@testing-library/react";
+import { cleanup, render as rtlRender, screen, within } from "@testing-library/react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { JobDetailView } from "@/components/jobs/JobDetail";
@@ -86,7 +86,7 @@ describe("JobDetailView: Glassdoor", () => {
 
   it("empresa confidencial não mostra o link", () => {
     const host = render(job({ company: "Confidencial" }));
-    expect(host.innerHTML).not.toContain("glassdoor");
+    expect(within(host).queryByRole("link", { name: /glassdoor/i })).toBeNull();
   });
 });
 

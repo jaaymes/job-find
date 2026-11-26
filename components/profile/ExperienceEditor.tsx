@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, type MutableRefObject } from "react";
+import { Star } from "lucide-react";
 import { toast } from "sonner";
 import type { Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import { MAX_HIGHLIGHTS, type Profile } from "@/lib/shared/schemas/profile";
@@ -67,7 +68,16 @@ function Row({
       {!open && (
         <ul className="list-disc pl-[18px] text-sm leading-relaxed text-jf-ink-2">
           {exp.bullets.map((b) => (
-            <li key={b.id}>{b.text}</li>
+            <li key={b.id}>
+              {b.text}
+              {highlights.includes(b.id) && (
+                <>
+                  {" "}
+                  <Star aria-hidden="true" className="inline size-3.5 text-jf-brand" fill="currentColor" />
+                  <span className="sr-only">(destacado)</span>
+                </>
+              )}
+            </li>
           ))}
         </ul>
       )}
@@ -227,7 +237,7 @@ export function ExperienceEditor({ profile, experiences, onChange, highlights, o
           now.onChange(now.experiences.map((e) => (e.id === expId ? { ...e, bullets: previous.bullets } : e)));
           const restored = previous.highlights.filter((h) => oldIds.has(h));
           const kept = now.highlights.filter((h) => !newIds.has(h) && !restored.includes(h));
-          now.onHighlightsChange([...kept, ...restored]);
+          now.onHighlightsChange([...kept, ...restored].slice(0, MAX_HIGHLIGHTS));
         },
       },
     });

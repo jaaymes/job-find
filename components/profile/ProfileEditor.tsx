@@ -40,12 +40,13 @@ const isBlank = (v: string | null) => (v ?? "").trim() === "";
 export function ProfileEditor({ profile, onSave }: Props) {
   const [draft, setDraft] = useState(profile);
   const [saved, setSaved] = useState<"idle" | "ok">("idle");
-  const [dirty, setDirty] = useState(false);
+  // Perfil gravado por último (o recebido ou o último salvo): as alterações não salvas são a diferença do rascunho para ele.
+  const [baseline, setBaseline] = useState(profile);
+  const dirty = JSON.stringify(draft) !== JSON.stringify(baseline);
   useUnsavedChangesGuard(dirty, "Você tem alterações não salvas no perfil. Sair mesmo assim?");
   const patch = (p: Partial<Profile>) => {
     setDraft((d) => ({ ...d, ...p }));
     setSaved("idle");
-    setDirty(true);
   };
   const [assist, setAssist] = useState<{ field: TextField; open: boolean }>({ field: "headline", open: false });
   const assistTarget: AssistTarget = { kind: assist.field };
@@ -82,7 +83,7 @@ export function ProfileEditor({ profile, onSave }: Props) {
           onClick={() => {
             const ok = onSave(draft);
             setSaved(ok ? "ok" : "idle");
-            if (ok) setDirty(false);
+            if (ok) setBaseline(draft);
           }}
         >
           Salvar perfil

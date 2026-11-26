@@ -30,7 +30,8 @@ const ACTION_VERBS = new Set([
   "delivered", "launched", "wrote", "ran", "drove", "shipped", "owned", "optimized", "automated", "migrated",
   "architected", "mentored", "analyzed", "integrated", "maintained", "scaled", "refactored", "deployed", "established", "set",
 ]);
-const VERB_ENDING = /(ei|ou|iu|ed)$/;
+// Limite conhecido: "Marketing", "Seed" também contam como verbo; falso negativo só suprime um aviso.
+const VERB_ENDING = /(ei|ou|iu|amos|emos|imos|ed|ing)$/;
 
 function firstWord(text: string): string {
   const m = /[\p{L}]+/u.exec(text);
@@ -94,7 +95,7 @@ export function reviewProfile(profile: Profile): Finding[] {
     out.push({
       kind: "skill_missing",
       where: { field: "skills", stackId: s.stackId },
-      message: `${s.label} aparece nas suas realizações, mas não está nas competências.`,
+      message: `${s.label} aparece ou está implícita nas suas realizações, mas não está nas competências.`,
     });
   }
   return out;

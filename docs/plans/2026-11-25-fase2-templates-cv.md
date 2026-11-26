@@ -113,13 +113,14 @@
 **Arquivos:**
 - Criar:
   - `scripts/subset-fonts.sh`;
-  - `public/fonts/SourceSerif4-{Regular,Bold}.ttf`, `SourceSans3-{Regular,Bold}.ttf`, `IBMPlexSans-{Regular,Bold}.ttf`;
+  - `public/fonts/SourceSerif4-{Regular,Bold}.ttf`, `JFSans-{Regular,Bold}.ttf`, `JFGrotesk-{Regular,Bold}.ttf`;
+  - nota: JF Sans é o Source Sans 3 e JF Grotesk é o IBM Plex Sans, renomeados por serem subconjuntos modificados (Reserved Font Name da OFL);
   - `public/fonts/LICENSE-SourceSerif4.txt`, `LICENSE-SourceSans3.txt`, `LICENSE-IBMPlexSans.txt`.
 - Modificar: `lib/client/pdf/fonts.ts`
 - Teste: `tests/unit/client/pdf-fonts.test.ts` (node)
 
 **Interfaces que esta tarefa entrega:**
-- `type PdfFamily = "Inter" | "Source Serif 4" | "Source Sans 3" | "IBM Plex Sans"`.
+- `type PdfFamily = "Inter" | "Source Serif 4" | "JF Sans" | "JF Grotesk"`.
 - `PDF_FAMILIES: Record<PdfFamily, { regular: string; bold: string; license: string }>`, com os nomes dos arquivos.
 - `registerPdfFonts(baseDir?)` registra as 4 famílias (400 e 700).
 - `PDF_FONT` continua `"Inter"`.
@@ -134,7 +135,7 @@
   - cada família tem a sua licença;
   - a soma dos 6 TTF novos é ≤ 1_572_864 bytes.
 - [ ] **Passo 4: implementar `PDF_FAMILIES` e o registro** em `fonts.ts`, depois rodar `pnpm vitest run tests/unit/client/pdf-fonts.test.ts tests/unit/client/pdf.test.ts`. Esperado: PASS.
-- [ ] **Passo 5: commit** `feat(pdf): fontes Source Serif 4, Source Sans 3 e IBM Plex Sans (OFL, subconjunto latino)`
+- [ ] **Passo 5: commit** `feat(pdf): fontes Source Serif 4, JF Sans e JF Grotesk (OFL, subconjunto latino)`
 
 ### Task 4: Tarefa 4 — registro de templates, renderizador guiado por template, metadados e teste ATS
 
@@ -158,12 +159,12 @@
 | classico | summary, experience, skills, projects, education, certifications, languages | Inter / Inter | 10 pt, `titleRule: true`, igual ao layout atual |
 | compacto | skills, experience, projects, education, certifications, languages | Inter / Inter | 9.5 pt, margens 28/32, `titleCase: "upper"`, `skillsLayout: "grouped"` |
 | harvard | education, experience, projects, skills, certifications, languages | Source Serif 4 / Source Serif 4 | `nameAlign: "center"`, `titleRule: true` |
-| minimalista | summary, experience, skills, education, languages | Source Sans 3 / Source Sans 3 | `titleRule: false`, `sectionGap` 18 |
-| moderno | summary, skills, experience, projects, education, certifications, languages | IBM Plex Sans / IBM Plex Sans | `accent: "#1F3A5F"` |
+| minimalista | summary, experience, skills, education, languages | JF Sans / JF Sans | `titleRule: false`, `sectionGap` 18 |
+| moderno | summary, skills, experience, projects, education, certifications, languages | JF Grotesk / JF Grotesk | `accent: "#1F3A5F"` |
 | resultados | summary, highlights, experience, skills, education, certifications, languages | Inter / Inter | destaques em negrito |
 | lideranca | summary, skills, experience, education, certifications, languages | Inter / Source Serif 4 | `titleRule: true` |
 | inicio-de-carreira | summary, skills, projects, education, experience, certifications, languages | Inter / Inter | projetos com o nome em negrito e as stacks na linha seguinte |
-| transicao | summary, skills, projects, experience, education, certifications, languages | Source Sans 3 / Source Sans 3 | — |
+| transicao | summary, skills, projects, experience, education, certifications, languages | JF Sans / JF Sans | — |
 | internacional | summary, experience, skills, projects, education, certifications, languages | Inter / Inter | `locationLine: true` (D-05) |
 
 No `minimalista`, `projects` e `certifications` foram omitidos de propósito, como no PRD. A seção `highlights` tira os bullets destacados da experiência (D-03).

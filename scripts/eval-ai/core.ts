@@ -396,6 +396,8 @@ export async function runAssistSuite(profiles: { id: string; profile: Profile }[
       const qa = FIXED_ANSWERS.map((answer, i) => ({ question: `Pergunta ${i + 1}`, answer }));
       const { data } = await generateStructured({ ...writeCall({ ...common, target: summary, qa }), validate: accept });
       const texts = data.options.map((d) => restoreName(profile, d).text?.trim() ?? "").filter(Boolean);
+      // Campo vazio ou nulo não é geração limpa: o app trataria como erro.
+      if (texts.length < 2) fail("write", `saída sem texto: ${texts.length} de 2 opções com o campo preenchido`);
       checkInvented("write", texts, FIXED_ANSWERS.join("\n"));
     });
 
@@ -409,6 +411,7 @@ export async function runAssistSuite(profiles: { id: string; profile: Profile }[
       const target: AssistTarget = { kind: "bullets", expId: exp.id };
       const { data } = await generateStructured({ ...rewriteCall({ ...common, target, current, tone: { tone: "direct" } }), validate: accept });
       const bullets = (restoreName(profile, data.draft).bullets ?? []).filter((b) => b.trim());
+      if (bullets.length === 0) fail("rewrite", "saída sem bullets: o campo veio vazio ou nulo");
       checkInvented("rewrite", bullets, current.bullets?.join("\n") ?? "");
     });
   }

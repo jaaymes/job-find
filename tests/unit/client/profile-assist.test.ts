@@ -5,7 +5,7 @@ import { AiError } from "@/lib/client/ai/errors";
 import { PROVIDERS } from "@/lib/client/ai/providers";
 import { defaultAiSettings } from "@/lib/client/ai/settings";
 import * as validate from "@/lib/client/cv/validate";
-import { ASSIST_INVENTED_MESSAGE, askQuestions, rewriteDraft, writeDrafts } from "@/lib/client/profile/assist";
+import { ASSIST_INVENTED_MESSAGE, askQuestions, restoreName, rewriteDraft, writeDrafts } from "@/lib/client/profile/assist";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 
 type Chunk = Record<string, unknown>;
@@ -55,6 +55,47 @@ describe("askQuestions", () => {
     const same = { questions: [SENSITIVE, clean[0], clean[1]] };
     const model = mockModel(same, same);
     await expect(askQuestions(common(model))).rejects.toMatchObject({ code: "invalid_output" });
+  });
+});
+
+describe("entradas vazias (#20)", () => {
+  it("só perguntas em branco: invalid_output", async () => {
+    const blank = { questions: ["", "  ", " "] };
+    await expect(askQuestions(common(mockModel(blank, blank)))).rejects.toMatchObject({ code: "invalid_output" });
+    const two = { questions: ["", "  "] };
+    await expect(askQuestions(common(mockModel(two, two)))).rejects.toMatchObject({ code: "invalid_output" });
+  });
+  it("sobrando menos de 3 perguntas preenchidas: invalid_output", async () => {
+    const few = { questions: ["a", "", ""] };
+    await expect(askQuestions(common(mockModel(few, few)))).rejects.toMatchObject({ code: "invalid_output" });
+  });
+  it("pergunta vazia entre válidas é descartada", async () => {
+    const model = mockModel({ questions: [clean[0], "  ", clean[1], clean[2], clean[3]] });
+    await expect(askQuestions(common(model))).resolves.toEqual(clean.slice(0, 4));
+  });
+});
+
+describe("rascunho sem o campo do alvo (#30)", () => {
+  const qa = [{ question: "Resultado?", answer: "melhorei" }];
+  it("summary com text null vira invalid_output, com feedback na retentativa", async () => {
+    const bad = { options: [{ text: null, bullets: null }, { text: "ok", bullets: null }] };
+    const model = mockModel(bad, bad);
+    await expect(writeDrafts({ ...common(model), qa })).rejects.toMatchObject({ code: "invalid_output" });
+    expect(JSON.stringify(model.doStreamCalls[1]?.prompt)).toContain("campo text preenchido");
+  });
+  it("bullets com bullets null vira invalid_output, com feedback", async () => {
+    const bad = { draft: { text: null, bullets: null } };
+    const model = mockModel(bad, bad);
+    const a = { ...common(model), target: { kind: "bullets", expId: "exp_1" } as const, current: { text: null, bullets: ["Entreguei telas"] }, tone: { tone: "direct" } as const };
+    await expect(rewriteDraft(a)).rejects.toMatchObject({ code: "invalid_output" });
+    expect(JSON.stringify(model.doStreamCalls[1]?.prompt)).toContain("campo bullets");
+  });
+  it("sem nome no perfil, [NOME] fica e o validador marca", async () => {
+    const anon = { ...profile, name: "" };
+    const draft = { options: [{ text: "[NOME] lidera times.", bullets: null }, { text: "[NOME] cuida do frontend.", bullets: null }] };
+    const model = mockModel(draft, draft);
+    await expect(writeDrafts({ ...common(model), profile: anon, qa })).rejects.toMatchObject({ code: "invalid_output" });
+    expect(restoreName(anon, { text: "[NOME] lidera", bullets: ["[NOME] fez"] })).toEqual({ text: "[NOME] lidera", bullets: ["[NOME] fez"] });
   });
 });
 

@@ -93,7 +93,7 @@ export function mockResolverFor(pair: Pair, lang: CvLang, scenario: MockScenario
 }
 
 /** Opções do modelo falso da suíte `assist`: cada uma injeta um defeito que a suíte precisa pegar. */
-export type AssistMockOpts = { inventedNumber?: boolean; sensitiveQuestion?: boolean };
+export type AssistMockOpts = { inventedNumber?: boolean; sensitiveQuestion?: boolean; emptyField?: boolean };
 
 const SUMMARY = "Pessoa desenvolvedora com experiência prática, foco em qualidade e em entregar o que o time precisa.";
 
@@ -103,9 +103,9 @@ export function assistMockResolverFor(profile: Profile, opts: AssistMockOpts = {
   const suffix = opts.inventedNumber ? " e aumentou a conversão em 45%" : "";
   const answerFor = (prompt: string): unknown => {
     if (prompt.includes("escreva exatamente 2 opções")) {
-      return { options: [SUMMARY, `${SUMMARY} Gosta de trabalhar em equipe`].map((t) => ({ text: `${t}${suffix}`, bullets: null })) };
+      return { options: [SUMMARY, `${SUMMARY} Gosta de trabalhar em equipe`].map((t) => ({ text: opts.emptyField ? null : `${t}${suffix}`, bullets: null })) };
     }
-    if (prompt.includes("reescreva o texto atual")) return { draft: { text: null, bullets: [`${firstBullet}${suffix}`] } };
+    if (prompt.includes("reescreva o texto atual")) return { draft: { text: null, bullets: opts.emptyField ? null : [`${firstBullet}${suffix}`] } };
     return {
       questions: [
         opts.sensitiveQuestion ? "Qual é a sua idade?" : "Qual era o contexto do trabalho?",

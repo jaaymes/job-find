@@ -1,20 +1,32 @@
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantDialog } from "@/components/profile/assistant/AssistantDialog";
+import { ASSIST_INVENTED_MESSAGE } from "@/lib/client/profile/assist";
 import { AiError } from "@/lib/client/ai/errors";
 import type { AssistTarget, Draft } from "@/lib/client/ai/prompts/profile.assist.v1";
 import { emptyProfile } from "@/lib/shared/schemas/profile";
 
-const mocks = vi.hoisted(() => ({ askQuestions: vi.fn(), writeDrafts: vi.fn(), rewriteDraft: vi.fn(), usable: vi.fn() }));
-vi.mock("@/lib/client/profile/assist", () => ({
-  askQuestions: mocks.askQuestions,
-  writeDrafts: mocks.writeDrafts,
-  rewriteDraft: mocks.rewriteDraft,
-  ASSIST_INVENTED_MESSAGE: "A IA sugeriu fatos que não estão no seu perfil. Tente de novo ou responda com mais detalhes.",
-}));
+const mocks = vi.hoisted(() => ({ askQuestions: vi.fn(), writeDrafts: vi.fn(), rewriteDraft: vi.fn(), usable: vi.fn(), nullStore: { on: false } }));
+vi.mock("@/lib/client/profile/assist", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/client/profile/assist")>("@/lib/client/profile/assist");
+  return {
+    askQuestions: mocks.askQuestions,
+    writeDrafts: mocks.writeDrafts,
+    rewriteDraft: mocks.rewriteDraft,
+    ASSIST_INVENTED_MESSAGE: actual.ASSIST_INVENTED_MESSAGE,
+  };
+});
+vi.mock("@/lib/client/storage/store", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/client/storage/store")>("@/lib/client/storage/store");
+  // Só devolve null quando o teste liga a flag (SSR/hidratação); a chamada real mantém a ordem dos hooks.
+  return { ...actual, useStore: (s: Parameters<typeof actual.useStore>[0]) => {
+    const v = actual.useStore(s);
+    return mocks.nullStore.on ? null : v;
+  } };
+});
 vi.mock("@/lib/client/ai/model", () => ({ hasUsableProvider: mocks.usable }));
 
-const INVENTED = "A IA sugeriu fatos que não estão no seu perfil. Tente de novo ou responda com mais detalhes.";
+const INVENTED = ASSIST_INVENTED_MESSAGE;
 const EMPTY: Draft = { text: "", bullets: null };
 const QUESTIONS = ["Qual foi seu maior projeto?", "Que tecnologias usou?", "Que resultado alcançou?"];
 
@@ -45,6 +57,7 @@ beforeEach(() => {
   mocks.writeDrafts.mockReset();
   mocks.rewriteDraft.mockReset();
   mocks.usable.mockReset().mockReturnValue(true);
+  mocks.nullStore.on = false;
 });
 afterEach(cleanup);
 
@@ -55,6 +68,19 @@ describe("AssistantDialog: sem provedor", () => {
     expect(await screen.findByText("Conecte uma IA para usar o assistente")).toBeTruthy();
     expect(screen.getByRole("link", { name: /Conecte uma IA/ }).getAttribute("href")).toBe("/configuracoes");
     expect(mocks.askQuestions).not.toHaveBeenCalled();
+  });
+});
+
+describe("AssistantDialog: configurações ainda não lidas", () => {
+  it("com a store nula só o corpo some: título presente, sem aviso e sem chamada de IA", async () => {
+    mocks.nullStore.on = true;
+    setup();
+    expect(await screen.findByText("Escrever com IA")).toBeTruthy();
+    expect(screen.queryByText("Conecte uma IA para usar o assistente")).toBeNull();
+    expect(screen.queryAllByRole("textbox")).toHaveLength(0);
+    expect(mocks.askQuestions).not.toHaveBeenCalled();
+    expect(mocks.writeDrafts).not.toHaveBeenCalled();
+    expect(mocks.rewriteDraft).not.toHaveBeenCalled();
   });
 });
 
@@ -130,6 +156,16 @@ describe("AssistantDialog: entrevista", () => {
     expect(screen.queryByRole("radiogroup")).toBeNull();
     expect((screen.getAllByRole("textbox")[0] as HTMLTextAreaElement).value).toBe("resposta");
     expect(onInsert).not.toHaveBeenCalled();
+  });
+
+  it("askQuestions que rejeita mostra o alerta com Tentar de novo", async () => {
+    mocks.askQuestions.mockReset().mockRejectedValueOnce(new Error("falhou")).mockResolvedValueOnce(QUESTIONS);
+    setup();
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("Não foi possível gerar agora. Tente de novo.");
+    fireEvent.click(within(alert).getByRole("button", { name: "Tentar de novo" }));
+    expect(await screen.findAllByRole("textbox")).toHaveLength(3);
+    expect(mocks.askQuestions).toHaveBeenCalledTimes(2);
   });
 
   it("invalid_output mostra a mensagem da D-04 e Tentar de novo refaz a geração", async () => {
@@ -261,5 +297,39 @@ describe("AssistantDialog: reescrita", () => {
     fireEvent.change(area, { target: { value: "  Texto final  " } });
     fireEvent.click(screen.getByRole("button", { name: "Inserir no perfil" }));
     expect(onInsert).toHaveBeenCalledWith({ text: "Texto final", bullets: null });
+  });
+
+  it("rewriteDraft que rejeita com erro (não aborto) mostra o alerta genérico com Tentar de novo", async () => {
+    mocks.rewriteDraft.mockRejectedValueOnce(new Error("falhou")).mockResolvedValueOnce({ text: "Texto novo", bullets: null });
+    setup({ current });
+    const alert = await screen.findByRole("alert");
+    expect(alert.textContent).toContain("Não foi possível gerar agora. Tente de novo.");
+    fireEvent.click(within(alert).getByRole("button", { name: "Tentar de novo" }));
+    await waitFor(() => expect((screen.getByLabelText("Sugestão editável") as HTMLTextAreaElement).value).toBe("Texto novo"));
+  });
+
+  it("insere a reescrita de bullets com a lista editada", async () => {
+    mocks.rewriteDraft.mockResolvedValue({ text: null, bullets: ["Um", "Dois"] });
+    const { onInsert } = setup({ target: { kind: "bullets", expId: "exp_1" }, current: { text: null, bullets: ["Antigo"] } });
+    fireEvent.click(await screen.findByRole("button", { name: "Remover realização 1" }));
+    fireEvent.click(screen.getByRole("button", { name: "Inserir no perfil" }));
+    expect(onInsert).toHaveBeenCalledWith({ text: null, bullets: ["Dois"] });
+  });
+
+  it("fechar o painel durante a geração aborta o signal", async () => {
+    const pending = deferred<Draft>();
+    mocks.rewriteDraft.mockReturnValue(pending.promise);
+    const props = { open: true, onOpenChange: vi.fn(), profile: emptyProfile(), target: { kind: "summary" } as AssistTarget, current, onInsert: vi.fn() };
+    const { rerender } = render(<AssistantDialog {...props} />);
+    const signal = (await waitFor(() => {
+      expect(mocks.rewriteDraft).toHaveBeenCalled();
+      return mocks.rewriteDraft.mock.calls[0][0];
+    })).signal as AbortSignal;
+    expect(signal.aborted).toBe(false);
+    rerender(<AssistantDialog {...props} open={false} />);
+    await waitFor(() => expect(signal.aborted).toBe(true));
+    await act(async () => {
+      pending.resolve({ text: "x", bullets: null });
+    });
   });
 });

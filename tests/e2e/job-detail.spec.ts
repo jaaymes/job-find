@@ -111,7 +111,7 @@ test("mostra título, empresa, chips, descrição e atribuição com links para 
 test("link do Glassdoor aponta para a busca da empresa e abre em nova aba", async ({ page }) => {
   await page.goto("/vagas/1");
   const link = page.getByRole("link", { name: /Ver .+ no Glassdoor \(abre em nova aba\)/ }).first();
-  await expect(link).toHaveAttribute("href", /^https:\/\/www\.glassdoor\.com/);
+  await expect(link).toHaveAttribute("href", /^https:\/\/www\.glassdoor\.com\.br\/Search\//);
   await expect(link).toHaveAttribute("target", "_blank");
   await expect(link).toHaveAttribute("rel", /noopener/);
   await expect(link).toHaveAttribute("rel", /nofollow/);

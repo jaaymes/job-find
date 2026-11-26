@@ -47,4 +47,18 @@ describe("runAssistSuite com modelo falso (sem rede)", () => {
     expect(report.sensitive).toBeGreaterThanOrEqual(2);
     expect(report.failures.some((f) => f.step === "questions")).toBe(true);
   });
+
+  it("campo vazio ou nulo conta como falha, não como geração limpa (#26)", async () => {
+    const profiles = (await tenProfiles()).slice(0, 2);
+    const report = await runAssistSuite(profiles, {
+      settings: defaultAiSettings(),
+      resolveModelFor: (p) => assistMockResolverFor(p.profile, { emptyField: true }),
+    });
+    const write = report.failures.filter((f) => f.step === "write");
+    const rewrite = report.failures.filter((f) => f.step === "rewrite");
+    expect(write).toHaveLength(2);
+    expect(rewrite).toHaveLength(2);
+    for (const f of write) expect(f.detail).toContain("saída sem texto");
+    for (const f of rewrite) expect(f.detail).toContain("saída sem bullets");
+  });
 });

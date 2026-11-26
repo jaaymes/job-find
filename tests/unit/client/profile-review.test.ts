@@ -35,6 +35,8 @@ describe("reviewProfile: verbo de ação", () => {
     (text) => expect(kinds(withBullets(text))).toEqual([]),
   );
 
+  it.each(["Implementamos o checkout", "Leading a squad"])("aceita %s", (text) => expect(kinds(withBullets(text))).toEqual([]));
+
   it("'Responsável pelo sistema' não tem verbo de ação", () => {
     expect(kinds(withBullets("Responsável pelo sistema"))).toEqual(["bullet_no_verb"]);
   });
@@ -65,6 +67,11 @@ describe("suggestSkills", () => {
     expect(reviewProfile(p)).toEqual([
       expect.objectContaining({ kind: "skill_missing", where: { field: "skills", stackId: "kubernetes" } }),
     ]);
+  });
+
+  it("a mensagem diz que aparece ou está implícita nas realizações", () => {
+    const f = reviewProfile(withBullets("Migrei para Kubernetes"));
+    expect(f[0].message).toBe("Kubernetes aparece ou está implícita nas suas realizações, mas não está nas competências.");
   });
 
   it("não sugere quando a skill já existe", () => {

@@ -1,4 +1,4 @@
-import { expect, test, type Page, type Route } from "@playwright/test";
+import { expect, test, type Locator, type Page, type Route } from "@playwright/test";
 
 // Fase 3: assistente de IA do perfil (entrevista, reescrita, RN-20, RNF-04, RNF-05). O provedor (DeepSeek) é mockado.
 
@@ -276,4 +276,43 @@ test("sem IA configurada, o painel pede para conectar uma IA e não chama o prov
   await page.getByRole("button", { name: "Escrever com IA" }).click();
   await expect(dialog(page).getByText("Conecte uma IA para usar o assistente")).toBeVisible();
   expect(mock.bodies).toHaveLength(0);
+});
+
+/** Avança com `Tab` de verdade (sem `focus()`) até o elemento receber o foco. */
+async function tabTo(page: Page, target: Locator, max = 80, key = "Tab") {
+  for (let i = 0; i < max; i++) {
+    await page.keyboard.press(key);
+    if (await target.evaluate((el) => el === document.activeElement)) return;
+  }
+  throw new Error(`o foco não chegou ao elemento em ${max} Tabs`);
+}
+
+test("assistente do resumo só com o teclado: Tab, Enter, setas, Espaço e salvar o perfil", async ({ page }) => {
+  await page.goto("/perfil");
+  await expect(page.getByRole("button", { name: "Escrever com IA" })).toBeVisible();
+  await tabTo(page, page.getByRole("button", { name: "Escrever com IA" }));
+  await page.keyboard.press("Enter");
+
+  await expect(dialog(page).getByRole("textbox").first()).toBeFocused(FIRST);
+  await page.keyboard.type("Trabalho com produtos web.");
+  await tabTo(page, dialog(page).getByRole("button", { name: "Gerar" }), 5);
+  await page.keyboard.press("Enter");
+
+  const option1 = dialog(page).getByRole("radio", { name: "Opção 1" });
+  await expect(option1).toBeFocused(FIRST);
+  await page.keyboard.press("ArrowDown");
+  await expect(dialog(page).getByRole("radio", { name: "Opção 2" })).toBeChecked();
+  await page.keyboard.press("Space");
+  await expect(dialog(page).getByRole("radio", { name: "Opção 2" })).toBeChecked();
+  await expect(dialog(page).getByRole("textbox")).toHaveValue(OPTION_2);
+  await tabTo(page, dialog(page).getByRole("button", { name: "Inserir no perfil" }), 5);
+  await page.keyboard.press("Enter");
+
+  await expect(dialog(page)).toHaveCount(0);
+  await expect(summary(page)).toHaveValue(OPTION_2);
+  // "Salvar perfil" fica antes do resumo no DOM; o foco volta ao botão do assistente, então a volta é com Shift+Tab.
+  await tabTo(page, page.getByRole("button", { name: "Salvar perfil" }), 80, "Shift+Tab");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("status").filter({ hasText: "Perfil salvo" })).toBeVisible();
+  expect(await storedSummary(page)).toBe(OPTION_2);
 });

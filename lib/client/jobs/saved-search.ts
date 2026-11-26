@@ -1,6 +1,6 @@
 import "client-only";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createStore, useStore, type SetResult, type Store } from "@/lib/client/storage/store";
 import { jobsQuerySchema } from "@/lib/shared/schemas/jobs-query";
@@ -99,12 +99,19 @@ export function readLastFilters(now: number = Date.now()): SavedFilters | null {
  */
 export function useRememberFilters(filters: PageFilters, ready: boolean): void {
   const serialized = JSON.stringify(toSavedFilters(filters));
+  const previous = useRef<string | undefined>(undefined);
   useEffect(() => {
     if (!ready) return;
     const next: SavedFilters | null = JSON.parse(serialized);
     const current = lastFiltersStore.get();
+    const before = previous.current;
+    previous.current = serialized;
     if (next === null) {
-      if (current !== null) lastFiltersStore.set(null);
+      // Só apaga na transição "tinha filtro salvável -> ficou vazio" (limpar de verdade). Montar sem filtros ou
+      // alternar "ocultas" numa página sem filtros não toca na última busca. (`ready` é de mão única, então
+      // `previous` só começa a valer depois da restauração.)
+      const hadFilter = before !== undefined && before !== "null";
+      if (current !== null && hadFilter) lastFiltersStore.set(null);
       return;
     }
     const unchanged =

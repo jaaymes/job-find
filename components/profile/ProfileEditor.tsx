@@ -13,6 +13,7 @@ import {
   type Profile,
 } from "@/lib/shared/schemas/profile";
 import { AssistantDialog } from "./assistant/AssistantDialog";
+import { AssistantHub } from "./assistant/AssistantHub";
 import { AssistButton } from "./assistant/AssistButton";
 import { CertificationsEditor } from "./CertificationsEditor";
 import { ProfileReview } from "./ProfileReview";
@@ -97,21 +98,36 @@ export function ProfileEditor({ profile, onSave }: Props) {
 
       <ProfileReview profile={draft} onFix={fix} />
 
+      <AssistantHub
+        headlineEmpty={isBlank(draft.headline)}
+        summaryEmpty={isBlank(draft.summary)}
+        firstExpId={draft.experiences[0]?.id ?? null}
+        onField={(field) => setAssist({ field, open: true })}
+        onExperience={(expId) => setBulletFix((b) => ({ expId, n: (b?.n ?? 0) + 1 }))}
+      />
+
       <div className="grid gap-3.5 sm:grid-cols-2">
         <label className={FIELD_LABEL}>
           Nome
           <input className={FIELD} value={draft.name ?? ""} onChange={(e) => patch({ name: orNull(e.target.value) })} />
         </label>
         <div className="flex flex-col gap-2 sm:col-span-2">
-          <label className={FIELD_LABEL}>
-            Título profissional
-            <input
-              className={FIELD}
-              value={draft.headline ?? ""}
-              onChange={(e) => patch({ headline: orNull(e.target.value) })}
+          <div className="flex items-center justify-between gap-2">
+            <label htmlFor="profile-headline" className="text-[13px] font-semibold text-jf-ink-2">
+              Título profissional
+            </label>
+            <AssistButton
+              empty={isBlank(draft.headline)}
+              label="Título profissional"
+              onClick={() => setAssist({ field: "headline", open: true })}
             />
-          </label>
-          <AssistButton empty={isBlank(draft.headline)} onClick={() => setAssist({ field: "headline", open: true })} />
+          </div>
+          <input
+            id="profile-headline"
+            className={FIELD}
+            value={draft.headline ?? ""}
+            onChange={(e) => patch({ headline: orNull(e.target.value) })}
+          />
         </div>
         <label className={FIELD_LABEL}>
           Cidade
@@ -175,16 +191,23 @@ export function ProfileEditor({ profile, onSave }: Props) {
         onChange={(links) => patch({ contact: { ...draft.contact, links } })}
       />
       <div className="flex flex-col gap-2">
-        <label className={FIELD_LABEL}>
-          Resumo
-          <textarea
-            rows={3}
-            className={FIELD}
-            value={draft.summary ?? ""}
-            onChange={(e) => patch({ summary: orNull(e.target.value) })}
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="profile-summary" className="text-[13px] font-semibold text-jf-ink-2">
+            Resumo
+          </label>
+          <AssistButton
+            empty={isBlank(draft.summary)}
+            label="Resumo"
+            onClick={() => setAssist({ field: "summary", open: true })}
           />
-        </label>
-        <AssistButton empty={isBlank(draft.summary)} onClick={() => setAssist({ field: "summary", open: true })} />
+        </div>
+        <textarea
+          id="profile-summary"
+          rows={3}
+          className={FIELD}
+          value={draft.summary ?? ""}
+          onChange={(e) => patch({ summary: orNull(e.target.value) })}
+        />
       </div>
       <AssistantDialog
         open={assist.open}

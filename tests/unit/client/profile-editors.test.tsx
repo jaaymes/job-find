@@ -5,6 +5,7 @@ import { BaseCvDownload } from "@/components/profile/BaseCvDownload";
 import { CertificationsEditor } from "@/components/profile/CertificationsEditor";
 import { ExperienceEditor } from "@/components/profile/ExperienceEditor";
 import { LanguagesEditor } from "@/components/profile/LanguagesEditor";
+import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { ProjectsEditor } from "@/components/profile/ProjectsEditor";
 import { emptyProfile, type Profile } from "@/lib/shared/schemas/profile";
 
@@ -221,5 +222,26 @@ describe("BaseCvDownload", () => {
       templateId: "minimalista",
     });
     window.localStorage.clear();
+  });
+});
+
+describe("assistente visível no perfil", () => {
+  const withExp = (): Profile => ({
+    ...emptyProfile(),
+    experiences: [
+      { id: "exp_1", company: "Acme", title: "Dev", startDate: null, endDate: null, bullets: [{ id: "exp_1.b1", text: "Fiz A" }] },
+    ],
+  });
+
+  it("experiência fechada já mostra Melhorar com IA", () => {
+    render(<ExperienceEditor profile={withExp()} experiences={withExp().experiences} onChange={() => {}} highlights={[]} onHighlightsChange={() => {}} />);
+    expect(screen.getByRole("button", { name: /^Melhorar com IA/ })).toBeTruthy();
+    expect(screen.queryByRole("group", { name: "Realizações" })).toBeNull();
+  });
+
+  it("o atalho de experiências abre a experiência fechada e o assistente dela", async () => {
+    render(<ProfileEditor profile={withExp()} onSave={() => true} />);
+    fireEvent.click(screen.getByRole("button", { name: "Melhorar experiências com IA" }));
+    expect(await screen.findByRole("dialog")).toBeTruthy();
   });
 });

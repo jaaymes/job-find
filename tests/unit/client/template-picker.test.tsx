@@ -48,9 +48,61 @@ describe("TemplatePicker", () => {
   });
 
 
-  it("o botão tem o nome acessível com o modelo atual", () => {
+  it("o texto visível do botão é exatamente o nome acessível (WCAG 2.5.3), sem aria-label", () => {
     render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} />);
-    expect(screen.getByRole("button", { name: "Modelo do CV: Clássico" })).toBeTruthy();
+    const trigger = screen.getByRole("button", { name: "Modelo do CV: Clássico" });
+    expect(trigger.hasAttribute("aria-label")).toBe(false);
+    expect(trigger.textContent?.trim()).toBe("Modelo do CV: Clássico");
+  });
+
+  it("o texto do botão quebra linha em vez de vazar do contêiner", () => {
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} triggerClassName="w-full" />);
+    const trigger = screen.getByRole("button", { name: "Modelo do CV: Clássico" });
+    expect(trigger.className).toContain("max-w-full");
+    expect(trigger.className).toContain("w-full");
+    expect(trigger.className).toContain("whitespace-normal");
+    expect(trigger.className).not.toContain("whitespace-nowrap");
+    const text = trigger.querySelector("span.text-left");
+    expect(text?.className).toContain("min-w-0");
+    expect(text?.className).toContain("break-words");
+  });
+
+  it("com o dialog fechado só a miniatura do botão é montada: nem a galeria nem a prévia grande", async () => {
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} />);
+    await waitFor(() => expect(mocks.renderCvThumbnail).toHaveBeenCalledTimes(1));
+    expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, "classico", 56, expect.any(AbortSignal));
+    expect(mocks.renderCvThumbnail).not.toHaveBeenCalledWith(expect.anything(), expect.anything(), 150, expect.anything());
+    expect(screen.queryByTestId("preview-grande")).toBeNull();
+    expect(screen.queryByRole("radiogroup")).toBeNull();
+    expect(document.querySelectorAll("img")).toHaveLength(1);
+  });
+
+  it("triggerCv: a miniatura do botão usa o CV estável e não renderiza de novo quando só o cv muda", async () => {
+    const editado = assembleBaseCv({ ...profile, headline: "Dev front-end" }, "pt");
+    const { rerender } = render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} triggerCv={cv} />);
+    await waitFor(() => expect(mocks.renderCvThumbnail).toHaveBeenCalledTimes(1));
+    rerender(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={editado} triggerCv={cv} />);
+    await new Promise((r) => setTimeout(r, 500));
+    expect(mocks.renderCvThumbnail).toHaveBeenCalledTimes(1);
+    expect(mocks.renderCvThumbnail).not.toHaveBeenCalledWith(editado, expect.anything(), 56, expect.anything());
+  });
+
+  it("triggerCv: a galeria e a prévia grande continuam usando o cv", async () => {
+    const editado = assembleBaseCv({ ...profile, headline: "Dev front-end" }, "pt");
+    render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={editado} triggerCv={cv} />);
+    fireEvent.click(screen.getByRole("button", { name: "Modelo do CV: Clássico" }));
+    await screen.findByRole("dialog");
+    await waitFor(() => expect(mocks.renderCvThumbnail).toHaveBeenCalledTimes(11));
+    expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, "classico", 56, expect.any(AbortSignal));
+    for (const t of CV_TEMPLATES) expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(editado, t.id, 150, expect.any(AbortSignal));
+  });
+
+  it("sem triggerCv, a miniatura do botão usa o cv", async () => {
+    const editado = assembleBaseCv({ ...profile, headline: "Dev front-end" }, "pt");
+    const { rerender } = render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} />);
+    await waitFor(() => expect(mocks.renderCvThumbnail).toHaveBeenCalledTimes(1));
+    rerender(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={editado} />);
+    await waitFor(() => expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(editado, "classico", 56, expect.any(AbortSignal)), { timeout: 2000 });
   });
 
   it("abre um dialog com um radiogroup de 10 modelos, com descrição e indicação", async () => {
@@ -113,14 +165,14 @@ describe("TemplatePicker", () => {
     render(<TemplatePicker value="classico" recommended="moderno" onChange={() => {}} cv={cv} />);
     const trigger = screen.getByRole("button", { name: "Modelo do CV: Clássico" });
     await waitFor(() => expect(trigger.querySelector("img")).toBeTruthy());
-    expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, "classico", expect.any(Number));
+    expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, "classico", expect.any(Number), expect.any(AbortSignal));
   });
 
   it("cada um dos 10 modelos tem uma miniatura A4", async () => {
     const { dialog } = await open();
     const group = within(dialog).getByRole("radiogroup");
     await waitFor(() => expect(group.querySelectorAll("img")).toHaveLength(10));
-    for (const t of CV_TEMPLATES) expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, t.id, 150);
+    for (const t of CV_TEMPLATES) expect(mocks.renderCvThumbnail).toHaveBeenCalledWith(cv, t.id, 150, expect.any(AbortSignal));
   });
 
   it("a prévia grande acompanha o modelo selecionado", async () => {

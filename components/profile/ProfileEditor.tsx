@@ -102,6 +102,7 @@ export function ProfileEditor({ profile, onSave }: Props) {
         headlineEmpty={isBlank(draft.headline)}
         summaryEmpty={isBlank(draft.summary)}
         firstExpId={draft.experiences[0]?.id ?? null}
+        firstExpEmpty={draft.experiences[0]?.bullets.every((b) => isBlank(b.text)) ?? false}
         onField={(field) => setAssist({ field, open: true })}
         onExperience={(expId) => setBulletFix((b) => ({ expId, n: (b?.n ?? 0) + 1 }))}
       />

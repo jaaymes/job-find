@@ -157,7 +157,7 @@ function Row({
             >
               + Realização
             </button>
-            <AssistButton empty={exp.bullets.every((b) => b.text.trim() === "")} onClick={onAssist} />
+            <AssistButton empty={exp.bullets.every((b) => b.text.trim() === "")} label={title} onClick={onAssist} />
             </div>
           </fieldset>
         </div>

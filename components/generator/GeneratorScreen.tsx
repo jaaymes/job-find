@@ -365,11 +365,11 @@ function Generator({ job }: { job: JobDetail }) {
     else request({ lang: record.lang, includeLetter: true });
   };
 
-  // Prévia do seletor de modelo: o CV gerado, ou o do perfil no idioma escolhido enquanto não há geração.
-  const previewCv = useMemo(
-    () => (review ? review.cv : profile ? assembleBaseCv(profile, shown.lang) : null),
-    [review, profile, shown.lang],
-  );
+  // Miniatura do botão do modelo: o CV do perfil no idioma escolhido. Não muda a cada edição do CV gerado (cada
+  // pausa custaria um PDF inteiro só para a miniatura de 56px).
+  const triggerCv = useMemo(() => (profile ? assembleBaseCv(profile, shown.lang) : null), [profile, shown.lang]);
+  // Galeria e prévia grande do seletor de modelo: o CV gerado, ou o do perfil enquanto não há geração.
+  const previewCv = review ? review.cv : triggerCv;
   const recommendedTemplate = useMemo(() => (profile ? recommendTemplate(profile, job) : "classico"), [profile, job]);
   const templateId: CvTemplateId = profile
     ? resolveTemplateId(record?.templateId ?? draftTemplate, prefs ?? { templateId: null }, profile, job)
@@ -454,6 +454,7 @@ function Generator({ job }: { job: JobDetail }) {
             templateId={templateId}
             recommendedTemplate={recommendedTemplate}
             previewCv={previewCv}
+            triggerCv={triggerCv ?? previewCv}
             onTemplate={onTemplate}
             onLang={onLang}
             onLetter={onLetter}

@@ -74,6 +74,7 @@ export function BaseCvDownload({ profile }: { profile: Profile }) {
           onChange={(id) => choose(id)}
           cv={cv}
           showDefaultOption={false}
+          triggerClassName="w-full"
         />
         <label className={FIELD_LABEL}>
           Idioma dos rótulos do CV

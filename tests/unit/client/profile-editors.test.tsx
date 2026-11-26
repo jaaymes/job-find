@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { useState } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { BaseCvDownload } from "@/components/profile/BaseCvDownload";
@@ -242,9 +242,22 @@ describe("assistente visível no perfil", () => {
     expect(screen.queryByRole("group", { name: "Realizações" })).toBeNull();
   });
 
+  it("o botão de IA dentro da experiência aberta tem o título da experiência no nome acessível", () => {
+    render(<ExperienceEditor profile={withExp()} experiences={withExp().experiences} onChange={() => {}} highlights={[]} onHighlightsChange={() => {}} />);
+    fireEvent.click(screen.getByRole("button", { name: /^Editar experiência/ }));
+    const grupo = screen.getByRole("group", { name: "Realizações" });
+    expect(within(grupo).getByRole("button", { name: "Melhorar com IA: Dev · Acme" })).toBeTruthy();
+  });
+
+  it("experiência mais recente sem realizações: o atalho do hub diz Escrever", () => {
+    const vazia: Profile = { ...withExp(), experiences: [{ ...withExp().experiences[0], bullets: [] }] };
+    render(<ProfileEditor profile={vazia} onSave={() => true} />);
+    expect(screen.getByRole("button", { name: "Escrever a experiência mais recente com IA" })).toBeTruthy();
+  });
+
   it("o atalho de experiências abre a experiência fechada e o assistente dela", async () => {
     render(<ProfileEditor profile={withExp()} onSave={() => true} />);
-    fireEvent.click(screen.getByRole("button", { name: "Melhorar experiências com IA" }));
+    fireEvent.click(screen.getByRole("button", { name: "Melhorar a experiência mais recente com IA" }));
     expect(await screen.findByRole("dialog")).toBeTruthy();
   });
 });

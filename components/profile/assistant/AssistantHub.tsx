@@ -6,8 +6,10 @@ import { BTN_PRIMARY } from "@/components/ui/styles";
 type Props = {
   headlineEmpty: boolean;
   summaryEmpty: boolean;
-  /** Primeira experiência do perfil; `null` quando não há nenhuma. */
+  /** Primeira experiência do perfil (a mais recente); `null` quando não há nenhuma. */
   firstExpId: string | null;
+  /** A primeira experiência ainda não tem realizações escritas: o atalho vira "Escrever". */
+  firstExpEmpty: boolean;
   onField: (field: "headline" | "summary") => void;
   onExperience: (expId: string) => void;
 };
@@ -15,7 +17,7 @@ type Props = {
 const SHORTCUT = `${BTN_PRIMARY} min-h-11 gap-2 px-4 text-sm`;
 
 /** Atalhos em destaque para o assistente de IA: título, resumo e experiências. */
-export function AssistantHub({ headlineEmpty, summaryEmpty, firstExpId, onField, onExperience }: Props) {
+export function AssistantHub({ headlineEmpty, summaryEmpty, firstExpId, firstExpEmpty, onField, onExperience }: Props) {
   return (
     <section aria-labelledby="assistant-hub-title" className="flex flex-col gap-3 rounded-xl border border-jf-brand bg-jf-brand-soft p-4">
       <div className="flex flex-col gap-1">
@@ -34,12 +36,22 @@ export function AssistantHub({ headlineEmpty, summaryEmpty, firstExpId, onField,
           <Sparkles aria-hidden />
           {summaryEmpty ? "Escrever o resumo com IA" : "Melhorar o resumo com IA"}
         </button>
-        <button type="button" className={SHORTCUT} disabled={firstExpId === null} onClick={() => firstExpId && onExperience(firstExpId)}>
+        <button
+          type="button"
+          className={SHORTCUT}
+          disabled={firstExpId === null}
+          aria-describedby={firstExpId === null ? "assistant-hub-no-exp" : undefined}
+          onClick={() => firstExpId && onExperience(firstExpId)}
+        >
           <Sparkles aria-hidden />
-          Melhorar experiências com IA
+          {firstExpEmpty ? "Escrever a experiência mais recente com IA" : "Melhorar a experiência mais recente com IA"}
         </button>
       </div>
-      {firstExpId === null && <p className="text-sm text-jf-ink-3">Adicione uma experiência para usar o assistente nela.</p>}
+      {firstExpId === null && (
+        <p id="assistant-hub-no-exp" className="text-sm text-jf-ink-3">
+          Adicione uma experiência para usar o assistente nela.
+        </p>
+      )}
     </section>
   );
 }

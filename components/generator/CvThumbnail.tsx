@@ -58,18 +58,24 @@ export function CvThumbnail({ cv, templateId, width, className }: Props) {
   useEffect(() => {
     if (!visible || cached !== null) return;
     let stale = false;
+    // Ninguém mais quer esta miniatura (fechou a galeria, trocou o CV): o pedido sai da fila sem renderizar.
+    const ctrl = new AbortController();
     const done = (url: string | null) => {
       if (!stale) setResult({ cv, templateId, width, url });
     };
     const timer = setTimeout(
       () => {
-        renderCvThumbnail(cv, templateId, width).then(done, () => done(null));
+        renderCvThumbnail(cv, templateId, width, ctrl.signal).then(done, (err: unknown) => {
+          // Cancelado não é falha: não vira "Prévia indisponível".
+          if (!(err instanceof DOMException && err.name === "AbortError")) done(null);
+        });
       },
       hadImageRef.current ? EDIT_DEBOUNCE_MS : 0,
     );
     return () => {
       stale = true;
       clearTimeout(timer);
+      ctrl.abort();
     };
   }, [visible, cv, templateId, width, cached]);
 

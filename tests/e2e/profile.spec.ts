@@ -390,4 +390,13 @@ test("projeto, certificação e idioma são editáveis e continuam lá depois do
   const importBox = await page.getByRole("heading", { name: /Importar currículo/ }).boundingBox();
   const modelsBox = await page.getByRole("heading", { name: "Modelos de CV" }).boundingBox();
   expect(modelsBox!.y).toBeGreaterThan(importBox!.y);
+  // O botão do modelo cabe na coluna estreita do cartão: o texto quebra linha em vez de vazar.
+  const picker = page.getByRole("button", { name: /^Modelo do CV: / });
+  await expect(picker).toBeVisible();
+  const fits = await picker.evaluate((el) => {
+    const card = el.closest("section")!.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    return el.scrollWidth <= el.clientWidth && box.right <= card.right + 0.5;
+  });
+  expect(fits).toBe(true);
 });

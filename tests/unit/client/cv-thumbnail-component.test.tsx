@@ -55,4 +55,38 @@ describe("CvThumbnail", () => {
     await waitFor(() => expect(container.textContent).toContain("Prévia indisponível"));
     expect(mocks.renderCvThumbnail).toHaveBeenCalledTimes(2);
   });
+  it("passa um AbortSignal e o aborta ao desmontar", async () => {
+    let sinal: AbortSignal | undefined;
+    mocks.renderCvThumbnail.mockImplementation((_cv: AssembledCv, _id: string, _w: number, s?: AbortSignal) => {
+      sinal = s;
+      return new Promise<string>(() => undefined);
+    });
+    const { unmount } = render(<CvThumbnail cv={cvPt} templateId="classico" width={150} />);
+    await waitFor(() => expect(sinal).toBeInstanceOf(AbortSignal));
+    expect(sinal!.aborted).toBe(false);
+    unmount();
+    expect(sinal!.aborted).toBe(true);
+  });
+
+  it("trocar o cv aborta o pedido anterior", async () => {
+    const sinais: AbortSignal[] = [];
+    mocks.renderCvThumbnail.mockImplementation((_cv: AssembledCv, _id: string, _w: number, s: AbortSignal) => {
+      sinais.push(s);
+      return new Promise<string>(() => undefined);
+    });
+    const { rerender } = render(<CvThumbnail cv={cvPt} templateId="classico" width={150} />);
+    await waitFor(() => expect(sinais).toHaveLength(1));
+    rerender(<CvThumbnail cv={cvEn} templateId="classico" width={150} />);
+    expect(sinais[0].aborted).toBe(true);
+  });
+
+  it("AbortError não mostra Prévia indisponível", async () => {
+    let rejeita: (e: unknown) => void = () => undefined;
+    mocks.renderCvThumbnail.mockImplementation(() => new Promise<string>((_r, rej) => (rejeita = rej)));
+    const { container } = render(<CvThumbnail cv={cvPt} templateId="classico" width={150} />);
+    await waitFor(() => expect(mocks.renderCvThumbnail).toHaveBeenCalled());
+    await act(async () => rejeita(new DOMException("cancelada", "AbortError")));
+    expect(container.textContent).not.toContain("Prévia indisponível");
+    expect(screen.getByRole("status", { hidden: true })).toBeTruthy();
+  });
 });

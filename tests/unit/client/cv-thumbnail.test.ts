@@ -95,4 +95,82 @@ describe("miniatura do CV", () => {
     await expect(renderCvThumbnail(cv, modelos[0], 200)).resolves.toMatch(/^blob:/);
     expect(renderCvPdf).toHaveBeenCalledTimes(2);
   });
+  it("pedido na fila abortado antes da vez não renderiza, rejeita com AbortError e não vai para o cache", async () => {
+    let solta: () => void = () => undefined;
+    renderCvPdf.mockImplementationOnce(async () => {
+      await new Promise<void>((r) => (solta = r));
+      return { blob: new Blob(["%PDF"]), pages: 1 };
+    });
+    const primeiro = renderCvThumbnail(cv, modelos[0], 200);
+    const ctrl = new AbortController();
+    const segundo = renderCvThumbnail(cv, modelos[1], 200, ctrl.signal);
+    const terceiro = renderCvThumbnail(cv, modelos[2], 200);
+    await vi.waitFor(() => expect(renderCvPdf).toHaveBeenCalledTimes(1));
+    ctrl.abort();
+    solta();
+    await expect(primeiro).resolves.toMatch(/^blob:/);
+    await expect(segundo).rejects.toMatchObject({ name: "AbortError" });
+    await expect(terceiro).resolves.toMatch(/^blob:/);
+    // Só o 1º e o 3º renderizaram: o abortado saiu da fila sem custo.
+    expect(renderCvPdf).toHaveBeenCalledTimes(2);
+    expect(peekThumbnail(cv, modelos[1], 200)).toBeNull();
+  });
+
+  it("dois pedidos da mesma miniatura: abortar um não quebra o outro", async () => {
+    let solta: () => void = () => undefined;
+    renderCvPdf.mockImplementationOnce(async () => {
+      await new Promise<void>((r) => (solta = r));
+      return { blob: new Blob(["%PDF"]), pages: 1 };
+    });
+    const ocupa = renderCvThumbnail(cv, modelos[0], 200);
+    const ctrl = new AbortController();
+    const abortado = renderCvThumbnail(cv, modelos[1], 200, ctrl.signal);
+    const outro = renderCvThumbnail(cv, modelos[1], 200, new AbortController().signal);
+    await vi.waitFor(() => expect(renderCvPdf).toHaveBeenCalledTimes(1));
+    ctrl.abort();
+    solta();
+    await ocupa;
+    await expect(abortado).rejects.toMatchObject({ name: "AbortError" });
+    const url = await outro;
+    expect(url).toMatch(/^blob:/);
+    expect(peekThumbnail(cv, modelos[1], 200)).toBe(url);
+    expect(renderCvPdf).toHaveBeenCalledTimes(2);
+  });
+
+  it("abortar depois de a renderização começar não a interrompe: termina e fica no cache", async () => {
+    let solta: () => void = () => undefined;
+    renderCvPdf.mockImplementationOnce(async () => {
+      await new Promise<void>((r) => (solta = r));
+      return { blob: new Blob(["%PDF"]), pages: 1 };
+    });
+    const ctrl = new AbortController();
+    const pedido = renderCvThumbnail(cv, modelos[0], 200, ctrl.signal);
+    await vi.waitFor(() => expect(renderCvPdf).toHaveBeenCalledTimes(1));
+    ctrl.abort();
+    solta();
+    const url = await pedido;
+    expect(peekThumbnail(cv, modelos[0], 200)).toBe(url);
+  });
+
+  it("libera o canvas temporário depois de gerar o PNG", async () => {
+    const canvases: HTMLCanvasElement[] = [];
+    const create = document.createElement.bind(document);
+    const spy = vi.spyOn(document, "createElement").mockImplementation((tag: string, opts?: ElementCreationOptions) => {
+      const el = create(tag, opts);
+      if (tag === "canvas") {
+        (el as HTMLCanvasElement).width = 300;
+        (el as HTMLCanvasElement).height = 400;
+        canvases.push(el as HTMLCanvasElement);
+      }
+      return el;
+    });
+    try {
+      await renderCvThumbnail(cv, modelos[0], 200);
+    } finally {
+      spy.mockRestore();
+    }
+    expect(canvases).toHaveLength(1);
+    expect(canvases[0].width).toBe(0);
+    expect(canvases[0].height).toBe(0);
+  });
 });

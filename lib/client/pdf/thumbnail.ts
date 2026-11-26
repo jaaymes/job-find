@@ -35,10 +35,16 @@ async function renderPng(cv: AssembledCv, templateId: CvTemplateId, widthPx: num
     const page = await pdf.getPage(1);
     const canvas = document.createElement("canvas");
     await drawPdfPage(page, canvas, widthPx).promise;
-    const png = await new Promise<Blob>((resolve, reject) =>
-      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao gerar a miniatura."))), "image/png"),
-    );
-    return URL.createObjectURL(png);
+    try {
+      const png = await new Promise<Blob>((resolve, reject) =>
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Falha ao gerar a miniatura."))), "image/png"),
+      );
+      return URL.createObjectURL(png);
+    } finally {
+      // Libera a memória do canvas temporário já (o navegador só a devolve quando o coletor passar).
+      canvas.width = 0;
+      canvas.height = 0;
+    }
   } finally {
     void task.destroy().catch(() => undefined);
   }
@@ -49,11 +55,25 @@ export function peekThumbnail(cv: AssembledCv, templateId: CvTemplateId, widthPx
   return cache.get(thumbnailKey(cv, templateId, widthPx)) ?? null;
 }
 
+function abortError(): DOMException {
+  return new DOMException("Miniatura cancelada.", "AbortError");
+}
+
 /**
  * Miniatura (PNG da página 1) do CV no modelo pedido. Renderiza uma por vez (fila) e guarda até 20
  * no cache (o menos usado tem o URL revogado). Falhas rejeitam e não ficam no cache.
+ *
+ * `signal`: se for abortado antes de a vez do pedido chegar na fila, ele não renderiza e rejeita com `AbortError`
+ * (sem cache). Cada chamada é um pedido próprio na fila (não há deduplicação): abortar um não afeta outro pedido
+ * da mesma miniatura, que renderiza (ou acha no cache) normalmente. Abortar depois de a renderização começar não a
+ * interrompe: ela termina e vai para o cache.
  */
-export function renderCvThumbnail(cv: AssembledCv, templateId: CvTemplateId, widthPx: number): Promise<string> {
+export function renderCvThumbnail(
+  cv: AssembledCv,
+  templateId: CvTemplateId,
+  widthPx: number,
+  signal?: AbortSignal,
+): Promise<string> {
   const key = thumbnailKey(cv, templateId, widthPx);
   const hit = cache.get(key);
   if (hit) {
@@ -66,6 +86,7 @@ export function renderCvThumbnail(cv: AssembledCv, templateId: CvTemplateId, wid
   const job = tail.then(async () => {
     const cached = cache.get(key);
     if (cached) return cached;
+    if (signal?.aborted) throw abortError();
     const url = await renderPng(cv, templateId, widthPx);
     cache.set(key, url);
     if (cache.size > MAX_CACHE) {

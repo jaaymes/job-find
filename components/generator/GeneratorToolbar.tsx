@@ -22,6 +22,8 @@ export type ToolbarProps = {
   recommendedTemplate: CvTemplateId;
   /** CV das miniaturas e da prévia do seletor de modelo: o gerado, ou o do perfil enquanto não há geração. */
   previewCv: AssembledCv;
+  /** CV estável (o do perfil no idioma escolhido) só para a miniatura do botão do modelo. */
+  triggerCv: AssembledCv;
   onTemplate: (id: CvTemplateId, makeDefault: boolean) => void;
   onLang: (l: CvLang) => void;
   onLetter: (checked: boolean) => void;
@@ -60,6 +62,7 @@ export function GeneratorToolbar(p: ToolbarProps) {
         recommended={p.recommendedTemplate}
         onChange={p.onTemplate}
         cv={p.previewCv}
+        triggerCv={p.triggerCv}
         disabled={p.running}
       />
       <label className="flex min-h-11 cursor-pointer items-center gap-2 text-sm font-medium">

@@ -7,6 +7,7 @@ import type { AssembledCv } from "@/lib/client/cv/assemble";
 import { CV_TEMPLATES, getTemplate } from "@/lib/client/pdf/templates/registry";
 import type { CvTemplateId } from "@/lib/client/pdf/templates/types";
 import { useMediaQuery } from "@/lib/client/use-media-query";
+import { cn } from "@/lib/utils";
 import { CvThumbnail } from "./CvThumbnail";
 import { PdfPreview } from "./PdfPreview";
 
@@ -14,8 +15,15 @@ export type TemplatePickerProps = {
   value: CvTemplateId;
   recommended: CvTemplateId;
   onChange: (id: CvTemplateId, makeDefault: boolean) => void;
-  /** CV usado nas miniaturas e na prévia grande (perfil salvo ou CV gerado). */
+  /** CV usado nas miniaturas da galeria e na prévia grande (perfil salvo ou CV gerado). */
   cv: AssembledCv;
+  /**
+   * CV da miniatura do botão (padrão: `cv`). No gerador é o CV do perfil, estável: com o CV em edição, cada pausa
+   * renderizaria um PDF inteiro de novo só para a miniatura de 56px.
+   */
+  triggerCv?: AssembledCv;
+  /** Classes extras do botão (ex.: `w-full` no cartão do perfil). */
+  triggerClassName?: string;
   /** Mostra a caixa "Usar como padrão nos próximos CVs". */
   showDefaultOption?: boolean;
   /** Desabilita o botão (ex.: durante a geração, para a escolha não se perder). */
@@ -26,7 +34,16 @@ export type TemplatePickerProps = {
  * Escolha do modelo do CV: botão com a miniatura do modelo atual que abre uma galeria com os 10 modelos (todos de
  * coluna única, legíveis por ATS) em folhas A4 pequenas e a prévia grande do selecionado.
  */
-export function TemplatePicker({ value, recommended, onChange, cv, showDefaultOption = true, disabled = false }: TemplatePickerProps) {
+export function TemplatePicker({
+  value,
+  recommended,
+  onChange,
+  cv,
+  triggerCv = cv,
+  triggerClassName,
+  showDefaultOption = true,
+  disabled = false,
+}: TemplatePickerProps) {
   const [open, setOpen] = useState(false);
   const [makeDefault, setMakeDefault] = useState(false);
   const current = getTemplate(value);
@@ -40,7 +57,8 @@ export function TemplatePicker({ value, recommended, onChange, cv, showDefaultOp
     setSelected(id);
     if (!wide) previewRef.current?.scrollIntoView?.({ block: "start", behavior: reduceMotion ? "auto" : "smooth" });
   };
-  // A seleção é local: setas do teclado só movem o foco entre os modelos; quem confirma é o botão.
+  // A seleção é local: clicar ou usar as setas do teclado nos radios muda o modelo marcado (e a prévia), mas só o
+  // botão "Usar este modelo" confirma e chama `onChange`.
   const onOpenChange = (next: boolean) => {
     if (next) {
       setSelected(value);
@@ -56,13 +74,18 @@ export function TemplatePicker({ value, recommended, onChange, cv, showDefaultOp
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger
-        render={<button type="button" className={`${BTN_OUTLINE} justify-start gap-3 py-1.5 pl-1.5`} disabled={disabled} />}
-        aria-label={`Modelo do CV: ${current.name}`}
+        render={
+          <button
+            type="button"
+            className={cn(BTN_OUTLINE, "max-w-full min-w-0 justify-start gap-3 py-1.5 pl-1.5 whitespace-normal", triggerClassName)}
+            disabled={disabled}
+          />
+        }
       >
-        <CvThumbnail cv={cv} templateId={value} width={56} className="w-14 flex-none" />
-        <span className="text-left">
-          Modelo: <span className="font-semibold">{current.name}</span>
-          <span className="text-jf-ink-3"> · Trocar</span>
+        <CvThumbnail cv={triggerCv} templateId={value} width={56} className="w-14 flex-none" />
+        {/* O texto visível é o nome acessível inteiro (WCAG 2.5.3): a miniatura é decorativa. */}
+        <span className="min-w-0 text-left break-words">
+          Modelo do CV: <span className="font-semibold">{current.name}</span>
         </span>
       </DialogTrigger>
       <DialogContent mobile="sheet" className="gap-3 sm:flex sm:h-[88vh] sm:max-w-6xl sm:flex-col sm:overflow-hidden">

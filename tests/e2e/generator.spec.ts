@@ -699,6 +699,21 @@ test("vaga nova sem registro: o modelo recomendado já vem selecionado e marcado
   await expect(recommended.getByRole("radio")).toBeChecked();
 });
 
+test("no celular (375px), o botão do modelo quebra o texto e não vaza da barra de opções", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  await page.goto("/gerador/1");
+  const picker = page.getByRole("button", { name: /^Modelo do CV: / });
+  await expect(picker).toHaveAccessibleName("Modelo do CV: Foco em resultados", FIRST);
+  await expect(picker).toHaveText("Modelo do CV: Foco em resultados");
+  const fits = await picker.evaluate((el) => {
+    const bar = el.closest("section")!.getBoundingClientRect();
+    const box = el.getBoundingClientRect();
+    return el.scrollWidth <= el.clientWidth && box.right <= bar.right + 0.5;
+  });
+  expect(fits).toBe(true);
+});
+
 /** A miniatura de cada modelo só vira `img` ao entrar na tela (IntersectionObserver): rola até cada uma e espera carregar. */
 async function expectAllThumbnailsLoaded(group: Locator) {
   await expect(group.getByRole("radio")).toHaveCount(10, FIRST);

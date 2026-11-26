@@ -698,3 +698,34 @@ test("vaga nova sem registro: o modelo recomendado já vem selecionado e marcado
   await expect(recommended).toContainText("Foco em resultados");
   await expect(recommended.getByRole("radio")).toBeChecked();
 });
+
+/** A miniatura de cada modelo só vira `img` ao entrar na tela (IntersectionObserver): rola até cada uma e espera carregar. */
+async function expectAllThumbnailsLoaded(page: Page, group: ReturnType<Page["locator"]>) {
+  const cards = group.locator("label");
+  await expect(cards).toHaveCount(10, FIRST);
+  for (let i = 0; i < 10; i++) {
+    const card = cards.nth(i);
+    await card.scrollIntoViewIfNeeded();
+    const img = card.locator("img");
+    await expect(img).toHaveCount(1, FIRST);
+    await expect.poll(() => img.evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0), FIRST).toBe(true);
+  }
+}
+
+test("o seletor do gerador mostra 10 miniaturas A4 e a prévia grande", async ({ page }) => {
+  await generate(page);
+  await page.getByRole("button", { name: /^Modelo do CV: / }).click();
+  const dialog = page.getByRole("dialog");
+  await expectAllThumbnailsLoaded(page, dialog.getByRole("radiogroup", { name: "Modelos de CV" }));
+  await expect(dialog.getByRole("region", { name: "Prévia do modelo" }).locator("canvas").first()).toBeVisible(FIRST);
+});
+
+test("sem CV gerado, o seletor do gerador já mostra as miniaturas com o currículo do perfil", async ({ page }) => {
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  await page.goto("/gerador/1");
+  await page.getByRole("button", { name: /^Modelo do CV: / }).click();
+  const dialog = page.getByRole("dialog");
+  await expectAllThumbnailsLoaded(page, dialog.getByRole("radiogroup", { name: "Modelos de CV" }));
+  await expect(dialog.getByRole("region", { name: "Prévia do modelo" }).locator("canvas").first()).toBeVisible(FIRST);
+  expect(await storedRec(page)).toBeNull();
+});

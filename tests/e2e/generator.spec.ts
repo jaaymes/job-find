@@ -661,3 +661,36 @@ test("'Usar como padrão' aplica o modelo escolhido a outra vaga", async ({ page
   await page.goto("/gerador/2");
   await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible(FIRST);
 });
+
+test("'Regenerar' mantém o modelo escolhido e o registro salvo guarda o modelo", async ({ page }) => {
+  mock.invent = false;
+  await generate(page);
+  await page.getByRole("button", { name: /^Modelo do CV: / }).click();
+  await page.getByRole("dialog").getByRole("radio", { name: /Harvard/ }).check();
+  await page.getByRole("dialog").getByRole("button", { name: "Usar este modelo" }).click();
+  await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
+  const calls = mock.bodies.length;
+
+  // Sem edições, "Regenerar" não pede confirmação.
+  await page.getByRole("button", { name: "Regenerar" }).click();
+  await expect.poll(() => mock.bodies.length).toBeGreaterThan(calls);
+  await expect(headline(page)).toBeVisible(FIRST);
+  await expect(page.getByRole("button", { name: "Modelo do CV: Harvard" })).toBeVisible();
+  await expect.poll(async () => (await storedRec(page))?.templateId).toBe("harvard");
+});
+
+test("vaga nova sem registro: o modelo recomendado já vem selecionado e marcado com o selo", async ({ page }) => {
+  await seedStorage(page, { [AI_KEY]: AI_SETTINGS, [PROFILE_KEY]: PROFILE });
+  await page.goto("/gerador/1");
+  // Perfil sênior e vaga em português: a recomendação é "Foco em resultados".
+  const picker = page.getByRole("button", { name: /^Modelo do CV: / });
+  await expect(picker).toHaveText("Modelo do CV: Foco em resultados", FIRST);
+  expect(await storedRec(page)).toBeNull();
+
+  await picker.click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByText("Recomendado para você")).toHaveCount(1);
+  const recommended = dialog.locator("label").filter({ hasText: "Recomendado para você" });
+  await expect(recommended).toContainText("Foco em resultados");
+  await expect(recommended.getByRole("radio")).toBeChecked();
+});
